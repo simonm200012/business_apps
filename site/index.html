@@ -65,6 +65,15 @@ footer{margin-top:40px}
     <button type="button" data-f="yours" aria-pressed="false" title="Real data you add yourself">Your data</button>
   </div>
   <main class="grid">
+    <article class="card" data-source="demo" data-private="showcase" hidden>
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5.5h10M6.5 11.5h12.5M4 17.5h15"/></svg></span>
+        <h2>Stratum</h2>
+      </div>
+      <div class="tags"><span class="kind mono">SITE</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>The company showcase: data warehousing, Power BI, analytics tools, predictions, automation and business apps, with live product mock-ups and links to the demos. Illustrative data.</p>
+      <a class="open" href="showcase/">Open</a>
+    </article>
     <article class="card" data-source="demo">
       <div class="top">
         <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
@@ -105,6 +114,15 @@ footer{margin-top:40px}
       <a class="open" href="analytics/">Open</a>
     </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M7.5 12h4l5-5M11.5 12l5 5"/></svg></span>
+        <h2>n8n Runs</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Every n8n workflow and pipeline: health, scheduled runs per day, missed and failed runs, and when each workflow was last deployed. Live from the run tracker.</p>
+      <a class="open" href="n8n/">Open</a>
+    </article>
 
     <article class="card">
       <div class="top">
@@ -195,12 +213,75 @@ footer{margin-top:40px}
       <a class="open" href="invoices/">Open</a>
     </article>
 
+    <article class="card" data-source="yours">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>
+        <h2>Billing</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono yours" title="Real data you add yourself; it stays in your browser (and your private cloud copy)">YOUR DATA</span></div>
+      <p>Issue invoices and credit notes, run monthly retainer billing and track payments. Gap-free numbering, the data FURS requires, UPN QR, VAT ledger and RP-O exports, and a tamper-evident log. Data stays in your browser.</p>
+      <a class="open" href="billing/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+        <h2>Ads &amp; Return</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Google Ads and Meta spend against GA4 revenue and store bookings: return per market, every campaign, cost per booking per optics, budget pacing and wasted spend. Real data, approved accounts only.</p>
+      <a class="open" href="ads/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16"/><path d="M6 15l4-4 3 3 5-6"/><path d="M15 8h3v3"/></svg></span>
+        <h2>Margin guard</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Which discount codes, price lists, brands and shops lose margin, and yesterday's negative-margin sales. Real data, approved accounts only.</p>
+      <a class="open" href="margin/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span>
+        <h2>Refill &amp; win-back</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Contact-lens customers running out soon per market, how many can be e-mailed, what the model suggests and whether reminders work. Totals only, approved accounts only.</p>
+      <a class="open" href="refill/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-2 9H6z"/><circle cx="8" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg></span>
+        <h2>Webshop conversion health</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Where shoppers drop off on the five webshops, by shop, device, category and landing page, and which tracking looks broken. Real data, approved accounts only.</p>
+      <a class="open" href="webshop/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg></span>
+        <h2>Customer service quality</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>NPS, first-answer times, SLA, calls and how much the AI chatbot handles, by market and queue, live from Daktela. Approved accounts only.</p>
+      <a class="open" href="cs-quality/">Open</a>
+    </article>
 
+    <article class="card" data-source="live">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l4-4"/><path d="M4 18a8 8 0 1 1 16 0"/></svg></span>
+        <h2>Hub usage &amp; speed</h2>
+      </div>
+      <div class="tags"><span class="kind mono">MONITOR</span><span class="data mono live" title="Real company data, for approved accounts">LIVE</span></div>
+      <p>Who uses which Adrial Hub apps, how fast and reliable they are, which apps could be retired and what the cloud costs. Approved accounts only.</p>
+      <a class="open" href="hub-usage/">Open</a>
+    </article>
 
     <article class="card" data-source="both">
       <div class="top">
