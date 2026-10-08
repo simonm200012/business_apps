@@ -4,7 +4,7 @@ Static browser apps (no build step, no server). Web root is `site/`. Spec: `docs
 
 Run locally: `cd site && python3 -m http.server 8080`, then open http://localhost:8080/
 
-## Deploy free on Cloudflare Pages
+## Deploy free on Cloudflare (Workers static assets)
 1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick this repo.
 2. Framework preset: None. Build command: leave empty. Build output directory: `site`.
 3. Save and Deploy. You get `https://<name>.pages.dev`; add your own domain under Custom domains (free).

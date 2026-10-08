@@ -8,7 +8,7 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 - `site/` holds the original front-end files copied from the live Cloud Run site. This is what Cloudflare serves.
   - Included: erp, crm, analytics, mail, invoices, desk, design-compare, branch-manager, parcels, recon, stores, onboarding, contracts, marketing, client-atlas, pisarna-dms, postbench, team-tasks, plus `_shared/`.
   - The home page currently lists 18 tiles.
-- `public/` holds an earlier rebuild from `docs/APPS-CODE-GUIDE.md`. It is unused. Delete it once you are happy with `site/`.
+- `public/` (earlier rebuild) and the stray `bk-*.png` files were removed.
 - `wrangler.jsonc` points Cloudflare at `./site`.
 - Cloudflare project: `business-apps`, live at https://business-apps.simonm2000.workers.dev
 - Build settings in Cloudflare: build command empty, deploy command `npx wrangler deploy`.
@@ -22,7 +22,7 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 2. **Stratum (`showcase/`) is not in the repo.** It is private on the original server (needs sign-in). Add it only after step 1 works.
    - Download it while signed in on the original site, or copy `C:\hub\public\showcase` from your PC into `site/showcase/`.
 3. **Eight apps that need your server are not in `site/`:** ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop. Without the server they only show a sign-in page. Copy them from `C:\hub\public\` if you want the tiles to open.
-4. **Cleanup:** remove `public/` and the stray `bk-*.png` files in the repo root.
+4. ~~Cleanup~~ done.
 5. **Home page:** `site/index.html` tiles for the apps above need adding back (copy the full `C:\hub\public\index.html`).
 
 ## Run locally
