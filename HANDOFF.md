@@ -17,7 +17,7 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 
 1. ~~Cloudflare Access~~ done: policy `business-apps owner` (Allow, simonm2000@outlook.com, One-time PIN) is attached to the worker for all traffic and verified.
 2. ~~Stratum (`showcase/`)~~ done: copied into `site/showcase/` and its tile is visible on the home page.
-3. ~~Eight server apps~~ done: ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop are in `site/` with the full home page. Only Billing works fully offline; the others call `/api/...` and will not show live data.
+3. ~~Eight server apps~~ done: ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop are in `site/` with the full home page. Billing works offline. ads, cs-quality, hub-usage, margin, refill, webshop and n8n run on made-up demo data: `_shared/demo-api.js` answers their `/api/...` calls in the browser and each app has a `demo-api.js`. A DEMO DATA badge is shown. To use real data later, remove the two demo script tags from the app's `index.html` and add a real backend.
 4. ~~Cleanup~~ done.
 5. ~~Home page~~ done: full tile list restored.
 
