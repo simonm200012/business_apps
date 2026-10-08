@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Desk · Adrial Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3EF;--card:#FFFFFF;--sunken:#F4F3EF;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--line:#E0DDD6;--hair:#ECEAE4;--chip:#EFEDE8;--field:#FFFFFF;--dash:#D3CFC6;
+  --accent:#5B3FE0;--accent-soft:#ECE8FD;--focus:#7B66F0;
+  --ok-bg:#DCEBE0;--ok-fg:#24553A;--ok-dot:#3F7D58;--warn-bg:#FBF0D5;--warn-fg:#76510A;--bad-bg:#FCE6E2;--bad-fg:#9A3412;--bad-dot:#C2410C;
+  --blue-bg:#DFE5F4;--blue-fg:#2A4180;--blue-dot:#3E5BA9;--teal-bg:#D7EEF2;--teal-fg:#0E5462;--teal-dot:#17869C;--clay-bg:#F6E3D6;--clay-fg:#7A3610;--clay-dot:#B4561C;
+  --weekend:#B9B5AC;
+  --overlay:rgba(12,12,13,.42);--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);--pop:0 1px 2px rgba(12,12,13,.06),0 18px 40px -16px rgba(12,12,13,.32);
+  color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C0C0D;--card:#161618;--sunken:#1F1F22;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--hair:#232327;--chip:#26262A;--field:#1C1C1F;--dash:#3A3A40;
+  --accent:#9B88F5;--accent-soft:#2A2440;
+  --ok-bg:#1D3426;--ok-fg:#93CFA3;--ok-dot:#5FAF7A;--warn-bg:#30260F;--warn-fg:#F0C567;--bad-bg:#371815;--bad-fg:#F3A47E;--bad-dot:#E0703F;
+  --blue-bg:#1E2638;--blue-fg:#A9BBEA;--blue-dot:#7D97DA;--teal-bg:#132D33;--teal-fg:#8FD3E0;--teal-dot:#4FB3C6;--clay-bg:#35210F;--clay-fg:#F0B58C;--clay-dot:#D9824A;
+  --weekend:#4A4A50;
+  --overlay:rgba(0,0,0,.62);--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.8);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C0C0D;--card:#161618;--sunken:#1F1F22;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--hair:#232327;--chip:#26262A;--field:#1C1C1F;--dash:#3A3A40;
+  --accent:#9B88F5;--accent-soft:#2A2440;
+  --ok-bg:#1D3426;--ok-fg:#93CFA3;--ok-dot:#5FAF7A;--warn-bg:#30260F;--warn-fg:#F0C567;--bad-bg:#371815;--bad-fg:#F3A47E;--bad-dot:#E0703F;
+  --blue-bg:#1E2638;--blue-fg:#A9BBEA;--blue-dot:#7D97DA;--teal-bg:#132D33;--teal-fg:#8FD3E0;--teal-dot:#4FB3C6;--clay-bg:#35210F;--clay-fg:#F0B58C;--clay-dot:#D9824A;
+  --weekend:#4A4A50;
+  --overlay:rgba(0,0,0,.62);--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.8);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.mono,.eyebrow{font-family:'Geist Mono',ui-monospace,Menlo,monospace}
+.eyebrow{font-size:12px;letter-spacing:.06em;color:var(--ink3)}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--ink)}
+a:hover{color:var(--ink2)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ico,.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.wrap{max-width:1200px;margin:0 auto;padding:40px 16px 112px;display:flex;flex-direction:column;gap:18px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:20px 24px}
+.titles{flex:1 1 420px;display:flex;flex-direction:column;gap:10px;min-width:0}
+h1{margin:0;font-size:clamp(36px,6vw,56px);line-height:1;font-weight:500;letter-spacing:-.045em}
+h1 span{color:var(--accent)}
+.lede{margin:0;max-width:640px;font-size:16px;color:var(--ink2)}
+.summary{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;font:500 12px/1.4 'Geist Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.summary b{font-weight:500;color:var(--ink)}
+.summary .bad b,.summary .bad{color:var(--bad-fg)}
+.summary i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:var(--ink3);vertical-align:1px}
+.summary .bad i{background:var(--bad-dot)}
+.summary .ok i{background:var(--ok-dot)}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.privacy{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--ink3)}
+.privacy svg{width:15px;height:15px;flex:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--chip);color:var(--ink)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.primary:hover{opacity:.88;background:var(--ink);color:var(--bg)}
+.btn.good{background:var(--ok-bg);border-color:transparent;color:var(--ok-fg)}
+.btn.small{min-height:36px;padding:0 14px;font-size:14px}
+.btn.tiny{min-height:30px;padding:0 10px;font-size:13px}
+.btn.icon{width:44px;padding:0}
+.btn.icon.small{width:36px}
+.btn.icon.tiny{width:30px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--chip)}
+.btn.danger{color:var(--bad-fg)}
+.btn:disabled{opacity:.5;cursor:default}
+.linkbtn{padding:0;border:0;background:none;color:var(--accent);font:inherit;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:22px;background:var(--chip);align-self:flex-start;max-width:100%}
+.tab{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--ink2);font-weight:500;font-size:14px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.tab .n{min-width:20px;padding:0 6px;border-radius:999px;background:var(--card);font:500 11.5px/18px 'Geist Mono',ui-monospace,monospace;color:var(--ink2);text-align:center}
+.tab[aria-selected="true"] .n{background:var(--chip)}
+.tab .n.bad{background:var(--bad-bg);color:var(--bad-fg)}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.search{flex:1 1 260px;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.search input{flex:1;min-width:0;border:0;background:transparent;padding:8px 0;outline:none;font-size:14.5px}
+.search:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+.search svg{width:16px;height:16px;color:var(--ink3);flex:none}
+.field-inline{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:14px;max-width:100%}
+.field-inline span{color:var(--ink3);white-space:nowrap}
+.field-inline select{border:0;background:transparent;padding:8px 6px;font-weight:500;cursor:pointer;max-width:180px;min-width:0}
+.field-inline select:focus{outline:none}
+.field-inline:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+
+.bulk{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border-radius:16px;background:var(--accent-soft);font-size:14px}
+.bulk>b{font-weight:500;margin-right:4px}
+.bulk select,.bulk input{min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:14px;max-width:180px}
+
+/* lists */
+.group{display:flex;flex-direction:column;gap:8px}
+.group-h{display:flex;align-items:baseline;gap:10px;margin:6px 4px 0;font:500 12px/1.4 'Geist Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.group-h.bad{color:var(--bad-fg)}
+.group-h .c{color:var(--ink3)}
+.tasks{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 14px 8px 12px;border-bottom:1px solid var(--hair);min-height:60px}
+.row:last-child{border-bottom:0}
+.row:hover{background:color-mix(in srgb,var(--chip) 55%,transparent)}
+.row.sel{background:var(--accent-soft)}
+.row .pick{width:18px;height:18px;margin:0 2px;accent-color:#5B3FE0;cursor:pointer;flex:none}
+.donebtn{display:grid;place-items:center;width:36px;height:36px;flex:none;padding:0;border:0;border-radius:50%;background:transparent;color:var(--ink3);cursor:pointer}
+.donebtn:hover{background:var(--chip);color:var(--ink)}
+.donebtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6}
+.donebtn[aria-pressed="true"]{color:var(--ok-dot)}
+.rowmain{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:3px;padding:6px 4px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer}
+.rowmain .t{font-weight:500;font-size:15.5px;line-height:1.35;overflow-wrap:anywhere}
+.row.done .rowmain .t{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--ink3)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;color:var(--ink3)}
+.meta>span{display:inline-flex;align-items:center;gap:5px;min-width:0}
+.meta svg{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.meta .who{color:var(--ink2);font-weight:500}
+.meta .hit{color:var(--accent)}
+.rowside{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:500;white-space:nowrap;background:var(--chip);color:var(--ink2)}
+.pill svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pill i{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.pill.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.pill.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.pill.violet{background:var(--accent-soft);color:var(--accent)}
+.pill.blue{background:var(--blue-bg);color:var(--blue-fg)}
+.pill.teal{background:var(--teal-bg);color:var(--teal-fg)}
+.pill.clay{background:var(--clay-bg);color:var(--clay-fg)}
+.pill.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px}
+.tagchip{display:inline-flex;align-items:center;padding:0 8px;border-radius:999px;background:var(--chip);color:var(--ink2);font-size:12px;line-height:20px}
+
+/* empty state */
+.empty{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.drop{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:260px;padding:32px 20px;border:1.5px dashed var(--dash);border-radius:18px;background:var(--card);text-align:center}
+.drop h2{margin:0;font-size:22px;font-weight:500;letter-spacing:-.02em}
+.drop p{margin:0;max-width:520px;color:var(--ink2)}
+.drop .row-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.ico-lg{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--ink);color:var(--bg)}
+.ico-lg svg{width:22px;height:22px}
+.step{display:flex;flex-direction:column;gap:6px;padding:18px 20px}
+.step b{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;font-weight:500;color:var(--ink3)}
+.step h3{margin:0;font-size:16px;font-weight:500}
+.step p{margin:0;font-size:14px;color:var(--ink2)}
+.none{margin:0;padding:36px 16px;border:1.5px dashed var(--dash);border-radius:18px;color:var(--ink3);text-align:center;font-size:14.5px}
+.none b{display:block;margin-bottom:4px;color:var(--ink);font-size:16px;font-weight:500}
+
+/* done log */
+.log{display:flex;flex-direction:column;gap:18px}
+.log-day{display:flex;flex-direction:column;gap:8px}
+.log-item{display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 12px;padding:14px 16px;border-bottom:1px solid var(--hair)}
+.log-item:last-child{border-bottom:0}
+.log-item .tm{font:500 12.5px/1.6 'Geist Mono',ui-monospace,monospace;color:var(--ink3)}
+.log-item .bd{display:flex;flex-direction:column;gap:6px;min-width:0}
+.log-item .bd>button{align-self:flex-start;padding:0;border:0;background:none;font-weight:500;font-size:15px;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.log-item .bd>button:hover{text-decoration:underline}
+.conf-mini{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border-radius:12px;background:var(--ok-bg);color:var(--ok-fg);font-size:13px}
+.conf-mini a,.conf-mini button{color:inherit;font:inherit;font-weight:500}
+.conf-mini button{padding:0;border:0;background:none;text-decoration:underline;cursor:pointer}
+
+/* board */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.col{display:flex;flex-direction:column;gap:8px;min-height:200px;padding:10px;border-radius:18px;background:var(--chip);border:1.5px solid transparent;transition:border-color .12s}
+.col.over{border-color:var(--accent);border-style:dashed;background:var(--accent-soft)}
+.col-h{display:flex;align-items:center;gap:8px;padding:4px 6px 2px;font-weight:500;font-size:14px}
+.col-h i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.col-h .c{margin-left:auto;font:500 12px 'Geist Mono',ui-monospace,monospace;color:var(--ink3)}
+.bcard{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);cursor:grab}
+.bcard.dragging{opacity:.45}
+.bcard>button.open{padding:0;border:0;background:none;text-align:left;font-weight:500;cursor:pointer;overflow-wrap:anywhere}
+.bcard .mv{display:flex;gap:4px;justify-content:flex-end}
+.bcard .mv .btn{min-height:28px;width:28px}
+.bcard .mv .btn svg{width:15px;height:15px}
+.col .more{font-size:13px;color:var(--ink3);text-align:center;padding:6px}
+
+/* calendar */
+.cal-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.cal-head h2{margin:0 8px 0 0;font-size:22px;font-weight:500;letter-spacing:-.02em;min-width:170px}
+.cal-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-left:auto;font-size:12.5px;color:var(--ink3)}
+.cal-legend span{display:inline-flex;align-items:center;gap:6px}
+.cal-legend i{width:9px;height:9px;border-radius:3px;background:var(--c)}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--line);gap:1px;box-shadow:var(--shadow)}
+.cal .dow{padding:8px 10px;background:var(--card);font:500 11px 'Geist Mono',ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.day{display:flex;flex-direction:column;gap:3px;min-height:108px;min-width:0;padding:6px;background:var(--card);border:0;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.day:hover{background:color-mix(in srgb,var(--chip) 60%,var(--card))}
+.day.out{background:var(--sunken)}
+.day.out .dn{color:var(--weekend)}
+.day .dn{font:500 12.5px 'Geist Mono',ui-monospace,monospace;color:var(--ink2);padding:2px 4px}
+.day.today .dn{display:inline-grid;place-items:center;align-self:flex-start;min-width:24px;height:24px;border-radius:999px;background:var(--ink);color:var(--bg)}
+.day[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
+.ev{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 6px;border-radius:6px;font-size:12px;line-height:18px;background:var(--bg-c,var(--chip));color:var(--fg-c,var(--ink2))}
+.ev.due{--bg-c:var(--accent-soft);--fg-c:var(--accent)}
+.ev.due.over{--bg-c:var(--bad-bg);--fg-c:var(--bad-fg)}
+.ev.due.done{text-decoration:line-through;opacity:.7}
+.ev.book{--bg-c:var(--teal-bg);--fg-c:var(--teal-fg)}
+.ev.more{background:transparent;color:var(--ink3)}
+.dots{display:none;gap:3px;flex-wrap:wrap;padding:0 4px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--c)}
+.cal-list{display:flex;flex-direction:column;gap:8px}
+.cal-list h3{margin:6px 4px 0;font-size:15px;font-weight:500}
+
+/* overlay + toasts */
+#drop-overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;background:var(--overlay);pointer-events:none}
+#drop-overlay div{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(560px,100%);padding:48px 32px;border:2px dashed var(--accent);border-radius:24px;background:var(--card);font-size:22px;font-weight:500;text-align:center;letter-spacing:-.01em}
+#drop-overlay small{font-size:14px;font-weight:400;color:var(--ink2)}
+#toasts{position:fixed;left:16px;bottom:16px;z-index:2147483200;display:flex;flex-direction:column;gap:8px;max-width:min(440px,calc(100vw - 32px))}
+.toast{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;background:var(--ink);color:var(--bg);box-shadow:var(--pop);font-size:14px}
+.toast p{margin:0;flex:1;overflow-wrap:anywhere}
+.toast button{border:0;background:transparent;color:inherit;font-weight:600;cursor:pointer;padding:0 2px;text-decoration:underline}
+.toast.err{background:var(--bad-fg);color:var(--card)}
+.spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+
+.foot{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink3)}
+
+/* dialogs */
+dialog{padding:0;border:0;color:var(--ink);background:transparent;max-width:none;max-height:none}
+dialog::backdrop{background:var(--overlay)}
+.dlg-shell{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--pop);overflow:hidden}
+.d-head{display:flex;align-items:center;gap:10px;padding:14px 14px 14px 22px;border-bottom:1px solid var(--line)}
+.d-head .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.d-head h2{margin:0;font-size:19px;font-weight:500;letter-spacing:-.015em;overflow-wrap:anywhere}
+.s-body{flex:1;min-height:0;overflow:auto;padding:18px 22px 24px;display:flex;flex-direction:column;gap:16px}
+.d-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.d-foot .spacer{flex:1}
+.help{margin:0;font-size:13.5px;color:var(--ink3)}
+
+#detail{width:min(1100px,calc(100vw - 32px));height:min(880px,calc(100vh - 32px))}
+#detail .dlg-shell{height:100%;max-height:none;position:relative}
+#detail.dropping .dlg-shell::after{content:'Drop the confirmation PDF or photo here';position:absolute;inset:8px;display:grid;place-items:center;border:2px dashed var(--accent);border-radius:16px;background:color-mix(in srgb,var(--card) 88%,transparent);font-size:20px;font-weight:500;pointer-events:none}
+.d-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.d-main,.d-side{min-width:0;min-height:0;overflow:auto;padding:18px 22px 28px;display:flex;flex-direction:column;gap:18px}
+.d-main>*,.d-side>*,.s-body>*,.sec>*{flex-shrink:0}
+.d-side{background:var(--sunken);border-left:1px solid var(--line)}
+.title-in{field-sizing:content;width:100%;padding:6px 10px;margin:-6px -10px;border:1px solid transparent;border-radius:12px;background:transparent;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1.25;resize:none;overflow:hidden}
+.title-in:hover{border-color:var(--line)}
+.title-in:focus{outline:2px solid var(--focus);outline-offset:0;border-color:transparent;background:var(--field)}
+.state-line{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.span2{grid-column:span 2}
+.f>label,.f .lbl{font:500 12px/1.4 'Geist Mono',ui-monospace,monospace;letter-spacing:.04em;color:var(--ink2)}
+.f input,.f select,.f textarea{width:100%;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--field);font-size:15px}
+.f textarea{min-height:96px;resize:vertical;line-height:1.5}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--focus);outline-offset:0;border-color:transparent}
+.f .hint{font-size:12.5px;color:var(--ink3)}
+.sugg{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:13.5px}
+.sugg .q{color:var(--ink2);font-size:12.5px;overflow-wrap:anywhere}
+.sugg .acts{display:flex;flex-wrap:wrap;gap:6px}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sec-h{display:flex;align-items:center;gap:8px;margin:0;font-size:15px;font-weight:500}
+.sec-h .c{font:500 12px 'Geist Mono',ui-monospace,monospace;color:var(--ink3)}
+.sec-h .sp{flex:1}
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.check li{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 4px;border-radius:10px}
+.check li:hover{background:var(--chip)}
+.check input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:#5B3FE0;flex:none}
+.check input[type=text]{flex:1;min-width:0;min-height:36px;padding:4px 8px;border:1px solid transparent;border-radius:8px;background:transparent}
+.check input[type=text]:focus{border-color:var(--line);background:var(--field);outline:none}
+.check li.done input[type=text]{color:var(--ink3);text-decoration:line-through}
+.addline{display:flex;gap:6px}
+.addline input{flex:1;min-width:0;min-height:40px;padding:6px 12px;border:1px dashed var(--dash);border-radius:12px;background:transparent}
+.addline input:focus{border-style:solid;outline:2px solid var(--focus);outline-offset:0}
+.confs{display:flex;flex-direction:column;gap:10px}
+.conf{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.conf.confirmed{border-color:color-mix(in srgb,var(--ok-dot) 55%,var(--line))}
+.conf-top{display:flex;align-items:flex-start;gap:10px}
+.prov{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:10px;background:var(--bgc,var(--chip));color:var(--fgc,var(--ink2))}
+.prov svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.prov.hotel,.prov.stay{--bgc:var(--blue-bg);--fgc:var(--blue-fg)}
+.prov.flight{--bgc:var(--accent-soft);--fgc:var(--accent)}
+.prov.train,.prov.bus,.prov.ferry{--bgc:var(--teal-bg);--fgc:var(--teal-fg)}
+.prov.car{--bgc:var(--clay-bg);--fgc:var(--clay-fg)}
+.prov.event{--bgc:var(--warn-bg);--fgc:var(--warn-fg)}
+.conf-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.conf-t b{font-weight:500;overflow-wrap:anywhere}
+.conf-t small{color:var(--ink3);font-size:12.5px;overflow-wrap:anywhere}
+.kv{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--ink2)}
+.kv span b{font-weight:500;color:var(--ink)}
+.conf-acts{display:flex;flex-wrap:wrap;gap:6px}
+.confirmed-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--ok-bg);color:var(--ok-fg);font-size:14px}
+.confirmed-banner svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.confirmed-banner b{font-weight:600}
+.mailcard{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:14px}
+.mailcard .subj{font-weight:500;overflow-wrap:anywhere}
+.mailcard dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin:0;font-size:13px}
+.mailcard dt{color:var(--ink3)}
+.mailcard dd{margin:0;overflow-wrap:anywhere;color:var(--ink2)}
+.mailcard .excerpt{margin:0;max-height:7.5em;overflow:hidden;color:var(--ink2);font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-mask-image:linear-gradient(#000 60%,transparent)}
+.atts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.atts li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:6px 8px;border-radius:10px;background:var(--sunken);font-size:13.5px}
+.atts li .nm{flex:1 1 160px;min-width:0;overflow-wrap:anywhere}
+.atts li small{color:var(--ink3);font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px}
+
+#mailview{width:min(980px,calc(100vw - 32px));height:min(900px,calc(100vh - 32px))}
+#mailview .dlg-shell{height:100%;max-height:none}
+.mv-meta{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;margin:0;font-size:13.5px}
+.mv-meta dt{color:var(--ink3)}
+.mv-meta dd{margin:0;overflow-wrap:anywhere}
+.mv-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--chip)}
+.seg button{min-height:32px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--ink2);font-weight:500;font-size:13.5px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.mv-frame{flex:1;min-height:360px;width:100%;border:1px solid var(--line);border-radius:12px;background:#fff}
+.mv-text{flex:1;margin:0;min-height:200px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--field);font:13.5px/1.6 'Geist',ui-sans-serif,system-ui,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto}
+.mv-note{margin:0;padding:8px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn-fg);font-size:13px}
+#mailview .s-body{gap:12px}
+
+#confedit{width:min(860px,calc(100vw - 32px))}
+.ce-grid{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:18px}
+.ce-prev{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.ce-prev canvas,.ce-prev img{display:block;width:100%;height:auto;border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.ce-prev .fname{font-size:12.5px;color:var(--ink3);overflow-wrap:anywhere}
+.tagsug{display:inline-flex;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font:500 10.5px/18px 'Geist Mono',ui-monospace,monospace;letter-spacing:.04em;text-transform:none}
+.provline{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2)}
+.linksugg{display:flex;flex-wrap:wrap;gap:6px}
+.linksugg button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.text summary{cursor:pointer;font-size:13.5px;color:var(--ink2)}
+details.text pre{margin:8px 0 0;max-height:220px;overflow:auto;padding:12px;border-radius:10px;background:var(--chip);font:12px/1.5 'Geist Mono',ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+
+#settings{width:min(680px,calc(100vw - 32px))}
+#settings h3{margin:0 0 4px;font-size:15px;font-weight:500}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.danger-zone{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px;border-radius:14px;background:var(--bad-bg);color:var(--bad-fg)}
+.danger-zone p{margin:0;flex:1 1 240px;font-size:13.5px}
+
+#paste{width:min(720px,calc(100vw - 32px))}
+#paste textarea{min-height:260px;font-size:14px}
+#ask{width:min(460px,calc(100vw - 32px))}
+#ask .s-body{gap:10px}
+#ask p{margin:0;color:var(--ink2);font-size:14.5px;overflow-wrap:anywhere}
+
+@media (max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  .d-body{display:block;overflow:auto}
+  .d-main,.d-side{overflow:visible}
+  .d-side{border-left:0;border-top:1px solid var(--line)}
+  .ce-grid{grid-template-columns:minmax(0,1fr)}
+  .ce-prev{max-width:260px}
+}
+@media (max-width:720px){
+  .wrap{padding-top:28px;gap:14px}
+  #detail,#mailview,#confedit,#settings,#paste{width:100vw;height:100vh;height:100dvh;margin:0}
+  #detail .dlg-shell,#mailview .dlg-shell,#confedit .dlg-shell,#settings .dlg-shell,#paste .dlg-shell{height:100%;max-height:none;border-radius:0;border:0}
+  .d-head{padding-left:16px}
+  .s-body,.d-main,.d-side{padding-left:16px;padding-right:16px}
+  .tabs{border-radius:18px}
+  .tab{padding:0 11px}
+  .day{min-height:56px;padding:4px}
+  .day .ev{display:none}
+  .dots{display:flex}
+  .cal-head h2{min-width:0;font-size:19px}
+  .row{padding-left:8px;padding-right:10px}
+  .rowside{margin-left:70px;justify-content:flex-start}
+}
+@media (max-width:560px){
+  .board{grid-template-columns:minmax(0,1fr)}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .f.span2{grid-column:auto}
+  .actions .btn{flex:1 1 auto}
+  .cal .dow{padding:6px 2px;text-align:center;font-size:10px;letter-spacing:0}
+  .day .dn{padding:1px 2px}
+}
+</style>
+<script src="msg.js"></script>
+<script src="eml.js"></script>
+<script src="extract.js"></script>
+<script src="/_shared/adrial-sync.js"></script>
+<script src="features.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="titles">
+      <span class="eyebrow">ADRIAL APPS · DESK</span>
+      <h1>Desk<span>.</span></h1>
+      <p class="lede">Drop Outlook e-mails here and each one becomes a task. Attach booking links and confirmation PDFs, and see what's done and what's still left.</p>
+      <p class="summary" id="summary" aria-live="polite"></p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" id="import-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Import e-mails
+      </button>
+      <button type="button" class="btn" id="paste-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4.5V3h6v1.5M9 10h6M9 14h4"/></svg>Paste e-mail text
+      </button>
+      <button type="button" class="btn" id="new-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New task
+      </button>
+      <button type="button" class="btn icon" id="settings-btn" aria-label="Settings, backup and sync">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+      <input type="file" id="file-input" accept=".msg,.eml,application/vnd.ms-outlook,message/rfc822" multiple hidden>
+      <input type="file" id="conf-input" accept="application/pdf,.pdf,image/*" hidden>
+      <input type="file" id="restore-input" accept=".json,application/json" hidden>
+    </div>
+  </header>
+
+  <p class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>These are real e-mails: they stay in this browser and nothing is sent anywhere, except your own private cloud copy when you sign in.</span></p>
+
+  <div id="storage-error" class="none" hidden><b>This browser blocks storage for this page.</b>Tasks can't be saved here. Open Desk in a normal (not private) window.</div>
+
+  <nav class="tabs" role="tablist" aria-label="Views" id="tabs"></nav>
+
+  <div class="toolbar" id="toolbar">
+    <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="sr">Search tasks</span><input id="q" type="search" placeholder="Search titles, notes, e-mails and confirmations" autocomplete="off"></label>
+    <label class="field-inline"><span>For</span><select id="f-who"><option value="">Everyone</option></select></label>
+  </div>
+
+  <div class="bulk" id="bulk" hidden role="region" aria-label="Selected tasks">
+    <b id="bulk-count"></b>
+    <label><span class="sr">Set status</span><select id="bulk-status"><option value="">Set status…</option></select></label>
+    <label><span class="sr">Set priority</span><select id="bulk-prio"><option value="">Set priority…</option><option value="high">High</option><option value="normal">Normal</option><option value="low">Low</option></select></label>
+    <label><span class="sr">Set due date</span><input type="date" id="bulk-due" title="Set due date"></label>
+    <label><span class="sr">Add tag</span><input type="text" id="bulk-tag" placeholder="Add tag + Enter" maxlength="40"></label>
+    <button type="button" class="btn small danger" id="bulk-delete">Delete…</button>
+    <button type="button" class="btn small ghost" id="bulk-clear">Clear selection</button>
+  </div>
+
+  <section id="empty" class="empty" hidden>
+    <div class="drop">
+      <span class="ico-lg"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+      <h2>Drag e-mails from Outlook anywhere onto this page</h2>
+      <p>Each e-mail (.msg from Outlook, or .eml) becomes a task with the mail and its attachments kept. You can also paste e-mail text or start a task by hand.</p>
+      <div class="row-btns">
+        <button type="button" class="btn primary" id="import-btn-2">Choose e-mail files</button>
+        <button type="button" class="btn" id="paste-btn-2">Paste e-mail text</button>
+        <button type="button" class="btn" id="example-btn">Load example tasks</button>
+      </div>
+    </div>
+    <div class="card step"><b>01</b><h3>Drop e-mails</h3><p>Drag a mail from Outlook straight onto the page. The subject becomes the task, and dates in the text are offered as the due date.</p></div>
+    <div class="card step"><b>02</b><h3>Book and attach</h3><p>Paste the booking link or drop the confirmation PDF on the task. Reference, dates and total are read for you to check.</p></div>
+    <div class="card step"><b>03</b><h3>See what's left</h3><p>Today and overdue, a board, a calendar with due and booking dates, and a log of everything done.</p></div>
+  </section>
+
+  <main id="view" aria-live="polite"></main>
+
+  <footer class="foot"><span id="storage-line">Stored only in this browser.</span><span>Back up from Settings → Export.</span></footer>
+</div>
+
+<div id="drop-overlay" hidden><div><span id="drop-title">Drop e-mails to turn them into tasks</span><small id="drop-sub">Outlook .msg or .eml files · several at once is fine</small></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<dialog id="detail" aria-labelledby="d-eyebrow"><div class="dlg-shell" id="detail-shell"></div></dialog>
+<dialog id="mailview" aria-labelledby="mv-title"><div class="dlg-shell" id="mailview-shell"></div></dialog>
+<dialog id="confedit" aria-labelledby="ce-title"><div class="dlg-shell" id="confedit-shell"></div></dialog>
+
+<dialog id="paste" aria-labelledby="p-title">
+  <form class="dlg-shell" id="paste-form" method="dialog" novalidate>
+    <header class="d-head"><div class="t"><span class="eyebrow">NEW TASK FROM TEXT</span><h2 id="p-title">Paste e-mail text</h2></div>
+      <button type="button" class="btn icon small ghost" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <div class="s-body">
+      <p class="help">In Outlook, open the e-mail, select all (Ctrl+A), copy (Ctrl+C) and paste it below. If the From / Sent / To / Subject lines are included, they are read too.</p>
+      <div class="f"><label for="p-text">E-mail text</label><textarea id="p-text" required placeholder="From: …&#10;Sent: …&#10;To: …&#10;Subject: …&#10;&#10;Message…"></textarea></div>
+      <div class="f"><label for="p-subject">Task title (optional)</label><input id="p-subject" maxlength="200" placeholder="Taken from the Subject line or the first line"></div>
+    </div>
+    <footer class="d-foot"><span class="spacer"></span><button type="button" class="btn" data-close>Cancel</button><button type="submit" class="btn primary" id="p-go">Create task</button></footer>
+  </form>
+</dialog>
+
+<dialog id="settings" aria-labelledby="s-title">
+  <div class="dlg-shell">
+    <header class="d-head"><div class="t"><span class="eyebrow">DESK</span><h2 id="s-title">Settings</h2></div>
+      <button type="button" class="btn icon small ghost" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <div class="s-body">
+      <section><h3>Cloud sync</h3><p class="help" style="margin-bottom:10px">Sign in to keep a private copy of your tasks, e-mails and confirmation files and continue on another device. Only you can see it.</p><div id="s-sync"></div></section>
+      <section><h3>Storage</h3><p class="help" id="s-storage">Stored only in this browser.</p></section>
+      <section><h3>Export and backup</h3><p class="help">A backup file holds every task, e-mail and file. Keep it somewhere safe: it contains the e-mails.</p>
+        <div class="btnrow">
+          <button type="button" class="btn small" id="s-backup">Download backup (.json)</button>
+          <button type="button" class="btn small" id="s-restore">Restore a backup…</button>
+          <button type="button" class="btn small" id="s-csv">Tasks as spreadsheet (.csv)</button>
+        </div></section>
+      <section><h3>Example data</h3><p class="help">Fictional tasks (example.com addresses, made-up hotels) to try Desk out. Remove them with Clear all data.</p>
+        <div class="btnrow"><button type="button" class="btn small" id="s-example">Load example tasks</button></div></section>
+      <div class="danger-zone"><p><b style="font-weight:600">Clear all data.</b> Deletes every task, e-mail and file in this browser. When you are signed in, the cloud copy is replaced with the empty one too.</p><button type="button" class="btn small danger" id="s-clear">Clear all data…</button></div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="ask" aria-labelledby="ask-title">
+  <div class="dlg-shell">
+    <div class="s-body"><h2 id="ask-title" style="margin:0;font-size:19px;font-weight:500;letter-spacing:-.015em"></h2><p id="ask-text"></p></div>
+    <footer class="d-foot" id="ask-btns"></footer>
+  </div>
+</dialog>
+</body>
+</html>

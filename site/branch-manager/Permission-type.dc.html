@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<title>Permission type — SI/HR Managers</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F3EF}
+.app{--ground:#F4F3EF;--surface:#FFFFFF;--sunken:#F4F3EF;--fill:#EAE8E3;--line:#E0DDD6;--hair:#ECEAE4;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--inv:#0C0C0D;--inv-ink:#F4F3EF;--inv-ink3:#A8A59E;--dash:#D3CFC6;--track:#EFEDE8;--shadow:0 1px 2px rgba(12,12,13,0.04),0 16px 40px -24px rgba(12,12,13,0.18);--good:#24553A;--good-bg:#DCEBE0;--good-dot:#3F7D58;--bad:#9A3412;--bad-dot:#C2410C;--scrim:rgba(12,12,13,0.32);--weekend:#B9B5AC;color-scheme:light}
+.app[data-theme="dark"]{--ground:#0C0C0D;--surface:#161618;--sunken:#1F1F22;--fill:#26262A;--line:#2E2E33;--hair:#232327;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--inv:#F4F3EF;--inv-ink:#0C0C0D;--inv-ink3:#55544F;--dash:#3A3A40;--track:#26262A;--shadow:0 1px 2px rgba(0,0,0,0.4),0 16px 40px -24px rgba(0,0,0,0.7);--good:#93CFA3;--good-bg:#1D3426;--good-dot:#5FAF7A;--bad:#F3A47E;--bad-dot:#E0703F;--scrim:rgba(0,0,0,0.62);--weekend:#4A4A50;color-scheme:dark}
+.app a{color:var(--ink)}.app a:hover{color:var(--ink2)}
+.app button:focus-visible,.app a:focus-visible,.app input:focus-visible,.app select:focus-visible,.app textarea:focus-visible,.app label:focus-within{outline:2px solid #7B66F0;outline-offset:2px}
+.app input::placeholder,.app textarea::placeholder{color:var(--ink3)}
+</style>
+</helmet>
+<dc-import name="Main" start-view="permissions" start-perm="sihr_m" hint-size="100%,1000px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

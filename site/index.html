@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-home="1" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Adrial Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F4F3EF;--card:#FFFFFF;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--line:#E0DDD6;--chip:#EFEDE8;--accent:#5B3FE0;--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C0C0D;--card:#161618;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--chip:#26262A;--accent:#9B88F5;--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C0C0D;--card:#161618;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--chip:#26262A;--accent:#9B88F5;--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:48px 16px 64px}
+header{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+.eyebrow,.mono{font-family:'Geist Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink3);letter-spacing:.04em}
+h1{margin:0;font-size:clamp(40px,7vw,64px);line-height:1;font-weight:500;letter-spacing:-.045em}
+h1 span{color:var(--accent)}
+.lede{margin:0;max-width:620px;font-size:17px;color:var(--ink2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:16px}
+.card{display:flex;flex-direction:column;gap:14px;padding:22px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.top{display:flex;align-items:center;gap:12px}
+.icon{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--ink);color:var(--bg)}
+.card h2{margin:0;font-size:19px;font-weight:500;letter-spacing:-.015em}
+.card p{margin:0;color:var(--ink2)}
+.kind{align-self:flex-start;padding:2px 8px;border-radius:999px;background:var(--chip)}
+.open{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:500;text-decoration:none}
+.open:hover{opacity:.88}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.screens{display:flex;flex-wrap:wrap;gap:6px}
+.screens a{padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink2);font-size:13px;text-decoration:none}
+.screens a:hover{color:var(--ink);border-color:var(--ink3)}
+footer{margin-top:40px}
+[data-private][hidden]{display:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start}
+.data{padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink2)}
+.data.live,.data.both{border-color:transparent;background:#DDEFE3;color:#1F5E3A}
+.data.yours{border-color:transparent;background:#E4E8F7;color:#2D3F8C}
+:root[data-theme="dark"] .data.live,:root[data-theme="dark"] .data.both{background:#16301F;color:#8FD3A6}
+:root[data-theme="dark"] .data.yours{background:#1C2340;color:#A9B6F0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .data.live,:root:not([data-theme="light"]) .data.both{background:#16301F;color:#8FD3A6}:root:not([data-theme="light"]) .data.yours{background:#1C2340;color:#A9B6F0}}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.filters button{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink2);font:500 13px 'Geist',system-ui,sans-serif;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card[data-filtered]{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">ADRIALVALLIS · CLOUD RUN</span>
+    <h1>Adrial Apps<span>.</span></h1>
+    <p class="lede">Tools and prototypes built in Claude, in one place.</p>
+  </header>
+
+  <div class="filters" role="group" aria-label="Show apps by data source">
+    <button type="button" data-f="" aria-pressed="true">All</button>
+    <button type="button" data-f="live" aria-pressed="false" title="Real company data (approved accounts)">Live data</button>
+    <button type="button" data-f="demo" aria-pressed="false" title="Made-up sample data">Demo data</button>
+    <button type="button" data-f="yours" aria-pressed="false" title="Real data you add yourself">Your data</button>
+  </div>
+  <main class="grid">
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+        <h2>Adrial Mail</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Email and SMS marketing: profiles, segments, campaigns with a drag-and-drop email editor, automated flows, sign-up forms and revenue reports. Demo data; nothing is ever sent.</p>
+      <a class="open" href="mail/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 17.5h7M17.5 14v7"/></svg></span>
+        <h2>ERP</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Products and stock per location, purchasing, sales orders, invoices and payments for an optical retailer. Demo data; changes stay in your browser.</p>
+      <a class="open" href="erp/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21 20a6 6 0 0 0-4-5.6"/></svg></span>
+        <h2>CRM</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Companies, contacts, a deal pipeline board and activities for the B2B team, with forecast and win rates. Demo data; changes stay in your browser.</p>
+      <a class="open" href="crm/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+        <h2>Analytics</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Sales, stores, e-commerce funnel, marketing ROAS, customer cohorts and products, with filters and comparisons. Generated demo data.</p>
+      <a class="open" href="analytics/">Open</a>
+    </article>
+
+
+    <article class="card">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="9.5" y="4" width="5" height="16" rx="1.5"/><rect x="16" y="4" width="5" height="16" rx="1.5"/></svg></span>
+        <h2>Design Comparison</h2>
+      </div>
+      <span class="kind mono">DECISION</span>
+      <p>Branch Manager, Photon and Tenzen on the same sample dashboard, in light and dark. Compare, read the differences and record your pick.</p>
+      <a class="open" href="design-compare/">Open</a>
+    </article>
+
+    <article class="card">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+        <h2>ERP &amp; BI Client Atlas</h2>
+      </div>
+      <span class="kind mono">TOOL</span>
+      <p>Where to find paying clients for ERP, CRM, Power BI and data work, from Slovenia out to Europe. Pipeline progress is saved in your browser.</p>
+      <a class="open" href="client-atlas/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+        <h2>Pisarna DMS Demo</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Document management demo with fictional data. Sign in as a demo user with the password <span class="mono">demo</span>; changes stay in your browser.</p>
+      <a class="open" href="pisarna-dms/">Open</a>
+    </article>
+
+    <article class="card">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="11" height="11" rx="2"/><path d="M9 19h9a2 2 0 0 0 2-2V8"/></svg></span>
+        <h2>Postbench</h2>
+      </div>
+      <span class="kind mono">TOOL</span>
+      <p>Posts and banners for every platform, with safe zones, a month planner and export.</p>
+      <a class="open" href="postbench/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></span>
+        <h2>Team Tasks</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Linear-style issue tracking: lists and boards grouped by status, cycles, projects, an inbox, a ⌘K command menu and keyboard shortcuts. Demo data; saved in your browser and your private cloud copy.</p>
+      <nav class="screens" aria-label="Team Tasks screens">
+        <a href="team-tasks/#/my-issues/assigned">My issues</a>
+        <a href="team-tasks/#/inbox">Inbox</a>
+        <a href="team-tasks/#/team/WEB/issues/all?layout=board">Board</a>
+        <a href="team-tasks/#/team/WEB/cycle/current">Cycle</a>
+        <a href="team-tasks/#/projects">Projects</a>
+      </nav>
+      <a class="open" href="team-tasks/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10"/><path d="M18 9a6 6 0 0 1-6 6H8a2 2 0 0 0-2 2"/></svg></span>
+        <h2>Branch Manager App</h2>
+      </div>
+      <div class="tags"><span class="kind mono">PROTOTYPE</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Bookings, branches and managers side by side, with lifetime and monthly statistics, plus a TIMIFY-style booking calendar per branch (sample data).</p>
+      <nav class="screens" aria-label="Branch Manager screens">
+        <a href="branch-manager/Main.dc.html">App</a>
+        <a href="branch-manager/Bookings.html">Bookings</a>
+        <a href="branch-manager/Overview-by-month.dc.html">By month</a>
+        <a href="branch-manager/Compare.dc.html">Compare</a>
+        <a href="branch-manager/Branch-detail.dc.html">Branch detail</a>
+        <a href="branch-manager/Permission-type.dc.html">Permissions</a>
+        <a href="branch-manager/New-branch.dc.html">New branch</a>
+        <a href="branch-manager/Invite-manager.dc.html">Invite manager</a>
+        <a href="branch-manager/Export.dc.html">Export</a>
+        <a href="branch-manager/Dark-mode.dc.html">Dark mode</a>
+      </nav>
+      <a class="open" href="branch-manager/Login.dc.html">Open</a>
+    </article>
+
+    <article class="card" data-source="yours">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span>
+        <h2>Invoices</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono yours" title="Real data you add yourself; it stays in your browser (and your private cloud copy)">YOUR DATA</span></div>
+      <p>Drop PDF invoices and the vendor, dates, VAT and totals are read for you. Costs by month, category and vendor, what's unpaid, and exports for your accountant. Invoices stay in your browser.</p>
+      <a class="open" href="invoices/">Open</a>
+    </article>
+
+
+
+
+
+
+
+
+    <article class="card" data-source="both">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></span>
+        <h2>Parcels &amp; COD</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono both" title="Real company data for approved accounts; demo data for everyone else">LIVE + DEMO</span></div>
+      <p>Track every parcel across GLS, DPD, the national posts, BOX NOW and Poste Italiane, work the stuck ones, and check that cash on delivery reached the bank. Live from the carriers for approved accounts, demo data for everyone else; nothing is sent to carriers.</p>
+      <a class="open" href="parcels/">Open</a>
+    </article>
+
+    <article class="card" data-source="both">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h11l-3-3"/><path d="M17 17H6l3 3"/><path d="M4 12h16"/></svg></span>
+        <h2>Payment reconciliation</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono both" title="Real company data for approved accounts; demo data for everyone else">LIVE + DEMO</span></div>
+      <p>Match every provider payment, refund and payout to shop orders and the bank, work the exceptions and close the month with an export for accounting. Live from the payment providers for approved accounts, demo data for everyone else.</p>
+      <a class="open" href="recon/">Open</a>
+    </article>
+
+    <article class="card" data-source="both">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18"/><path d="M10 20v-6h4v6"/></svg></span>
+        <h2>Store daily board</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono both" title="Real company data for approved accounts; demo data for everyone else">LIVE + DEMO</span></div>
+      <p>The morning screen for every optics store: yesterday's sales, month-to-date vs target, cash check, today's staff, pickups to call, complaints, reviews and tasks from head office. Live for the 8 stores (approved accounts), demo data for everyone else.</p>
+      <a class="open" href="stores/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11l2 2 4-4"/></svg></span>
+        <h2>Joiners &amp; leavers</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>Checklists for new hires, moves and leavers: accounts, licences, Codeks cards, keys and equipment, with overdue tasks by team and nothing forgotten on the last day. Demo data.</p>
+      <a class="open" href="onboarding/">Open</a>
+    </article>
+
+    <article class="card" data-source="demo">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+        <h2>Contracts &amp; renewals</h2>
+      </div>
+      <div class="tags"><span class="kind mono">APP</span><span class="data mono demo" title="Made-up sample data">DEMO DATA</span></div>
+      <p>One register of every lease, supplier, software and service contract, with notice deadlines, renewals, price increases and annual spend, so no deadline is missed. Demo data.</p>
+      <a class="open" href="contracts/">Open</a>
+    </article>
+
+    <article class="card" data-source="both">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M8 14h3v3H8z"/></svg></span>
+        <h2>Marketing calendar</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono both" title="Real company data for approved accounts; demo data for everyone else">LIVE + DEMO</span></div>
+      <p>Plan every campaign, promotion and post per market in one calendar and see right next to it what each one spent and earned. Live Google Ads, Meta and GA4 numbers for approved accounts, demo data for everyone else; nothing is ever posted or sent.</p>
+      <a class="open" href="marketing/">Open</a>
+    </article>
+
+    <article class="card" data-source="yours">
+      <div class="top">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M8.5 12.5l2.2 2.2 4.8-5"/></svg></span>
+        <h2>Desk</h2>
+      </div>
+      <div class="tags"><span class="kind mono">TOOL</span><span class="data mono yours" title="Real data you add yourself; it stays in your browser (and your private cloud copy)">YOUR DATA</span></div>
+      <p>Turn Outlook e-mails into tasks, attach booking links and confirmation PDFs, and see what's done and what's left. Stays in your browser.</p>
+      <a class="open" href="desk/">Open</a>
+    </article>
+  </main>
+
+  <footer class="mono">Built from Claude artifacts · prototypes use sample data</footer>
+</div>
+<script>
+// filter tiles by data source; "live" also shows the apps that have live and demo modes
+(function () {
+  var bar = document.querySelector('.filters');
+  if (!bar) return;
+  function apply(f) {
+    bar.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-f') === f)); });
+    document.querySelectorAll('.card').forEach(function (c) {
+      var d = c.getAttribute('data-source') || '';
+      var show = !f || d === f || (d === 'both' && (f === 'live' || f === 'demo'));
+      if (show) c.removeAttribute('data-filtered'); else c.setAttribute('data-filtered', '');
+    });
+    try { localStorage.setItem('adrial-apps-filter', f); } catch (e) {}
+  }
+  bar.addEventListener('click', function (e) { var b = e.target.closest('button[data-f]'); if (b) apply(b.getAttribute('data-f')); });
+  var saved = ''; try { saved = localStorage.getItem('adrial-apps-filter') || ''; } catch (e) {}
+  if (saved) apply(saved);
+})();
+// private apps: only accounts with access see their tile (the server blocks the pages themselves)
+fetch('/api/private/session', { credentials: 'same-origin', cache: 'no-store' })
+  .then(function (r) { return r.ok ? r.json() : { allowed: [] }; })
+  .then(function (j) { (j.allowed || []).forEach(function (k) { var el = document.querySelector('[data-private="' + k + '"]'); if (el) el.hidden = false; }); })
+  .catch(function () {});
+</script>
+</body>
+</html>

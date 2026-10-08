@@ -1,0 +1,2371 @@
+<!doctype html><html><head><meta charset=utf8><script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Postbench</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Poppins:wght@800&family=Playfair+Display:wght@800&family=Bebas+Neue&family=DM+Serif+Display&family=DM+Sans:wght@500;700&family=Oswald:wght@700&family=Montserrat:wght@500;800&family=Lato:wght@400;700&display=swap">
+<style>
+/* Layout: a drafting-table workbench. Controls rail on the left, a crop-marked artboard on the pasteboard
+   on the right; on phones the artboard sticks to the top and the rail scrolls underneath it.
+   Palette: cool grey-green neutrals with one process-magenta accent (print proofing vernacular). */
+:root{
+  --bg:#e3e7e5; --panel:#f3f5f4; --raised:#fbfcfb; --ink:#16201c; --ink2:#55615b; --line:#ccd3cf;
+  --accent:#d6247a; --accent-ink:#ffffff; --focus:#d6247a; --ok:#1f7a4d; --warn:#b45309;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+  padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#101413;--panel:#181d1b;--raised:#212725;--ink:#e8ede9;--ink2:#98a39d;--line:#2f3835;--accent:#ff5fa8;--accent-ink:#2a0816;--focus:#ff5fa8;--ok:#5fd39a;--warn:#f5a524;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#101413;--panel:#181d1b;--raised:#212725;--ink:#e8ede9;--ink2:#98a39d;--line:#2f3835;--accent:#ff5fa8;--accent-ink:#2a0816;--focus:#ff5fa8;--ok:#5fd39a;--warn:#f5a524;color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--body);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+img{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
+
+.app{height:100%;display:flex;flex-direction:column;min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;margin-right:auto}
+.brand svg{flex:none;color:var(--accent)}
+.brand h1{margin:0;font:700 19px/1 var(--display);letter-spacing:-.01em}
+.brand span{color:var(--ink2);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 14px;border:1px solid var(--line);border-radius:6px;background:var(--raised);font-weight:600;font-size:13px;text-align:center}
+.btn:hover{border-color:var(--ink2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn.confirm{border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.55;cursor:default}
+
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(300px,390px) 1fr}
+.rail{overflow:auto;background:var(--panel);border-right:1px solid var(--line);padding:0 16px 40px}
+.rail-head{position:sticky;top:0;z-index:5;margin:0 -16px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);display:grid;gap:10px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tabs button{border:0;border-radius:6px;background:transparent;padding:7px 6px;font-weight:600;font-size:13px;color:var(--ink2)}
+.tabs button[aria-selected="true"]{background:var(--raised);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.banner{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 7%,var(--raised));font-size:12.5px}
+.banner b{margin-right:auto;font-weight:700}
+.banner input[type=date]{width:auto;padding:4px 6px;font-size:12.5px;border:1px solid var(--line);border-radius:6px;background:var(--raised)}
+.btn.sm{min-height:30px;padding:4px 10px;font-size:12.5px}
+details.sec{display:block}
+details.sec>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"+";font:500 16px/1 var(--mono);color:var(--ink2)}
+details.sec[open]>summary::after{content:"\2212"}
+.sec-body{display:grid;gap:12px;margin-top:12px}
+.fmt-group{grid-column:1/-1;font:500 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);padding-top:6px}
+.fmt-group:first-child{padding-top:0}
+.sub-h{margin:0;font-size:12px;font-weight:600;color:var(--ink2)}
+.eg small{float:right;margin-left:8px;font:400 11px/1.6 var(--mono);color:var(--ink2)}
+.plan-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pi{display:grid;grid-template-columns:66px 1fr;gap:10px;align-items:center;width:100%;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--raised);text-align:left;min-width:0}
+.pi .pt{width:66px;height:66px;display:grid;place-items:center;background:var(--bg);border-radius:4px}
+.pi .pt canvas{display:block}
+.pi .pm{display:grid;gap:3px;min-width:0}
+.pi .when{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font:500 11px/1.4 var(--mono);color:var(--ink2)}
+.pi .hl{font-weight:600;font-size:13px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pi[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tag{display:inline-block;padding:0 7px;border-radius:999px;border:1px solid var(--line);font:600 10.5px/1.6 var(--body);color:var(--ink2)}
+.tag.warn{border-color:var(--accent);color:var(--accent)}
+.brand-prev{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.brand-prev i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line)}
+.brand-prev img{height:28px;width:auto;max-width:90px;object-fit:contain;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.btn.ic svg{flex:none}
+.stage-wrap{position:relative}
+.chk::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.chk.warn{border-color:var(--warn)}
+.chk.warn::before{background:var(--warn)}
+.check-panel{position:absolute;top:50px;left:16px;right:16px;z-index:12;max-width:440px;max-height:60%;overflow:auto;padding:12px 14px;background:var(--raised);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.check-panel ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.check-panel li{display:grid;gap:2px;padding-left:10px;border-left:3px solid var(--warn)}
+.check-panel li.info{border-left-color:var(--line)}
+.check-panel b{font-size:13px}
+.check-panel span{font-size:12.5px;color:var(--ink2)}
+.over{color:var(--warn)!important}
+.warn-t{color:var(--warn)}
+.car-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px}
+.car-strip canvas{flex:none;display:block;border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.tools{display:grid;gap:8px;padding:10px;border:1px dashed var(--line);border-radius:8px}
+.tools select{width:auto;padding:5px 8px;font-size:12.5px}
+.sec{padding:16px 0;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.sec:last-child{border-bottom:0}
+.sec h2{margin:0;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.hint{margin:0;color:var(--ink2);font-size:12.5px}
+
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fmt{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--raised);text-align:left;min-width:0}
+.fmt .glyph{justify-self:center;border:1.5px solid var(--ink2);border-radius:2px;background:transparent}
+.fmt b{display:block;font-size:12.5px;font-weight:600;line-height:1.2}
+.fmt small{display:block;font:400 10.5px/1.3 var(--mono);color:var(--ink2);white-space:nowrap}
+.fmt[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.fmt[aria-pressed="true"] .glyph{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.tpl{display:grid;gap:6px;padding:6px;border:1px solid var(--line);border-radius:6px;background:var(--raised);text-align:center;min-width:0}
+.tpl .thumb{height:112px;display:grid;place-items:center;background:var(--bg);border-radius:3px}
+.tpl .thumb canvas{display:block}
+.tpl span{font-size:12px;font-weight:600}
+.tpl[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+
+.fld{display:grid;gap:5px;min-width:0}
+.fld>span,.lbl{font-size:12px;font-weight:600;color:var(--ink2);display:flex;justify-content:space-between;gap:8px}
+.fld output{font:400 11.5px var(--mono)}
+input[type=text],input:not([type]),select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--raised);min-width:0}
+textarea{resize:vertical;min-height:58px;line-height:1.35}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.upl{display:grid;gap:6px}
+.thumb-chip{display:flex;align-items:center;gap:8px;min-height:36px}
+.thumb-chip img{width:36px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--line);background:var(--bg)}
+
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sw{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:8px;padding:0;overflow:hidden}
+.sw i{position:absolute;right:5px;bottom:5px;width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
+.sw[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.sw.logo::after{content:"Logo";position:absolute;left:4px;top:3px;font:500 9px var(--mono);color:#fff;text-shadow:0 0 3px rgba(0,0,0,.7)}
+.sw.brand::after{content:"Mine";position:absolute;left:4px;top:3px;font:500 9px var(--mono);color:#fff;text-shadow:0 0 3px rgba(0,0,0,.7)}
+.colors{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.clr{display:grid;gap:4px;justify-items:start;font-size:11.5px;color:var(--ink2);font-weight:600}
+.clr input{width:100%;height:34px;padding:2px;border:1px solid var(--line);border-radius:6px;background:var(--raised)}
+.seg{display:inline-grid;grid-auto-flow:column;border:1px solid var(--line);border-radius:6px;overflow:hidden;width:max-content}
+.seg button{border:0;background:var(--raised);padding:7px 14px;font-size:13px;font-weight:600}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pair{display:grid;gap:2px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--raised);text-align:left;min-width:0}
+.pair b{font-size:19px;line-height:1.1;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pair small{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pair[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+
+.emoji{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.emoji button{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;background:var(--raised);font-size:18px;line-height:1;padding:0}
+.ex-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ex-list button{width:100%;display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--raised);text-align:left;min-width:0}
+.ex-list button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-list button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.stack-eg{display:grid;gap:6px}
+.eg{display:block;width:100%;text-align:left;padding:7px 10px;border:1px dashed var(--line);border-radius:6px;background:transparent;font-size:12.5px;color:var(--ink2);line-height:1.35}
+.eg:hover{border-color:var(--ink2);color:var(--ink)}
+.opt{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+.opt input{accent-color:var(--accent);margin:0}
+.ex-edit{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--raised)}
+
+.stage-wrap{min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--bg);background-image:radial-gradient(color-mix(in srgb,var(--ink) 14%,transparent) 1px,transparent 1.2px);background-size:18px 18px}
+.stage-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 16px}
+.stage-bar .mono{color:var(--ink2)}
+.stage-bar label{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;margin-left:auto}
+.stage-bar input{accent-color:var(--accent)}
+#board-area{flex:1;min-height:0;display:grid;place-items:center;padding:28px}
+.board{position:relative;line-height:0}
+.board canvas{display:block;box-shadow:0 1px 2px rgba(0,0,0,.18),0 12px 32px rgba(0,0,0,.22);touch-action:auto}
+.cm{position:absolute;width:14px;height:14px;pointer-events:none;border:0 solid var(--ink2)}
+.cm.tl{left:-20px;top:-20px;border-right-width:1px;border-bottom-width:1px}
+.cm.tr{right:-20px;top:-20px;border-left-width:1px;border-bottom-width:1px}
+.cm.bl{left:-20px;bottom:-20px;border-right-width:1px;border-top-width:1px}
+.cm.br{right:-20px;bottom:-20px;border-left-width:1px;border-top-width:1px}
+
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(10,14,12,.62)}
+.sheet{width:min(920px,100%);max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;display:grid}
+.sheet header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.sheet h2{margin:0;font:700 17px var(--display)}
+.sheet h3{margin:0;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+.icon-btn{width:34px;height:34px;border:1px solid var(--line);border-radius:6px;background:var(--raised);font-size:18px;line-height:1;padding:0}
+.m-body{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;padding:16px}
+.m-prev{display:grid;gap:10px;align-content:start;justify-items:center;background:var(--bg);border-radius:8px;padding:14px}
+.m-prev img{display:block;max-height:56vh;width:auto;height:auto;border-radius:2px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.m-side{display:grid;gap:12px;align-content:start;min-width:0}
+.m-side .btns .btn{flex:1 1 auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:var(--raised);font-size:12px;font-weight:600;cursor:pointer}
+.chip input{accent-color:var(--accent);margin:0}
+.chips .fmt-group{flex-basis:100%;padding-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;max-width:calc(100% - 32px);padding:10px 16px;border-radius:8px;background:var(--ink);color:var(--bg);font-weight:600;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+@media (min-width:861px){
+  .rail{order:-1}
+}
+@media (max-width:860px){
+  .app{height:auto;min-height:100%}
+  .layout{display:block}
+  .stage-wrap{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;height:48vh;min-height:300px;border-bottom:1px solid var(--line)}
+  #board-area{padding:20px 28px}
+  .rail{overflow:visible;border-right:0;padding-bottom:60px}
+  .rail-head{position:static}
+  .brand span{display:none}
+  .m-body{grid-template-columns:1fr}
+  .top{gap:6px}
+  .btn.ic .lbl-t{display:none}
+  .btn.ic{padding:6px 9px}
+  .btn.ic.confirm .lbl-t{display:inline}
+  .stage-bar{padding:8px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="6.5"/><path d="M12 1.5v6M12 16.5v6M1.5 12h6M16.5 12h6"/></svg>
+      <h1>Postbench</h1><span>Posts and banners for every platform</span>
+    </div>
+    <button class="btn ghost ic" id="btn-undo" type="button" aria-label="Undo" title="Undo (Ctrl+Z)" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span class="lbl-t">Undo</span></button>
+    <button class="btn ghost ic" id="btn-redo" type="button" aria-label="Redo" title="Redo (Ctrl+Shift+Z)" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg><span class="lbl-t">Redo</span></button>
+    <button class="btn ghost ic" id="btn-reset" type="button" aria-label="Start over"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span class="lbl-t" id="reset-lbl">Start over</span></button>
+    <button class="btn primary" id="btn-export" type="button">Export</button>
+  </header>
+
+  <div class="layout">
+    <section class="stage-wrap" aria-label="Preview">
+      <div class="stage-bar">
+        <span class="mono" id="dims">1080 × 1080 px</span>
+        <button class="btn sm ghost" id="btn-play" type="button" hidden>Preview motion</button>
+        <button class="btn sm ghost chk" id="btn-check" type="button" aria-expanded="false" aria-controls="check-panel">Checking</button>
+        <label for="chk-safe"><input type="checkbox" id="chk-safe">Show safe zones</label>
+      </div>
+      <div class="check-panel" id="check-panel" role="region" aria-label="Design check" hidden><ul id="check-list"></ul></div>
+      <div id="board-area">
+        <div class="board">
+          <canvas id="cv" width="1080" height="1080" tabindex="0" aria-label="Design preview. Drag stickers and text to move them."></canvas>
+          <i class="cm tl"></i><i class="cm tr"></i><i class="cm bl"></i><i class="cm br"></i>
+        </div>
+      </div>
+    </section>
+
+    <aside class="rail" aria-label="Controls">
+      <div class="rail-head">
+        <div class="banner" id="plan-banner" hidden>
+          <b id="pb-label">Post 1 of 1</b>
+          <input type="date" id="pb-date" aria-label="Post date">
+          <button class="btn sm" id="pb-back" type="button">All posts</button>
+          <button class="btn sm ghost" id="pb-close" type="button">Close</button>
+          <button class="btn sm ghost" id="pb-del" type="button">Remove</button>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button type="button" role="tab" id="tab-create" aria-controls="pane-create" aria-selected="true">Create</button>
+          <button type="button" role="tab" id="tab-plan" aria-controls="pane-plan" aria-selected="false">Month plan</button>
+          <button type="button" role="tab" id="tab-biz" aria-controls="pane-biz" aria-selected="false">Business</button>
+        </div>
+      </div>
+      <div id="pane-create" role="tabpanel" aria-labelledby="tab-create">
+      <section class="sec" id="sec-ai" hidden>
+        <h2>Describe your ad</h2>
+        <label class="fld"><span>What do you want to promote?</span>
+          <textarea id="ai-prompt" rows="3" maxlength="600" placeholder="Instagram story for my barbershop: 20% off haircuts this Friday, dark and bold"></textarea>
+        </label>
+        <div class="stack-eg" id="ai-examples"></div>
+        <div class="stack-eg" id="ai-occasions"></div>
+        <label class="opt" id="ai-brand-row" for="ai-brand" hidden><input type="checkbox" id="ai-brand" checked>Use my saved brand colors and fonts</label>
+        <div class="btns">
+          <button class="btn primary" id="ai-go" type="button">Create 3 designs</button>
+          <button class="btn ghost" id="ai-stop" type="button" hidden>Stop</button>
+        </div>
+        <p class="hint" id="ai-status" role="status"></p>
+        <div class="tpl-grid" id="ai-vars" hidden></div>
+        <div class="tools" id="ai-refine">
+          <label class="fld"><span>Ask for changes to the design on screen</span><input id="ai-change" maxlength="300" autocomplete="off" placeholder="Make it more playful and use dark green"></label>
+          <div class="btns"><button class="btn sm" id="ai-change-go" type="button">Apply change</button></div>
+          <p class="hint" id="ai-change-status" role="status"></p>
+        </div>
+      </section>
+
+      <details class="sec" id="sec-review">
+        <summary><h2>Turn a review into a post</h2></summary>
+        <div class="sec-body">
+          <label class="fld"><span>The review, exactly as the customer wrote it</span><textarea id="rv-text" rows="3" maxlength="1500"></textarea></label>
+          <div class="row2">
+            <label class="fld"><span>Customer name</span><input id="rv-name" maxlength="60" autocomplete="off" placeholder="Maya Rodriguez"></label>
+            <label class="fld"><span>Posted on</span><select id="rv-src"><option>Google</option><option>Facebook</option><option>Tripadvisor</option><option>Booking.com</option><option>Yelp</option><option value="">Somewhere else</option></select></label>
+          </div>
+          <label class="fld"><span>Stars</span><select id="rv-stars"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="0">No stars</option></select></label>
+          <label class="opt" id="rv-ai-row" for="rv-ai" hidden><input type="checkbox" id="rv-ai" checked>Let Claude pick the strongest line and write the caption</label>
+          <div class="btns"><button class="btn" id="rv-go" type="button">Make review post</button></div>
+          <p class="hint" id="rv-status" role="status">Use real reviews only. The post quotes the customer's own words, and names are shortened to first name and initial.</p>
+        </div>
+      </details>
+
+      <section class="sec">
+        <h2>Size</h2>
+        <div class="fmt-grid" id="fmt-grid"></div>
+      </section>
+
+      <section class="sec">
+        <h2>Layout</h2>
+        <div class="tpl-grid" id="tpl-grid"></div>
+        <p class="hint" id="tpl-hint" hidden>This layout shows a photo. Add yours under Photo and logo.</p>
+      </section>
+
+      <section class="sec">
+        <h2>Words</h2>
+        <p class="hint">The text shown is an example. Type over it.</p>
+        <label class="fld"><span>Headline</span><textarea id="f-headline" rows="2" maxlength="120"></textarea></label>
+        <label class="fld"><span>Details</span><textarea id="f-sub" rows="2" maxlength="200"></textarea></label>
+        <div class="row2">
+          <label class="fld"><span>Tag, price or number</span><input id="f-badge" maxlength="24" autocomplete="off"></label>
+          <label class="fld"><span>Button</span><input id="f-cta" maxlength="28" autocomplete="off"></label>
+        </div>
+        <label class="fld"><span>Handle or website</span><input id="f-handle" maxlength="40" autocomplete="off"></label>
+        <label class="fld"><span>List, one item per line</span><textarea id="f-list" rows="4" maxlength="900" placeholder="Cappuccino — 2.80&#10;Butter croissant — 2.10"></textarea></label>
+        <p class="hint" id="list-hint">For the Menu, Opening hours and Numbered list layouts, and for carousels. Put a price or time after a dash.</p>
+        <label class="fld"><span>Headline size <output id="o-headscale"></output></span><input type="range" id="r-headscale" min="70" max="140" step="5"></label>
+      </section>
+
+      <section class="sec">
+        <h2>Caption</h2>
+        <label class="fld"><span>Post text and hashtags</span><textarea id="f-caption" rows="4" maxlength="1200" placeholder="Write the text that goes with the post, or let Describe your ad draft it."></textarea></label>
+        <p class="hint mono" id="cap-count"></p>
+        <label class="fld"><span>Image description (alt text)</span><textarea id="f-alt" rows="2" maxlength="400" placeholder="Describe the image for people who use screen readers. Instagram, Facebook and LinkedIn have a field for it."></textarea></label>
+        <div class="btns"><button class="btn" id="copy-caption" type="button">Copy caption</button><button class="btn" id="copy-alt" type="button">Copy alt text</button></div>
+        <div class="tools" id="cap-tools" hidden>
+          <p class="sub-h">Rewrite the caption</p>
+          <div class="btns">
+            <button class="btn sm" type="button" data-tone="shorter">Shorter</button>
+            <button class="btn sm" type="button" data-tone="friendlier">Friendlier</button>
+            <button class="btn sm" type="button" data-tone="professional">More professional</button>
+            <button class="btn sm" type="button" data-tone="playful">More playful</button>
+          </div>
+          <div class="btns">
+            <select id="tr-lang" aria-label="Language to translate into"></select>
+            <button class="btn sm" id="tr-go" type="button">Translate post</button>
+            <button class="btn sm" id="alt-go" type="button">Write alt text</button>
+          </div>
+          <p class="hint" id="cap-status" role="status"></p>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Photo and logo</h2>
+        <div class="upl">
+          <span class="lbl">Photo</span>
+          <div class="thumb-chip">
+            <img id="photo-thumb" alt="" hidden>
+            <label class="btn" for="in-photo">Choose photo</label>
+            <input id="in-photo" type="file" accept="image/*" hidden>
+            <button class="btn ghost" id="rm-photo" type="button" hidden>Remove</button>
+          </div>
+        </div>
+        <label class="fld"><span>Darken photo <output id="o-overlay"></output></span><input type="range" id="r-overlay" min="0" max="90"></label>
+        <div class="row2" id="photo-pos" hidden>
+          <label class="fld"><span>Left or right</span><input type="range" id="r-px" min="0" max="100"></label>
+          <label class="fld"><span>Up or down</span><input type="range" id="r-py" min="0" max="100"></label>
+          <label class="fld"><span>Zoom <output id="o-pz"></output></span><input type="range" id="r-pz" min="100" max="250" step="5"></label>
+          <p class="hint">Or drag the photo on the preview.</p>
+        </div>
+        <div class="upl">
+          <span class="lbl">Logo</span>
+          <div class="thumb-chip">
+            <img id="logo-thumb" alt="" hidden>
+            <label class="btn" for="in-logo">Choose logo</label>
+            <input id="in-logo" type="file" accept="image/*" hidden>
+            <button class="btn ghost" id="rm-logo" type="button" hidden>Remove</button>
+          </div>
+        </div>
+        <div class="row2" id="logo-opts">
+          <label class="fld"><span>Corner</span>
+            <select id="s-logopos"><option value="tr">Top right</option><option value="tl">Top left</option><option value="br">Bottom right</option><option value="bl">Bottom left</option></select>
+          </label>
+          <label class="fld"><span>Size <output id="o-logosize"></output></span><input type="range" id="r-logosize" min="6" max="40"></label>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Colors and type</h2>
+        <div class="themes" id="theme-grid"></div>
+        <div class="colors">
+          <label class="clr">Back<input type="color" id="c-bg1"></label>
+          <label class="clr">Back 2<input type="color" id="c-bg2"></label>
+          <label class="clr">Text<input type="color" id="c-text"></label>
+          <label class="clr">Accent<input type="color" id="c-accent"></label>
+        </div>
+        <div class="seg" role="group" aria-label="Background style">
+          <button type="button" data-bg="gradient">Gradient</button><button type="button" data-bg="solid">Solid</button>
+        </div>
+        <label class="fld" id="angle-fld"><span>Gradient angle <output id="o-angle"></output></span><input type="range" id="r-angle" min="0" max="360"></label>
+        <div class="pairs" id="pair-grid"></div>
+        <button class="btn" id="save-brand" type="button">Save as my brand</button>
+        <p class="hint" id="brand-hint">Keeps your colors, fonts, logo and handle in this browser so you can reuse them.</p>
+      </section>
+
+      <section class="sec">
+        <h2>Text and stickers</h2>
+        <div class="btns">
+          <button class="btn" id="add-text" type="button">Add text</button>
+          <button class="btn" id="add-qr" type="button" hidden>Add QR code</button>
+          <label class="btn" for="in-extra">Add image</label>
+          <input id="in-extra" type="file" accept="image/*" hidden>
+        </div>
+        <div class="emoji" id="emoji-row"></div>
+        <ul class="ex-list" id="ex-list"></ul>
+        <div class="ex-edit" id="ex-edit" hidden>
+          <label class="fld" id="ex-text-fld"><span id="ex-text-lbl">Text</span><input id="ex-text" maxlength="300" autocomplete="off"></label>
+          <label class="fld"><span>Size <output id="o-exsize"></output></span><input type="range" id="ex-size" min="3" max="60"></label>
+          <div class="row2" id="ex-color-row">
+            <label class="clr">Color<input type="color" id="ex-color"></label>
+            <label class="fld"><span>Weight</span><select id="ex-weight"><option value="400">Regular</option><option value="700">Bold</option></select></label>
+          </div>
+          <button class="btn" id="ex-del" type="button">Delete</button>
+        </div>
+        <p class="hint">Drag items on the preview to move them. Arrow keys nudge the selected item.</p>
+      </section>
+      </div>
+
+      <div id="pane-plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
+        <section class="sec" id="plan-ai" hidden>
+          <h2>Plan a month of posts</h2>
+          <p class="hint">Claude plans a mix of posts from your Business details and the notes below. Fill in the Business tab first for better posts.</p>
+          <div class="row2">
+            <label class="fld"><span>Number of posts</span><select id="pl-count"><option>4</option><option>8</option><option selected>12</option><option>16</option><option>20</option></select></label>
+            <label class="fld"><span>First day</span><input type="date" id="pl-start"></label>
+          </div>
+          <div class="fld"><span>Post on</span><div class="chips" id="pl-days"></div></div>
+          <label class="fld"><span>Anything happening this month? (optional)</span><textarea id="pl-notes" rows="3" maxlength="800" placeholder="New autumn menu from 10 October. Closed on 1 November. 10% off for students on Wednesdays."></textarea></label>
+          <label class="opt" id="pl-brand-row" for="pl-brand" hidden><input type="checkbox" id="pl-brand" checked>Use my saved brand colors and fonts</label>
+          <div class="btns"><button class="btn primary" id="pl-go" type="button">Create plan</button><button class="btn ghost" id="pl-stop" type="button" hidden>Stop</button></div>
+          <p class="hint" id="pl-status" role="status"></p>
+        </section>
+        <section class="sec">
+          <h2>Your posts</h2>
+          <label class="fld"><span>Size for every post</span><select id="pl-format"></select></label>
+          <p class="hint" id="pl-empty">No posts yet. Create a plan above, or add the design you are working on.</p>
+          <ol class="plan-list" id="pl-list"></ol>
+          <div class="btns">
+            <button class="btn" id="pl-add" type="button">Add current design</button>
+            <button class="btn primary" id="pl-export" type="button">Save plan as ZIP</button>
+            <button class="btn ghost" id="pl-clear" type="button">Clear plan</button>
+          </div>
+          <p class="hint" id="pl-xstatus" role="status">The ZIP holds every post as an image plus a calendar spreadsheet with dates, captions and image descriptions.</p>
+        </section>
+      </div>
+
+      <div id="pane-biz" role="tabpanel" aria-labelledby="tab-biz" hidden>
+        <section class="sec">
+          <h2>Your business</h2>
+          <p class="hint">Saved in this browser. Claude uses these details for ads and plans, and does not add facts that are not here or in your request.</p>
+          <label class="fld"><span>Business name</span><input id="bz-name" maxlength="60" autocomplete="off"></label>
+          <label class="fld"><span>What you sell or do</span><textarea id="bz-what" rows="2" maxlength="300" placeholder="Sourdough bread, pastries and coffee, baked every morning"></textarea></label>
+          <div class="row2">
+            <label class="fld"><span>Type of business</span><select id="bz-industry"></select></label>
+            <label class="fld"><span>Town or area</span><input id="bz-area" maxlength="60" autocomplete="off"></label>
+          </div>
+          <label class="fld"><span>Who your customers are</span><input id="bz-who" maxlength="140" autocomplete="off" placeholder="Families and office workers nearby"></label>
+          <div class="row2">
+            <label class="fld"><span>Tone</span><select id="bz-tone"><option>Friendly</option><option>Professional</option><option>Playful</option><option>Premium</option><option>Bold</option></select></label>
+            <label class="fld"><span>Post language</span><select id="bz-lang"></select></label>
+          </div>
+          <div class="row2">
+            <label class="fld"><span>Website or booking link</span><input id="bz-link" maxlength="200" autocomplete="off" placeholder="cornerbakery.com"></label>
+            <label class="fld"><span>Social handle</span><input id="bz-handle" maxlength="40" autocomplete="off" placeholder="@cornerbakery"></label>
+          </div>
+        </section>
+        <section class="sec">
+          <h2>Brand look</h2>
+          <div class="brand-prev" id="bz-brand"></div>
+          <div class="btns"><button class="btn" id="bz-save-brand" type="button">Save current colors, fonts and logo</button><button class="btn ghost" id="bz-use-brand" type="button" hidden>Use it in the current design</button></div>
+          <p class="hint">Make a design you like in Create, then save its look here. New ads and plans can use it.</p>
+        </section>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="sheet">
+    <header><h2 id="m-title">Export</h2><button class="icon-btn" id="m-close" type="button" aria-label="Close">×</button></header>
+    <div class="m-body">
+      <div class="m-prev">
+        <img id="m-img" alt="Your finished image">
+        <p class="hint">If saving is blocked here, press and hold or right-click the image.</p>
+      </div>
+      <div class="m-side">
+        <p class="mono" id="m-meta"></p>
+        <p class="hint warn-t" id="m-check" hidden></p>
+        <div class="btns">
+          <button class="btn primary" id="m-png" type="button">Save PNG</button>
+          <button class="btn" id="m-jpg" type="button">Save JPG</button>
+          <button class="btn" id="m-copy" type="button">Copy image</button>
+          <button class="btn" id="m-pdf" type="button" hidden>Save print PDF</button>
+        </div>
+        <div class="btns" id="m-video-row" hidden>
+          <select id="m-vdur" aria-label="Video length"><option value="6">6 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option></select>
+          <button class="btn" id="m-video" type="button">Save animated video</button>
+        </div>
+        <p class="hint" id="m-video-note" hidden></p>
+        <div id="m-car" hidden>
+          <h3>Carousel</h3>
+          <p class="hint" id="m-car-info"></p>
+          <div class="car-strip" id="m-car-strip"></div>
+          <div class="btns"><button class="btn" id="m-car-zip" type="button">Save slides for Instagram</button><button class="btn" id="m-car-pdf" type="button">Save PDF for LinkedIn</button></div>
+        </div>
+        <h3>Same design, other sizes</h3>
+        <div class="chips" id="m-sizes"></div>
+        <button class="btn" id="m-zip" type="button">Save selected sizes as ZIP</button>
+        <p class="hint" id="m-status" role="status"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const esc = v => String(v).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const ease = p => 1 - Math.pow(1 - p, 3);
+const back = p => { const k = 1.70158; return 1 + (k + 1) * Math.pow(p - 1, 3) + k * Math.pow(p - 1, 2); };
+
+/* ---------- data ---------- */
+const FORMATS = [
+  { id: 'ig-post',     name: 'Instagram post',      w: 1080, h: 1080, ratio: '1:1',    group: 'Social' },
+  { id: 'ig-portrait', name: 'Instagram portrait',  w: 1080, h: 1350, ratio: '4:5',    group: 'Social' },
+  { id: 'story',       name: 'Story, Reel, TikTok', w: 1080, h: 1920, ratio: '9:16',   group: 'Social', safe: true },
+  { id: 'fb-post',     name: 'Facebook post',       w: 1200, h: 630,  ratio: '1.91:1', group: 'Social' },
+  { id: 'fb-cover',    name: 'Facebook cover',      w: 1640, h: 624,  ratio: '2.63:1', group: 'Social' },
+  { id: 'x-post',      name: 'X post',              w: 1600, h: 900,  ratio: '16:9',   group: 'Social' },
+  { id: 'li-banner',   name: 'LinkedIn banner',     w: 1584, h: 396,  ratio: '4:1',    group: 'Social' },
+  { id: 'yt-thumb',    name: 'YouTube thumbnail',   w: 1280, h: 720,  ratio: '16:9',   group: 'Social' },
+  { id: 'pin',         name: 'Pinterest pin',       w: 1000, h: 1500, ratio: '2:3',    group: 'Social' },
+  { id: 'ad-mrec',     name: 'Web ad, rectangle',   w: 300,  h: 250,  ratio: '6:5',    group: 'Web ads' },
+  { id: 'ad-leader',   name: 'Web ad, leaderboard', w: 728,  h: 90,   ratio: '8:1',    group: 'Web ads' },
+  { id: 'ad-half',     name: 'Web ad, half page',   w: 300,  h: 600,  ratio: '1:2',    group: 'Web ads' },
+  { id: 'ad-sky',      name: 'Web ad, skyscraper',  w: 160,  h: 600,  ratio: '4:15',   group: 'Web ads' },
+  { id: 'a4',          name: 'A4 flyer',            w: 2480, h: 3508, ratio: '210 × 297 mm', group: 'Print', pdf: [595.28, 841.89] },
+  { id: 'a5',          name: 'A5 flyer',            w: 1748, h: 2480, ratio: '148 × 210 mm', group: 'Print', pdf: [419.53, 595.28] },
+];
+const fmtDims = f => f.pdf ? `${f.ratio} · 300 dpi` : `${f.w} × ${f.h} · ${f.ratio}`;
+const THEMES = [
+  { id: 'ember',  name: 'Ember',  bg1: '#1c1512', bg2: '#3b2418', text: '#fff4ea', accent: '#ff7a3d' },
+  { id: 'citrus', name: 'Citrus', bg1: '#fff3b0', bg2: '#ffd84d', text: '#231a00', accent: '#e0245e' },
+  { id: 'fresh',  name: 'Fresh',  bg1: '#e8f6ee', bg2: '#c8ecd8', text: '#0d3b2a', accent: '#12a05c' },
+  { id: 'ocean',  name: 'Ocean',  bg1: '#0b3b5c', bg2: '#0e6d8f', text: '#f2fbff', accent: '#ffd166' },
+  { id: 'blush',  name: 'Blush',  bg1: '#ffeef0', bg2: '#ffd3da', text: '#5c1230', accent: '#c2185b' },
+  { id: 'forest', name: 'Forest', bg1: '#11331f', bg2: '#0a1f13', text: '#eef8ee', accent: '#f2c94c' },
+  { id: 'paper',  name: 'Paper',  bg1: '#fafaf7', bg2: '#eceae3', text: '#181816', accent: '#181816' },
+  { id: 'noir',   name: 'Noir',   bg1: '#0d0d0d', bg2: '#1f1f1f', text: '#ffffff', accent: '#ff3d2e' },
+  { id: 'lilac',  name: 'Lilac',  bg1: '#efe9ff', bg2: '#d9ccff', text: '#24104f', accent: '#6a3df0' },
+  { id: 'sunset', name: 'Sunset', bg1: '#ff7a45', bg2: '#e0245e', text: '#ffffff', accent: '#ffe27a' },
+];
+const PAIRS = [
+  { name: 'Studio',      head: 'Bricolage Grotesque', hw: 800, hs: 1,    body: 'Figtree',    bw: 500 },
+  { name: 'Poster',      head: 'Poppins',             hw: 800, hs: 1,    body: 'DM Sans',    bw: 500 },
+  { name: 'Editorial',   head: 'Playfair Display',    hw: 800, hs: 1,    body: 'Lato',       bw: 400 },
+  { name: 'Impact',      head: 'Bebas Neue',          hw: 400, hs: 1.35, body: 'Montserrat', bw: 500 },
+  { name: 'Warm',        head: 'DM Serif Display',    hw: 400, hs: 1,    body: 'DM Sans',    bw: 500 },
+  { name: 'Condensed',   head: 'Oswald',              hw: 700, hs: 1.18, body: 'Lato',       bw: 400 },
+  { name: 'Geometric',   head: 'Montserrat',          hw: 800, hs: .96,  body: 'Figtree',    bw: 500 },
+];
+const FALLBACK = {
+  'Playfair Display': 'Georgia, "Times New Roman", serif', 'DM Serif Display': 'Georgia, "Times New Roman", serif',
+  'Bebas Neue': 'Impact, "Arial Narrow", sans-serif', 'Oswald': '"Arial Narrow", Arial, sans-serif',
+};
+const fam = n => `"${n}", ${FALLBACK[n] || 'system-ui, -apple-system, "Segoe UI", Arial, sans-serif'}`;
+const EMOJI = ['🔥', '⭐', '🎉', '❤️', '👉', '✅', '🛒', '📍', '🎁', '⏰', '💬', '🆕'];
+
+/* ---------- state ---------- */
+const KEY = 'postbench.v1', BKEY = 'postbench.brand.v1';
+const fresh = () => ({
+  format: 'ig-post', template: 'bold', theme: 'ember',
+  fields: { ...TEMPLATES_SAMPLE.bold }, touched: {}, caption: '',
+  colors: pickColors(THEMES[0]), bgMode: 'gradient', angle: 145, fontPair: 0,
+  overlay: 55, photo: null, logo: null, logoPos: 'tr', logoSize: 16, extras: [], alt: '', headScale: 100, photoX: 50, photoY: 50, photoZoom: 100,
+});
+function pickColors(t) { return { bg1: t.bg1, bg2: t.bg2, text: t.text, accent: t.accent }; }
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+const IMG = { photo: null, logo: null, ex: {} };
+let st, brand = store.get(BKEY), selId = null, showSafe = false;
+
+/* ---------- color helpers ---------- */
+function hex2rgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(x => x + x).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function rgba(h, a) { const [r, g, b] = hex2rgb(h); return `rgba(${r},${g},${b},${a})`; }
+function lum(h) { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; const [r, g, b] = hex2rgb(h); return .2126 * f(r) + .7152 * f(g) + .0722 * f(b); }
+const onColor = h => { const l = lum(h); return (1.05 / (l + .05)) >= ((l + .05) / (lum('#14110f') + .05)) ? '#ffffff' : '#14110f'; };
+
+/* ---------- text measuring and fitting ---------- */
+const mc = document.createElement('canvas').getContext('2d');
+function wrap(text, maxW) {
+  const out = [];
+  for (const para of text.split('\n')) {
+    const words = para.split(/\s+/).filter(Boolean);
+    if (!words.length) { out.push(''); continue; }
+    let line = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const t = line + ' ' + words[i];
+      if (mc.measureText(t).width <= maxW) line = t; else { out.push(line); line = words[i]; }
+    }
+    out.push(line);
+  }
+  return out;
+}
+function balanceLines(text, w, n) {
+  let lo = w * .5, hi = w;
+  for (let i = 0; i < 7; i++) { const mid = (lo + hi) / 2; if (wrap(text, mid).length <= n) hi = mid; else lo = mid; }
+  return wrap(text, hi);
+}
+function fit(o) {
+  const text = o.upper ? o.text.toUpperCase() : o.text;
+  const test = s => {
+    mc.font = `${o.weight} ${s}px ${o.family}`; if ('letterSpacing' in mc) mc.letterSpacing = (o.ls || 0) * s + 'px';
+    let lines = wrap(text, o.w);
+    if (o.balance && lines.length > 1) lines = balanceLines(text, o.w, lines.length);
+    const widest = Math.max(1, ...lines.map(l => mc.measureText(l).width));
+    const hh = lines.length * s * o.lh;
+    return { s, lines, widest, hh, ok: widest <= o.w + .5 && hh <= o.h };
+  };
+  let hi = Math.max(Math.floor(o.max), 6), lo = Math.max(4, Math.floor(Math.min(o.min, hi)));
+  let r = test(hi); if (r.ok) return r;
+  let best = test(lo); if (!best.ok) return best;
+  while (hi - lo > 1) { const mid = (hi + lo) >> 1, t = test(mid); if (t.ok) { lo = mid; best = t; } else hi = mid; }
+  return best;
+}
+function textLayer(c, o) {
+  if (!o.text) return null;
+  const family = o.font === 'head' ? c.fonts.head : c.fonts.body;
+  const weight = o.weight || (o.font === 'head' ? c.fonts.hw : c.fonts.bw);
+  const r = fit({ text: o.text, family, weight, w: o.w, h: o.h, max: o.max, min: o.min, lh: o.lh || 1.15, upper: o.upper, ls: o.ls, balance: o.balance !== false && o.font !== 'plain' });
+  let y = o.y;
+  if (o.valign === 'middle') y += (o.h - r.hh) / 2; else if (o.valign === 'bottom') y += o.h - r.hh;
+  return { t: 'text', x: o.x, y, w: o.w, align: o.align || 'left', lines: r.lines, size: r.s, lh: o.lh || 1.15,
+    font: `${weight} ${r.s}px ${family}`, ls: (o.ls || 0) * r.s, color: o.color, a: o.a ?? 1, h: r.hh, tw: r.widest };
+}
+
+/* ---------- layer helpers ---------- */
+const R = (x, y, w, h, fill, o = {}) => ({ t: 'rect', x, y, w, h, fill, r: o.r || 0, stroke: o.stroke, sw: o.sw, a: o.a, shadow: o.shadow });
+const E = (cx, cy, rx, ry, fill, o = {}) => ({ t: 'ellipse', cx, cy, rx, ry, fill, stroke: o.stroke, sw: o.sw, a: o.a, shadow: o.shadow });
+function burst(cx, cy, r, n, k) { const p = []; for (let i = 0; i < n * 2; i++) { const a = Math.PI * i / n, rr = i % 2 ? r * k : r; p.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); } return p; }
+
+/* stack: lays items out top to bottom inside a region, shrinking sizes until they fit */
+function pill(c, reg, it, align, sc) {
+  const ph = clamp((it.ph || c.s * .085) * sc, 24, c.s * .2);
+  let size = ph * .42;
+  const label = it.upper ? it.text.toUpperCase() : it.text, ls = it.ls ?? .03, wgt = it.weight || 700;
+  const meas = s => { mc.font = `${wgt} ${s}px ${c.fonts.body}`; if ('letterSpacing' in mc) mc.letterSpacing = ls * s + 'px'; return mc.measureText(label).width; };
+  let tw = meas(size); const pad = ph * .6;
+  if (tw + pad * 2 > reg.w) { size *= (reg.w - pad * 2) / tw; tw = meas(size); }
+  const ww = tw + pad * 2;
+  const x = align === 'center' ? reg.x + (reg.w - ww) / 2 : align === 'right' ? reg.x + reg.w - ww : reg.x;
+  const rect = R(x, 0, ww, ph, it.outline ? null : it.fill, { r: ph / 2, stroke: it.outline ? it.fill : null, sw: Math.max(2, c.u * .004) });
+  const t = { t: 'text', x, y: (ph - size) / 2, w: ww, align: 'center', lines: [label], size, lh: 1, font: `${wgt} ${size}px ${c.fonts.body}`, ls: ls * size, color: it.color, a: 1 };
+  return { layers: [rect, t], hh: ph };
+}
+function buildStack(c, reg, items, o, sc) {
+  const parts = []; let total = 0;
+  for (const it of items) {
+    if (!it || (it.lite && c.ultra)) continue;
+    let part = null;
+    if (it.kind === 'text') {
+      if (!it.text) continue;
+      const max = Math.max(it.max * sc, Math.min(it.min || 0, it.max));
+      const l = textLayer(c, { ...it, x: reg.x, y: 0, w: reg.w, h: reg.h * (it.share || .5), max, min: Math.min(it.min || 10, max), align: o.align, valign: 'top' });
+      part = { layers: [l], hh: l.h };
+    } else if (it.kind === 'pill') {
+      if (!it.text) continue;
+      part = pill(c, reg, it, o.align, sc);
+    } else if (it.kind === 'rect') {
+      const rw = it.w * sc, rh = Math.max(2, it.h * sc);
+      const x = o.align === 'center' ? reg.x + (reg.w - rw) / 2 : o.align === 'right' ? reg.x + reg.w - rw : reg.x;
+      part = { layers: [R(x, 0, rw, rh, it.fill, { r: rh / 2, a: it.a })], hh: rh };
+    } else if (it.kind === 'space') part = { layers: [], hh: it.h * sc };
+    if (!part) continue;
+    part.oy = total; part.gap = (it.gap || 0) * sc; total += part.hh + part.gap; parts.push(part);
+  }
+  if (parts.length) total -= parts[parts.length - 1].gap;
+  return { parts, total };
+}
+function stack(c, reg, items, o = {}) {
+  let b;
+  for (const sc of [1, .88, .77, .66, .55, .44]) { b = buildStack(c, reg, items, o, sc); if (b.total <= reg.h) break; }
+  let y0 = reg.y;
+  if (o.valign === 'middle') y0 += Math.max(0, (reg.h - b.total) / 2); else if (o.valign === 'bottom') y0 += Math.max(0, reg.h - b.total);
+  const out = [];
+  for (const p of b.parts) for (const l of p.layers) { l.y += y0 + p.oy; out.push(l); }
+  return out;
+}
+const iHead = (c, o = {}) => { const it = { kind: 'text', text: c.f.headline, font: 'head', max: c.s * .15 * c.fonts.hs, min: c.u * .03, share: .55, color: c.col.text, lh: 1.02, gap: c.u * .035, ...o }; it.max *= c.hsc; return it; };
+const iSub = (c, o = {}) => ({ kind: 'text', text: c.f.sub, font: 'body', max: c.s * .045, min: c.u * .026, share: .26, color: c.col.text, a: .86, lh: 1.35, gap: c.u * .045, lite: true, ...o });
+const iCta = (c, o = {}) => ({ kind: 'pill', text: c.f.cta, fill: c.col.text, color: c.col.onText, gap: c.u * .035, ...o });
+const iHandle = (c, o = {}) => ({ kind: 'text', text: c.f.handle, font: 'body', weight: 700, max: c.s * .035, min: c.u * .026, share: .1, color: c.col.text, a: .72, ls: .03, lh: 1.2, gap: 0, lite: true, ...o });
+const iTag = (c, o = {}) => ({ kind: 'text', text: c.f.badge, font: 'body', weight: 700, max: c.s * .034, min: c.u * .026, share: .08, color: c.col.accent, upper: true, ls: .18, lh: 1.2, gap: c.u * .03, ...o });
+
+/* ---------- templates ---------- */
+const TEMPLATES_SAMPLE = {
+  bold:  { badge: '30% OFF', headline: 'Weekend bake sale', sub: 'Fresh bread, pastries and cakes. Saturday and Sunday only.', cta: 'Order now', handle: '@cornerbakery', list: '' },
+  clean: { badge: 'New', headline: 'Sourdough, delivered', sub: 'A fresh loaf at your door every Friday morning.', cta: 'Subscribe', handle: '@cornerbakery', list: '' },
+  photo: { badge: 'Open late', headline: 'Warm bread until 9pm', sub: 'Come in after work. We bake a second batch every evening.', cta: 'Visit us', handle: '@cornerbakery', list: '' },
+  spot:  { badge: 'New', headline: 'Cardamom morning bun', sub: 'Soft, sticky and baked fresh at 6am.', cta: 'Pre-order', handle: '@cornerbakery', list: '' },
+  quote: { badge: '★★★★★', headline: 'Best croissant I\'ve had outside Paris.', sub: 'Maya R., Google review', cta: '', handle: '@cornerbakery', list: '' },
+  event: { badge: 'Sat 14 Jun', headline: 'Bread baking workshop', sub: '10:00 to 13:00. 12 seats. Corner Bakery, Elm Street.', cta: 'Reserve a seat', handle: '@cornerbakery', list: '' },
+  stat:  { badge: '4.9', headline: 'Average rating from 1,200 customers', sub: 'Thank you for baking this with us.', cta: '', handle: '@cornerbakery', list: '' },
+  frame: { badge: 'Est. 2014', headline: 'Baked slowly. Shared often.', sub: 'Find us on Elm Street, open daily from 7am.', cta: 'Find us', handle: '@cornerbakery', list: '' },
+  menu:  { badge: 'Autumn menu', headline: 'Fresh from the oven', sub: 'Baked every morning from 7am.', cta: 'Order ahead', handle: '@cornerbakery', list: 'Sourdough loaf — €4.50\nCardamom bun — €3.20\nPumpkin bun — €3.40\nButter croissant — €2.10\nCappuccino — €2.80' },
+  hours: { badge: 'Visit us', headline: 'Opening hours', sub: 'Closed on public holidays.', cta: '', handle: '@cornerbakery', list: 'Monday to Friday — 7:00 to 19:00\nSaturday — 8:00 to 16:00\nSunday — 8:00 to 13:00' },
+  steps: { badge: 'Bread tips', headline: '3 ways to keep bread fresh', sub: '', cta: 'Save this post', handle: '@cornerbakery', list: 'Store it cut side down on a wooden board\nFreeze slices and toast them straight from frozen\nRevive the crust in a hot oven for 5 minutes' },
+};
+/* list lines: "name — price", "days | hours" or a plain line; the last dash or bar splits the value off */
+function parseList(t) {
+  return String(t || '').split('\n').map(l => l.trim()).filter(Boolean).slice(0, 16).map(raw => {
+    let i = Math.max(raw.lastIndexOf('|'), raw.lastIndexOf('\t')), len = 1;
+    if (i < 0) { const m = [...raw.matchAll(/\s[—–-]\s/g)].pop(); if (m) { i = m.index; len = m[0].length; } }
+    return i > 0 && raw.slice(i + len).trim() ? { label: raw.slice(0, i).trim(), value: raw.slice(i + len).trim(), raw } : { label: raw, value: '', raw };
+  });
+}
+function arrowLayers(cx, cy, r, color, bg) {
+  const sw = Math.max(2, r * .16), k = r * .42;
+  return [E(cx, cy, r, r, bg), { t: 'line', x1: cx - k, y1: cy, x2: cx + k, y2: cy, color, sw }, { t: 'line', x1: cx + k * .2, y1: cy - k * .7, x2: cx + k, y2: cy, color, sw }, { t: 'line', x1: cx + k * .2, y1: cy + k * .7, x2: cx + k, y2: cy, color, sw }];
+}
+function listLayers(c, reg, items, style) {
+  const { u, col } = c, n = items.length, out = [];
+  const gap = style === 'steps' ? u * .022 : 0;
+  const rowH = Math.min(c.s * (style === 'steps' ? .13 : .085), (reg.h - gap * (n - 1)) / n);
+  const total = n * rowH + gap * (n - 1), y0 = reg.y + Math.max(0, (reg.h - total) * (c.wide ? .5 : .3));
+  if (style === 'hours') out.push(R(reg.x - u * .035, y0 - u * .025, reg.w + u * .07, total + u * .05, col.text, { r: u * .03, a: .08 }));
+  items.forEach((it, i) => {
+    const y = y0 + i * (rowH + gap);
+    if (style === 'steps') {
+      const d = Math.min(rowH * .8, c.s * .1), cxn = reg.x + d / 2, cyn = y + rowH / 2, tx = reg.x + d + u * .035;
+      out.push(E(cxn, cyn, d / 2, d / 2, col.accent));
+      out.push(textLayer(c, { text: String(i + 1), x: cxn - d / 2, y: cyn - d / 2, w: d, h: d, font: 'head', color: col.onAccent, align: 'center', valign: 'middle', max: d * .56, min: 6, lh: 1 }));
+      out.push(textLayer(c, { text: it.raw, x: tx, y, w: reg.x + reg.w - tx, h: rowH, font: 'body', weight: 600, color: col.text, align: 'left', valign: 'middle', max: c.s * .046, min: u * .018, lh: 1.2 }));
+      return;
+    }
+    const fs = Math.min(rowH * .5, c.s * .046);
+    const val = it.value ? textLayer(c, { text: it.value, x: reg.x + reg.w * .5, y, w: reg.w * .5, h: rowH, font: 'body', weight: 700, color: style === 'menu' ? col.accent : col.text, align: 'right', valign: 'middle', max: fs, min: u * .016, lh: 1.1, balance: false }) : null;
+    const vw = val ? val.tw + u * .05 : 0;
+    const name = textLayer(c, { text: it.label, x: reg.x, y, w: reg.w - vw, h: rowH * .96, font: 'body', weight: style === 'menu' ? 600 : 700, color: col.text, align: 'left', valign: 'middle', max: fs, min: u * .016, lh: 1.1 });
+    if (style === 'menu' && val && name && name.lines.length === 1) {
+      const x1 = reg.x + name.tw + u * .022, x2 = reg.x + reg.w - val.tw - u * .022, ly = y + rowH / 2 + name.size * .3;
+      if (x2 - x1 > u * .04) out.push({ t: 'line', x1, y1: ly, x2, y2: ly, color: col.text, sw: Math.max(1.5, name.size * .1), dash: [.1, name.size * .32], a: .45 });
+    }
+    if (style === 'hours' && i < n - 1) out.push({ t: 'line', x1: reg.x, y1: y + rowH, x2: reg.x + reg.w, y2: y + rowH, color: col.text, sw: Math.max(1, u * .002), a: .16 });
+    out.push(name, val);
+  });
+  return out.filter(Boolean);
+}
+const bottomOf = Ls => Math.max(...Ls.map(l => l.y + (l.h || 0)));
+const topOf = Ls => Math.min(...Ls.map(l => l.y));
+function listTemplate(c, style) {
+  const { w, h, u, col, ix, iy, iw, ih } = c, items = parseList(c.f.list).slice(0, c.story ? 14 : c.wide ? 8 : 12);
+  if (c.ultra || !items.length) return TEMPLATES.clean.build(c);
+  const L = [], center = style === 'hours', align = center ? 'center' : 'left', cta = { fill: col.accent, color: col.onAccent }, bar = Math.max(4, u * .014);
+  if (style === 'menu') L.push(R(0, 0, w, bar, col.accent), R(0, h - bar, w, bar, col.accent));
+  else if (style === 'hours') L.push(E(w * .92, h * .92, u * .42, u * .42, col.accent, { a: .14 }));
+  else L.push(E(w, 0, u * .28, u * .28, col.accent, { a: .9 }), E(w, 0, u * .42, u * .42, col.accent, { a: .14 }));
+  if (c.wide) {
+    L.push(...stack(c, { x: ix, y: iy, w: iw * .42, h: ih }, [iTag(c), iHead(c, { max: c.s * .1 * c.fonts.hs }), iSub(c, { max: c.s * .036 }), iCta(c, cta), iHandle(c)], { align: 'left', valign: 'middle' }));
+    L.push(...listLayers(c, { x: ix + iw * .5, y: iy, w: iw * .5, h: ih }, items, style));
+    return L;
+  }
+  const head = stack(c, { x: ix, y: iy, w: style === 'steps' ? iw * .7 : iw, h: ih * .3 }, [iTag(c), iHead(c, { max: c.s * .1 * c.fonts.hs, share: .8 })], { align, valign: 'top' });
+  const foot = stack(c, { x: ix, y: iy + ih * .76, w: iw, h: ih * .24 }, [iSub(c, { max: c.s * .036, share: .4 }), iCta(c, cta), iHandle(c)], { align, valign: 'bottom' });
+  const top = (head.length ? bottomOf(head) : iy) + u * .05, bottom = (foot.length ? topOf(foot) : iy + ih) - u * .05;
+  L.push(...head, ...listLayers(c, { x: center ? ix + iw * .08 : ix, y: top, w: center ? iw * .84 : iw, h: Math.max(u * .12, bottom - top) }, items, style), ...foot);
+  return L;
+}
+function sticker(c, cx, cy, d, text) {
+  const r = d / 2;
+  const t = textLayer(c, { text, x: cx - r * .68, y: cy - r * .5, w: r * 1.36, h: r, font: 'head', color: c.col.onAccent, align: 'center', valign: 'middle', max: r * .62 * c.fonts.hs, min: 10, lh: .95, upper: true });
+  return { t: 'group', cx, cy, rot: -9 * Math.PI / 180, layers: [{ t: 'poly', pts: burst(cx, cy, r, 14, .87), fill: c.col.accent, shadow: true }, t].filter(Boolean) };
+}
+const TEMPLATES = {
+  bold: { name: 'Bold sale', build(c) {
+    const { w, h, u, m, col, f, ix, iy, iw, ih } = c, L = [];
+    L.push(E(w * .95, h * .05, u * .5, u * .5, col.accent, { a: .16 }), E(w * .02, h * .98, u * .34, u * .34, col.text, { a: .07 }));
+    const d = f.badge ? (c.wide ? Math.min(ih, w * .3) : Math.min(iw * .5, ih * .3)) : 0;
+    if (d) L.push(sticker(c, w - m - d / 2, c.wide ? iy + ih / 2 : iy + d / 2, d, f.badge));
+    const reg = c.wide ? { x: ix, y: iy, w: iw - d - m, h: ih } : { x: ix, y: iy + d * .85, w: iw, h: ih - d * .85 };
+    L.push(...stack(c, reg, [iHead(c, { upper: true }), iSub(c), iCta(c), iHandle(c)], { align: 'left', valign: c.wide ? 'middle' : 'bottom' }));
+    return L;
+  } },
+  clean: { name: 'Clean', build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [];
+    if (c.wide) L.push(E(w * .9, h * .5, h * .5, h * .5, col.accent), E(w * .9, h * .5, h * .74, h * .74, col.accent, { a: .14 }));
+    else L.push(E(w, 0, u * .34, u * .34, col.accent), E(w, 0, u * .5, u * .5, col.accent, { a: .14 }));
+    const reg = c.wide ? { x: ix, y: iy, w: iw * .6, h: ih } : { x: ix, y: iy, w: iw * .8, h: ih };
+    L.push(...stack(c, reg, [iTag(c), { kind: 'rect', w: u * .12, h: u * .012, fill: col.accent, gap: u * .035 }, iHead(c, { max: c.s * .125 * c.fonts.hs }), iSub(c), iCta(c, { fill: col.accent, color: col.onAccent }), iHandle(c)], { align: 'left', valign: 'middle' }));
+    return L;
+  } },
+  photo: { name: 'Photo', usesPhoto: true, build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [], ov = c.st.overlay / 100, white = '#ffffff';
+    if (c.imgs.photo) L.push({ t: 'photo', x: 0, y: 0, w, h, r: 0 });
+    else L.push(E(w * .8, h * .25, u * .45, u * .45, col.accent, { a: .3 }), R(0, 0, w, h, '#000', { a: .42 }));
+    const k = a => 'rgba(0,0,0,' + a + ')';
+    const scrim = c.wide
+      ? [0, 0, w, 0, [[0, k(ov)], [.7, k(ov * .45)], [1, k(0)]]]
+      : [0, 0, 0, h, [[0, k(ov * .35)], [.4, k(ov * .12)], [1, k(ov)]]];
+    L.push(R(0, 0, w, h, { g: scrim }));
+    L.push(...stack(c, { x: ix, y: iy, w: iw, h: ih * .1 }, [{ kind: 'pill', text: c.f.badge, fill: col.accent, color: col.onAccent, upper: true, ls: .12, ph: u * .07, gap: 0, lite: true }], { align: 'left', valign: 'top' }));
+    const reg = c.wide ? { x: ix, y: iy + ih * .12, w: iw * .6, h: ih * .88 } : { x: ix, y: iy + ih * .14, w: iw, h: ih * .86 };
+    L.push(...stack(c, reg, [iHead(c, { color: white }), iSub(c, { color: white }), iCta(c, { fill: col.accent, color: col.onAccent }), iHandle(c, { color: white })], { align: 'left', valign: c.wide ? 'middle' : 'bottom' }));
+    return L;
+  } },
+  spot: { name: 'Product', usesPhoto: true, build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [];
+    let card, reg;
+    if (c.wide) { const cw = iw * (c.ultra ? .3 : .42); card = { x: w - c.m - cw, y: iy, w: cw, h: ih }; reg = { x: ix, y: iy, w: iw - cw - c.m, h: ih }; }
+    else { const ch = ih * (c.story ? .42 : .44); card = { x: ix, y: iy, w: iw, h: ch }; reg = { x: ix, y: iy + ch + u * .045, w: iw, h: ih - ch - u * .045 }; }
+    const r = u * .04;
+    L.push(R(card.x, card.y, card.w, card.h, '#000', { r, shadow: true }), { t: 'photo', x: card.x, y: card.y, w: card.w, h: card.h, r, ph: true });
+    L.push(...stack(c, { x: card.x + u * .03, y: card.y + u * .03, w: card.w - u * .06, h: u * .1 }, [{ kind: 'pill', text: c.f.badge, fill: col.accent, color: col.onAccent, upper: true, ls: .1, ph: u * .07, gap: 0 }], { align: 'left', valign: 'top' }));
+    L.push(...stack(c, reg, [iHead(c, { max: c.s * .105 * c.fonts.hs }), iSub(c), iCta(c, { fill: col.accent, color: col.onAccent }), iHandle(c)], { align: 'left', valign: c.wide ? 'middle' : 'top' }));
+    return L;
+  } },
+  quote: { name: 'Quote', build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [];
+    L.push(E(w * .5, h * .5, u * .3, u * .3, null, { stroke: col.accent, sw: u * .004, a: .3 }), E(w * .5, h * .5, u * .46, u * .46, null, { stroke: col.accent, sw: u * .004, a: .16 }));
+    const reg = c.wide ? { x: ix + iw * .1, y: iy, w: iw * .8, h: ih } : { x: ix, y: iy, w: iw, h: ih };
+    L.push(...stack(c, reg, [
+      { kind: 'text', text: c.f.badge, font: 'plain', weight: 700, max: c.s * .05, min: u * .02, share: .1, color: col.accent, ls: .2, lh: 1.1, gap: u * .04 },
+      c.wide ? null : { kind: 'text', text: '“', font: 'head', max: c.s * .22, min: u * .05, share: .2, color: col.accent, lh: .7, gap: u * .01 },
+      iHead(c, { max: c.s * .085 * c.fonts.hs, share: .6, gap: u * .04 }),
+      { kind: 'rect', w: u * .1, h: u * .006, fill: col.accent, gap: u * .03 },
+      iSub(c, { weight: 700, max: c.s * .04, lite: false }), iCta(c, { gap: u * .03 }), iHandle(c)], { align: 'center', valign: 'middle' }));
+    return L;
+  } },
+  event: { name: 'Event', build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [];
+    const cx = c.wide ? w * .5 : w / 2, cy = h / 2;
+    [.2, .33, .46].forEach((k, i) => L.push(E(cx, cy, u * k, u * k, null, { stroke: col.accent, sw: u * .005, a: .32 - i * .08 })));
+    const reg = c.wide ? { x: ix + iw * .08, y: iy, w: iw * .84, h: ih } : { x: ix, y: iy, w: iw, h: ih };
+    L.push(...stack(c, reg, [
+      { kind: 'pill', text: c.f.badge, fill: col.accent, color: col.onAccent, upper: true, ls: .1, ph: u * .095, gap: u * .05 },
+      iHead(c, { max: c.s * .14 * c.fonts.hs, upper: true }), iSub(c), iCta(c, { outline: true, fill: col.text, color: col.text }), iHandle(c)], { align: 'center', valign: 'middle' }));
+    return L;
+  } },
+  stat: { name: 'Big number', build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [];
+    const gx = w - c.m - u * .26, gy = c.top + c.m, n = 6, s = u * .052;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) L.push(E(gx + i * s, gy + j * s, u * .0075, u * .0075, col.accent, { a: .5 }));
+    const reg = c.wide ? { x: ix, y: iy, w: iw * .72, h: ih } : { x: ix, y: iy, w: iw, h: ih };
+    L.push(...stack(c, reg, [
+      { kind: 'text', text: c.f.badge, font: 'head', max: c.s * (c.wide ? .3 : .36) * c.fonts.hs, min: u * .08, share: .5, color: col.accent, lh: .9, gap: u * .025 },
+      { kind: 'rect', w: u * .16, h: u * .014, fill: col.accent, gap: u * .035 },
+      iHead(c, { max: c.s * .07 * c.fonts.hs, share: .3 }), iSub(c), iCta(c, { fill: col.accent, color: col.onAccent }), iHandle(c)], { align: 'left', valign: 'middle' }));
+    return L;
+  } },
+  frame: { name: 'Frame', build(c) {
+    const { w, h, u, m, col, ix, iy, iw, ih } = c, L = [];
+    const o1 = m * .6, o2 = m * .9;
+    L.push(R(o1, c.top + o1, w - 2 * o1, h - c.top - c.bot - 2 * o1, null, { stroke: col.text, sw: u * .004, a: .75 }));
+    L.push(R(o2, c.top + o2, w - 2 * o2, h - c.top - c.bot - 2 * o2, null, { stroke: col.accent, sw: u * .002, a: .8 }));
+    const pad = m * 1.3, reg = { x: ix + pad * .6, y: iy + pad * .6, w: iw - pad * 1.2, h: ih - pad * 1.2 };
+    L.push(...stack(c, reg, [
+      c.f.badge ? iTag(c, { text: '—  ' + c.f.badge + '  —', gap: u * .035 }) : null,
+      iHead(c, { max: c.s * .115 * c.fonts.hs }),
+      { kind: 'rect', w: u * .08, h: u * .004, fill: col.accent, gap: u * .035 },
+      iSub(c), iCta(c, { outline: true, fill: col.text, color: col.text }), iHandle(c)], { align: 'center', valign: 'middle' }));
+    return L;
+  } },
+  menu: { name: 'Menu or prices', list: true, build: c => listTemplate(c, 'menu') },
+  hours: { name: 'Opening hours', list: true, build: c => listTemplate(c, 'hours') },
+  steps: { name: 'Numbered list', list: true, build: c => listTemplate(c, 'steps') },
+  slide: { name: 'Carousel slide', hidden: true, build(c) {
+    const { w, h, u, col, ix, iy, iw, ih } = c, L = [], sl = c.st.slide || { i: 1, n: 1 };
+    L.push(E(w * .96, h * .06, u * .36, u * .36, col.accent, { a: .14 }));
+    L.push(...stack(c, { x: ix, y: iy, w: c.wide ? iw * .8 : iw, h: ih * .82 }, [
+      { kind: 'text', text: String(sl.i).padStart(2, '0'), font: 'head', max: c.s * .24 * c.fonts.hs, min: u * .06, share: .32, color: col.accent, lh: .95, gap: u * .02 },
+      { kind: 'rect', w: u * .12, h: u * .012, fill: col.accent, gap: u * .04 },
+      iHead(c, { max: c.s * .1 * c.fonts.hs, share: .45 }), iSub(c, { max: c.s * .05, weight: 700, lite: false })], { align: 'left', valign: 'middle' }));
+    const dr = Math.max(3, u * .009), step = dr * 3.2, by = iy + ih - u * .03;
+    for (let k = 0; k < sl.n; k++) L.push(E(ix + dr + k * step, by, dr, dr, k === sl.i - 1 ? col.accent : col.text, { a: k === sl.i - 1 ? 1 : .28 }));
+    if (sl.i < sl.n || sl.more) L.push(...arrowLayers(w - c.m - u * .045, by, u * .045, col.onAccent, col.accent));
+    return L;
+  } },
+};
+const LAYOUT_HELP = {
+  "bold": "Promotions and sales. badge = a discount or short hook shown in a starburst, such as '20% OFF' or 'SALE'. The headline is set in capitals.",
+  "clean": "Announcements, new products or services. badge = a tiny label above the headline, such as 'New'.",
+  "photo": "Full-bleed photo with text over it. Only for food, products, places or people. The owner adds the photo afterwards.",
+  "spot": "Product spotlight: a photo card with text beside or below it. badge = a short label on the photo, such as 'New'.",
+  "quote": "Customer testimonial. headline = the quote itself, sub = who said it, badge = stars. Use ONLY when the request contains a real quote.",
+  "event": "Events, openings, workshops. badge = the date or time shown in a pill. Use ONLY a date the request gives.",
+  "stat": "One big number. badge = the number, such as '4.9' or '10 years'. Use ONLY a figure the request gives.",
+  "frame": "Elegant invitation-style frame. badge = a small label such as 'Est. 2014'. Suits premium, calm or formal brands.",
+  "menu": "Menu or price list. list = one item per line as 'name — price'. Use ONLY prices the request or details give; without prices, write lines without a price.",
+  "hours": "Opening hours. list = one line per day or range as 'days — hours'. Use ONLY hours the request or details give.",
+  "steps": "Numbered list of 3 to 5 short points such as tips, services or reasons. list = one point per line, up to 60 characters each. It can also be saved as a swipeable carousel."
+};
+const ORDER = Object.keys(TEMPLATES).filter(k => !TEMPLATES[k].hidden);
+
+/* ---------- layout context ---------- */
+function ctxFor(s, fmt, imgs) {
+  const w = fmt.w, h = fmt.h, u = Math.min(w, h * 1.15), m = u * .07;
+  const story = !!fmt.safe, wide = w / h > 1.4, ultra = w / h > 3;
+  const top = story ? h * .13 : 0, bot = story ? h * .18 : 0;
+  const iy = top + (story ? 0 : m), by = h - (story ? bot : m);
+  const ts = story ? 1.22 : ultra ? 1.6 : h / w > 1.2 ? 1.1 : 1;
+  const col = { ...s.colors }; col.onAccent = onColor(col.accent); col.onText = onColor(col.text);
+  const p = PAIRS[s.fontPair] || PAIRS[0];
+  return { st: s, w, h, u, s: u * ts, m, story, wide, ultra, top, bot, ix: m, iy, iw: w - 2 * m, ih: by - iy, col,
+    fonts: { head: fam(p.head), hw: p.hw, hs: p.hs, body: fam(p.body), bw: p.bw }, f: s.fields, imgs: imgs || IMG, hsc: clamp((s.headScale || 100) / 100, .5, 1.6) };
+}
+
+/* ---------- drawing ---------- */
+function fillStyle(ctx, f) {
+  if (typeof f === 'string') return f;
+  const g = ctx.createLinearGradient(f.g[0], f.g[1], f.g[2], f.g[3]);
+  f.g[4].forEach(([o, c]) => g.addColorStop(o, c));
+  return g;
+}
+function rpath(ctx, x, y, w, h, r) {
+  r = Math.min(r || 0, w / 2, h / 2); ctx.beginPath();
+  if (!r) { ctx.rect(x, y, w, h); return; }
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function paint(ctx, L) {
+  if (L.fill) { ctx.fillStyle = fillStyle(ctx, L.fill); ctx.fill(); }
+  if (L.stroke) { ctx.lineWidth = L.sw || 2; ctx.strokeStyle = L.stroke; ctx.stroke(); }
+}
+function drawPhoto(ctx, L, c, ui) {
+  ctx.save(); rpath(ctx, L.x, L.y, L.w, L.h, L.r); ctx.clip();
+  const img = c.imgs.photo;
+  if (img) {
+    const st0 = c.st, s = Math.max(L.w / img.width, L.h / img.height) * (L.zoom || 1) * clamp((st0.photoZoom || 100) / 100, 1, 3), dw = img.width * s, dh = img.height * s;
+    ctx.drawImage(img, L.x + (L.w - dw) * clamp((st0.photoX ?? 50) / 100, 0, 1), L.y + (L.h - dh) * clamp((st0.photoY ?? 50) / 100, 0, 1), dw, dh);
+  } else {
+    ctx.fillStyle = c.col.bg2; ctx.fillRect(L.x, L.y, L.w, L.h);
+    ctx.fillStyle = rgba(c.col.text, .1); ctx.fillRect(L.x, L.y, L.w, L.h);
+    const k = Math.min(L.w, L.h), cx = L.x + L.w / 2, cy = L.y + L.h / 2;
+    ctx.fillStyle = rgba(c.col.text, .22);
+    ctx.beginPath(); ctx.arc(cx + k * .16, cy - k * .12, k * .07, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx - k * .3, cy + k * .24); ctx.lineTo(cx - k * .06, cy - k * .06); ctx.lineTo(cx + k * .08, cy + k * .1); ctx.lineTo(cx + k * .16, cy + k * .02); ctx.lineTo(cx + k * .3, cy + k * .24); ctx.closePath(); ctx.fill();
+    if (ui) { ctx.font = `600 ${c.u * .028}px ${c.fonts.body}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(c.col.text, .6); ctx.fillText('Add your photo', cx, cy + k * .36); }
+  }
+  ctx.restore();
+}
+function drawLayer(ctx, L, c, ui) {
+  ctx.save(); ctx.globalAlpha *= (L.a ?? 1);
+  if (L.shadow) { ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = c.u * .05; ctx.shadowOffsetY = c.u * .018; }
+  switch (L.t) {
+    case 'rect': rpath(ctx, L.x, L.y, L.w, L.h, L.r); paint(ctx, L); break;
+    case 'ellipse': ctx.beginPath(); ctx.ellipse(L.cx, L.cy, L.rx, L.ry, 0, 0, Math.PI * 2); paint(ctx, L); break;
+    case 'poly': ctx.beginPath(); L.pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); paint(ctx, L); break;
+    case 'photo': drawPhoto(ctx, L, c, ui); break;
+    case 'line': ctx.beginPath(); ctx.moveTo(L.x1, L.y1); ctx.lineTo(L.x2, L.y2); ctx.lineWidth = L.sw || 2; ctx.lineCap = 'round'; ctx.strokeStyle = L.color; if (L.dash) ctx.setLineDash(L.dash); ctx.stroke(); break;
+    case 'group': ctx.translate(L.cx, L.cy); ctx.rotate(L.rot); ctx.translate(-L.cx, -L.cy); L.layers.forEach(l => drawLayer(ctx, l, c, ui)); break;
+    case 'text': {
+      ctx.font = L.font; ctx.fillStyle = L.color; ctx.textBaseline = 'middle'; ctx.textAlign = L.align;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = L.ls + 'px';
+      const x = L.align === 'center' ? L.x + L.w / 2 : L.align === 'right' ? L.x + L.w : L.x;
+      L.lines.forEach((ln, i) => ctx.fillText(ln, x, L.y + (i + .5) * L.size * L.lh));
+      break;
+    }
+  }
+  ctx.restore();
+}
+function drawBg(ctx, s, w, h) {
+  const c = s.colors;
+  if (s.bgMode === 'solid') { ctx.fillStyle = c.bg1; ctx.fillRect(0, 0, w, h); return; }
+  const a = s.angle * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a), len = Math.abs(w * dx) + Math.abs(h * dy);
+  const g = ctx.createLinearGradient(w / 2 - dx * len / 2, h / 2 - dy * len / 2, w / 2 + dx * len / 2, h / 2 + dy * len / 2);
+  g.addColorStop(0, c.bg1); g.addColorStop(1, c.bg2); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+}
+function logoBox(c) {
+  const img = c.imgs.logo; if (!img) return null;
+  const maxW = c.u * c.st.logoSize / 100, maxH = maxW * .62, k = Math.min(maxW / img.width, maxH / img.height);
+  const lw = img.width * k, lh = img.height * k, pos = c.st.logoPos;
+  return { x: pos[1] === 'l' ? c.m : c.w - c.m - lw, y: pos[0] === 't' ? c.top + c.m * .8 : c.h - c.bot - c.m * .8 - lh, w: lw, h: lh };
+}
+function extraFont(ex, c, size) { return `${ex.weight || 700} ${size}px ${ex.font === 'body' ? c.fonts.body : c.fonts.head}`; }
+const qrCache = new Map();
+function qrFor(text) {
+  if (!text || typeof qrcode !== 'function') return null;
+  if (qrCache.has(text)) return qrCache.get(text);
+  let v = null;
+  try {
+    if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+    const q = qrcode(0, 'M'); q.addData(text); q.make();
+    const n = q.getModuleCount(), m = [];
+    for (let r = 0; r < n; r++) { const row = []; for (let k = 0; k < n; k++) row.push(q.isDark(r, k)); m.push(row); }
+    v = { n, m };
+  } catch (e) { v = null; }
+  qrCache.set(text, v); return v;
+}
+const qrText = t => { t = (t || '').trim(); return !t ? '' : /^[a-z][a-z0-9+.-]*:/i.test(t) ? t : 'https://' + t; };
+function drawQr(ctx, ex, x, y, sz, ui) {
+  ctx.save(); ctx.fillStyle = '#ffffff'; rpath(ctx, x, y, sz, sz, sz * .05); ctx.fill();
+  const q = qrFor(qrText(ex.text));
+  if (q) {
+    const mod = sz / (q.n + 6); ctx.fillStyle = '#111111';
+    for (let r = 0; r < q.n; r++) for (let k = 0; k < q.n; k++) if (q.m[r][k]) ctx.fillRect(x + (k + 3) * mod, y + (r + 3) * mod, mod + .4, mod + .4);
+  } else if (ui) {
+    ctx.fillStyle = '#5a5a5a'; ctx.font = `600 ${sz * .1}px system-ui, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Add a link', x + sz / 2, y + sz / 2);
+  }
+  ctx.restore();
+}
+function drawExtras(ctx, c, ui, anim) {
+  c.st.extras.forEach((ex, j) => {
+    const cx = ex.x * c.w, cy = ex.y * c.h;
+    ctx.save();
+    if (anim) {
+      const p = clamp((anim.t - anim.start - j * .12) / .5, 0, 1);
+      if (p <= 0) { ctx.restore(); return; }
+      const k = .6 + .4 * back(p); ctx.globalAlpha = ease(p); ctx.translate(cx, cy); ctx.scale(k, k); ctx.translate(-cx, -cy);
+    }
+    if (ex.kind === 'text') {
+      const size = ex.size * c.u, lines = (ex.text || ' ').split('\n'), lh = size * 1.15;
+      ctx.save(); ctx.font = extraFont(ex, c, size); ctx.fillStyle = ex.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+      let widest = 0;
+      lines.forEach((ln, i) => { ctx.fillText(ln, cx, cy - lines.length * lh / 2 + (i + .5) * lh); widest = Math.max(widest, ctx.measureText(ln).width); });
+      ctx.restore();
+      if (ui) ex._bb = { x: cx - widest / 2, y: cy - lines.length * lh / 2, w: widest, h: lines.length * lh };
+    } else if (ex.kind === 'qr') {
+      const sz = ex.size * c.u * 2;
+      drawQr(ctx, ex, cx - sz / 2, cy - sz / 2, sz, ui);
+      if (ui) ex._bb = { x: cx - sz / 2, y: cy - sz / 2, w: sz, h: sz };
+    } else {
+      const img = c.imgs.ex[ex.id];
+      if (img) {
+        const w = ex.size * c.u * 2, h = w * img.height / img.width;
+        ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+        if (ui) ex._bb = { x: cx - w / 2, y: cy - h / 2, w, h };
+      }
+    }
+    ctx.restore();
+  });
+}
+function prepare(s, fmt, imgs) { const c = ctxFor(s, fmt, imgs); return { c, layers: TEMPLATES[s.template].build(c) }; }
+function bigShape(L, c) { const a = L.t === 'rect' ? L.w * L.h : L.t === 'ellipse' ? 4 * L.rx * L.ry : 0; return a > c.w * c.h * .2; }
+/* opt.t (seconds) switches on the entrance animation used by the motion preview and video export */
+function draw(ctx, s, fmt, ui, opt = {}) {
+  const prep = opt.prep || prepare(s, fmt, opt.imgs), c = prep.c, t = opt.t;
+  ctx.save(); ctx.clearRect(0, 0, fmt.w, fmt.h);
+  drawBg(ctx, s, fmt.w, fmt.h);
+  prep.layers.forEach((L, i) => {
+    if (opt.bgOnly && (L.t === 'text' || L.t === 'group')) return;
+    if (t == null) return drawLayer(ctx, L, c, ui);
+    if (L.t === 'photo') {
+      L = { ...L, zoom: 1 + .07 * Math.min(1, t / (opt.dur || 6)) };
+      if (L.w >= c.w * .99) return drawLayer(ctx, L, c, ui);
+    }
+    const p = clamp((t - .2 - i * .085) / .6, 0, 1); if (p <= 0) return;
+    ctx.save(); ctx.globalAlpha = ease(p);
+    if (L.t === 'group') { const k = .55 + .45 * back(p); ctx.translate(L.cx, L.cy); ctx.scale(k, k); ctx.rotate(Math.sin(t * 2.2) * .035); ctx.translate(-L.cx, -L.cy); }
+    else if (!bigShape(L, c)) ctx.translate(0, (1 - ease(p)) * c.u * .045);
+    drawLayer(ctx, L, c, ui); ctx.restore();
+  });
+  const lb = opt.bgOnly ? null : logoBox(c);
+  if (lb) { ctx.save(); if (t != null) ctx.globalAlpha = ease(clamp((t - .1) / .5, 0, 1)); ctx.drawImage(c.imgs.logo, lb.x, lb.y, lb.w, lb.h); ctx.restore(); }
+  if (!opt.bgOnly) drawExtras(ctx, c, ui, t == null ? null : { t, start: .3 + prep.layers.length * .085 });
+  if (!opt.bgOnly && s.slide && s.slide.cover) arrowLayers(fmt.w - c.m - c.u * .045, c.iy + c.ih - c.u * .03, c.u * .045, c.col.onAccent, c.col.accent).forEach(L => drawLayer(ctx, L, c, ui));
+  if (ui) {
+    if (ui.safe) {
+      ctx.save(); const lw = Math.max(2, fmt.w / 450);
+      if (c.story) {
+        ctx.fillStyle = 'rgba(214,36,122,.22)'; ctx.fillRect(0, 0, fmt.w, c.top); ctx.fillRect(0, fmt.h - c.bot, fmt.w, c.bot);
+        ctx.fillStyle = '#fff'; ctx.font = `600 ${fmt.w * .026}px ${c.fonts.body}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('Covered by app buttons', fmt.w / 2, c.top / 2); ctx.fillText('Covered by app buttons', fmt.w / 2, fmt.h - c.bot / 2);
+      }
+      ctx.setLineDash([lw * 5, lw * 4]); ctx.lineWidth = lw; ctx.strokeStyle = 'rgba(214,36,122,.95)';
+      ctx.strokeRect(c.m, c.iy, c.iw, c.ih); ctx.restore();
+    }
+    if (ui.marks && ui.marks.length) { ctx.save(); ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = Math.max(2, fmt.w / 360); ctx.setLineDash([fmt.w * .012, fmt.w * .008]); ui.marks.forEach(b => ctx.strokeRect(b.x - 4, b.y - 4, b.w + 8, b.h + 8)); ctx.restore(); }
+    const sel = s.extras.find(e => e.id === ui.sel);
+    if (sel && sel._bb) { const b = sel._bb, p = fmt.w * .008; ctx.save(); ctx.lineWidth = Math.max(2, fmt.w / 500); ctx.strokeStyle = '#d6247a'; ctx.setLineDash([fmt.w * .01, fmt.w * .007]); ctx.strokeRect(b.x - p, b.y - p, b.w + 2 * p, b.h + 2 * p); ctx.restore(); }
+  }
+  ctx.restore();
+  return c;
+}
+
+/* ---------- fonts ---------- */
+const fontReqs = new Set();
+function loadFonts(s = st) {
+  const p = PAIRS[s.fontPair] || PAIRS[0];
+  const text = Object.values(s.fields).join('') + s.extras.map(e => e.text || '').join('');
+  const extra = text.replace(/[\x00-\x7f]/g, '');
+  const list = [`${p.hw} 40px "${p.head}"`, `${p.bw} 40px "${p.body}"`, `700 40px "${p.body}"`, ...s.extras.map(e => `${e.weight || 700} 40px "${(e.font === 'body' ? p.body : p.head)}"`)];
+  const jobs = [];
+  for (const f of list) { const k = f + '|' + extra; if (fontReqs.has(k)) continue; fontReqs.add(k); jobs.push(document.fonts.load(f, 'Aa' + extra).catch(() => [])); }
+  return Promise.all(jobs);
+}
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { schedule(); thumbsSoon(); planThumbsSoon(); });
+
+/* ---------- image helpers ---------- */
+function loadImg(src) { return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
+async function readImage(file, maxDim, mime) {
+  const url = URL.createObjectURL(file), img = await loadImg(url);
+  if (!img) { URL.revokeObjectURL(url); return null; }
+  const k = Math.min(1, maxDim / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+  cv.width = Math.max(1, Math.round(img.width * k)); cv.height = Math.max(1, Math.round(img.height * k));
+  const x = cv.getContext('2d'); if (mime === 'image/jpeg') { x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); }
+  x.drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+  return cv.toDataURL(mime, .86);
+}
+
+/* ---------- rendering pipeline ---------- */
+const cv = $('#cv'), cx = cv.getContext('2d');
+const fmtOf = id => FORMATS.find(f => f.id === id) || FORMATS[0];
+let raf = 0, thumbT = 0, saveT = 0, playing = false;
+const previewScale = fmt => Math.min(1, 1600 / Math.max(fmt.w, fmt.h));
+function render() {
+  raf = 0; if (playing) return;
+  const fmt = fmtOf(st.format), k = previewScale(fmt), W = Math.round(fmt.w * k), H = Math.round(fmt.h * k);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; fitStage(); }
+  cx.setTransform(k, 0, 0, k, 0, 0);
+  draw(cx, st, fmt, { safe: showSafe, sel: selId, marks: checkOpen ? issues.flatMap(i => i.boxes || []) : null });
+}
+function schedule() { if (!raf) raf = requestAnimationFrame(render); }
+function fitStage() {
+  const fmt = fmtOf(st.format), a = $('#board-area');
+  const aw = a.clientWidth - 56, ah = a.clientHeight - 56;
+  const s = Math.max(.04, Math.min(aw / fmt.w, ah / fmt.h));
+  cv.style.width = Math.round(fmt.w * s) + 'px'; cv.style.height = Math.round(fmt.h * s) + 'px';
+}
+function thumbsSoon() { clearTimeout(thumbT); thumbT = setTimeout(renderThumbs, 120); }
+function renderThumbs() {
+  const fmt = fmtOf(st.format), s = Math.min(150 / fmt.w, 108 / fmt.h);
+  $$('#tpl-grid .tpl').forEach(b => {
+    const cvs = b.querySelector('canvas'), q = 2;
+    cvs.width = Math.round(fmt.w * s * q); cvs.height = Math.round(fmt.h * s * q);
+    cvs.style.width = fmt.w * s + 'px'; cvs.style.height = fmt.h * s + 'px';
+    const x = cvs.getContext('2d'); x.setTransform(s * q, 0, 0, s * q, 0, 0);
+    const id = b.dataset.id, f = TEMPLATES[id].list && !parseList(st.fields.list).length ? { ...st.fields, list: TEMPLATES_SAMPLE[id].list } : st.fields;
+    draw(x, { ...st, template: id, fields: f, extras: [] }, fmt, null);
+  });
+  renderVarThumbs();
+}
+function saveSoon() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    const strip = o => JSON.parse(JSON.stringify(o, (k, v) => (k === '_bb' ? undefined : v)));
+    if (!store.set(KEY, strip(st))) {
+      const lite = strip(st); lite.photo = null; lite.extras = lite.extras.filter(e => e.kind !== 'image');
+      store.set(KEY, lite);
+    }
+    syncPlan();
+  }, 500);
+}
+function commit(opts = {}) {
+  schedule(); thumbsSoon(); saveSoon(); loadFonts(); histTouch(); checkSoon();
+  if (opts.ui !== false) syncUi();
+}
+
+/* ---------- ui build and sync ---------- */
+function buildUi() {
+  let grp = '';
+  $('#fmt-grid').innerHTML = FORMATS.map(f => {
+    const k = 22 / Math.max(f.w, f.h), gw = Math.max(6, Math.round(f.w * k)), gh = Math.max(6, Math.round(f.h * k));
+    const head = f.group !== grp ? `<div class="fmt-group">${(grp = f.group)}</div>` : '';
+    return head + `<button class="fmt" type="button" data-id="${f.id}" aria-pressed="false"><i class="glyph" style="width:${gw}px;height:${gh}px"></i><span><b>${f.name}</b><small>${fmtDims(f)}</small></span></button>`;
+  }).join('');
+  $('#tpl-grid').innerHTML = ORDER.map(id => `<button class="tpl" type="button" data-id="${id}" aria-pressed="false"><div class="thumb"><canvas aria-hidden="true"></canvas></div><span>${TEMPLATES[id].name}</span></button>`).join('');
+  $('#pair-grid').innerHTML = PAIRS.map((p, i) => `<button class="pair" type="button" data-i="${i}" aria-pressed="false"><b style="font-family:${fam(p.head)};font-weight:${p.hw}">${p.name}</b><small style="font-family:${fam(p.body)}">${p.head} + ${p.body}</small></button>`).join('');
+  $('#emoji-row').innerHTML = EMOJI.map(e => `<button type="button" data-e="${e}" aria-label="Add ${e}">${e}</button>`).join('');
+  drawThemeGrid();
+}
+function drawThemeGrid() {
+  const list = [...(brand ? [{ id: 'brand', name: 'My brand', ...brand.colors, mine: true }] : []), ...logoThemes.map((t, i) => ({ id: 'logo' + i, name: 'From your logo', ...t, fromLogo: true })), ...THEMES];
+  $('#theme-grid').innerHTML = list.map(t => `<button class="sw${t.mine ? ' brand' : ''}${t.fromLogo ? ' logo' : ''}" type="button" data-id="${t.id}" aria-label="${t.name} colors" aria-pressed="false" title="${t.name}" style="background:linear-gradient(135deg,${t.bg1},${t.bg2})"><i style="background:${t.accent}"></i></button>`).join('');
+  $('#brand-hint').textContent = brand ? 'Your brand is saved in this browser. Saving again replaces it.' : 'Keeps your colors, fonts, logo and handle in this browser so you can reuse them.';
+}
+function syncUi() {
+  const fmt = fmtOf(st.format);
+  if (refreshLogoThemes()) drawThemeGrid();
+  updateCapCount();
+  $$('#fmt-grid .fmt').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === st.format));
+  $$('#tpl-grid .tpl').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === st.template));
+  $$('#pair-grid .pair').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === st.fontPair));
+  $$('#theme-grid .sw').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === st.theme));
+  $$('.seg [data-bg]').forEach(b => b.setAttribute('aria-pressed', b.dataset.bg === st.bgMode));
+  $('#dims').textContent = `${fmt.w} × ${fmt.h} px · ${fmt.ratio}`;
+  $('#tpl-hint').hidden = !(TEMPLATES[st.template].usesPhoto && !st.photo);
+  for (const k of ['headline', 'sub', 'badge', 'cta', 'handle', 'list']) { const el = $('#f-' + k); if (document.activeElement !== el) el.value = st.fields[k] || ''; }
+  $('#list-hint').textContent = TEMPLATES[st.template].list && !parseList(st.fields.list).length ? 'This layout shows your list. Add at least one line.' : 'For the Menu, Opening hours and Numbered list layouts, and for carousels. Put a price or time after a dash.';
+  $('#r-headscale').value = st.headScale || 100; $('#o-headscale').textContent = (st.headScale || 100) + '%';
+  $('#photo-pos').hidden = !st.photo; $('#r-px').value = st.photoX ?? 50; $('#r-py').value = st.photoY ?? 50; $('#r-pz').value = st.photoZoom || 100; $('#o-pz').textContent = (st.photoZoom || 100) + '%';
+  if (document.activeElement !== $('#f-caption')) $('#f-caption').value = st.caption || '';
+  if (document.activeElement !== $('#f-alt')) $('#f-alt').value = st.alt || '';
+  $('#ai-brand-row').hidden = !brand; $('#pl-brand-row').hidden = !brand;
+  for (const [k, id] of [['bg1', 'c-bg1'], ['bg2', 'c-bg2'], ['text', 'c-text'], ['accent', 'c-accent']]) $('#' + id).value = st.colors[k];
+  $('#c-bg2').disabled = st.bgMode === 'solid'; $('#angle-fld').hidden = st.bgMode === 'solid';
+  $('#r-angle').value = st.angle; $('#o-angle').textContent = st.angle + '°';
+  $('#r-overlay').value = st.overlay; $('#o-overlay').textContent = st.overlay + '%';
+  $('#r-logosize').value = st.logoSize; $('#o-logosize').textContent = st.logoSize + '%'; $('#s-logopos').value = st.logoPos;
+  for (const [k, thumb, rm] of [['photo', '#photo-thumb', '#rm-photo'], ['logo', '#logo-thumb', '#rm-logo']]) {
+    const t = $(thumb); t.hidden = !st[k]; if (st[k]) t.src = st[k]; $(rm).hidden = !st[k];
+  }
+  $('#logo-opts').hidden = !st.logo;
+  const list = $('#ex-list');
+  list.innerHTML = st.extras.map(e => `<li><button type="button" data-id="${e.id}" aria-pressed="${e.id === selId}"><span>${e.kind === 'text' ? esc(e.text || 'Text') : e.kind === 'qr' ? 'QR code: ' + esc(e.text || 'no link yet') : 'Image'}</span></button></li>`).join('');
+  const sel = st.extras.find(e => e.id === selId);
+  $('#ex-edit').hidden = !sel;
+  if (sel) {
+    $('#ex-text-fld').hidden = sel.kind === 'image'; $('#ex-text-lbl').textContent = sel.kind === 'qr' ? 'Link' : 'Text'; $('#ex-color-row').hidden = sel.kind !== 'text';
+    if (document.activeElement !== $('#ex-text')) $('#ex-text').value = sel.text || '';
+    $('#ex-size').value = sel.size * 100; $('#o-exsize').textContent = Math.round(sel.size * 100);
+    $('#ex-color').value = sel.color || '#ffffff'; $('#ex-weight').value = String(sel.weight || 700);
+  }
+  cv.style.touchAction = st.extras.length ? 'none' : 'auto';
+}
+
+/* ---------- actions ---------- */
+function setFormat(id) { st.format = id; commit(); fitStage(); }
+function setTemplate(id) {
+  st.template = id;
+  const sample = TEMPLATES_SAMPLE[id] || {};
+  for (const k of Object.keys(sample)) if (!st.touched[k]) st.fields[k] = sample[k] ?? '';
+  if (TEMPLATES[id].list && !parseList(st.fields.list).length) st.fields.list = sample.list || '';
+  commit();
+}
+function applyTheme(id) {
+  const t = id === 'brand' && brand ? { ...brand.colors, id } : /^logo\d$/.test(id) ? logoThemes[+id.slice(4)] : THEMES.find(x => x.id === id); if (!t) return;
+  const oldText = st.colors.text;
+  st.theme = id; st.colors = pickColors(t);
+  st.extras.forEach(e => { if (e.kind === 'text' && e.color === oldText) e.color = st.colors.text; });
+  if (id === 'brand') {
+    if (brand.fontPair != null) st.fontPair = brand.fontPair;
+    if (brand.handle) { st.fields.handle = brand.handle; st.touched.handle = true; }
+    if (brand.logoPos) st.logoPos = brand.logoPos;
+    if (brand.logoSize) st.logoSize = brand.logoSize;
+    if (brand.logo) { st.logo = brand.logo; loadImg(brand.logo).then(i => { IMG.logo = i; schedule(); thumbsSoon(); syncUi(); }); }
+  }
+  commit();
+}
+function addExtra(ex) { ex.id = uid(); st.extras.push(ex); selId = ex.id; commit(); }
+function selExtra() { return st.extras.find(e => e.id === selId); }
+
+function bind() {
+  $('#fmt-grid').addEventListener('click', e => { const b = e.target.closest('.fmt'); if (b) setFormat(b.dataset.id); });
+  $('#tpl-grid').addEventListener('click', e => { const b = e.target.closest('.tpl'); if (b) setTemplate(b.dataset.id); });
+  $('#theme-grid').addEventListener('click', e => { const b = e.target.closest('.sw'); if (b) applyTheme(b.dataset.id); });
+  $('#pair-grid').addEventListener('click', e => { const b = e.target.closest('.pair'); if (b) { st.fontPair = +b.dataset.i; commit(); } });
+  for (const k of ['headline', 'sub', 'badge', 'cta', 'handle', 'list']) $('#f-' + k).addEventListener('input', e => { st.fields[k] = e.target.value; st.touched[k] = true; commit({ ui: false }); if (k === 'list') $('#list-hint').textContent = TEMPLATES[st.template].list && !parseList(st.fields.list).length ? 'This layout shows your list. Add at least one line.' : 'For the Menu, Opening hours and Numbered list layouts, and for carousels. Put a price or time after a dash.'; });
+  $('#r-headscale').addEventListener('input', e => { st.headScale = +e.target.value; $('#o-headscale').textContent = st.headScale + '%'; commit({ ui: false }); });
+  for (const [id, k] of [['r-px', 'photoX'], ['r-py', 'photoY'], ['r-pz', 'photoZoom']]) $('#' + id).addEventListener('input', e => { st[k] = +e.target.value; if (k === 'photoZoom') $('#o-pz').textContent = st[k] + '%'; commit({ ui: false }); });
+  for (const [k, id] of [['bg1', 'c-bg1'], ['bg2', 'c-bg2'], ['text', 'c-text'], ['accent', 'c-accent']]) $('#' + id).addEventListener('input', e => { const old = st.colors[k]; st.colors[k] = e.target.value; st.theme = 'custom'; if (k === 'text') st.extras.forEach(x => { if (x.kind === 'text' && x.color === old) x.color = e.target.value; }); commit(); });
+  $$('.seg [data-bg]').forEach(b => b.addEventListener('click', () => { st.bgMode = b.dataset.bg; commit(); }));
+  $('#r-angle').addEventListener('input', e => { st.angle = +e.target.value; commit(); });
+  $('#r-overlay').addEventListener('input', e => { st.overlay = +e.target.value; commit(); });
+  $('#r-logosize').addEventListener('input', e => { st.logoSize = +e.target.value; commit(); });
+  $('#s-logopos').addEventListener('change', e => { st.logoPos = e.target.value; commit(); });
+  $('#in-photo').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; const d = await readImage(f, 1800, 'image/jpeg'); if (!d) return toast('That file could not be read as an image.'); st.photo = d; IMG.photo = await loadImg(d); commit(); });
+  $('#in-logo').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; const d = await readImage(f, 700, 'image/png'); if (!d) return toast('That file could not be read as an image.'); st.logo = d; IMG.logo = await loadImg(d); commit(); if (logoThemes.length) toast('Colors from your logo are suggested under Colors and type.'); });
+  $('#rm-photo').addEventListener('click', () => { st.photo = null; IMG.photo = null; st.photoX = st.photoY = 50; st.photoZoom = 100; commit(); });
+  $('#rm-logo').addEventListener('click', () => { st.logo = null; IMG.logo = null; commit(); });
+  $('#save-brand').addEventListener('click', saveBrand);
+  $('#add-text').addEventListener('click', () => addExtra({ kind: 'text', text: 'New text', x: .5, y: .5, size: .07, color: st.colors.text, weight: 700, font: 'head' }));
+  $('#emoji-row').addEventListener('click', e => { const b = e.target.closest('button'); if (b) addExtra({ kind: 'text', text: b.dataset.e, x: .5, y: .5, size: .12, color: '#ffffff', weight: 400, font: 'body' }); });
+  $('#in-extra').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    const d = await readImage(f, 900, f.type === 'image/jpeg' ? 'image/jpeg' : 'image/png'); if (!d) return toast('That file could not be read as an image.');
+    const id = uid(); IMG.ex[id] = await loadImg(d); st.extras.push({ id, kind: 'image', src: d, x: .5, y: .5, size: .18 }); selId = id; commit();
+  });
+  $('#ex-list').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { selId = b.dataset.id; syncUi(); schedule(); } });
+  $('#ex-text').addEventListener('input', e => { const s = selExtra(); if (s) { s.text = e.target.value; commit({ ui: false }); const b = $(`#ex-list button[data-id="${s.id}"] span`); if (b) b.textContent = s.kind === 'qr' ? 'QR code: ' + (s.text || 'no link yet') : s.text || 'Text'; } });
+  $('#ex-size').addEventListener('input', e => { const s = selExtra(); if (s) { s.size = +e.target.value / 100; $('#o-exsize').textContent = e.target.value; commit({ ui: false }); } });
+  $('#ex-color').addEventListener('input', e => { const s = selExtra(); if (s) { s.color = e.target.value; commit({ ui: false }); } });
+  $('#ex-weight').addEventListener('change', e => { const s = selExtra(); if (s) { s.weight = +e.target.value; commit({ ui: false }); } });
+  $('#ex-del').addEventListener('click', delExtra);
+  $('#chk-safe').addEventListener('change', e => { showSafe = e.target.checked; schedule(); });
+
+  /* reset needs a second click: confirm() is not available in every viewer */
+  let rt = 0; const rb = $('#btn-reset');
+  rb.addEventListener('click', () => {
+    const rl = $('#reset-lbl');
+    if (!rb.classList.contains('confirm')) { rb.classList.add('confirm'); rl.textContent = 'Click again to clear'; rt = setTimeout(() => { rb.classList.remove('confirm'); rl.textContent = 'Start over'; }, 3000); return; }
+    clearTimeout(rt); rb.classList.remove('confirm'); rl.textContent = 'Start over';
+    st = fresh(); selId = null; IMG.photo = IMG.logo = null; IMG.ex = {}; vars = []; varSel = -1; activePlan = -1; scratch = null; renderVars(); updateBanner(); renderPlanList(); commit(); fitStage(); histReset();
+  });
+
+  /* dragging stickers and text on the preview */
+  let drag = null;
+  const pt = e => { const r = cv.getBoundingClientRect(), f = fmtOf(st.format); return { x: (e.clientX - r.left) * f.w / r.width, y: (e.clientY - r.top) * f.h / r.height, f }; };
+  cv.addEventListener('pointerdown', e => {
+    if (playing) return;
+    const p = pt(e); let hit = null;
+    for (let i = st.extras.length - 1; i >= 0; i--) { const b = st.extras[i]._bb, pad = p.f.w * .015; if (b && p.x >= b.x - pad && p.x <= b.x + b.w + pad && p.y >= b.y - pad && p.y <= b.y + b.h + pad) { hit = st.extras[i]; break; } }
+    selId = hit ? hit.id : null; syncUi(); schedule();
+    if (hit) { drag = { id: hit.id, dx: hit.x - p.x / p.f.w, dy: hit.y - p.y / p.f.h }; cv.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+    const img = IMG.photo, ph = img && prepare(st, p.f, IMG).layers.find(l => l.t === 'photo');
+    if (ph && p.x >= ph.x && p.x <= ph.x + ph.w && p.y >= ph.y && p.y <= ph.y + ph.h) {
+      const k = Math.max(ph.w / img.width, ph.h / img.height) * clamp((st.photoZoom || 100) / 100, 1, 3);
+      drag = { photo: true, sx: p.x, sy: p.y, fx: st.photoX ?? 50, fy: st.photoY ?? 50, ex: img.width * k - ph.w, ey: img.height * k - ph.h };
+      cv.setPointerCapture(e.pointerId); e.preventDefault();
+    }
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!drag) return; const p = pt(e);
+    if (drag.photo) {
+      if (drag.ex > 1) st.photoX = Math.round(clamp(drag.fx - (p.x - drag.sx) / drag.ex * 100, 0, 100));
+      if (drag.ey > 1) st.photoY = Math.round(clamp(drag.fy - (p.y - drag.sy) / drag.ey * 100, 0, 100));
+      return schedule();
+    }
+    const s = st.extras.find(x => x.id === drag.id); if (!s) return;
+    s.x = clamp(p.x / p.f.w + drag.dx, 0, 1); s.y = clamp(p.y / p.f.h + drag.dy, 0, 1); schedule();
+  });
+  const end = () => { if (drag) { const wasPhoto = drag.photo; drag = null; commit({ ui: !!wasPhoto }); } };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  cv.addEventListener('keydown', e => {
+    const s = selExtra(); if (!s) return;
+    const step = e.shiftKey ? .05 : .01, mv = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+    if (mv) { s.x = clamp(s.x + mv[0], 0, 1); s.y = clamp(s.y + mv[1], 0, 1); e.preventDefault(); commit({ ui: false }); }
+    else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); delExtra(); }
+  });
+
+  new ResizeObserver(fitStage).observe($('#board-area'));
+  $('#btn-export').addEventListener('click', openExport);
+  $('#m-close').addEventListener('click', closeExport);
+  $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeExport(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeExport(); });
+}
+function delExtra() { const i = st.extras.findIndex(e => e.id === selId); if (i < 0) return; delete IMG.ex[selId]; st.extras.splice(i, 1); selId = null; commit(); }
+
+/* ---------- toast ---------- */
+let toastT = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2800); }
+
+/* ---------- export ---------- */
+const slug = s => (s || 'post').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'post';
+const baseName = () => slug(st.fields.headline);
+async function renderStateBlob(s, fmt, mime, imgs) {
+  await loadFonts(s); if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const c = document.createElement('canvas'); c.width = fmt.w; c.height = fmt.h;
+  draw(c.getContext('2d'), { ...s, extras: s.extras.map(e => ({ ...e })) }, fmt, null, { imgs });
+  return new Promise(res => c.toBlob(res, mime, .92));
+}
+function renderBlob(fmt, mime) { return renderStateBlob(st, fmt, mime, IMG); }
+const dlPromise = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+async function saveFile(blob, filename) {
+  const cap = await dlPromise;
+  if (cap) {
+    try { await cap.save({ filename, data: blob }); toast('Saved ' + filename); return true; }
+    catch (e) { if (e && e.code === 'declined') return false; if (e && e.code === 'rate_limited') { toast('Another save is waiting. Try again in a moment.'); return false; } }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000); toast('Downloading ' + filename); return true;
+}
+let exp = { url: null, blob: null };
+async function openExport() {
+  const fmt = fmtOf(st.format); $('#modal').hidden = false; $('#m-status').textContent = 'Rendering…';
+  $('#m-meta').textContent = `${fmt.name} · ${fmt.w} × ${fmt.h} px`;
+  let grp = '';
+  $('#m-sizes').innerHTML = FORMATS.map(f => (f.group !== grp ? `<span class="fmt-group">${(grp = f.group)}</span>` : '') + `<label class="chip"><input type="checkbox" value="${f.id}"${f.group === 'Social' ? ' checked' : ''}>${f.name}</label>`).join('');
+  $('#m-pdf').hidden = !fmt.pdf;
+  const warns = issues.filter(i => !i.info);
+  $('#m-check').hidden = !warns.length; $('#m-check').textContent = warns.length ? 'Before you post: ' + warns.map(i => i.title.charAt(0).toLowerCase() + i.title.slice(1)).join('; ') + '. Open the check above the preview for details.' : '';
+  const slides = CAROUSEL_FMTS.includes(fmt.id) ? carouselStates() : null;
+  $('#m-car').hidden = !slides;
+  if (slides) {
+    const n = parseList(st.fields.list).length;
+    $('#m-car-info').textContent = `Your list becomes ${slides.length} slides: a cover, ${n} list slides${st.fields.cta ? ' and a closing slide with your button text' : ''}.`;
+    renderCarStrip(slides, fmt);
+  }
+  const vm = videoMime(), vOk = !!vm && fmt.group === 'Social';
+  $('#m-video-row').hidden = !vOk; $('#m-video-note').hidden = !vOk;
+  $('#m-video-note').textContent = vm && vm.startsWith('video/webm') ? 'This browser saves WebM video. Instagram and TikTok want MP4, so record in Chrome, Edge or Safari, or convert the file.' : 'A silent MP4 of the design animating in. Add music in the app when you post.';
+  const blob = await renderBlob(fmt, 'image/png'); if (exp.url) URL.revokeObjectURL(exp.url);
+  exp = { blob, url: URL.createObjectURL(blob) };
+  const mi = $('#m-img'); mi.onerror = () => { const fr = new FileReader(); fr.onload = () => { mi.onerror = null; mi.src = fr.result; }; fr.readAsDataURL(blob); };
+  mi.src = exp.url;
+  $('#m-status').textContent = `PNG · ${(blob.size / 1024).toFixed(0)} KB`; $('#m-png').focus();
+}
+function closeExport() { $('#modal').hidden = true; }
+function bindExport() {
+  $('#m-car-zip').addEventListener('click', () => saveCarousel('zip'));
+  $('#m-car-pdf').addEventListener('click', () => saveCarousel('pdf'));
+  $('#m-png').addEventListener('click', () => { if (exp.blob) saveFile(exp.blob, `${baseName()}-${st.format}.png`); });
+  $('#m-jpg').addEventListener('click', async () => { const b = await renderBlob(fmtOf(st.format), 'image/jpeg'); saveFile(b, `${baseName()}-${st.format}.jpg`); });
+  $('#m-copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': exp.blob })]); toast('Image copied'); }
+    catch (e) { toast('Copying is not available here. Use Save, or press and hold the image.'); }
+  });
+  $('#m-zip').addEventListener('click', async () => {
+    const ids = $$('#m-sizes input:checked').map(i => i.value); if (!ids.length) return toast('Pick at least one size.');
+    const files = [], btn = $('#m-zip'); btn.disabled = true;
+    for (let i = 0; i < ids.length; i++) {
+      const f = fmtOf(ids[i]); $('#m-status').textContent = `Rendering ${i + 1} of ${ids.length}: ${f.name}`;
+      const b = await renderBlob(f, 'image/png'); files.push({ name: `${baseName()}-${f.id}-${f.w}x${f.h}.png`, data: new Uint8Array(await b.arrayBuffer()) });
+      await wait(0);
+    }
+    const zip = makeZip(files); $('#m-status').textContent = `ZIP · ${(zip.size / 1024).toFixed(0)} KB`; btn.disabled = false;
+    saveFile(zip, `${baseName()}-all-sizes.zip`);
+  });
+}
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(), parts = [], cd = [], d = new Date();
+  const dt = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), dd = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  let off = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), crc = crc32(f.data), sz = f.data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true); lh.setUint16(10, dt, true); lh.setUint16(12, dd, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, sz, true); lh.setUint32(22, sz, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, name, f.data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true); ch.setUint16(12, dt, true); ch.setUint16(14, dd, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, sz, true); ch.setUint32(24, sz, true); ch.setUint16(28, name.length, true); ch.setUint32(42, off, true);
+    cd.push(ch.buffer, name); off += 30 + name.length + sz;
+  }
+  const cdSize = cd.reduce((a, b) => a + b.byteLength, 0), end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, off, true);
+  return new Blob([...parts, ...cd, end.buffer], { type: 'application/zip' });
+}
+
+/* ---------- describe your ad (runs on the viewer's own Claude, so it only appears where that exists) ---------- */
+let askClaude = null, aiCtl = null, vars = [], varSel = -1;
+const samplePromise = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('sample').catch(() => null) : Promise.resolve(null);
+const HEX = /^#[0-9a-f]{6}$/i;
+const cleanLine = (v, max) => typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max) : '';
+const cleanList = v => (Array.isArray(v) ? v.join('\n') : typeof v === 'string' ? v : '').split('\n').map(l => cleanLine(l, 80)).filter(Boolean).slice(0, 12).join('\n');
+const cleanText = (v, max) => typeof v === 'string' ? v.replace(/\r/g, '').replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim().slice(0, max) : '';
+function contrast(a, b) { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); }
+function safeColors(c) {
+  const out = { bg1: c.bg1.toLowerCase(), bg2: c.bg2.toLowerCase(), text: c.text.toLowerCase(), accent: c.accent.toLowerCase() };
+  const worst = t => Math.min(contrast(t, out.bg1), contrast(t, out.bg2));
+  if (worst(out.text) < 4.5) out.text = worst('#ffffff') >= worst('#14110f') ? '#ffffff' : '#14110f';
+  if (worst(out.accent) < 2.2) out.accent = out.text;
+  return out;
+}
+/* Claude's reply is untrusted data: only whitelisted ids, hex colors and trimmed strings get through */
+function cleanDesign(o) {
+  if (!o || typeof o !== 'object' || !Object.prototype.hasOwnProperty.call(TEMPLATES, o.template) || TEMPLATES[o.template].hidden) return null;
+  const f = o.fields && typeof o.fields === 'object' ? o.fields : {};
+  const fields = { badge: cleanLine(f.badge, 16), headline: cleanLine(f.headline, 60), sub: cleanLine(f.sub, 120), cta: cleanLine(f.cta, 24), handle: cleanLine(f.handle, 40), list: cleanList(f.list) };
+  if (!fields.headline) return null;
+  const col = o.colors && typeof o.colors === 'object' && ['bg1', 'bg2', 'text', 'accent'].every(k => HEX.test(o.colors[k] || '')) ? safeColors(o.colors) : null;
+  const theme = THEMES.some(t => t.id === o.theme) ? o.theme : 'ember';
+  return { template: o.template, colors: col, theme: col ? null : theme,
+    fontPair: Number.isInteger(o.fontPair) && o.fontPair >= 0 && o.fontPair < PAIRS.length ? o.fontPair : 0,
+    format: FORMATS.some(x => x.id === o.format) ? o.format : null, fields, caption: cleanText(o.caption, 600) };
+}
+function resolveDesign(d, wantBrand) {
+  const useBrand = !!(brand && (wantBrand ?? $('#ai-brand').checked));
+  const colors = useBrand ? { ...brand.colors } : d.colors || pickColors(THEMES.find(t => t.id === d.theme) || THEMES[0]);
+  return { template: d.template, colors, fontPair: useBrand && brand.fontPair != null ? brand.fontPair : d.fontPair,
+    fields: { ...d.fields, handle: d.fields.handle || defaultHandle() }, theme: useBrand ? 'brand' : d.colors ? 'custom' : d.theme };
+}
+function applyDesign(i) {
+  const d = vars[i]; if (!d) return;
+  const r = resolveDesign(d), oldText = st.colors.text;
+  st.template = r.template; st.colors = r.colors; st.theme = r.theme; st.bgMode = 'gradient'; st.fontPair = r.fontPair;
+  st.fields = r.fields; st.touched = { badge: true, headline: true, sub: true, cta: true, handle: true }; st.caption = d.caption || '';
+  st.extras.forEach(e => { if (e.kind === 'text' && e.color === oldText) e.color = st.colors.text; });
+  if (d.format) st.format = d.format;
+  varSel = i; commit(); fitStage(); markVars();
+}
+function renderVars() {
+  const box = $('#ai-vars'); box.hidden = !vars.length;
+  box.innerHTML = vars.map((d, i) => `<button class="tpl" type="button" data-i="${i}" aria-pressed="${i === varSel}"><div class="thumb"><canvas aria-hidden="true"></canvas></div><span>${i + 1}. ${TEMPLATES[d.template].name}</span></button>`).join('');
+  renderVarThumbs();
+}
+function markVars() { $$('#ai-vars .tpl').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === varSel)); }
+function renderVarThumbs() {
+  const fmt = fmtOf(st.format), s = Math.min(150 / fmt.w, 108 / fmt.h);
+  $$('#ai-vars .tpl').forEach(b => {
+    const d = vars[+b.dataset.i]; if (!d) return;
+    const r = resolveDesign(d), cvs = b.querySelector('canvas'), q = 2;
+    cvs.width = Math.round(fmt.w * s * q); cvs.height = Math.round(fmt.h * s * q); cvs.style.width = fmt.w * s + 'px'; cvs.style.height = fmt.h * s + 'px';
+    const x = cvs.getContext('2d'); x.setTransform(s * q, 0, 0, s * q, 0, 0);
+    const tmp = { ...st, template: r.template, colors: r.colors, fontPair: r.fontPair, fields: r.fields, bgMode: 'gradient', extras: [] };
+    draw(x, tmp, fmt, null); loadFonts(tmp);
+  });
+}
+function buildAiPrompt(request) {
+  const fmt = fmtOf(st.format);
+  return `You are the art director inside Postbench, a tool that builds social media ads for small businesses from a fixed set of layouts. Turn the request below into 3 different design options.
+
+REQUEST (written by the business owner):
+"""
+${request}
+"""
+
+BUSINESS DETAILS (facts you may use)
+${profileBlock()}
+
+PLATFORM
+Set "format" to one of ${FORMATS.map(f => f.id).join(', ')} ONLY if the request names a platform or shape (Instagram post = ig-post, Instagram portrait = ig-portrait, story, reel or TikTok = story, Facebook post = fb-post, Facebook cover = fb-cover, X or Twitter = x-post, LinkedIn banner = li-banner, YouTube thumbnail = yt-thumb, Pinterest = pin, Google display ads = ad-mrec, ad-leader, ad-half or ad-sky, flyer or poster = a4 or a5). Otherwise set it to null. The current size is ${fmt.id}.
+
+LAYOUTS (field "template", use the id)
+${ORDER.map(id => `- ${id}: ${LAYOUT_HELP[id]}`).join('\n')}
+
+COLOR THEMES (field "theme", use the id)
+${THEMES.map(t => `- ${t.id}: background ${t.bg1} to ${t.bg2}, text ${t.text}, accent ${t.accent}`).join('\n')}
+If the request names or clearly implies brand colors (for example "black and gold"), set "theme" to null and give "colors": {"bg1","bg2","text","accent"} as 6-digit hex values like "#112233", with strong contrast between text and both backgrounds. Otherwise set "colors" to null.
+
+FONT PAIRS (field "fontPair", the number)
+${PAIRS.map((p, i) => `- ${i}: ${p.name} (${p.head} headings)`).join('\n')}
+Studio is friendly and modern, Poster is bold and geometric, Editorial is a refined serif, Impact is tall loud capitals, Warm is a soft cozy serif, Condensed is sporty and strong, Geometric is clean and modern. Choose by mood.
+
+COPY RULES
+- ${langRule('Write all copy in the same language as the request.')}
+- Never invent facts. Use only facts from the request and the business details. Do not make up prices, discounts, dates, times, addresses, ratings, awards, years in business, testimonials or guarantees. If a layout needs a detail you do not have, pick a different layout or write copy that works without it.
+- Limits: badge up to 14 characters (may be ""), headline up to 44 characters and at most 7 words, sub up to 100 characters in one or two short sentences (may be ""), cta up to 20 characters as a verb phrase such as "Book now" ("" for none), handle: the social handle from the business details or the request, else "". list: only for the menu, hours and steps layouts, one item per line separated by \\n, at most 8 lines of up to 60 characters; otherwise "".
+- The headline is a finished line, not a label. No emoji in badge, headline or sub.
+- caption: the text to post with the image, up to 350 characters, in the owner's voice, ending with 3 to 6 relevant hashtags on their own line. The same fact rules apply.
+
+THE 3 OPTIONS MUST DIFFER
+Use three different layouts and three different looks (themes or colors, and font pairs). Prefer bold, clean, event, frame and stat when the request fits them, and menu, hours or steps when it lists items, prices, opening hours or tips. Use photo or spot only for physical products, food, places or people.
+
+Reply with ONLY this JSON and no other text, with exactly 3 objects in "options":
+{"options":[{"format":null,"template":"bold","theme":"ember","colors":null,"fontPair":1,"fields":{"badge":"","headline":"","sub":"","cta":"","handle":"","list":""},"caption":""}]}`;
+}
+const setAi = t => { $('#ai-status').textContent = t; };
+function aiBusy(on) { $('#ai-go').disabled = on; $('#ai-stop').hidden = !on; $('#ai-prompt').disabled = on; }
+const AI_GONE = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
+function setAiAvailable(on) {
+  if (!on) askClaude = null;
+  for (const id of ['#sec-ai', '#plan-ai', '#cap-tools', '#rv-ai-row']) $(id).hidden = !on;
+}
+function aiError(e) { handleAiError(e, setAi); }
+function handleAiError(e, set) {
+  const code = e && e.code;
+  if (code === 'cancelled') return set('Stopped.');
+  if (AI_GONE.includes(code)) { setAiAvailable(false); set(''); return toast('Claude is not available for this page.'); }
+  set({
+    rate_limited: 'Too many requests, or your Claude usage limit is reached. Try again in a few minutes.',
+    session_expired: 'Sign in to Claude again, then try once more.',
+    refused: 'Claude could not make an ad from that request. Describe the business and the offer in different words.',
+    empty_completion: 'Claude sent nothing back. Try again with a bit more detail.',
+    invalid_json: 'Claude\'s answer could not be turned into designs. Press Create again.',
+    prompt_too_large: 'That request is too long. Shorten it and try again.',
+  }[code] || 'Something went wrong while asking Claude. Try again.');
+}
+async function runAi() {
+  const text = $('#ai-prompt').value.trim();
+  if (!askClaude) return;
+  if (!text) { setAi('Say what you want to promote first, for example the business, the offer and the mood.'); return $('#ai-prompt').focus(); }
+  aiCtl = new AbortController(); aiBusy(true); setAi('Claude is designing your options. This can take up to a minute.');
+  try {
+    const res = await askClaude.json(buildAiPrompt(text), { signal: aiCtl.signal, cache: false, onText: () => setAi('Writing your options...') });
+    const list = Array.isArray(res) ? res : res && Array.isArray(res.options) ? res.options : [];
+    const designs = list.map(cleanDesign).filter(Boolean).slice(0, 3);
+    if (!designs.length) throw { code: 'invalid_json' };
+    const fmt = (designs.find(d => d.format) || {}).format || null; designs.forEach(d => { d.format = fmt; });
+    vars = designs; varSel = -1; renderVars(); applyDesign(0);
+    setAi(`${designs.length} options ready. Click one to switch, then edit anything you like.`);
+  } catch (e) { aiError(e); }
+  finally { aiBusy(false); aiCtl = null; }
+}
+function bindAi() {
+  const pick = e => {
+    const b = e.target.closest('.eg'); if (!b) return;
+    $('#ai-prompt').value = b.dataset.s != null ? starters[+b.dataset.s] : occasionPrompt(occList[+b.dataset.o]);
+    showIdeas(false); $('#ai-prompt').focus();
+  };
+  $('#ai-examples').addEventListener('click', pick); $('#ai-occasions').addEventListener('click', pick);
+  $('#ai-prompt').addEventListener('input', e => showIdeas(!e.target.value.trim()));
+  $('#ai-go').addEventListener('click', runAi);
+  $('#ai-stop').addEventListener('click', () => { if (aiCtl) aiCtl.abort(); });
+  $('#ai-prompt').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); runAi(); } });
+  $('#ai-vars').addEventListener('click', e => { const b = e.target.closest('.tpl'); if (b) applyDesign(+b.dataset.i); });
+  $('#ai-brand').addEventListener('change', renderVarThumbs);
+  $('#f-caption').addEventListener('input', e => { st.caption = e.target.value; saveSoon(); });
+  $('#copy-caption').addEventListener('click', async () => {
+    const t = $('#f-caption'); if (!t.value.trim()) return toast('There is no caption to copy yet.');
+    try { await navigator.clipboard.writeText(t.value); toast('Caption copied'); }
+    catch (e) { t.focus(); t.select(); toast('Press Ctrl+C or Cmd+C to copy the selected text.'); }
+  });
+  $('#f-alt').addEventListener('input', e => { st.alt = e.target.value; saveSoon(); });
+  $('#copy-alt').addEventListener('click', async () => {
+    const t = $('#f-alt'); if (!t.value.trim()) return toast('There is no alt text to copy yet.');
+    try { await navigator.clipboard.writeText(t.value); toast('Alt text copied'); }
+    catch (e) { t.focus(); t.select(); toast('Press Ctrl+C or Cmd+C to copy the selected text.'); }
+  });
+  samplePromise.then(f => { if (typeof f === 'function' && typeof f.json === 'function') { askClaude = f; setAiAvailable(true); } });
+}
+
+/* ---------- business profile ---------- */
+const PKEY = 'postbench.profile.v1';
+const INDUSTRIES = [['', 'Choose one'], ['cafe', 'Café or restaurant'], ['salon', 'Hair salon or barber'], ['beauty', 'Beauty or spa'], ['fitness', 'Gym or fitness'], ['retail', 'Shop'], ['online', 'Online shop'], ['trades', 'Trades and home services'], ['pro', 'Professional services'], ['health', 'Health or clinic'], ['realestate', 'Real estate'], ['other', 'Something else']];
+const LANGS = ['English', 'Slovenian', 'Croatian', 'Serbian', 'German', 'Italian', 'French', 'Spanish', 'Portuguese', 'Dutch', 'Polish', 'Czech', 'Hungarian', 'Swedish'];
+const PFIELDS = ['name', 'what', 'industry', 'area', 'who', 'tone', 'lang', 'link', 'handle'];
+let profile = { name: '', what: '', industry: '', area: '', who: '', tone: 'Friendly', lang: '', link: '', handle: '' }, profT = 0;
+{ const saved = store.get(PKEY); if (saved && typeof saved === 'object') for (const k of PFIELDS) if (typeof saved[k] === 'string') profile[k] = saved[k]; }
+function saveProfile() { clearTimeout(profT); profT = setTimeout(() => store.set(PKEY, profile), 300); }
+function profileBlock() {
+  const p = profile, ind = (INDUSTRIES.find(i => i[0] === p.industry) || [])[1];
+  const rows = [['Business name', p.name], ['What they sell or do', p.what], ['Type of business', p.industry ? ind : ''], ['Town or area', p.area], ['Customers', p.who], ['Tone of voice', p.tone], ['Website or booking link', p.link], ['Social handle', p.handle]]
+    .map(([k, v]) => [k, cleanLine(v, 300)]).filter(r => r[1]);
+  return rows.length ? rows.map(r => `- ${r[0]}: ${r[1]}`).join('\n') : '- (none given)';
+}
+const langRule = fallback => profile.lang ? `Write all copy in ${profile.lang}.` : fallback;
+const defaultHandle = () => cleanLine(profile.handle, 40) || (brand && brand.handle) || '';
+function saveBrand() {
+  brand = { colors: { ...st.colors }, fontPair: st.fontPair, logo: st.logo, handle: (st.touched.handle && st.fields.handle) || profile.handle, logoPos: st.logoPos, logoSize: st.logoSize };
+  if (!store.set(BKEY, brand)) { brand.logo = null; store.set(BKEY, brand); }
+  st.theme = 'brand'; drawThemeGrid(); syncUi(); renderBrandPrev(); toast('Brand look saved in this browser');
+}
+function renderBrandPrev() {
+  const box = $('#bz-brand');
+  if (!brand) { box.textContent = 'No brand look saved yet.'; $('#bz-use-brand').hidden = true; return; }
+  const p = PAIRS[brand.fontPair] || PAIRS[0];
+  box.innerHTML = ['bg1', 'bg2', 'text', 'accent'].map(k => `<i style="background:${esc(brand.colors[k])}"></i>`).join('') + `<span>${esc(p.name)} fonts</span>` + (brand.logo ? `<img src="${esc(brand.logo)}" alt="Saved logo">` : '');
+  $('#bz-use-brand').hidden = false;
+}
+function bindProfile() {
+  $('#bz-industry').innerHTML = INDUSTRIES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+  $('#bz-lang').innerHTML = '<option value="">Same as I write</option>' + LANGS.map(l => `<option>${l}</option>`).join('');
+  $('#tr-lang').innerHTML = LANGS.map(l => `<option>${l}</option>`).join('');
+  for (const k of PFIELDS) {
+    const el = $('#bz-' + k); el.value = profile[k] || '';
+    el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', () => { profile[k] = el.value; saveProfile(); if (['industry', 'name', 'tone'].includes(k)) renderStarters(); });
+  }
+  $('#bz-save-brand').addEventListener('click', saveBrand);
+  $('#bz-use-brand').addEventListener('click', () => { applyTheme('brand'); setTab('create'); toast('Your brand look is applied'); });
+}
+
+/* ---------- tabs ---------- */
+const TABS = ['create', 'plan', 'biz'];
+function setTab(id) {
+  if (!TABS.includes(id)) id = 'create';
+  for (const t of TABS) { const b = $('#tab-' + t); b.setAttribute('aria-selected', String(t === id)); b.tabIndex = t === id ? 0 : -1; $('#pane-' + t).hidden = t !== id; }
+  if (matchMedia('(min-width: 861px)').matches) $('.rail').scrollTop = 0;
+  try { sessionStorage.setItem('postbench.tab', id); } catch (e) { /* storage blocked */ }
+}
+function bindTabs() {
+  TABS.forEach((t, i) => {
+    const b = $('#tab-' + t); b.addEventListener('click', () => setTab(t));
+    b.addEventListener('keydown', e => { const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (d) { const n = TABS[(i + d + TABS.length) % TABS.length]; setTab(n); $('#tab-' + n).focus(); } });
+  });
+  let start = 'create'; try { start = sessionStorage.getItem('postbench.tab') || 'create'; } catch (e) { /* storage blocked */ }
+  setTab(start);
+}
+
+/* ---------- ideas: starters by business type and upcoming occasions ---------- */
+const STARTERS = {
+  cafe: ['Instagram post introducing our seasonal menu, warm and cozy', 'Story telling people what is fresh out of the oven today, friendly', 'Facebook post asking which cake we should bake next, playful'],
+  salon: ['Instagram story inviting people to book an appointment this week, bold and dark', 'Post introducing our team and the services we offer, friendly', 'Facebook post with one hair care tip for winter, helpful'],
+  beauty: ['Instagram post about taking time for yourself with a treatment, calm and premium', 'Story inviting people to buy a gift voucher, warm', 'Post with one skincare tip, gentle and trustworthy'],
+  fitness: ['Instagram story inviting beginners to their first class, energetic', 'Post with a quick workout tip, bold', 'Facebook post introducing our trainers, friendly'],
+  retail: ['Instagram post showing new arrivals in the shop, fresh and bright', 'Story reminding people we are open this weekend, simple', 'Post asking customers to vote for their favorite product, playful'],
+  online: ['Instagram post for our best-selling product, clean and modern', 'Story explaining how ordering and delivery work, clear and friendly', 'Pinterest pin showing a product in everyday use, calm'],
+  trades: ['Facebook post saying we are taking new jobs in the area, trustworthy', 'Post with one home maintenance tip, practical', 'Instagram post showing a finished job, proud and clean'],
+  pro: ['LinkedIn banner for our firm, calm and trustworthy', 'LinkedIn post with one practical tip for small business owners', 'Facebook post inviting people to book a first call, professional'],
+  health: ['Facebook post reminding people to book a check-up, calm and caring', 'Instagram post introducing our team, friendly', 'Post with one simple health tip, trustworthy'],
+  realestate: ['Instagram post for a new property listing, premium', 'Facebook post offering a home valuation, trustworthy', 'Story with a tip for first-time buyers, helpful'],
+};
+const DEFAULT_STARTERS = ['Instagram story for my barbershop: 20% off haircuts this Friday, dark and bold', 'Facebook post announcing the new vegan lunch menu at Green Fork cafe, fresh and friendly', 'LinkedIn banner for my accounting firm, calm and trustworthy'];
+let starters = DEFAULT_STARTERS, occList = [];
+function easter(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1);
+}
+function nthWeekday(y, month, wd, n) { const d = new Date(y, month, 1); return new Date(y, month, 1 + ((wd - d.getDay() + 7) % 7) + (n - 1) * 7); }
+function occasionsFor(y) {
+  const bf = nthWeekday(y, 10, 4, 4); bf.setDate(bf.getDate() + 1);
+  return [['New Year', new Date(y, 0, 1)], ["Valentine's Day", new Date(y, 1, 14)], ["International Women's Day", new Date(y, 2, 8)], ['Easter', easter(y)],
+    ["Mother's Day (US and many countries)", nthWeekday(y, 4, 0, 2)], ["Father's Day (US, UK and others)", nthWeekday(y, 5, 0, 3)], ['First day of summer', new Date(y, 5, 21)],
+    ['Back to school', new Date(y, 8, 1)], ['Halloween', new Date(y, 9, 31)], ['Black Friday', bf], ['Cyber Monday', new Date(y, bf.getMonth(), bf.getDate() + 3)],
+    ['Christmas', new Date(y, 11, 25)], ["New Year's Eve", new Date(y, 11, 31)]].map(([name, date]) => ({ name, date }));
+}
+const today0 = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+const fmtDay = d => d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+function upcoming(days) { const t = today0(), y = t.getFullYear(); return [...occasionsFor(y), ...occasionsFor(y + 1)].filter(o => o.date >= t && o.date - t <= days * 864e5).sort((a, b) => a.date - b.date); }
+function untilText(d) { const n = Math.round((d - today0()) / 864e5); return n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`; }
+const occasionPrompt = o => `${o.name.replace(/ \(.*\)$/, '')} post${profile.name.trim() ? ' for ' + profile.name.trim() : ''}, ${(profile.tone || 'friendly').toLowerCase()}`;
+function showIdeas(on) { $('#ai-examples').hidden = !on; $('#ai-occasions').hidden = !on || !occList.length; }
+function renderStarters() {
+  starters = STARTERS[profile.industry] || DEFAULT_STARTERS; occList = upcoming(60).slice(0, 3);
+  $('#ai-examples').innerHTML = '<p class="sub-h">Ideas</p>' + starters.map((t, i) => `<button class="eg" type="button" data-s="${i}">${esc(t)}</button>`).join('');
+  $('#ai-occasions').innerHTML = '<p class="sub-h">Coming up</p>' + occList.map((o, i) => `<button class="eg" type="button" data-o="${i}">${esc(o.name)}<small>${esc(fmtDay(o.date))} · ${untilText(o.date)}</small></button>`).join('');
+  showIdeas(!$('#ai-prompt').value.trim());
+}
+
+/* ---------- month plan ---------- */
+const PLKEY = 'postbench.plan.v1';
+const PILLARS = { offer: 'Offer', product: 'Product', 'behind-the-scenes': 'Behind the scenes', tip: 'Tip', community: 'Community', occasion: 'Occasion', engagement: 'Question', review: 'Review', post: 'Post' };
+const DESIGN_KEYS = ['template', 'theme', 'colors', 'bgMode', 'angle', 'fontPair', 'overlay', 'fields', 'touched', 'caption', 'alt', 'photo', 'extras', 'headScale', 'photoX', 'photoY', 'photoZoom'];
+const ALL_TOUCHED = () => ({ badge: true, headline: true, sub: true, cta: true, handle: true, list: true });
+const clone = o => JSON.parse(JSON.stringify(o, (k, v) => (k === '_bb' ? undefined : v)));
+const snap = s => clone(Object.fromEntries(DESIGN_KEYS.map(k => [k, s[k]])));
+const pad2 = n => String(n).padStart(2, '0');
+const isoDay = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const parseDay = v => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; };
+const hasOwn = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+let plan = { format: 'ig-portrait', days: [1, 3, 5], items: [] }, activePlan = -1, scratch = null, plCtl = null, planT = 0, planThumbT = 0;
+const pimg = new Map();
+function loadPlan() {
+  const p = store.get(PLKEY) || {};
+  if (FORMATS.some(f => f.id === p.format && f.group === 'Social')) plan.format = p.format;
+  if (Array.isArray(p.days) && p.days.every(d => Number.isInteger(d) && d >= 0 && d < 7) && p.days.length) plan.days = p.days;
+  plan.items = (Array.isArray(p.items) ? p.items : []).filter(it => it && it.id && it.design && hasOwn(TEMPLATES, it.design.template) && parseDay(it.date) && it.design.fields);
+}
+function savePlan() {
+  clearTimeout(planT);
+  planT = setTimeout(() => {
+    if (store.set(PLKEY, plan)) return;
+    const lite = clone(plan); lite.items.forEach(it => { it.design.photo = null; it.design.extras = (it.design.extras || []).filter(e => e.kind !== 'image'); });
+    if (store.set(PLKEY, lite)) toast('Photos in your plan are too big to keep after this page closes. Save the plan as a ZIP.');
+  }, 400);
+}
+function syncPlan() {
+  if (activePlan < 0 || !plan.items[activePlan]) return;
+  plan.items[activePlan].design = snap(st);
+  if (fmtOf(st.format).group === 'Social') plan.format = st.format;
+  savePlan(); renderPlanList();
+}
+function flushPlan() { if (activePlan >= 0 && plan.items[activePlan]) { plan.items[activePlan].design = snap(st); savePlan(); } }
+const needsPhoto = it => !!(TEMPLATES[it.design.template].usesPhoto && !it.design.photo);
+async function loadDesignImages(d, target) {
+  target.photo = d.photo ? await loadImg(d.photo) : null;
+  const ex = {}; for (const e of d.extras || []) if (e.kind === 'image' && e.src) ex[e.id] = await loadImg(e.src);
+  target.ex = ex;
+}
+function planImgs(it) {
+  const d = it.design, key = (d.photo ? d.photo.length + d.photo.slice(-32) : '') + '|' + (d.extras || []).filter(e => e.kind === 'image').map(e => e.id).join(',');
+  let v = pimg.get(it.id);
+  if (!v || v.key !== key) { v = { key, imgs: { photo: null, ex: {}, logo: null } }; pimg.set(it.id, v); loadDesignImages(d, v.imgs).then(planThumbsSoon); }
+  v.imgs.logo = IMG.logo; return v.imgs;
+}
+function sortPlan() {
+  const cur = plan.items[activePlan];
+  plan.items.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  activePlan = cur ? plan.items.indexOf(cur) : -1;
+}
+function renderPlanList() {
+  $('#pl-empty').hidden = plan.items.length > 0;
+  $('#pl-list').innerHTML = plan.items.map((it, i) => `<li><button class="pi" type="button" data-i="${i}" aria-current="${i === activePlan}"><span class="pt"><canvas aria-hidden="true"></canvas></span><span class="pm"><span class="when">${esc(fmtDay(parseDay(it.date)))}<span class="tag">${esc(PILLARS[it.pillar] || 'Post')}</span>${needsPhoto(it) ? '<span class="tag warn">Add photo</span>' : ''}</span><span class="hl">${esc(it.design.fields.headline || 'Untitled post')}</span></span></button></li>`).join('');
+  $('#pl-format').value = plan.format;
+  $('#pl-export').disabled = !plan.items.length; $('#pl-clear').disabled = !plan.items.length;
+  planThumbsSoon();
+}
+function planThumbsSoon() { clearTimeout(planThumbT); planThumbT = setTimeout(renderPlanThumbs, 150); }
+function renderPlanThumbs() {
+  const fmt = fmtOf(plan.format), k = Math.min(64 / fmt.w, 64 / fmt.h), q = 2;
+  $$('#pl-list .pi').forEach(b => {
+    const it = plan.items[+b.dataset.i]; if (!it) return;
+    const cvs = b.querySelector('canvas');
+    cvs.width = Math.round(fmt.w * k * q); cvs.height = Math.round(fmt.h * k * q); cvs.style.width = Math.round(fmt.w * k) + 'px'; cvs.style.height = Math.round(fmt.h * k) + 'px';
+    const x = cvs.getContext('2d'); x.setTransform(k * q, 0, 0, k * q, 0, 0);
+    const s2 = { ...st, ...it.design }; draw(x, s2, fmt, null, { imgs: planImgs(it) }); loadFonts(s2);
+  });
+}
+function updateBanner() {
+  const it = plan.items[activePlan], on = activePlan >= 0 && !!it;
+  $('#plan-banner').hidden = !on; if (!on) return;
+  $('#pb-label').textContent = `Plan post ${activePlan + 1} of ${plan.items.length}`; $('#pb-date').value = it.date;
+}
+async function openPost(i) {
+  const it = plan.items[i]; if (!it) return;
+  flushPlan();
+  if (activePlan < 0) scratch = { state: clone(st), imgs: { photo: IMG.photo, ex: { ...IMG.ex } } };
+  activePlan = i; selId = null;
+  Object.assign(st, { caption: '', alt: '', photo: null, extras: [], headScale: 100, photoX: 50, photoY: 50, photoZoom: 100 }, clone(it.design)); st.touched = ALL_TOUCHED(); st.format = plan.format;
+  await loadDesignImages(st, IMG);
+  commit(); fitStage(); renderPlanList(); updateBanner(); histReset();
+}
+function restoreScratch() { if (scratch) { st = scratch.state; IMG.photo = scratch.imgs.photo; IMG.ex = scratch.imgs.ex; scratch = null; } }
+function closePost() {
+  if (activePlan < 0) return;
+  flushPlan(); activePlan = -1; selId = null; restoreScratch();
+  commit(); fitStage(); renderPlanList(); updateBanner(); histReset();
+}
+function removePost() {
+  if (activePlan < 0) return;
+  const i = activePlan; activePlan = -1; selId = null; plan.items.splice(i, 1); restoreScratch();
+  savePlan(); commit(); fitStage(); renderPlanList(); updateBanner(); histReset(); toast('Post removed from your plan');
+}
+const planDays = () => { const d = $$('#pl-days input:checked').map(i => +i.value); return d.length ? d : [1, 3, 5]; };
+function planDates(start, count, days) {
+  const out = [], d = new Date(start); let guard = 0;
+  while (out.length < count && guard++ < 500) { if (days.includes(d.getDay())) out.push(isoDay(d)); d.setDate(d.getDate() + 1); }
+  return out;
+}
+function nextPlanDate() {
+  const last = plan.items.length ? parseDay(plan.items[plan.items.length - 1].date) : null;
+  const d = last ? new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1) : today0();
+  return planDates(d, 1, planDays())[0];
+}
+function addCurrentToPlan() {
+  if (activePlan >= 0) { flushPlan(); return toast('This post is already in your plan.'); }
+  if (!plan.items.length && fmtOf(st.format).group === 'Social') plan.format = st.format;
+  plan.items.push({ id: uid(), date: nextPlanDate(), pillar: 'post', design: snap(st) });
+  sortPlan(); savePlan(); renderPlanList(); toast('Added to your plan');
+}
+function twoStep(btn, ask, run) {
+  if (btn.dataset.armed) { clearTimeout(+btn.dataset.armed); delete btn.dataset.armed; btn.textContent = btn.dataset.label; btn.classList.remove('confirm'); return run(); }
+  btn.dataset.label = btn.textContent; btn.textContent = ask; btn.classList.add('confirm');
+  btn.dataset.armed = String(setTimeout(() => { delete btn.dataset.armed; btn.textContent = btn.dataset.label; btn.classList.remove('confirm'); }, 3000));
+}
+const csvCell = v => { v = String(v ?? ''); if (/^[=+]/.test(v)) v = "'" + v; return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+async function exportPlan() {
+  flushPlan(); if (!plan.items.length) return;
+  const fmt = fmtOf(plan.format), files = [], btn = $('#pl-export'), enc = new TextEncoder();
+  const rows = [['Date', 'Day', 'Type', 'Image file', 'Headline', 'Caption', 'Image description (alt text)', 'Needs a photo']];
+  btn.disabled = true;
+  try {
+    for (let i = 0; i < plan.items.length; i++) {
+      const it = plan.items[i]; $('#pl-xstatus').textContent = `Rendering post ${i + 1} of ${plan.items.length}`;
+      const imgs = { logo: IMG.logo }; await loadDesignImages(it.design, imgs);
+      const b = await renderStateBlob({ ...st, ...clone(it.design) }, fmt, 'image/png', imgs);
+      const name = `${pad2(i + 1)}-${it.date}-${slug(it.design.fields.headline)}.png`;
+      files.push({ name, data: new Uint8Array(await b.arrayBuffer()) });
+      rows.push([it.date, parseDay(it.date).toLocaleDateString(undefined, { weekday: 'long' }), PILLARS[it.pillar] || 'Post', name, it.design.fields.headline || '', it.design.caption || '', it.design.alt || '', needsPhoto(it) ? 'yes' : '']);
+      await wait(0);
+    }
+    files.push({ name: 'posting-calendar.csv', data: enc.encode('﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n') });
+    const zip = makeZip(files);
+    $('#pl-xstatus').textContent = `ZIP · ${plan.items.length} posts and a calendar · ${(zip.size / 1048576).toFixed(1)} MB`;
+    await saveFile(zip, `${slug(profile.name || 'posts')}-plan-${plan.items[0].date}.zip`);
+  } finally { btn.disabled = !plan.items.length; }
+}
+function planPrompt(dates, notes, occ) {
+  return `You are the social media planner inside Postbench, a tool that builds posts for small businesses from a fixed set of layouts. Plan ${dates.length} posts, one for each date below.
+
+BUSINESS DETAILS (facts you may use)
+${profileBlock()}
+
+OWNER NOTES FOR THIS PERIOD (facts you may use)
+"""
+${notes || '(none)'}
+"""
+
+DATES (one post per date, in this order)
+${dates.map(d => `- ${d} (${parseDay(d).toLocaleDateString('en-GB', { weekday: 'long' })})`).join('\n')}
+
+OCCASIONS IN THIS PERIOD (use one only if it suits this business, and never invent a promotion for it)
+${occ.length ? occ.map(o => `- ${o.name}: ${isoDay(o.date)}`).join('\n') : '- none'}
+
+THE MIX (field "pillar")
+Use these post types: offer, product, behind-the-scenes, tip, community, occasion, engagement. Spread them out and never use the same type three times in a row. Use offer ONLY for offers stated in the notes or details; otherwise show products or services without prices. An engagement post asks followers one simple question. Do not write customer reviews or testimonials; for social proof, invite customers to leave a review instead.
+
+LAYOUTS (field "template", use the id)
+${ORDER.map(id => `- ${id}: ${LAYOUT_HELP[id]}`).join('\n')}
+Vary the layouts across the plan. Use photo or spot for at most a quarter of the posts, and only for physical products, food, places or people; the owner adds those photos later.
+
+LOOK
+Keep the feed consistent: use at most two color themes (field "theme", use the id) and at most two font pairs (field "fontPair", the number) across the whole plan. Set "colors" to null.
+${THEMES.map(t => `- ${t.id}: background ${t.bg1} to ${t.bg2}, text ${t.text}, accent ${t.accent}`).join('\n')}
+Font pairs: ${PAIRS.map((p, i) => `${i} ${p.name}`).join(', ')}.
+
+COPY RULES
+- ${langRule('Write all copy in the language of the business details and notes, or in English if that is unclear.')}
+- Never invent facts. Use only what the business details and notes say. Do not make up prices, discounts, dates, times, opening hours, addresses, ratings, awards, years in business, testimonials or guarantees.
+- Limits: badge up to 14 characters (may be ""), headline up to 44 characters and at most 7 words, sub up to 100 characters (may be ""), cta up to 20 characters ("" for none), handle "". list: only for the menu, hours and steps layouts, one item per line separated by \\n, at most 6 lines of up to 60 characters; otherwise "".
+- No emoji in badge, headline or sub.
+- caption: the text to post, up to 300 characters, in the owner's voice and tone, ending with 3 to 5 relevant hashtags on their own line.
+- alt: one sentence that describes the image for people who use screen readers, up to 200 characters, including the headline text.
+
+Reply with ONLY this JSON and no other text, with exactly ${dates.length} objects in "posts", in date order:
+{"posts":[{"date":"${dates[0]}","pillar":"tip","template":"clean","theme":"ember","colors":null,"fontPair":0,"fields":{"badge":"","headline":"","sub":"","cta":"","handle":"","list":""},"caption":"","alt":""}]}`;
+}
+const setPl = t => { $('#pl-status').textContent = t; };
+function plBusy(on) { $('#pl-go').disabled = on; $('#pl-stop').hidden = !on; }
+async function runPlan() {
+  if (!askClaude) return;
+  const notes = $('#pl-notes').value.trim();
+  if (!profile.what.trim() && !profile.name.trim() && !notes) { setPl('Tell Claude about the business first: fill in the Business tab, or write a few notes above.'); return; }
+  const count = +$('#pl-count').value, start = parseDay($('#pl-start').value) || today0(), dates = planDates(start, count, planDays());
+  const end = parseDay(dates[dates.length - 1]);
+  const occ = [...occasionsFor(start.getFullYear()), ...occasionsFor(start.getFullYear() + 1)].filter(o => o.date >= start && o.date <= end);
+  plCtl = new AbortController(); plBusy(true); setPl(`Claude is planning ${count} posts. This can take a minute or two.`);
+  try {
+    const res = await askClaude.json(planPrompt(dates, notes, occ), { signal: plCtl.signal, cache: false,
+      onText: ({ text }) => { const n = (text.match(/"date"\s*:/g) || []).length; setPl(`Writing post ${clamp(n, 1, count)} of ${count}...`); } });
+    const list = res && Array.isArray(res.posts) ? res.posts : Array.isArray(res) ? res : [];
+    const useBrand = !!(brand && $('#pl-brand').checked), items = [];
+    list.slice(0, count).forEach((o, i) => {
+      const d = cleanDesign(o); if (!d) return;
+      const r = resolveDesign(d, useBrand);
+      items.push({ id: uid(), date: dates.includes(o.date) ? o.date : dates[Math.min(i, dates.length - 1)], pillar: hasOwn(PILLARS, o.pillar) ? o.pillar : 'post',
+        design: { template: r.template, theme: r.theme, colors: r.colors, bgMode: 'gradient', angle: st.angle, fontPair: r.fontPair, overlay: 55, fields: r.fields, touched: ALL_TOUCHED(), caption: d.caption, alt: cleanLine(o.alt, 300), photo: null, extras: [], headScale: 100, photoX: 50, photoY: 50, photoZoom: 100 } });
+    });
+    if (!items.length) throw { code: 'invalid_json' };
+    if (activePlan >= 0) closePost();
+    plan.items = items; sortPlan(); savePlan(); renderPlanList();
+    setPl(`${items.length} posts planned. Click a post to open it, then edit it in Create. Posts marked Add photo need your picture.`);
+  } catch (e) { handleAiError(e, setPl); }
+  finally { plBusy(false); plCtl = null; }
+}
+function bindPlan() {
+  const WD = [1, 2, 3, 4, 5, 6, 0];
+  $('#pl-days').innerHTML = WD.map(d => `<label class="chip"><input type="checkbox" value="${d}"${plan.days.includes(d) ? ' checked' : ''}>${new Date(2024, 0, d === 0 ? 7 : d).toLocaleDateString(undefined, { weekday: 'short' })}</label>`).join('');
+  $('#pl-days').addEventListener('change', () => { plan.days = planDays(); savePlan(); });
+  const tm = today0(); tm.setDate(tm.getDate() + 1); $('#pl-start').value = isoDay(tm);
+  $('#pl-format').innerHTML = FORMATS.filter(f => f.group === 'Social').map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+  $('#pl-format').addEventListener('change', e => { plan.format = e.target.value; savePlan(); planThumbsSoon(); if (activePlan >= 0) setFormat(plan.format); });
+  $('#pl-list').addEventListener('click', e => { const b = e.target.closest('.pi'); if (b) openPost(+b.dataset.i); });
+  $('#pl-add').addEventListener('click', addCurrentToPlan);
+  $('#pl-export').addEventListener('click', exportPlan);
+  $('#pl-clear').addEventListener('click', e => twoStep(e.currentTarget, 'Click again to clear', () => { if (activePlan >= 0) closePost(); plan.items = []; savePlan(); renderPlanList(); }));
+  $('#pl-go').addEventListener('click', e => plan.items.length ? twoStep(e.currentTarget, 'Replace current plan?', runPlan) : runPlan());
+  $('#pl-stop').addEventListener('click', () => { if (plCtl) plCtl.abort(); });
+  $('#pb-back').addEventListener('click', () => setTab('plan'));
+  $('#pb-close').addEventListener('click', closePost);
+  $('#pb-del').addEventListener('click', e => twoStep(e.currentTarget, 'Remove?', removePost));
+  $('#pb-date').addEventListener('change', e => { const it = plan.items[activePlan]; if (!it || !parseDay(e.target.value)) return; it.date = e.target.value; sortPlan(); savePlan(); renderPlanList(); updateBanner(); });
+}
+
+/* ---------- customer review to post ---------- */
+function shortName(n) { const p = (n || '').trim().split(/\s+/).filter(Boolean); return !p.length ? '' : p.length === 1 ? p[0] : `${p[0]} ${p[p.length - 1][0].toUpperCase()}.`; }
+const normQ = t => t.replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, ' ').trim().toLowerCase();
+function localExcerpt(text, max = 140) {
+  const t = text.replace(/\s+/g, ' ').trim(); if (t.length <= max) return t;
+  let out = ''; for (const sn of t.match(/[^.!?]+[.!?]+["')\]]*\s*/g) || []) { if ((out + sn).trim().length > max) break; out += sn; }
+  out = out.trim(); if (out) return out;
+  const cut = t.slice(0, max); return cut.slice(0, Math.max(cut.lastIndexOf(' '), 40)) + '…';
+}
+function reviewPrompt(raw, name, src, stars) {
+  return `A small business wants to turn a real customer review into a social media post.
+
+REVIEW (copy words only from this text)
+"""
+${raw}
+"""
+Reviewer: ${name || 'not given'}. Posted on: ${src || 'not given'}. Stars: ${stars || 'not given'}.
+
+BUSINESS DETAILS
+${profileBlock()}
+
+1. excerpt: the strongest part of the review for the image. Copy it word for word from the review as one continuous piece; you may only leave out words at its start or end. Aim for 40 to 140 characters. Do not fix spelling, translate or add words.
+2. caption: a short thank-you caption from the business, up to 250 characters, in the same language as the review, ending with 2 to 4 relevant hashtags on their own line. Add no facts that are not in the review or the business details.
+
+Reply with ONLY this JSON: {"excerpt":"","caption":""}`;
+}
+async function runReview() {
+  const raw = $('#rv-text').value.trim(), status = $('#rv-status');
+  if (!raw) { status.textContent = 'Paste the review first.'; return $('#rv-text').focus(); }
+  const name = shortName($('#rv-name').value), src = $('#rv-src').value, stars = +$('#rv-stars').value;
+  let excerpt = localExcerpt(raw), caption = '', note = 'The quote uses the first sentences of the review.';
+  if (askClaude && $('#rv-ai').checked) {
+    $('#rv-go').disabled = true; status.textContent = 'Claude is picking the strongest line...';
+    try {
+      const r = await askClaude.json(reviewPrompt(raw, name, src, stars), { modelTier: 'quick', cache: false });
+      const ex = cleanLine(r && r.excerpt, 220).replace(/^["'“”‘’]+|["'“”‘’]+$/g, '').replace(/^(\.\.\.|…)\s*|\s*(\.\.\.|…)$/g, '');
+      if (ex.length > 10 && normQ(raw).includes(normQ(ex))) { excerpt = ex; note = 'Claude picked this line. It is copied word for word from the review.'; }
+      else note = 'Claude\'s pick did not match the review word for word, so the post uses the first sentences instead.';
+      caption = cleanText(r && r.caption, 600);
+    } catch (e) { if (AI_GONE.includes(e && e.code)) setAiAvailable(false); note = 'Claude could not help this time, so the post uses the first sentences of the review.'; }
+    finally { $('#rv-go').disabled = false; }
+  }
+  st.template = 'quote';
+  st.fields = { badge: stars ? '★'.repeat(stars) : '', headline: excerpt, sub: [name, src ? `${src} review` : ''].filter(Boolean).join(', '), cta: '', handle: st.touched.handle ? st.fields.handle : defaultHandle(), list: '' };
+  st.touched = ALL_TOUCHED();
+  st.caption = caption || `Thank you${name ? ', ' + name.split(' ')[0] : ''}!${stars ? ' ' + '★'.repeat(stars) : ''}\n\n“${excerpt}”`;
+  st.alt = `Customer review quote: “${excerpt}”${name ? ', ' + name : ''}.`;
+  commit(); status.textContent = note;
+}
+function bindReview() { $('#rv-go').addEventListener('click', runReview); }
+
+/* ---------- caption tools (Claude) ---------- */
+const TONES = { shorter: 'shorter and punchier', friendlier: 'warmer and friendlier', professional: 'more professional', playful: 'more playful' };
+const stripWrap = t => String(t || '').trim().replace(/^```[a-z]*\n?|\n?```$/g, '').trim().replace(/^"""\n?|\n?"""$/g, '').trim();
+const postText = () => [st.fields.badge, st.fields.headline, st.fields.sub, st.fields.cta, ...parseList(st.fields.list).map(i => i.raw)].filter(Boolean).join(' / ');
+async function capCall(busy, fn) {
+  const set = t => { $('#cap-status').textContent = t; }, btns = $$('#cap-tools button');
+  if (!askClaude) return;
+  btns.forEach(b => { b.disabled = true; }); set(busy);
+  try { set(await fn()); } catch (e) { handleAiError(e, set); } finally { btns.forEach(b => { b.disabled = false; }); }
+}
+function rewriteCaption(tone) {
+  const cur = (st.caption || '').trim();
+  const prompt = cur
+    ? `Rewrite this social media caption for a small business so it is ${TONES[tone]}. Keep the same language and the same facts, add no new facts, and end with a line of 3 to 5 relevant hashtags. Up to 300 characters. Reply with only the new caption, with no quotes or notes.\n\nBUSINESS DETAILS\n${profileBlock()}\n\nTHE IMAGE SAYS: ${postText()}\n\nCAPTION\n"""\n${cur}\n"""`
+    : `Write a social media caption for a small business post. Make it ${TONES[tone]}. ${langRule('Use the same language as the text on the image.')} Use only facts from the image text and the business details. Up to 300 characters, ending with 3 to 5 relevant hashtags on their own line. Reply with only the caption.\n\nBUSINESS DETAILS\n${profileBlock()}\n\nTHE IMAGE SAYS: ${postText()}`;
+  return capCall(cur ? 'Rewriting the caption...' : 'Writing a caption...', async () => {
+    const r = await askClaude(prompt, { modelTier: 'quick', cache: false }), t = cleanText(stripWrap(r.text), 1200);
+    if (!t) throw { code: 'empty_completion' };
+    st.caption = t; commit(); return cur ? 'Caption rewritten.' : 'Caption written.';
+  });
+}
+function translatePost() {
+  const lang = $('#tr-lang').value, f = st.fields;
+  if (!LANGS.includes(lang)) return;
+  const prompt = `Translate this social media post for a small business into ${lang}. Keep the meaning and keep names, prices, dates and numbers exactly. Make it sound natural to ${lang} speakers rather than word for word. Translate hashtags where that makes sense. Respect the limits: badge up to 14 characters, headline up to 44 characters, sub up to 100 characters, cta up to 20 characters; list keeps one item per line. Keep empty fields empty.\n\nPOST\n${JSON.stringify({ badge: f.badge, headline: f.headline, sub: f.sub, cta: f.cta, list: f.list || '', caption: st.caption || '', alt: st.alt || '' })}\n\nReply with ONLY this JSON: {"badge":"","headline":"","sub":"","cta":"","list":"","caption":"","alt":""}`;
+  return capCall(`Translating into ${lang}...`, async () => {
+    const r = await askClaude.json(prompt, { modelTier: 'quick', cache: false });
+    if (!r || typeof r !== 'object') throw { code: 'invalid_json' };
+    const h = cleanLine(r.headline, 60); if (f.headline && !h) throw { code: 'invalid_json' };
+    st.fields = { ...st.fields, badge: cleanLine(r.badge, 16), headline: h, sub: cleanLine(r.sub, 120), cta: cleanLine(r.cta, 24), list: f.list ? cleanList(r.list) || f.list : '' }; st.touched = ALL_TOUCHED();
+    st.caption = cleanText(r.caption, 1200); st.alt = cleanLine(r.alt, 400); commit();
+    return `Translated into ${lang}. Read it through before posting.`;
+  });
+}
+function writeAlt() {
+  return capCall('Writing alt text...', async () => {
+    const lim = await askClaude.limits().catch(() => null), see = !!(lim && lim.images), opts = { modelTier: 'quick', cache: false };
+    const facts = `Layout: ${TEMPLATES[st.template].name}${st.photo ? ', with a photo' : ''}. Text on the image: ${postText() || '(none)'}.`;
+    const prompt = `Write alt text for this social media image from a small business, for people who use screen readers. One or two sentences, up to 250 characters. Include the words shown on the image. ${see ? 'Describe what you see in the attached image.' : 'You cannot see the image; describe it from these facts: ' + facts} ${langRule('Write in the same language as the text on the image.')} Reply with only the alt text.`;
+    if (see) opts.images = await renderBlob(fmtOf(st.format), 'image/jpeg');
+    const r = await askClaude(prompt, opts), t = cleanLine(stripWrap(r.text), 400);
+    if (!t) throw { code: 'empty_completion' };
+    st.alt = t; commit(); return 'Alt text written. Check it before posting.';
+  });
+}
+function bindCaptionTools() {
+  $$('#cap-tools [data-tone]').forEach(b => b.addEventListener('click', () => rewriteCaption(b.dataset.tone)));
+  $('#tr-go').addEventListener('click', translatePost);
+  $('#alt-go').addEventListener('click', writeAlt);
+}
+
+/* ---------- print PDF: one page with the design as a 300 dpi JPEG ---------- */
+function pdfFromJpegs(pages, ptW, ptH) {
+  const enc = new TextEncoder(), parts = [], offs = []; let len = 0;
+  const put = d => { const b = typeof d === 'string' ? enc.encode(d) : d; parts.push(b); len += b.length; };
+  const obj = (n, body) => { offs[n] = len; put(`${n} 0 obj\n`); body(); put('\nendobj\n'); };
+  const total = 3 + pages.length * 3;
+  put('%PDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n');
+  obj(1, () => put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2, () => put(`<< /Type /Pages /Kids [${pages.map((_, i) => `${3 + i * 3} 0 R`).join(' ')}] /Count ${pages.length} >>`));
+  pages.forEach((pg, i) => {
+    const pid = 3 + i * 3, content = `q ${ptW} 0 0 ${ptH} 0 0 cm /Im${i} Do Q`;
+    obj(pid, () => put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${ptW} ${ptH}] /Resources << /XObject << /Im${i} ${pid + 1} 0 R >> >> /Contents ${pid + 2} 0 R >>`));
+    obj(pid + 1, () => { put(`<< /Type /XObject /Subtype /Image /Width ${pg.w} /Height ${pg.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${pg.jpg.length} >>\nstream\n`); put(pg.jpg); put('\nendstream'); });
+    obj(pid + 2, () => put(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
+  });
+  const xref = len;
+  put(`xref\n0 ${total}\n0000000000 65535 f \n` + Array.from({ length: total - 1 }, (_, i) => String(offs[i + 1]).padStart(10, '0') + ' 00000 n \n').join(''));
+  put(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(parts, { type: 'application/pdf' });
+}
+const jpegPdf = (jpg, pxW, pxH, ptW, ptH) => pdfFromJpegs([{ jpg, w: pxW, h: pxH }], ptW, ptH);
+
+/* ---------- carousels: a cover, one slide per list item, and a closing slide when there is a button text ---------- */
+const CAROUSEL_FMTS = ['ig-post', 'ig-portrait', 'story', 'fb-post', 'x-post'];
+function carouselStates(s = st) {
+  const items = parseList(s.fields.list); if (items.length < 2) return null;
+  const f = s.fields, n = items.length, base = { ...s, extras: [] }, end = !!f.cta;
+  const slides = [{ ...s, template: TEMPLATES[s.template].list ? 'clean' : s.template, fields: { ...f, list: '' }, slide: { cover: true } }];
+  items.forEach((it, i) => slides.push({ ...base, template: 'slide', fields: { badge: '', headline: it.label, sub: it.value, cta: '', handle: '', list: '' }, slide: { i: i + 1, n, more: end } }));
+  if (end) slides.push({ ...base, template: 'frame', fields: { badge: '', headline: f.cta, sub: cleanLine(profile.link, 80), cta: '', handle: f.handle, list: '' }, slide: { end: true } });
+  return slides;
+}
+function renderCarStrip(slides, fmt) {
+  const box = $('#m-car-strip'), k = 120 / fmt.h, q = 2;
+  box.innerHTML = slides.map(() => '<canvas aria-hidden="true"></canvas>').join('');
+  $$('canvas', box).forEach((cvs, i) => {
+    cvs.width = Math.round(fmt.w * k * q); cvs.height = Math.round(fmt.h * k * q); cvs.style.width = Math.round(fmt.w * k) + 'px'; cvs.style.height = '120px';
+    const x = cvs.getContext('2d'); x.setTransform(k * q, 0, 0, k * q, 0, 0); draw(x, slides[i], fmt, null); loadFonts(slides[i]);
+  });
+}
+async function saveCarousel(kind) {
+  const fmt = fmtOf(st.format), slides = carouselStates(); if (!slides) return;
+  const btns = [$('#m-car-zip'), $('#m-car-pdf')]; btns.forEach(b => { b.disabled = true; });
+  try {
+    if (kind === 'zip') {
+      const files = [], enc = new TextEncoder();
+      for (let i = 0; i < slides.length; i++) {
+        $('#m-status').textContent = `Rendering slide ${i + 1} of ${slides.length}`;
+        const b = await renderStateBlob(slides[i], fmt, 'image/png', IMG); files.push({ name: `${pad2(i + 1)}-${baseName()}.png`, data: new Uint8Array(await b.arrayBuffer()) });
+      }
+      if (st.caption || st.alt) files.push({ name: 'caption.txt', data: enc.encode((st.caption || '') + (st.alt ? `\n\nAlt text: ${st.alt}` : '') + '\n') });
+      const zip = makeZip(files); $('#m-status').textContent = `ZIP · ${slides.length} slides · ${(zip.size / 1048576).toFixed(1)} MB. Upload them in this order.`;
+      await saveFile(zip, `${baseName()}-carousel.zip`);
+    } else {
+      const pages = [];
+      for (let i = 0; i < slides.length; i++) {
+        $('#m-status').textContent = `Rendering page ${i + 1} of ${slides.length}`;
+        const b = await renderStateBlob(slides[i], fmt, 'image/jpeg', IMG); pages.push({ jpg: new Uint8Array(await b.arrayBuffer()), w: fmt.w, h: fmt.h });
+      }
+      const pdf = pdfFromJpegs(pages, Math.round(fmt.w * .75), Math.round(fmt.h * .75));
+      $('#m-status').textContent = `PDF · ${slides.length} pages · ${(pdf.size / 1048576).toFixed(1)} MB. On LinkedIn, add it as a document post.`;
+      await saveFile(pdf, `${baseName()}-carousel.pdf`);
+    }
+  } finally { btns.forEach(b => { b.disabled = false; }); }
+}
+
+/* ---------- motion: preview on the stage and video export ---------- */
+function videoMime() {
+  if (typeof MediaRecorder === 'undefined' || !HTMLCanvasElement.prototype.captureStream) return null;
+  for (const m of ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.4d0028', 'video/mp4;codecs=avc1.42E028', 'video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']) {
+    try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) { /* unsupported */ }
+  }
+  return null;
+}
+async function recordVideo(s, fmt, secs, onProgress) {
+  const mime = videoMime(); if (!mime) throw new Error('no recorder');
+  await loadFonts(s); if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const c = document.createElement('canvas'); c.width = fmt.w; c.height = fmt.h;
+  const x = c.getContext('2d'), prep = prepare(s, fmt, IMG);
+  draw(x, s, fmt, null, { prep, t: 0, dur: secs });
+  const stream = c.captureStream(30), rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: Math.round(clamp(fmt.w * fmt.h * 4, 2e6, 1e7)) });
+  const chunks = [], stopped = new Promise(r => { rec.onstop = r; });
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.start(250);
+  const t0 = performance.now();
+  await new Promise(res => {
+    const tick = () => { const t = (performance.now() - t0) / 1000; draw(x, s, fmt, null, { prep, t: Math.min(t, secs), dur: secs }); onProgress(Math.min(1, t / secs)); if (t < secs) requestAnimationFrame(tick); else res(); };
+    requestAnimationFrame(tick);
+  });
+  rec.stop(); await stopped; stream.getTracks().forEach(t => t.stop());
+  return { blob: new Blob(chunks, { type: mime.split(';')[0] }), ext: mime.startsWith('video/mp4') ? 'mp4' : 'webm' };
+}
+async function playMotion() {
+  if (playing) return;
+  playing = true; $('#btn-play').disabled = true;
+  const fmt = fmtOf(st.format), k = previewScale(fmt), prep = prepare(st, fmt, IMG), t0 = performance.now();
+  await new Promise(res => {
+    const tick = () => { const t = (performance.now() - t0) / 1000; cx.setTransform(k, 0, 0, k, 0, 0); draw(cx, st, fmt, null, { prep, t, dur: 6 }); if (t < 4.2) requestAnimationFrame(tick); else res(); };
+    requestAnimationFrame(tick);
+  });
+  playing = false; $('#btn-play').disabled = false; schedule();
+}
+function bindExtrasAndExports() {
+  $('#add-qr').hidden = typeof qrcode !== 'function';
+  $('#add-qr').addEventListener('click', () => {
+    addExtra({ kind: 'qr', text: cleanLine(profile.link, 300), x: .84, y: .8, size: .11 });
+    if (!profile.link.trim()) toast('Type the link for the QR code in the box below the list.');
+  });
+  $('#btn-play').hidden = false;
+  $('#btn-play').addEventListener('click', playMotion);
+  $('#m-pdf').addEventListener('click', async () => {
+    const f = fmtOf(st.format); if (!f.pdf) return;
+    $('#m-status').textContent = 'Making the PDF...';
+    const b = await renderBlob(f, 'image/jpeg'), pdf = jpegPdf(new Uint8Array(await b.arrayBuffer()), f.w, f.h, f.pdf[0], f.pdf[1]);
+    $('#m-status').textContent = `PDF · ${(pdf.size / 1048576).toFixed(1)} MB. For a print shop, ask whether they need extra bleed.`;
+    saveFile(pdf, `${baseName()}-${f.id}.pdf`);
+  });
+  $('#m-video').addEventListener('click', async () => {
+    const f = fmtOf(st.format), secs = +$('#m-vdur').value || 6, btn = $('#m-video'); btn.disabled = true;
+    try {
+      const { blob, ext } = await recordVideo(st, f, secs, p => { $('#m-status').textContent = `Recording: ${Math.round(p * secs)} of ${secs} seconds. Keep this tab open.`; });
+      $('#m-status').textContent = `${ext.toUpperCase()} video · ${(blob.size / 1048576).toFixed(1)} MB`;
+      await saveFile(blob, `${baseName()}-${f.id}.${ext}`);
+    } catch (e) { $('#m-status').textContent = 'This browser could not record the video. Try Chrome, Edge or Safari.'; }
+    finally { btn.disabled = false; }
+  });
+}
+
+/* ---------- undo and redo: snapshots of the design, grouped by pauses in editing ---------- */
+const dup = v => Array.isArray(v) ? v.map(dup) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).filter(([k]) => k !== '_bb').map(([k, x]) => [k, dup(x)])) : v;
+let undoStack = [], redoStack = [], histBase = null, histT = 0, restoring = false;
+const imgCache = new Map();
+async function cachedImg(src) {
+  if (imgCache.has(src)) return imgCache.get(src);
+  const i = await loadImg(src); imgCache.set(src, i);
+  if (imgCache.size > 30) imgCache.delete(imgCache.keys().next().value);
+  return i;
+}
+function updateUndoUi() { $('#btn-undo').disabled = !undoStack.length; $('#btn-redo').disabled = !redoStack.length; }
+function histReset() { undoStack = []; redoStack = []; clearTimeout(histT); histT = 0; histBase = dup(st); updateUndoUi(); }
+function histTouch() {
+  if (restoring || !histBase) return;
+  if (!histT) { undoStack.push(histBase); if (undoStack.length > 80) undoStack.shift(); redoStack = []; }
+  clearTimeout(histT); histT = setTimeout(() => { histT = 0; histBase = dup(st); }, 600);
+  updateUndoUi();
+}
+async function histGo(dir) {
+  if (histT) { clearTimeout(histT); histT = 0; histBase = dup(st); }
+  const from = dir < 0 ? undoStack : redoStack, to = dir < 0 ? redoStack : undoStack;
+  if (!from.length || restoring) return;
+  to.push(dup(st)); const next = from.pop();
+  restoring = true; selId = null;
+  st = dup(next);
+  IMG.photo = st.photo ? await cachedImg(st.photo) : null;
+  IMG.logo = st.logo ? await cachedImg(st.logo) : null;
+  const ex = {}; for (const e of st.extras) if (e.kind === 'image' && e.src) ex[e.id] = await cachedImg(e.src); IMG.ex = ex;
+  commit(); fitStage();
+  restoring = false; histBase = dup(st); updateUndoUi();
+  toast(dir < 0 ? 'Undone' : 'Redone');
+}
+
+/* ---------- ask Claude for a change to the design on screen ---------- */
+function refinePrompt(instr) {
+  const cur = { format: st.format, template: st.template, theme: THEMES.some(t => t.id === st.theme) ? st.theme : null, colors: st.colors, fontPair: st.fontPair, fields: { ...st.fields }, caption: st.caption || '' };
+  return `You are the art director inside Postbench, a tool that builds social media posts for small businesses from a fixed set of layouts. Change the current design the way the owner asks, and keep everything they did not ask to change.
+
+OWNER'S REQUEST
+"""
+${instr}
+"""
+
+CURRENT DESIGN
+${JSON.stringify(cur)}
+
+BUSINESS DETAILS (facts you may use)
+${profileBlock()}
+
+SIZES (field "format", use the id): ${FORMATS.map(f => `${f.id} (${f.name})`).join(', ')}.
+
+LAYOUTS (field "template", use the id)
+${ORDER.map(id => `- ${id}: ${LAYOUT_HELP[id]}`).join('\n')}
+
+COLOR THEMES (field "theme", use the id). To use other colors, set "theme" to null and give "colors" as 6-digit hex values like "#112233", with strong contrast between text and both backgrounds.
+${THEMES.map(t => `- ${t.id}: background ${t.bg1} to ${t.bg2}, text ${t.text}, accent ${t.accent}`).join('\n')}
+
+FONT PAIRS (field "fontPair", the number): ${PAIRS.map((p, i) => `${i} ${p.name}`).join(', ')}.
+
+RULES
+- Keep the language of the current design unless the owner asks for another language.
+- Never invent facts. Use only facts from the current design, the owner's request and the business details. Do not make up prices, discounts, dates, times, ratings, awards or testimonials.
+- Limits: badge up to 14 characters, headline up to 44 characters and at most 7 words, sub up to 100 characters, cta up to 20 characters, caption up to 350 characters. list holds one item per line separated by \\n and is only shown by the menu, hours and steps layouts.
+- No emoji in badge, headline or sub.
+
+Reply with ONLY one JSON object with the same keys as the current design, and no other text.`;
+}
+async function runRefine() {
+  const input = $('#ai-change'), instr = input.value.trim(), set = t => { $('#ai-change-status').textContent = t; };
+  if (!askClaude) return;
+  if (!instr) { set('Say what to change, for example "shorter headline" or "use dark green".'); return input.focus(); }
+  const btn = $('#ai-change-go'); btn.disabled = true; set('Claude is changing the design...');
+  try {
+    const d = cleanDesign(await askClaude.json(refinePrompt(instr), { modelTier: 'quick', cache: false }));
+    if (!d) throw { code: 'invalid_json' };
+    const oldText = st.colors.text;
+    st.template = d.template; st.fontPair = d.fontPair; st.bgMode = st.bgMode || 'gradient';
+    st.colors = d.colors || pickColors(THEMES.find(t => t.id === d.theme) || THEMES[0]); st.theme = d.colors ? 'custom' : d.theme;
+    st.fields = { ...d.fields, handle: d.fields.handle || defaultHandle() }; st.touched = ALL_TOUCHED();
+    if (d.caption) st.caption = d.caption;
+    st.extras.forEach(e => { if (e.kind === 'text' && e.color === oldText) e.color = st.colors.text; });
+    if (d.format) st.format = d.format;
+    commit(); fitStage(); input.value = ''; set('Done. Undo brings back the previous version.');
+  } catch (e) { handleAiError(e, set); }
+  finally { btn.disabled = false; }
+}
+
+/* ---------- color schemes suggested from the logo ---------- */
+const hexOf = c => '#' + c.map(v => clamp(Math.round(v), 0, 255).toString(16).padStart(2, '0')).join('');
+const mixRgb = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k);
+function logoPalettes(img) {
+  const N = 48, cvs = document.createElement('canvas'); cvs.width = cvs.height = N;
+  const x = cvs.getContext('2d', { willReadFrequently: true }), k = Math.min(N / img.width, N / img.height);
+  x.drawImage(img, 0, 0, img.width * k, img.height * k);
+  const d = x.getImageData(0, 0, N, N).data, bins = new Map();
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3] < 160) continue;
+    const key = (d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4), b = bins.get(key) || { n: 0, r: 0, g: 0, b: 0 };
+    b.n++; b.r += d[i]; b.g += d[i + 1]; b.b += d[i + 2]; bins.set(key, b);
+  }
+  const sat = ([r, g, b]) => (Math.max(r, g, b) - Math.min(r, g, b)) / 255, dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+  const cols = [...bins.values()].sort((a, b) => b.n - a.n).map(b => [b.r / b.n, b.g / b.n, b.b / b.n]).filter(c => sat(c) > .18);
+  if (!cols.length) return [];
+  const p = cols[0], a = cols.find(c => dist(c, p) > 90), W = [255, 255, 255], B = [0, 0, 0], P = hexOf(p), A = a ? hexOf(a) : null;
+  return [
+    safeColors({ bg1: P, bg2: hexOf(mixRgb(p, B, .3)), text: '#ffffff', accent: A || hexOf(mixRgb(p, W, .75)) }),
+    safeColors({ bg1: hexOf(mixRgb(p, W, .9)), bg2: hexOf(mixRgb(p, W, .76)), text: hexOf(mixRgb(p, B, .7)), accent: P }),
+    safeColors({ bg1: '#121212', bg2: hexOf(mixRgb(p, B, .72)), text: '#ffffff', accent: A || P }),
+  ];
+}
+let logoThemes = [], logoKey = '';
+function refreshLogoThemes() {
+  const key = st.logo && IMG.logo ? st.logo.length + st.logo.slice(-40) : '';
+  if (key === logoKey) return false;
+  logoKey = key; logoThemes = key ? logoPalettes(IMG.logo) : []; return true;
+}
+
+/* ---------- design check: what would make the post hard to use ---------- */
+const CAPTION_LIMITS = { 'ig-post': ['Instagram', 2200, 30], 'ig-portrait': ['Instagram', 2200, 30], story: ['Instagram', 2200, 30], 'fb-post': ['Facebook', 63206], 'fb-cover': ['Facebook', 63206], 'x-post': ['X', 280], 'li-banner': ['LinkedIn', 3000], 'yt-thumb': ['YouTube', 5000], pin: ['Pinterest', 500] };
+const capStats = () => { const t = st.caption || ''; return { n: [...t].length, tags: (t.match(/#[\p{L}\p{N}_]+/gu) || []).length }; };
+function updateCapCount() {
+  const { n, tags } = capStats(), lim = CAPTION_LIMITS[st.format], el = $('#cap-count');
+  el.textContent = `${n.toLocaleString()} characters · ${tags} hashtag${tags === 1 ? '' : 's'}` + (lim ? ` · ${lim[0]} allows ${lim[1].toLocaleString()}${lim[2] ? ` and ${lim[2]} hashtags` : ''}` : '');
+  el.classList.toggle('over', !!lim && (n > lim[1] || (!!lim[2] && tags > lim[2])));
+}
+let checkT = 0, issues = [], checkOpen = false;
+function checkSoon() { clearTimeout(checkT); checkT = setTimeout(runCheck, 400); }
+const minReadable = fmt => fmt.pdf ? 8 / 72 * 300 : fmt.group === 'Web ads' ? 10 : 9.5 * fmt.w / 375;
+function textBox(L) {
+  const tw = L.tw ?? L.w, x = L.align === 'center' ? L.x + (L.w - tw) / 2 : L.align === 'right' ? L.x + L.w - tw : L.x;
+  return { x, y: L.y, w: tw, h: L.lines.length * L.size * L.lh };
+}
+function runCheck() {
+  if (playing) return checkSoon();
+  const fmt = fmtOf(st.format), prep = prepare(st, fmt, IMG), c = prep.c, out = [], tpl = TEMPLATES[st.template];
+  const texts = prep.layers.filter(L => L.t === 'text' && L.lines && L.lines.some(l => l.trim()));
+  const tiny = texts.filter(L => L.size < minReadable(fmt));
+  if (tiny.length) out.push({ title: fmt.pdf ? 'Some text will be very small when printed' : 'Some text will be hard to read on a phone', fix: 'Use fewer words, a bigger headline size, or a layout with more room.', boxes: tiny.map(textBox) });
+  const k = Math.min(1, 360 / Math.max(fmt.w, fmt.h)), bw = Math.max(1, Math.round(fmt.w * k)), bh = Math.max(1, Math.round(fmt.h * k));
+  const bc = document.createElement('canvas'); bc.width = bw; bc.height = bh;
+  const bx = bc.getContext('2d', { willReadFrequently: true }); bx.setTransform(k, 0, 0, k, 0, 0);
+  draw(bx, st, fmt, null, { prep, bgOnly: true });
+  const px = bx.getImageData(0, 0, bw, bh).data, low = [];
+  for (const L of texts) {
+    if (!HEX.test(L.color || '')) continue;
+    const b = textBox(L), x0 = clamp(Math.floor(b.x * k), 0, bw - 1), y0 = clamp(Math.floor(b.y * k), 0, bh - 1);
+    const x1 = clamp(Math.ceil((b.x + b.w) * k), x0 + 1, bw), y1 = clamp(Math.ceil((b.y + b.h) * k), y0 + 1, bh), need = L.size >= c.u * .05 ? 3 : 4.5;
+    let worst = 99;
+    for (let gy = 0; gy < 2; gy++) for (let gx = 0; gx < 4; gx++) {
+      const cx0 = x0 + Math.floor((x1 - x0) * gx / 4), cx1 = Math.max(cx0 + 1, x0 + Math.floor((x1 - x0) * (gx + 1) / 4));
+      const cy0 = y0 + Math.floor((y1 - y0) * gy / 2), cy1 = Math.max(cy0 + 1, y0 + Math.floor((y1 - y0) * (gy + 1) / 2));
+      let r = 0, g = 0, bl = 0, n = 0;
+      for (let y = cy0; y < Math.min(cy1, bh); y++) for (let x = cx0; x < Math.min(cx1, bw); x++) { const i = (y * bw + x) * 4; r += px[i]; g += px[i + 1]; bl += px[i + 2]; n++; }
+      if (!n) continue;
+      const avg = [r / n, g / n, bl / n], a = L.a ?? 1, eff = a < 1 ? hexOf(mixRgb(avg, hex2rgb(L.color), a)) : L.color;
+      worst = Math.min(worst, contrast(eff, hexOf(avg)));
+    }
+    if (worst < need) low.push(b);
+  }
+  if (low.length) out.push({ title: 'Some text is hard to read against its background', fix: st.photo && tpl.usesPhoto ? 'Darken the photo, drag it to a calmer spot, or choose another theme.' : 'Choose a theme or colors with more contrast.', boxes: low });
+  if (c.story) {
+    const covered = st.extras.filter(e => e._bb && (e._bb.y < c.top || e._bb.y + e._bb.h > fmt.h - c.bot)).map(e => e._bb);
+    if (covered.length) out.push({ title: 'A sticker sits where the app covers the screen', fix: 'Move it towards the middle. Show safe zones marks the covered areas.', boxes: covered });
+  }
+  const qrs = st.extras.filter(e => e.kind === 'qr');
+  if (qrs.some(e => !qrFor(qrText(e.text)))) out.push({ title: 'A QR code has no link yet', fix: 'Select it under Text and stickers and type the link.' });
+  if (qrs.length && fmt.pdf) {
+    const small = qrs.filter(e => e.size * c.u * 2 / 300 * 2.54 < 2);
+    if (small.length) out.push({ title: 'The QR code will be smaller than 2 cm when printed', fix: 'Make it bigger so phones can scan it from arm\'s length.', boxes: small.map(e => e._bb).filter(Boolean) });
+  }
+  if (qrs.length && fmt.group === 'Social') out.push({ info: true, title: 'A QR code cannot be scanned on the phone it is viewed on', fix: 'Put the link in your caption or bio as well.' });
+  if (tpl.usesPhoto && !st.photo) out.push({ title: 'This layout needs a photo', fix: 'Add one under Photo and logo, or pick another layout.' });
+  if (fmt.pdf && IMG.photo && tpl.usesPhoto) {
+    const ph = prep.layers.find(l => l.t === 'photo');
+    if (ph && IMG.photo.width / (ph.w * clamp((st.photoZoom || 100) / 100, 1, 3) / 300) < 150) out.push({ title: 'The photo is low resolution for print', fix: 'Use a larger photo, at least 2000 pixels wide.' });
+  }
+  const sample = TEMPLATES_SAMPLE[st.template] || {};
+  if (['headline', 'sub', 'badge', 'cta', 'handle', 'list'].some(f => sample[f] && st.fields[f] === sample[f] && !st.touched[f])) out.push({ title: 'The example text is still there', fix: 'Type your own words under Words, or use Describe your ad.' });
+  const lim = CAPTION_LIMITS[st.format], cs = capStats();
+  if (lim && cs.n > lim[1]) out.push({ title: `The caption is longer than ${lim[0]} allows`, fix: `It has ${cs.n.toLocaleString()} characters; the limit is ${lim[1].toLocaleString()}.` });
+  if (lim && lim[2] && cs.tags > lim[2]) out.push({ title: `${lim[0]} allows ${lim[2]} hashtags at most`, fix: `The caption has ${cs.tags}. Keep the ones that matter most.` });
+  const words = [st.fields.headline, st.fields.sub, st.fields.badge, st.fields.cta].join(' ').split(/\s+/).filter(Boolean).length;
+  if (fmt.group !== 'Print' && !tpl.list && words > 35) out.push({ info: true, title: 'There is a lot of text on the image', fix: 'Posts with fewer words are easier to read while scrolling. Move details into the caption.' });
+  issues = out; renderCheck();
+}
+function renderCheck() {
+  const b = $('#btn-check'), warn = issues.filter(i => !i.info).length, tips = issues.length - warn;
+  b.classList.toggle('warn', warn > 0);
+  b.textContent = warn ? `${warn} thing${warn === 1 ? '' : 's'} to check` : tips ? `Looks good · ${tips} tip${tips === 1 ? '' : 's'}` : 'Looks good';
+  $('#check-list').innerHTML = issues.length
+    ? issues.map(i => `<li class="${i.info ? 'info' : ''}"><b>${esc(i.title)}</b><span>${esc(i.fix)}</span></li>`).join('')
+    : '<li class="info"><b>Nothing to fix</b><span>Text size, contrast, photo and caption all look fine for this size.</span></li>';
+  if (checkOpen) schedule();
+}
+function setCheckOpen(on) { checkOpen = on; $('#check-panel').hidden = !on; $('#btn-check').setAttribute('aria-expanded', String(on)); schedule(); }
+
+function bindMore() {
+  $('#btn-undo').addEventListener('click', () => histGo(-1));
+  $('#btn-redo').addEventListener('click', () => histGo(1));
+  document.addEventListener('keydown', e => {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    const t = e.target, key = e.key.toLowerCase();
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable) return;
+    if (key === 'z') { e.preventDefault(); histGo(e.shiftKey ? 1 : -1); }
+    else if (key === 'y') { e.preventDefault(); histGo(1); }
+  });
+  $('#ai-change-go').addEventListener('click', runRefine);
+  $('#ai-change').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); runRefine(); } });
+  $('#btn-check').addEventListener('click', () => setCheckOpen(!checkOpen));
+  document.addEventListener('click', e => { if (checkOpen && !e.target.closest('#check-panel, #btn-check')) setCheckOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && checkOpen) setCheckOpen(false); });
+  $('#f-caption').addEventListener('input', updateCapCount);
+}
+
+/* ---------- boot ---------- */
+async function boot() {
+  const saved = store.get(KEY), base = fresh();
+  st = saved ? { ...base, ...saved, fields: { ...base.fields, ...(saved.fields || {}) }, colors: { ...base.colors, ...(saved.colors || {}) }, touched: saved.touched || {} } : base;
+  if (!TEMPLATES[st.template]) st.template = 'bold';
+  if (!FORMATS.some(f => f.id === st.format)) st.format = 'ig-post';
+  st.extras = (st.extras || []).filter(e => e && e.id);
+  loadPlan();
+  buildUi(); bind(); bindExport(); bindAi(); bindTabs(); bindProfile(); bindPlan(); bindReview(); bindCaptionTools(); bindExtrasAndExports(); bindMore();
+  renderStarters(); renderBrandPrev(); renderPlanList(); updateBanner(); syncUi(); fitStage();
+  schedule(); thumbsSoon(); loadFonts();
+  if (st.photo) { IMG.photo = await loadImg(st.photo); schedule(); thumbsSoon(); }
+  if (st.logo) { IMG.logo = await loadImg(st.logo); schedule(); thumbsSoon(); }
+  for (const e of st.extras) if (e.kind === 'image' && e.src) IMG.ex[e.id] = await loadImg(e.src);
+  schedule(); syncUi(); checkSoon(); histReset();
+}
+boot();
+})();
+</script>
+
+</body></html>

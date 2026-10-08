@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ERP — Adrial Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="app">
+  <aside class="side" id="side" aria-label="ERP modules">
+    <div class="brand">
+      <a href="#/"><i aria-hidden="true"></i><span>Adrial ERP<small>Demo · optical retail</small></span></a>
+      <button type="button" class="btn sm menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
+      </button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Modules"></nav>
+    <div class="side-foot">
+      <div id="syncPanel" class="sync-panel"></div>
+      <span class="demo-pill" title="Generated, fictional demo data. It stays in this browser; when you sign in to cloud sync, a private copy is also kept in your account."><i aria-hidden="true"></i>Demo data · saved in this browser, plus your private cloud copy when you sign in to sync</span>
+      <button type="button" class="btn sm" id="resetBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/></svg>Reset demo data
+      </button>
+    </div>
+  </aside>
+  <main class="main" id="main" tabindex="-1"><div class="page"><p class="loading" role="status"><i aria-hidden="true"></i>Loading ERP data…</p></div></main>
+</div>
+<div id="layers"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/_shared/adrial-bus.js"></script>
+<script src="/_shared/adrial-sync.js"></script>
+<script src="data.js?v=9"></script>
+<script src="app.js?v=9"></script>
+</body>
+</html>

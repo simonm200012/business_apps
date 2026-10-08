@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Bookings — Branch Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Branch Manager tokens (same as Main.dc.html), light + dark via the shared Adrial Apps switch */
+:root{--ground:#F4F3EF;--surface:#FFFFFF;--sunken:#F4F3EF;--fill:#EAE8E3;--line:#E0DDD6;--hair:#ECEAE4;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--inv:#0C0C0D;--inv-ink:#F4F3EF;--dash:#D3CFC6;--track:#EFEDE8;--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);--good:#24553A;--good-bg:#DCEBE0;--bad:#9A3412;--bad-bg:#F6E3D6;--scrim:rgba(12,12,13,.32);--accent:#5B3FE0;--now:#C2410C;--hatch:rgba(12,12,13,.045);--font:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;color-scheme:light}
+html[data-adrial-mode="dark"]{--ground:#0C0C0D;--surface:#161618;--sunken:#1F1F22;--fill:#26262A;--line:#2E2E33;--hair:#232327;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--inv:#F4F3EF;--inv-ink:#0C0C0D;--dash:#3A3A40;--track:#26262A;--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--good:#93CFA3;--good-bg:#1D3426;--bad:#F3A47E;--bad-bg:#3A2418;--scrim:rgba(0,0,0,.62);--accent:#9B88F5;--now:#E0703F;--hatch:rgba(244,243,239,.05);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #7B66F0;outline-offset:2px}
+.mono{font-family:var(--mono)}
+.wrap{max-width:1680px;margin:0 auto;padding:20px 16px 72px}
+@media (min-width:800px){.wrap{padding:28px 28px 80px}}
+
+/* Header */
+.head{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
+.crumb{display:inline-flex;align-items:center;gap:6px;font:400 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);text-decoration:none}
+.crumb:hover{color:var(--ink)}
+h1{margin:10px 0 6px;font-size:clamp(30px,4.5vw,44px);line-height:1;font-weight:500;letter-spacing:-.04em}
+h1 span{color:var(--accent)}
+.sub{margin:0;color:var(--ink2);font-size:14px}
+.sub b{font-weight:500;color:var(--ink)}
+.proto{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:var(--fill);color:var(--ink2);font:400 12px var(--mono)}
+.proto i{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+/* Controls */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--ink3)}
+.btn.pri{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
+.btn.pri:hover{opacity:.9}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink2)}
+.btn.ghost:hover{color:var(--ink);background:var(--fill)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.btn.icon{width:40px;padding:0}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn svg,.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.seg{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:var(--fill)}
+.seg button{border:0;background:transparent;color:var(--ink2);min-height:32px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(12,12,13,.12)}
+.seg button:hover{color:var(--ink)}
+.select{min-height:40px;padding:0 34px 0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6964' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 13px center;-webkit-appearance:none;appearance:none;font-size:14px;font-weight:500;cursor:pointer}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.toolbar .grow{flex:1 1 auto}
+.datebtn{min-width:210px;justify-content:flex-start}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);font-size:13px;font-weight:500;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.label{font:400 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.stats{display:flex;flex-wrap:wrap;gap:8px 20px;padding:12px 18px;border-bottom:1px solid var(--hair);font-size:13px;color:var(--ink2)}
+.stats b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Calendar (week / day) */
+.cal{overflow:auto;max-height:calc(100vh - 230px);min-height:420px;position:relative}
+.grid{display:grid;position:relative;min-width:100%}
+.hcell{position:sticky;top:0;z-index:3;background:var(--surface);border-bottom:1px solid var(--hair);border-left:1px solid var(--hair);padding:8px 8px 6px;text-align:center}
+.hcell.corner{left:0;z-index:4;border-left:0}
+.hday{font-size:13px;font-weight:500}
+.hday.today{color:var(--accent)}
+.hday small{display:block;font:400 11px var(--mono);color:var(--ink3);font-weight:400}
+.hroom{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:2px 8px;border-radius:999px;background:var(--fill);font:400 11px var(--mono);color:var(--ink2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcol{position:sticky;left:0;z-index:2;background:var(--surface);border-right:1px solid var(--hair)}
+.tlabel{position:absolute;right:8px;font:400 11px var(--mono);color:var(--ink3);transform:translateY(-50%)}
+.col{position:relative;border-left:1px solid var(--hair);cursor:copy}
+.col.daystart{border-left:1px solid var(--line)}
+.hl{position:absolute;left:0;right:0;border-top:1px solid var(--hair)}
+.hl.half{border-top-style:dashed;opacity:.6}
+.blk{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px);pointer-events:none}
+.blk.closed{background:repeating-linear-gradient(135deg,var(--hatch) 0 6px,transparent 6px 12px),var(--sunken)}
+.blk span{position:absolute;top:6px;left:0;right:0;text-align:center;font:400 11px var(--mono);color:var(--ink3)}
+.now{position:absolute;left:0;right:0;border-top:2px solid var(--now);z-index:1;pointer-events:none}
+.now::before{content:"";position:absolute;left:-4px;top:-5px;width:8px;height:8px;border-radius:50%;background:var(--now)}
+.bk{position:absolute;left:3px;right:3px;border-radius:9px;padding:3px 7px;overflow:hidden;cursor:pointer;border:1px solid transparent;border-left:3px solid var(--c);background:var(--t);color:var(--k);font-size:12px;line-height:1.25;text-align:left;z-index:1}
+.bk:hover{filter:brightness(.97);z-index:2;box-shadow:0 6px 16px -8px rgba(0,0,0,.35)}
+.bk b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk span{display:block;font:400 10.5px var(--mono);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk.noshow{border-style:dashed}
+.bk.mine{box-shadow:inset 0 0 0 1px var(--c)}
+
+/* Agenda */
+.agenda-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--hair)}
+.search{flex:1 1 280px;max-width:420px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--sunken)}
+.agenda{padding:6px 0 10px}
+.ag-hour{display:grid;grid-template-columns:64px 1fr;border-top:1px solid var(--hair)}
+.ag-hour:first-child{border-top:0}
+.ag-h{padding:14px 0 0 18px;font:400 12px var(--mono);color:var(--ink3)}
+.ag-list{display:flex;flex-direction:column;gap:8px;padding:10px 18px 10px 0}
+.ag-item{display:grid;grid-template-columns:4px 104px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:10px 12px 10px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;text-align:left;width:100%}
+.ag-item:hover{border-color:var(--ink3)}
+.ag-bar{align-self:stretch;border-radius:14px 0 0 14px;background:var(--c)}
+.ag-time{font:500 13px var(--mono);font-variant-numeric:tabular-nums}
+.ag-time small{display:block;font-weight:400;color:var(--ink3);font-size:11px}
+.ag-who b{display:block;font-weight:500}
+.ag-who span{font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.ag-room{display:inline-grid;place-items:center;min-width:34px;height:28px;padding:0 8px;border-radius:999px;background:var(--fill);font:500 11px var(--mono);color:var(--ink2)}
+.badge{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font:500 11.5px var(--font);white-space:nowrap}
+.badge.cancel{background:var(--bad-bg);color:var(--bad)}
+.badge.noshow{background:var(--fill);color:var(--ink2)}
+.badge.mine{background:var(--good-bg);color:var(--good)}
+.ag-item.cancelled{opacity:.6}
+.ag-item.cancelled .ag-who b{text-decoration:line-through}
+.empty{padding:40px 18px;text-align:center;color:var(--ink3)}
+
+/* Shift plan */
+.month{display:grid;grid-template-columns:56px repeat(7,minmax(108px,1fr));overflow:auto}
+.mh{position:sticky;top:0;background:var(--surface);padding:10px;text-align:center;font-size:13px;font-weight:500;border-bottom:1px solid var(--hair);z-index:1}
+.mw{display:grid;place-items:center;font:400 11px var(--mono);color:var(--ink3);border-top:1px solid var(--hair)}
+.md{min-height:116px;padding:8px;border-top:1px solid var(--hair);border-left:1px solid var(--hair);cursor:pointer;display:flex;flex-direction:column;gap:5px}
+.md:hover{background:var(--sunken)}
+.md.other{opacity:.45}
+.md .n{display:flex;justify-content:space-between;align-items:center;font:500 12px var(--mono)}
+.md .n.today b{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:999px;background:var(--accent);color:#fff}
+.md .n small{color:var(--ink3);font-weight:400}
+.shift{display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:8px;background:var(--inv);color:var(--inv-ink);font:400 11px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shift.off{background:var(--fill);color:var(--ink3)}
+.shift.hol{background:#F6E3D6;color:#7A3610}
+html[data-adrial-mode="dark"] .shift.hol{background:#3A2418;color:#EDA77E}
+.load{height:4px;border-radius:999px;background:var(--track);overflow:hidden;margin-top:auto}
+.load i{display:block;height:100%;background:var(--accent);border-radius:999px}
+
+/* Popover, drawer, modal, toast */
+.pop{position:fixed;z-index:60;display:flex;flex-direction:column;gap:2px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -16px rgba(12,12,13,.35);min-width:170px}
+.pop button{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:14px;text-align:left}
+.pop button:hover{background:var(--fill)}
+.pop button.del{color:var(--bad)}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:50}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:55;width:min(500px,100%);background:var(--surface);box-shadow:-30px 0 80px -30px rgba(0,0,0,.4);display:flex;flex-direction:column}
+.dr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:22px 24px 12px}
+.dr-head h2{margin:4px 0 0;font-size:26px;line-height:1.1;font-weight:500;letter-spacing:-.03em}
+.dr-body{flex:1;overflow:auto;padding:4px 24px 20px}
+.dr-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:14px 24px 20px;border-top:1px solid var(--hair)}
+.kv{display:grid;gap:14px;margin-top:14px}
+.kv div>span{display:block;font:400 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.kv p{margin:0}
+.svc{display:inline-flex;align-items:center;gap:8px}
+.svc i{width:22px;height:8px;border-radius:999px;background:var(--c)}
+.dur{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:14px}
+.dur-top{display:flex;justify-content:space-between;font-weight:500}
+.dur-top small{font:400 12px var(--mono);color:var(--ink3)}
+.dur-bar{margin-top:12px;height:22px;border-radius:7px;background:var(--c);color:#fff;display:grid;place-items:center;font:500 11px var(--mono)}
+.dur-ends{display:flex;justify-content:space-between;font:400 11px var(--mono);color:var(--ink3);margin-top:4px}
+.modal{position:fixed;z-index:56;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:var(--surface);border-radius:20px;box-shadow:0 50px 110px -40px rgba(12,12,13,.45)}
+.md-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px 6px}
+.md-head h2{margin:0;font-size:20px;font-weight:500;letter-spacing:-.02em}
+.md-body{overflow:auto;padding:8px 22px 16px;display:flex;flex-direction:column;gap:14px}
+.md-foot{display:flex;gap:8px;justify-content:space-between;padding:14px 22px 18px;border-top:1px solid var(--hair)}
+.steps{display:flex;gap:6px;font:400 11px var(--mono);color:var(--ink3)}
+.steps span{padding:3px 9px;border-radius:999px;background:var(--fill)}
+.steps span.on{background:var(--inv);color:var(--inv-ink)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label,.field>.lab{font:400 12px var(--mono);color:var(--ink2)}
+.in{width:100%;min-height:44px;padding:0 14px;border-radius:14px;border:1px solid var(--line);background:var(--sunken)}
+textarea.in{min-height:96px;padding:10px 14px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.svcsel{display:flex;gap:8px}
+.svcsel select{flex:1}
+.swatch{width:44px;min-height:44px;border-radius:14px;border:1px solid var(--line);padding:0;cursor:pointer}
+.box{border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.box h3{margin:0;font-size:15px;font-weight:500}
+.box p{margin:0;font-size:13px;color:var(--ink2)}
+.weeknav{display:flex;align-items:center;justify-content:center;gap:8px}
+.weeknav .wk{min-width:220px;text-align:center;font:500 13px var(--mono)}
+.slotday{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--hair)}
+.slotday:first-child{border-top:0}
+.slotday .d{font:500 12px var(--mono);padding-top:6px}
+.slots{display:flex;flex-wrap:wrap;gap:6px}
+.slot{min-width:64px;min-height:32px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font:500 12.5px var(--mono);cursor:pointer}
+.slot:hover{border-color:var(--ink3)}
+.slot[aria-pressed="true"]{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
+.noslot{font-size:13px;color:var(--ink3);padding-top:6px}
+.sel{display:flex;flex-wrap:wrap;gap:6px}
+.sel span{display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 12px;border-radius:999px;background:var(--good-bg);color:var(--good);font:500 12.5px var(--mono)}
+.sel button{border:0;background:transparent;color:inherit;cursor:pointer;width:22px;height:22px;border-radius:50%}
+.sel button:hover{background:rgba(0,0,0,.08)}
+.suggest{border:1px solid var(--line);border-radius:14px;overflow:hidden;max-height:200px;overflow-y:auto}
+.suggest button{display:flex;justify-content:space-between;gap:12px;width:100%;border:0;border-bottom:1px solid var(--hair);background:var(--surface);padding:9px 14px;text-align:left;cursor:pointer;font-size:14px}
+.suggest button:last-child{border-bottom:0}
+.suggest button:hover{background:var(--fill)}
+.suggest small{font:400 12px var(--mono);color:var(--ink3)}
+.picked{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:var(--sunken);border:1px solid var(--line)}
+.check{display:flex;align-items:center;gap:10px;font-size:14px}
+.check input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
+.err{padding:10px 14px;border-radius:12px;background:var(--bad-bg);color:var(--bad);font-size:13.5px}
+.note{font:400 12px var(--mono);color:var(--ink3)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,8px);opacity:0;pointer-events:none;z-index:70;background:var(--inv);color:var(--inv-ink);padding:11px 18px;border-radius:999px;font-size:14px;transition:opacity .18s,transform .18s;max-width:calc(100vw - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.tabs{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:var(--fill);margin-top:4px}
+.tabs button{border:0;background:transparent;min-height:32px;padding:0 13px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--ink2);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(12,12,13,.12)}
+[hidden]{display:none!important}
+@media (max-width:640px){.row2{grid-template-columns:1fr}.ag-item{grid-template-columns:4px 84px minmax(0,1fr) auto}.ag-item .ag-room{display:none}.slotday{grid-template-columns:1fr}.datebtn{min-width:0}}
+@media print{.toolbar,.head .proto,adrial-shell{display:none}.cal{max-height:none;overflow:visible}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <a class="crumb" href="Main.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Branch Manager · Branches</a>
+      <h1 id="title">Bookings<span>.</span></h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <span class="proto" title="Bookings here are generated sample data. Nothing is sent to TIMIFY."><i></i>Prototype · sample bookings · saved in this browser only</span>
+  </header>
+
+  <div class="toolbar">
+    <button type="button" class="btn pri" id="newBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New booking</button>
+    <select class="select" id="branchSel" aria-label="Branch"></select>
+    <button type="button" class="btn" id="todayBtn">Today</button>
+    <button type="button" class="btn icon" id="prevBtn" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button type="button" class="btn datebtn" id="dateBtn" aria-label="Pick a date"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span id="dateLabel"></span></button>
+    <input type="date" id="datePick" hidden>
+    <button type="button" class="btn icon" id="nextBtn" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    <span class="grow"></span>
+    <div class="seg" role="group" aria-label="View" id="viewSeg">
+      <button type="button" data-view="agenda" aria-pressed="false">Agenda</button>
+      <button type="button" data-view="day" aria-pressed="false">Day</button>
+      <button type="button" data-view="week" aria-pressed="true">Week</button>
+      <button type="button" data-view="shift" aria-pressed="false">Shift plan</button>
+    </div>
+    <button type="button" class="btn icon" id="exportBtn" aria-label="Export bookings (CSV)" title="Export bookings (CSV)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M5 20h14"/></svg></button>
+  </div>
+
+  <div class="toolbar">
+    <span class="label">Rooms</span>
+    <div class="chips" id="roomChips"></div>
+    <span class="grow"></span>
+    <label class="label" for="svcFilter">Service</label>
+    <select class="select" id="svcFilter"></select>
+  </div>
+
+  <section class="panel" aria-live="polite">
+    <div class="stats" id="stats"></div>
+    <div id="view"></div>
+  </section>
+</div>
+
+<div id="layer"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Branches and rooms (from Branch Manager) ───────────────────────────────
+  var BRANCHES = [
+    { id: 'osijek', country: 'HR', city: 'Osijek', street: 'Trg slobode', email: 'osijek@adrialece.hr', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'rijeka', country: 'HR', city: 'Rijeka', street: 'Pul Vele Crikve', email: 'optika.rijeka@adrialece.hr', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'split', country: 'HR', city: 'Split', street: 'Ljudevita Posavskog', email: 'optika.split@adrialece.hr', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'zadar', country: 'HR', city: 'Zadar', street: 'Bartola Kašića', email: 'optika.zadar@adrialece.hr', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'zagreb', country: 'HR', city: 'Zagreb', street: 'Zagrebačka avenija', email: 'optika.zagreb@adrialece.hr', rooms: ['Examination 1', 'Examination 2', 'Examination 3'] },
+    { id: 'komenda', country: 'SI', city: 'Komenda', street: 'Pod kostanji', email: 'optika.komenda@moje-lece.si', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'koper', country: 'SI', city: 'Koper', street: 'Zore Perello-Godina', email: 'optika.koper@moje-lece.si', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'maribor', country: 'SI', city: 'Maribor', street: 'Prvomajska', email: 'optika.maribor@moje-lece.si', rooms: ['Examination 1', 'Examination 2'] },
+    { id: 'novomesto', country: 'SI', city: 'Novo Mesto', street: 'Ljubljanska cesta', email: 'optika.novomesto@moje-lece.si', rooms: ['Examination 1', 'Showroom Novo Mesto'] }
+  ];
+  BRANCHES.forEach(function (b) { b.roomList = b.rooms.map(function (name, i) { return { code: 'E' + (i + 1), name: name, short: /showroom/i.test(name) ? 'SR' : 'E' + (name.match(/\d+/) || [i + 1])[0] }; }); });
+  var byBranch = {}; BRANCHES.forEach(function (b) { byBranch[b.id] = b; });
+
+  // ── Services (as listed in the TIMIFY branch calendar) ────────────────────
+  var SERVICES = [
+    { id: 'EE20', name: 'Eye Exam 20 minutes', dur: 20, c: '#3F7D58', t: '#DCEBE0', k: '#24553A', w: 34 },
+    { id: 'EE30', name: 'Eye Exam 30 minutes', dur: 30, c: '#17869C', t: '#D7EEF2', k: '#0E5462', w: 20 },
+    { id: 'SMIP', name: 'Sight measurement with intraocular pressure measurement', dur: 20, c: '#3E5BA9', t: '#DFE5F4', k: '#2A4180', w: 12 },
+    { id: 'SMCL', name: 'Sight measurement for contact lenses', dur: 20, c: '#5A6FB4', t: '#E4E8F6', k: '#2A4180', w: 8 },
+    { id: 'CLF30', name: 'Contact Lenses Fitting 30 minutes', dur: 30, c: '#B4561C', t: '#F6E3D6', k: '#7A3610', w: 7 },
+    { id: 'CLC', name: 'Contact Lenses Check-up', dur: 30, c: '#5B3FE0', t: '#E6E1FB', k: '#3B2A9E', w: 6 },
+    { id: 'EDC', name: 'Eye Doctor - Complex Check-up', dur: 30, c: '#7A5CC9', t: '#EAE3F8', k: '#3B2A9E', w: 5 },
+    { id: 'EPT', name: 'Eye Pressure Test', dur: 20, c: '#9A6700', t: '#F7ECD2', k: '#6B4407', w: 4 },
+    { id: 'CLF60', name: 'Contact Lenses Fitting 60 minutes', dur: 60, c: '#8F3F05', t: '#F3DCCB', k: '#6B2E06', w: 3 },
+    { id: 'EE60', name: 'Eye Exam 60 minutes', dur: 60, c: '#0E5462', t: '#CFE7EC', k: '#0E5462', w: 1 }
+  ];
+  var DARK_TINT = { EE20: '#1D3426', EE30: '#12313A', SMIP: '#1E2640', SMCL: '#20263D', CLF30: '#3A2418', CLC: '#2A2550', EDC: '#2C2545', EPT: '#33270E', CLF60: '#3A2214', EE60: '#11303A', CUSTOM: '#26262A' };
+  var DARK_INK = { EE20: '#93CFA3', EE30: '#7CC8D6', SMIP: '#9DB0EA', SMCL: '#A6B4E6', CLF30: '#EDA77E', CLC: '#C9BDFB', EDC: '#C9BDFB', EPT: '#E2C27A', CLF60: '#EDA77E', EE60: '#7CC8D6', CUSTOM: '#BAB7AF' };
+  var SVC = {}; SERVICES.forEach(function (s) { SVC[s.id] = s; });
+  var CUSTOM = { id: 'CUSTOM', name: 'Custom', dur: 30, c: '#6B6964', t: '#EAE8E3', k: '#0C0C0D' };
+  var SWATCHES = ['#3F7D58', '#17869C', '#3E5BA9', '#5B3FE0', '#B4561C', '#9A6700', '#6B6964'];
+
+  // ── Dates ─────────────────────────────────────────────────────────────────
+  var DAY = 864e5;
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(s, n) { var d = parse(s); d.setDate(d.getDate() + n); return ymd(d); }
+  function dow(s) { return (parse(s).getDay() + 6) % 7; } // Mon = 0
+  function weekStart(s) { return addDays(s, -dow(s)); }
+  function isoWeek(s) { var d = parse(s); d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7); var w1 = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - w1) / DAY - 3 + (w1.getDay() + 6) % 7) / 7); }
+  function hm(min) { return pad(Math.floor(min / 60)) + ':' + pad(min % 60); }
+  function dm(s) { var d = parse(s); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1); }
+  var WD = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+  var WDL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function longDate(s) { var d = parse(s); return WDL[dow(s)] + ', ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+  var TODAY = ymd(new Date());
+  function nowMin() { var d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
+
+  // Public holidays (closed days)
+  function easter(y) { var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1; return new Date(y, mo - 1, da); }
+  var HOL_CACHE = {};
+  function holidays(country, y) {
+    var key = country + y; if (HOL_CACHE[key]) return HOL_CACHE[key];
+    var fixed = country === 'SI'
+      ? { '01-01': 'New Year', '01-02': 'New Year', '02-08': 'Prešeren Day', '04-27': 'Day of Uprising', '05-01': 'Labour Day', '05-02': 'Labour Day', '06-25': 'Statehood Day', '08-15': 'Assumption Day', '10-31': 'Reformation Day', '11-01': 'All Saints’ Day', '12-25': 'Christmas', '12-26': 'Independence Day' }
+      : { '01-01': 'New Year', '01-06': 'Epiphany', '05-01': 'Labour Day', '05-30': 'Statehood Day', '06-22': 'Anti-Fascist Struggle Day', '08-05': 'Victory Day', '08-15': 'Assumption Day', '11-01': 'All Saints’ Day', '11-18': 'Remembrance Day', '12-25': 'Christmas', '12-26': 'St Stephen’s Day' };
+    var out = {}; Object.keys(fixed).forEach(function (md) { out[y + '-' + md] = fixed[md]; });
+    var e = easter(y), em = new Date(e); em.setDate(e.getDate() + 1); out[ymd(em)] = 'Easter Monday';
+    if (country === 'HR') { var cc = new Date(e); cc.setDate(e.getDate() + 60); out[ymd(cc)] = 'Corpus Christi'; }
+    return (HOL_CACHE[key] = out);
+  }
+  function holidayOf(branch, s) { return holidays(branch.country, +s.slice(0, 4))[s] || ''; }
+
+  // Opening hours: Mon–Fri 08:00–19:00 (lunch 12:00–12:30), Sat 08:00–13:00, Sun closed.
+  function hours(branch, s) {
+    var hol = holidayOf(branch, s), d = dow(s);
+    if (hol) return { closed: true, why: hol };
+    if (d === 6) return { closed: true, why: 'Closed' };
+    if (d === 5) return { open: 480, close: 780, breaks: [] };
+    return { open: 480, close: 1140, breaks: [[720, 750]] };
+  }
+  var GRID_START = 480, GRID_END = 1140, PX = 1.9;
+
+  // ── Sample bookings: deterministic per branch × day × room ────────────────
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { var a = seed; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var NAMES = {
+    SI: { f: ['Ana', 'Maja', 'Nina', 'Eva', 'Sara', 'Petra', 'Tina', 'Mojca', 'Katja', 'Urša', 'Neža', 'Špela', 'Barbara', 'Mateja', 'Jure', 'Luka', 'Matej', 'Rok', 'Žiga', 'Gregor', 'Miha', 'Tomaž', 'Primož', 'Klemen', 'Aleš', 'Blaž', 'Andrej', 'Janez', 'Nejc', 'Jaka'], l: ['Novak', 'Horvat', 'Kovačič', 'Krajnc', 'Zupančič', 'Potočnik', 'Kovač', 'Mlakar', 'Kos', 'Vidmar', 'Golob', 'Turk', 'Kralj', 'Božič', 'Korošec', 'Bizjak', 'Zupan', 'Hribar', 'Kavčič', 'Rozman', 'Kastelic', 'Oblak', 'Petek', 'Žagar', 'Kolar', 'Košir', 'Koren', 'Mrak', 'Vovk', 'Jereb'], tel: '+386 4', mail: 'example.si' },
+    HR: { f: ['Ana', 'Ivana', 'Marija', 'Petra', 'Lucija', 'Martina', 'Maja', 'Kristina', 'Tea', 'Iva', 'Nikolina', 'Sara', 'Josipa', 'Helena', 'Luka', 'Ivan', 'Marko', 'Josip', 'Tomislav', 'Matej', 'Filip', 'Ante', 'Karlo', 'Domagoj', 'Mario', 'Nikola', 'Dario', 'Hrvoje', 'Petar', 'Bruno'], l: ['Horvat', 'Kovačević', 'Babić', 'Marić', 'Jurić', 'Novak', 'Kovačić', 'Knežević', 'Vuković', 'Marković', 'Petrović', 'Matić', 'Tomić', 'Pavlović', 'Kovač', 'Božić', 'Blažević', 'Grgić', 'Pavić', 'Radić', 'Perić', 'Šarić', 'Lovrić', 'Vidović', 'Perković', 'Popović', 'Bošnjak', 'Jukić', 'Barišić', 'Kolar'], tel: '+385 9', mail: 'example.hr' }
+  };
+  var REMARKS = ['', '', '', '', 'First visit', 'Wears contact lenses', 'Needs new prescription', 'Glasses broken', 'Follow-up after 6 months', 'Prefers morning'];
+  var STAFF = { SI: ['Maja Novak', 'Tina Kos', 'Luka Kovač'], HR: ['Ivana Babić', 'Marko Jurić', 'Tea Matić'] };
+  function ascii(s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase(); }
+  function pickW(r) { var tot = 0, i; for (i = 0; i < SERVICES.length; i++) tot += SERVICES[i].w; var x = r() * tot; for (i = 0; i < SERVICES.length; i++) { x -= SERVICES[i].w; if (x < 0) return SERVICES[i]; } return SERVICES[0]; }
+
+  var GEN = {};
+  function generated(branch, s) {
+    var key = branch.id + '|' + s; if (GEN[key]) return GEN[key];
+    var h = hours(branch, s), out = [];
+    if (!h.closed) {
+      var dist = Math.round((parse(s) - parse(TODAY)) / DAY);
+      var fade = dist > 40 ? Math.max(0.08, 1 - (dist - 40) / 70) : 1;
+      var pool = NAMES[branch.country], staff = STAFF[branch.country];
+      branch.roomList.forEach(function (room, ri) {
+        var r = rng(hash(key + '|' + room.code));
+        var base = (dow(s) === 5 ? 0.58 : 0.78) * [1, 0.72, 0.5][Math.min(ri, 2)] * (/showroom/i.test(room.name) ? 0.35 : 1) * fade;
+        var t = h.open;
+        while (t < h.close) {
+          var brk = h.breaks.filter(function (b) { return t >= b[0] && t < b[1]; })[0];
+          if (brk) { t = brk[1]; continue; }
+          var limit = h.close; h.breaks.forEach(function (b) { if (b[0] > t && b[0] < limit) limit = b[0]; });
+          if (r() < base) {
+            var svc = pickW(r);
+            if (t + svc.dur > limit) svc = SVC.EE20;
+            if (t + svc.dur > limit) { t += 10; continue; }
+            var f = pool.f[Math.floor(r() * pool.f.length)], l = pool.l[Math.floor(r() * pool.l.length)];
+            var email = ascii(f) + '.' + ascii(l) + (Math.floor(r() * 90) + 10) + '@' + pool.mail;
+            var phone = pool.tel + Math.floor(r() * 10) + ' ' + (100 + Math.floor(r() * 900)) + ' ' + (100 + Math.floor(r() * 900));
+            var remark = REMARKS[Math.floor(r() * REMARKS.length)];
+            var created = addDays(s, -(1 + Math.floor(r() * 21)));
+            var viaApp = r() < 0.66;
+            out.push({
+              id: branch.id + '-' + s + '-' + room.code + '-' + t, gen: true, branch: branch.id, date: s, room: room.code, start: t, dur: svc.dur, svc: svc.id, title: '',
+              first: f, last: l, email: email, phone: phone, note: remark,
+              createdAt: created + ' ' + hm(480 + Math.floor(r() * 600)), createdBy: viaApp ? 'Alensa' : staff[Math.floor(r() * staff.length)],
+              status: r() < 0.035 ? 'cancelled' : 'active', noShow: s < TODAY && r() < 0.035
+            });
+            t += svc.dur;
+          } else t += r() < 0.5 ? 10 : 20;
+        }
+      });
+    }
+    return (GEN[key] = out);
+  }
+
+  // ── Local changes (this browser only) ─────────────────────────────────────
+  var KEY = 'bm-bookings-v1';
+  function loadStore() { try { var v = JSON.parse(localStorage.getItem(KEY)); if (v && v.added) return v; } catch (e) {} return { added: {}, edited: {}, deleted: {} }; }
+  var store = loadStore();
+  function saveStore() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { toast('Could not save in this browser (storage blocked).'); } }
+
+  function bookingsOn(branchId, s) {
+    var b = byBranch[branchId], out = [];
+    generated(b, s).forEach(function (x) { if (!store.deleted[x.id] && !store.edited[x.id]) out.push(x); });
+    [store.edited, store.added].forEach(function (m) { Object.keys(m).forEach(function (id) { var x = m[id]; if (x.branch === branchId && x.date === s) out.push(x); }); });
+    return out.sort(function (a, c) { return a.start - c.start || a.room.localeCompare(c.room); });
+  }
+  function findBooking(id) {
+    if (store.added[id]) return store.added[id];
+    if (store.edited[id]) return store.edited[id];
+    var p = id.split('-'); // branch-YYYY-MM-DD-E1-start
+    var s = p[1] + '-' + p[2] + '-' + p[3];
+    return generated(byBranch[p[0]], s).filter(function (x) { return x.id === id; })[0] || null;
+  }
+  function putBooking(x) {
+    if (x.gen) store.edited[x.id] = x; else store.added[x.id] = x;
+    saveStore(); GEN_free = {};
+  }
+  function removeBooking(x) {
+    if (store.added[x.id]) delete store.added[x.id];
+    else { delete store.edited[x.id]; if (x.gen) store.deleted[x.id] = true; }
+    saveStore();
+  }
+  var GEN_free = {};
+
+  function svcOf(x) { return x.svc === 'CUSTOM' ? Object.assign({}, CUSTOM, { name: x.title || 'Custom', c: x.color || CUSTOM.c }) : SVC[x.svc]; }
+  function colors(x) {
+    var s = svcOf(x), dark = document.documentElement.getAttribute('data-adrial-mode') === 'dark';
+    if (x.svc === 'CUSTOM') return { c: s.c, t: dark ? '#26262A' : '#EFEDE8', k: dark ? '#F4F3EF' : '#0C0C0D' };
+    return { c: s.c, t: dark ? DARK_TINT[s.id] : s.t, k: dark ? DARK_INK[s.id] : s.k };
+  }
+  function custName(x) { return (x.first + ' ' + x.last).trim() || '(no customer)'; }
+  function roomName(branch, code) { var r = branch.roomList.filter(function (q) { return q.code === code; })[0]; return r ? r.name : code; }
+  function roomShort(branch, code) { var r = branch.roomList.filter(function (q) { return q.code === code; })[0]; return r ? r.short : code; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  // ── State (mirrored in the URL) ───────────────────────────────────────────
+  var q = new URLSearchParams(location.search);
+  var state = {
+    branch: byBranch[q.get('branch')] ? q.get('branch') : 'komenda',
+    view: ['agenda', 'day', 'week', 'shift'].indexOf(q.get('view')) >= 0 ? q.get('view') : (window.innerWidth < 760 ? 'agenda' : 'week'),
+    date: /^\d{4}-\d{2}-\d{2}$/.test(q.get('date') || '') ? q.get('date') : TODAY,
+    rooms: null, svc: 'all', search: ''
+  };
+  function branch() { return byBranch[state.branch]; }
+  function activeRooms() { var b = branch(); return state.rooms ? b.roomList.filter(function (r) { return state.rooms.indexOf(r.code) >= 0; }) : b.roomList; }
+  function syncUrl() { var u = new URL(location.href); u.searchParams.set('branch', state.branch); u.searchParams.set('view', state.view); u.searchParams.set('date', state.date); history.replaceState(null, '', u); }
+  function visible(x) { return state.svc === 'all' || x.svc === state.svc; }
+
+  // ── Toolbar ───────────────────────────────────────────────────────────────
+  var $ = function (id) { return document.getElementById(id); };
+  $('branchSel').innerHTML = BRANCHES.map(function (b) { return '<option value="' + b.id + '">' + b.country + ' - ' + esc(b.city) + ' - ' + esc(b.street) + '</option>'; }).join('');
+  $('svcFilter').innerHTML = '<option value="all">All services</option>' + SERVICES.map(function (s) { return '<option value="' + s.id + '">' + esc(s.name) + '</option>'; }).join('') + '<option value="CUSTOM">Custom titles</option>';
+
+  function renderToolbar() {
+    var b = branch();
+    $('branchSel').value = b.id;
+    $('title').innerHTML = esc(b.city) + ' bookings<span>.</span>';
+    $('subtitle').innerHTML = '<b>' + b.country + ' - ' + esc(b.city) + ' - ' + esc(b.street) + '</b> · ' + esc(b.email) + ' · ' + b.roomList.length + ' room' + (b.roomList.length > 1 ? 's' : '');
+    document.title = b.city + ' bookings — Branch Manager';
+    document.querySelectorAll('#viewSeg button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.view === state.view)); });
+    var s = state.date, label;
+    if (state.view === 'week') { var w = weekStart(s); label = 'CW' + isoWeek(s) + ', ' + dm(w) + ' – ' + dm(addDays(w, 6)); }
+    else if (state.view === 'shift') { var d = parse(s); label = MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+    else label = WD[dow(s)] + ', ' + dm(s) + '/' + s.slice(0, 4) + (s === TODAY ? ' · today' : '');
+    $('dateLabel').textContent = label;
+    $('roomChips').innerHTML = '<button type="button" class="chip" data-room="all" aria-pressed="' + (!state.rooms) + '">All</button>' +
+      b.roomList.map(function (r) { return '<button type="button" class="chip" data-room="' + r.code + '" aria-pressed="' + (!!state.rooms && state.rooms.indexOf(r.code) >= 0) + '"><span class="mono">' + r.short + '</span>' + esc(r.name) + '</button>'; }).join('');
+    $('svcFilter').value = state.svc;
+  }
+
+  // ── Stats line ────────────────────────────────────────────────────────────
+  function rangeDays() {
+    if (state.view === 'week') { var w = weekStart(state.date); return [0, 1, 2, 3, 4, 5, 6].map(function (i) { return addDays(w, i); }); }
+    if (state.view === 'shift') { var d = parse(state.date), first = ymd(new Date(d.getFullYear(), d.getMonth(), 1)), n = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); var out = []; for (var i = 0; i < n; i++) out.push(addDays(first, i)); return out; }
+    return [state.date];
+  }
+  function renderStats() {
+    var b = branch(), days = rangeDays(), rooms = activeRooms().map(function (r) { return r.code; });
+    var act = 0, canc = 0, booked = 0, cap = 0, mine = 0;
+    days.forEach(function (s) {
+      var h = hours(b, s);
+      if (!h.closed) cap += (h.close - h.open - h.breaks.reduce(function (a, x) { return a + x[1] - x[0]; }, 0)) * rooms.length;
+      bookingsOn(b.id, s).forEach(function (x) {
+        if (rooms.indexOf(x.room) < 0 || !visible(x)) return;
+        if (x.status === 'cancelled') { canc++; return; }
+        act++; booked += x.dur; if (!x.gen || store.edited[x.id]) mine++;
+      });
+    });
+    var span = state.view === 'week' ? 'this week' : state.view === 'shift' ? 'this month' : 'this day';
+    $('stats').innerHTML = '<span><b>' + act + '</b> bookings ' + span + '</span><span><b>' + (cap ? Math.round(booked / cap * 100) : 0) + '%</b> of open room time booked</span>' +
+      (canc ? '<span><b>' + canc + '</b> cancelled</span>' : '') + (mine ? '<span><b>' + mine + '</b> added or changed by you</span>' : '');
+  }
+
+  // ── Week / day calendar ───────────────────────────────────────────────────
+  function renderCalendar(days) {
+    var b = branch(), rooms = activeRooms(), cols = [];
+    days.forEach(function (s) { rooms.forEach(function (r, i) { cols.push({ s: s, r: r, first: i === 0 }); }); });
+    var H = (GRID_END - GRID_START) * PX, colw = days.length === 1 ? 'minmax(180px,1fr)' : 'minmax(118px,1fr)';
+    var html = '<div class="cal" id="cal"><div class="grid" style="grid-template-columns:56px repeat(' + cols.length + ',' + colw + ')">';
+    html += '<div class="hcell corner" style="grid-row:1"></div>';
+    cols.forEach(function (c) {
+      var hol = holidayOf(b, c.s);
+      html += '<div class="hcell" style="grid-row:1"><div class="hday' + (c.s === TODAY ? ' today' : '') + '">' + WD[dow(c.s)] + ', ' + dm(c.s) + (hol ? '<small>' + esc(hol) + '</small>' : '') + '</div><span class="hroom" title="' + esc(c.r.name) + '">' + c.r.short + ' · ' + esc(c.r.name) + '</span></div>';
+    });
+    // time column
+    html += '<div class="tcol" style="grid-row:2;height:' + H + 'px;position:sticky">';
+    for (var t = GRID_START; t <= GRID_END; t += 60) html += '<span class="tlabel" style="top:' + Math.max(8, (t - GRID_START) * PX) + 'px">' + hm(t) + '</span>';
+    html += '</div>';
+    var nm = nowMin();
+    cols.forEach(function (c, ci) {
+      var h = hours(b, c.s);
+      html += '<div class="col' + (c.first ? ' daystart' : '') + '" style="grid-row:2;height:' + H + 'px" data-date="' + c.s + '" data-room="' + c.r.code + '">';
+      for (var t2 = GRID_START + 30; t2 < GRID_END; t2 += 30) html += '<span class="hl' + (t2 % 60 ? ' half' : '') + '" style="top:' + (t2 - GRID_START) * PX + 'px"></span>';
+      if (h.closed) html += '<div class="blk closed" style="top:0;height:' + H + 'px"><span>' + esc(h.why) + '</span></div>';
+      else {
+        if (h.open > GRID_START) html += '<div class="blk" style="top:0;height:' + (h.open - GRID_START) * PX + 'px"></div>';
+        if (h.close < GRID_END) html += '<div class="blk closed" style="top:' + (h.close - GRID_START) * PX + 'px;height:' + (GRID_END - h.close) * PX + 'px"><span>Closed</span></div>';
+        h.breaks.forEach(function (x) { html += '<div class="blk" style="top:' + (x[0] - GRID_START) * PX + 'px;height:' + (x[1] - x[0]) * PX + 'px"></div>'; });
+      }
+      if (c.s === TODAY && nm > GRID_START && nm < GRID_END) html += '<span class="now" style="top:' + (nm - GRID_START) * PX + 'px"></span>';
+      bookingsOn(b.id, c.s).forEach(function (x) {
+        if (x.room !== c.r.code || x.status === 'cancelled' || !visible(x)) return;
+        var col = colors(x), top = (x.start - GRID_START) * PX, ht = Math.max(18, x.dur * PX - 2);
+        var mine = !x.gen || !!store.edited[x.id];
+        html += '<button type="button" class="bk' + (x.noShow ? ' noshow' : '') + (mine ? ' mine' : '') + '" data-id="' + esc(x.id) + '" style="top:' + top + 'px;height:' + ht + 'px;--c:' + col.c + ';--t:' + col.t + ';--k:' + col.k + '" title="' + hm(x.start) + '–' + hm(x.start + x.dur) + ' · ' + esc(custName(x)) + ' · ' + esc(svcOf(x).name) + '">' +
+          '<span>' + hm(x.start) + '–' + hm(x.start + x.dur) + '</span><b>' + esc(custName(x)) + '</b>' + (ht > 46 ? '<span>' + esc(svcOf(x).name) + '</span>' : '') + '</button>';
+      });
+      html += '</div>';
+    });
+    html += '</div></div>';
+    $('view').innerHTML = html;
+    var cal = $('cal');
+    var focus = (state.date === TODAY || days.indexOf(TODAY) >= 0) ? Math.max(GRID_START, nowMin() - 90) : GRID_START;
+    cal.scrollTop = (focus - GRID_START) * PX;
+    if (days.length > 1 && days.indexOf(state.date) > 0) cal.scrollLeft = Math.max(0, days.indexOf(state.date) * rooms.length * 118 - 40);
+  }
+
+  // ── Agenda ────────────────────────────────────────────────────────────────
+  function renderAgenda() {
+    var b = branch(), rooms = activeRooms().map(function (r) { return r.code; }), qy = state.search.trim().toLowerCase();
+    var list = bookingsOn(b.id, state.date).filter(function (x) {
+      if (rooms.indexOf(x.room) < 0 || !visible(x)) return false;
+      if (!qy) return true;
+      return [custName(x), x.email, x.phone, svcOf(x).name, hm(x.start), x.note, roomName(b, x.room)].join(' ').toLowerCase().indexOf(qy) >= 0;
+    });
+    var html = '<div class="agenda-tools"><div><b style="font-weight:500">' + longDate(state.date) + '</b>' + (state.date === TODAY ? ' <span class="badge mine">Today</span>' : '') + '<div class="note">Bookings for ' + (rooms.length === b.roomList.length ? 'all rooms' : rooms.length + ' room(s)') + (holidayOf(b, state.date) ? ' · ' + esc(holidayOf(b, state.date)) : '') + '</div></div>' +
+      '<input type="search" class="search" id="agSearch" placeholder="Search by customer, service, phone or time…" aria-label="Search bookings" value="' + esc(state.search) + '"></div><div class="agenda">';
+    if (hours(b, state.date).closed) html += '<div class="empty">The branch is closed on this day (' + esc(hours(b, state.date).why) + ').</div>';
+    else if (!list.length) html += '<div class="empty">' + (qy ? 'No bookings match “' + esc(state.search) + '”.' : 'No bookings on this day yet. Use New booking to add one.') + '</div>';
+    else {
+      var groups = {};
+      list.forEach(function (x) { var hr = Math.floor(x.start / 60); (groups[hr] = groups[hr] || []).push(x); });
+      Object.keys(groups).sort(function (a, c) { return a - c; }).forEach(function (hr) {
+        html += '<div class="ag-hour"><div class="ag-h">' + pad(+hr) + ':00</div><div class="ag-list">';
+        groups[hr].forEach(function (x) {
+          var col = colors(x), mine = !x.gen || !!store.edited[x.id];
+          html += '<button type="button" class="ag-item' + (x.status === 'cancelled' ? ' cancelled' : '') + '" data-id="' + esc(x.id) + '" style="--c:' + col.c + '">' +
+            '<span class="ag-bar"></span><span class="ag-time">' + hm(x.start) + ' – ' + hm(x.start + x.dur) + '<small>' + x.dur + ' MIN</small></span>' +
+            '<span class="ag-who"><b>' + esc(custName(x)) + '</b><span><span class="svc" style="--c:' + col.c + '"><i style="width:10px;height:10px"></i></span>' + esc(svcOf(x).name) + '</span></span>' +
+            '<span>' + (x.status === 'cancelled' ? '<span class="badge cancel">Cancelled</span>' : x.noShow ? '<span class="badge noshow">No-show</span>' : mine ? '<span class="badge mine">Yours</span>' : '') + '</span>' +
+            '<span class="ag-room" title="' + esc(roomName(b, x.room)) + '">' + roomShort(b, x.room) + '</span></button>';
+        });
+        html += '</div></div>';
+      });
+    }
+    html += '</div>';
+    $('view').innerHTML = html;
+    var s = $('agSearch');
+    s.addEventListener('input', function () { state.search = s.value; var pos = s.selectionStart; renderAgenda(); var n = $('agSearch'); n.focus(); n.setSelectionRange(pos, pos); });
+  }
+
+  // ── Shift plan (month) ────────────────────────────────────────────────────
+  function renderShift() {
+    var b = branch(), d = parse(state.date), first = ymd(new Date(d.getFullYear(), d.getMonth(), 1));
+    var start = weekStart(first), lastDay = ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0)), end = addDays(weekStart(lastDay), 6);
+    var rooms = activeRooms();
+    var html = '<div class="month"><div class="mh"></div>' + WDL.map(function (w) { return '<div class="mh">' + w + '</div>'; }).join('');
+    for (var w = start; w <= end; w = addDays(w, 7)) {
+      html += '<div class="mw">CW' + isoWeek(w) + '</div>';
+      for (var i = 0; i < 7; i++) {
+        var s = addDays(w, i), h = hours(b, s), other = s.slice(0, 7) !== state.date.slice(0, 7);
+        var shifts = h.closed ? '<span class="shift ' + (holidayOf(b, s) ? 'hol' : 'off') + '">' + esc(h.why === 'Closed' ? 'Day blocker' : h.why) + '</span>'
+          : rooms.map(function (r) { return '<span class="shift" title="' + esc(r.name) + '">' + r.short + ' ' + hm(h.open) + ' – ' + hm(h.close) + '</span>'; }).join('');
+        var load = 0;
+        if (!h.closed) {
+          var cap = (h.close - h.open - h.breaks.reduce(function (a, x) { return a + x[1] - x[0]; }, 0)) * rooms.length, used = 0;
+          bookingsOn(b.id, s).forEach(function (x) { if (x.status !== 'cancelled' && rooms.some(function (r) { return r.code === x.room; })) used += x.dur; });
+          load = cap ? Math.round(used / cap * 100) : 0;
+        }
+        html += '<div class="md' + (other ? ' other' : '') + '" data-day="' + s + '" role="button" tabindex="0" aria-label="' + longDate(s) + (h.closed ? ', ' + esc(h.why) : ', ' + load + '% booked') + '">' +
+          '<div class="n' + (s === TODAY ? ' today' : '') + '"><b>' + parse(s).getDate() + '</b>' + (h.closed ? '' : '<small>' + load + '%</small>') + '</div>' + shifts +
+          (h.closed ? '' : '<div class="load" title="' + load + '% booked"><i style="width:' + load + '%"></i></div>') + '</div>';
+      }
+    }
+    html += '</div>';
+    $('view').innerHTML = html;
+  }
+
+  function render() {
+    syncUrl(); renderToolbar(); renderStats();
+    if (state.view === 'week') { var w = weekStart(state.date); renderCalendar([0, 1, 2, 3, 4, 5, 6].map(function (i) { return addDays(w, i); })); }
+    else if (state.view === 'day') renderCalendar([state.date]);
+    else if (state.view === 'agenda') renderAgenda();
+    else renderShift();
+  }
+
+  // ── Layers: popover, drawer, modal ────────────────────────────────────────
+  var layer = $('layer');
+  function closeLayer() { layer.innerHTML = ''; document.removeEventListener('keydown', escClose); }
+  function escClose(e) { if (e.key === 'Escape') closeLayer(); }
+  function openLayer(html) { layer.innerHTML = html; document.addEventListener('keydown', escClose); }
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove('on'); }, 3000); }
+
+  function quickActions(x, anchor) {
+    var r = anchor.getBoundingClientRect();
+    var left = Math.min(window.innerWidth - 190, r.right + 6), top = Math.min(window.innerHeight - 190, r.top);
+    if (left < 8) left = 8;
+    openLayer('<div class="scrim" style="background:transparent" data-close></div><div class="pop" role="menu" style="left:' + left + 'px;top:' + Math.max(8, top) + 'px">' +
+      '<button type="button" role="menuitem" data-act="view"><svg class="ic" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>View</button>' +
+      '<button type="button" role="menuitem" data-act="edit"><svg class="ic" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>Edit</button>' +
+      '<button type="button" role="menuitem" data-act="dup"><svg class="ic" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Duplicate</button>' +
+      '<button type="button" role="menuitem" class="del" data-act="del"><svg class="ic" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Delete</button></div>');
+    layer.querySelector('.pop button').focus();
+    layer.onclick = function (e) {
+      if (e.target.hasAttribute('data-close')) return closeLayer();
+      var a = e.target.closest('[data-act]'); if (!a) return;
+      var act = a.getAttribute('data-act');
+      if (act === 'view') details(x);
+      else if (act === 'edit') editForm(x);
+      else if (act === 'dup') newBooking({ from: x });
+      else confirmDelete(x);
+    };
+  }
+
+  function details(x, tab) {
+    var b = byBranch[x.branch], s = svcOf(x), col = colors(x);
+    tab = tab || 'booking';
+    var visits = [];
+    for (var i = -60; i <= 60; i++) bookingsOn(b.id, addDays(x.date, i)).forEach(function (y) { if (y.email && y.email === x.email) visits.push(y); });
+    var body = tab === 'booking'
+      ? '<div class="kv"><div><span>Service</span><p class="svc" style="--c:' + col.c + '"><i></i>' + esc(s.name) + '</p></div>' +
+        '<div><span>Category</span><p>' + (x.svc === 'CUSTOM' ? 'Custom title' : 'My Services') + '</p></div>' +
+        '<div><span>Created on</span><p>' + esc(x.createdAt) + ' · by ' + esc(x.createdBy) + '</p></div>' +
+        '<div><span>Resource</span><p>' + esc(roomName(b, x.room)) + '</p></div>' +
+        '<div><span>Status</span><p>' + (x.status === 'cancelled' ? '<span class="badge cancel">Cancelled</span>' : x.noShow ? '<span class="badge noshow">No-show</span>' : 'Active') + '</p></div>' +
+        '<div><span>Note</span><p>' + esc([custName(x), x.email, x.phone, x.note].filter(Boolean).join(', ')) + '</p></div></div>' +
+        '<div class="dur" style="--c:' + col.c + '"><div class="dur-top">' + longDate(x.date) + '<small>' + x.dur + ' minute(s)</small></div><div class="dur-bar">' + x.dur + ' min</div><div class="dur-ends"><span>' + hm(x.start) + '</span><span>' + hm(x.start + x.dur) + '</span></div></div>'
+      : '<div class="kv"><div><span>Customer</span><p>' + esc(custName(x)) + '</p></div><div><span>Email</span><p>' + esc(x.email || '—') + '</p></div><div><span>Phone</span><p>' + esc(x.phone || '—') + '</p></div>' +
+        '<div><span>Bookings at this branch (±60 days)</span><p>' + visits.length + '</p></div></div>' +
+        (visits.length ? '<div class="dur"><div class="label" style="margin-bottom:8px">Visits</div>' + visits.map(function (v) { return '<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px solid var(--hair);font-size:13px"><span>' + longDate(v.date) + ' · ' + hm(v.start) + '</span><span style="color:var(--ink2)">' + esc(svcOf(v).name) + '</span></div>'; }).join('') + '</div>' : '');
+    openLayer('<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Booking details">' +
+      '<div class="dr-head"><div><span class="label">' + hm(x.start) + '–' + hm(x.start + x.dur) + ' · ' + esc(roomName(b, x.room)) + '</span><h2>' + esc(custName(x)) + '</h2>' +
+      '<div class="tabs" role="tablist"><button type="button" role="tab" data-tab="booking" aria-selected="' + (tab === 'booking') + '">Booking details</button><button type="button" role="tab" data-tab="customer" aria-selected="' + (tab === 'customer') + '">Customer details</button></div></div>' +
+      '<button type="button" class="btn icon ghost" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>' +
+      '<div class="dr-body">' + body + '</div>' +
+      '<div class="dr-foot"><button type="button" class="btn ghost" data-close>Close</button><button type="button" class="btn" data-act="dup">Duplicate</button><button type="button" class="btn" data-act="edit">Edit</button><button type="button" class="btn danger" data-act="del">Delete</button></div></aside>');
+    layer.querySelector('.drawer [data-tab="' + tab + '"]').focus();
+    layer.onclick = function (e) {
+      if (e.target.closest('[data-close]')) return closeLayer();
+      var t = e.target.closest('[data-tab]'); if (t) return details(x, t.getAttribute('data-tab'));
+      var a = e.target.closest('[data-act]'); if (!a) return;
+      var act = a.getAttribute('data-act');
+      if (act === 'edit') editForm(x); else if (act === 'dup') newBooking({ from: x }); else confirmDelete(x);
+    };
+  }
+
+  function confirmDelete(x) {
+    openLayer('<div class="scrim" data-close></div><div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="dlt"><div class="md-head"><h2 id="dlt">Delete this booking?</h2></div>' +
+      '<div class="md-body"><p style="margin:0">' + esc(custName(x)) + ' · ' + esc(svcOf(x).name) + '<br>' + longDate(x.date) + ', ' + hm(x.start) + '–' + hm(x.start + x.dur) + '</p><p class="note">Prototype: removed from this browser only. TIMIFY is not changed.</p></div>' +
+      '<div class="md-foot"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn danger" data-ok>Delete</button></div></div>');
+    layer.querySelector('[data-ok]').focus();
+    layer.onclick = function (e) {
+      if (e.target.closest('[data-close]')) return closeLayer();
+      if (e.target.closest('[data-ok]')) { removeBooking(x); closeLayer(); render(); toast('Booking deleted (this browser only).'); }
+    };
+  }
+
+  // ── Free slots ────────────────────────────────────────────────────────────
+  function busy(branchId, s, room, ignoreId) {
+    return bookingsOn(branchId, s).filter(function (x) { return x.room === room && x.status !== 'cancelled' && x.id !== ignoreId; });
+  }
+  function roomFree(b, s, room, start, dur, ignoreId) {
+    var h = hours(b, s);
+    if (h.closed || start < h.open || start + dur > h.close) return false;
+    if (h.breaks.some(function (x) { return start < x[1] && start + dur > x[0]; })) return false;
+    return !busy(b.id, s, room, ignoreId).some(function (x) { return start < x.start + x.dur && start + dur > x.start; });
+  }
+  function freeSlots(b, s, rooms, dur) {
+    var h = hours(b, s); if (h.closed) return [];
+    var ends = {}; rooms.forEach(function (r) { busy(b.id, s, r).forEach(function (x) { ends[x.start + x.dur] = 1; }); });
+    h.breaks.forEach(function (x) { ends[x[1]] = 1; });
+    var out = [], minStart = s === TODAY ? Math.ceil((nowMin() + 5) / 10) * 10 : 0;
+    if (s < TODAY) return [];
+    for (var t = h.open; t + dur <= h.close; t += 10) {
+      if (t < minStart) continue;
+      if (t % 30 !== 0 && !ends[t]) continue;
+      var room = rooms.filter(function (r) { return roomFree(b, s, r, t, dur); })[0];
+      if (room) out.push({ t: t, room: room });
+    }
+    return out;
+  }
+
+  // ── New booking (TIMIFY "Fast Booking Widget" flow) ───────────────────────
+  function newBooking(opts) {
+    opts = opts || {};
+    var b = branch(), from = opts.from;
+    var base = opts.date || (from ? from.date : state.date);
+    if (base < TODAY) base = TODAY;
+    var w = {
+      step: 1, svc: from ? from.svc : 'EE20', title: from && from.svc === 'CUSTOM' ? from.title : '', color: from && from.color || SWATCHES[0],
+      rooms: opts.room ? [opts.room] : from ? [from.room] : [], hours: 0, mins: 20,
+      week: weekStart(base),
+      picked: [], cust: from ? { first: from.first, last: from.last, email: from.email, phone: from.phone } : null, newCust: !from, note: from ? from.note : '', notify: true, err: ''
+    };
+    var dur0 = from ? from.dur : SVC[w.svc] ? SVC[w.svc].dur : 30; w.hours = Math.floor(dur0 / 60); w.mins = dur0 % 60;
+    if (opts.date && opts.start != null) { w.step = 3; w.picked = [{ s: opts.date, t: opts.start, room: opts.room || b.roomList[0].code }]; }
+
+    function dur() { return w.hours * 60 + w.mins; }
+    function customers() {
+      var seen = {}, out = [];
+      for (var i = -14; i <= 14; i++) bookingsOn(b.id, addDays(state.date, i)).forEach(function (x) { if (x.email && !seen[x.email]) { seen[x.email] = 1; out.push({ first: x.first, last: x.last, email: x.email, phone: x.phone }); } });
+      return out;
+    }
+    function draw() {
+      var d = dur(), rooms = w.rooms.length ? w.rooms : b.roomList.map(function (r) { return r.code; });
+      var html = '<div class="scrim" data-close></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="nbt"><div class="md-head"><div><h2 id="nbt">' + (from ? 'Duplicate booking' : 'New booking') + '</h2><div class="steps"><span class="' + (w.step === 1 ? 'on' : '') + '">1 Service</span><span class="' + (w.step === 2 ? 'on' : '') + '">2 Slots</span><span class="' + (w.step === 3 ? 'on' : '') + '">3 Customer</span></div></div>' +
+        '<button type="button" class="btn icon ghost" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="md-body">';
+      if (w.err) html += '<div class="err" role="alert">' + esc(w.err) + '</div>';
+      if (w.step === 1) {
+        html += '<div class="field"><label for="nbSvc">Service / title</label><div class="svcsel"><select class="in" id="nbSvc">' +
+          SERVICES.map(function (s) { return '<option value="' + s.id + '"' + (w.svc === s.id ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') +
+          '<option value="CUSTOM"' + (w.svc === 'CUSTOM' ? ' selected' : '') + '>Custom title…</option></select>' +
+          (w.svc === 'CUSTOM' ? '<input type="color" class="swatch" id="nbColor" value="' + w.color + '" aria-label="Colour">' : '<span class="swatch" style="background:' + SVC[w.svc].c + '" aria-hidden="true"></span>') + '</div></div>';
+        if (w.svc === 'CUSTOM') html += '<div class="field"><label for="nbTitle">Title</label><input class="in" id="nbTitle" maxlength="80" value="' + esc(w.title) + '" placeholder="e.g. Frame adjustment"></div>';
+        html += '<div class="box"><h3>Resources</h3><p>Select the room(s) needed for the booking. Leave all off to get the most slots.</p><div class="chips" id="nbRooms"><button type="button" class="chip" data-r="all" aria-pressed="' + (!w.rooms.length) + '">All</button>' +
+          b.roomList.map(function (r) { return '<button type="button" class="chip" data-r="' + r.code + '" aria-pressed="' + (w.rooms.indexOf(r.code) >= 0) + '">' + esc(r.name) + '</button>'; }).join('') + '</div></div>';
+        html += '<div class="box"><h3>Duration</h3><div class="row2"><div class="field"><label for="nbH">Hours</label><select class="in" id="nbH">' + [0, 1, 2, 3].map(function (h) { return '<option' + (h === w.hours ? ' selected' : '') + '>' + h + '</option>'; }).join('') + '</select></div>' +
+          '<div class="field"><label for="nbM">Minutes</label><select class="in" id="nbM">' + [0, 10, 15, 20, 30, 40, 45, 50].map(function (m) { return '<option' + (m === w.mins ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select></div></div></div>';
+      } else if (w.step === 2) {
+        html += '<div class="weeknav"><button type="button" class="btn icon" data-wk="-1" aria-label="Previous week"' + (w.week <= weekStart(TODAY) ? ' disabled' : '') + '><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><span class="wk">CW' + isoWeek(w.week) + ', ' + dm(w.week) + '/' + w.week.slice(0, 4) + ' – ' + dm(addDays(w.week, 6)) + '/' + addDays(w.week, 6).slice(0, 4) + '</span><button type="button" class="btn icon" data-wk="1" aria-label="Next week"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>';
+        html += '<p class="note">' + esc(w.svc === 'CUSTOM' ? (w.title || 'Custom') : SVC[w.svc].name) + ' · ' + d + ' min · ' + (w.rooms.length ? w.rooms.map(function (r) { return roomName(b, r); }).join(', ') : 'any room') + '. Pick one or more start times.</p><div>';
+        for (var i = 0; i < 7; i++) {
+          var s = addDays(w.week, i), sl = freeSlots(b, s, rooms, d);
+          html += '<div class="slotday"><div class="d">' + WD[dow(s)] + ', ' + dm(s) + '</div>' + (sl.length ? '<div class="slots">' + sl.map(function (x) {
+            var on = w.picked.some(function (p) { return p.s === s && p.t === x.t; });
+            return '<button type="button" class="slot" data-s="' + s + '" data-t="' + x.t + '" data-room="' + x.room + '" aria-pressed="' + on + '">' + hm(x.t) + '</button>';
+          }).join('') + '</div>' : '<div class="noslot">' + (hours(b, s).closed ? esc(hours(b, s).why) : s < TODAY ? 'In the past' : 'No available slots') + '</div>') + '</div>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="field"><span class="lab">Selected slots</span><div class="sel">' + w.picked.map(function (p, i) { return '<span>' + WD[dow(p.s)] + ', ' + dm(p.s) + ' ' + hm(p.t) + ' · ' + roomShort(b, p.room) + '<button type="button" data-unpick="' + i + '" aria-label="Remove slot">×</button></span>'; }).join('') + '</div></div>';
+        html += '<div class="box"><h3>Customer</h3>';
+        if (w.cust && !w.newCust) html += '<div class="picked"><div><b style="font-weight:500">' + esc((w.cust.first + ' ' + w.cust.last).trim()) + '</b><div class="note">' + esc(w.cust.email) + ' · ' + esc(w.cust.phone) + '</div></div><button type="button" class="btn ghost" data-cust="change">Change</button></div>';
+        else {
+          html += '<div class="field"><label for="nbFind">Find an existing customer</label><input class="in" id="nbFind" placeholder="Name, email or phone…" autocomplete="off"></div><div id="nbSuggest"></div>' +
+            '<div class="label" style="margin-top:4px">Or add a new customer</div><div class="row2"><div class="field"><label for="nbFirst">First name</label><input class="in" id="nbFirst" value="' + esc(w.cust ? w.cust.first : '') + '"></div><div class="field"><label for="nbLast">Last name</label><input class="in" id="nbLast" value="' + esc(w.cust ? w.cust.last : '') + '"></div></div>' +
+            '<div class="row2"><div class="field"><label for="nbEmail">Email</label><input class="in" id="nbEmail" type="email" value="' + esc(w.cust ? w.cust.email : '') + '"></div><div class="field"><label for="nbPhone">Phone</label><input class="in" id="nbPhone" type="tel" value="' + esc(w.cust ? w.cust.phone : '') + '"></div></div>';
+        }
+        html += '</div><div class="field"><label for="nbNote">Notes</label><textarea class="in" id="nbNote" maxlength="3000">' + esc(w.note) + '</textarea><span class="note" id="nbCount" style="text-align:right">' + w.note.length + ' / 3000</span></div>' +
+          '<label class="check"><input type="checkbox" id="nbNotify"' + (w.notify ? ' checked' : '') + '> Notify customer <span class="note">(prototype: nothing is sent)</span></label>';
+      }
+      html += '</div><div class="md-foot"><button type="button" class="btn ghost" data-' + (w.step === 1 ? 'close' : 'back') + '>' + (w.step === 1 ? 'Cancel' : 'Back') + '</button>' +
+        (w.step === 1 ? '<button type="button" class="btn pri" data-next>Find slots</button>' : w.step === 2 ? '<button type="button" class="btn pri" data-next' + (w.picked.length ? '' : ' disabled') + '>Continue' + (w.picked.length > 1 ? ' (' + w.picked.length + ')' : '') + '</button>' : '<button type="button" class="btn pri" data-save>Save</button>') + '</div></div>';
+      var keepFocus = document.activeElement && document.activeElement.id;
+      openLayer(html);
+      wire();
+      var f = keepFocus && $(keepFocus);
+      (f || layer.querySelector('.md-body select, .md-body input, .slot, [data-next], [data-save]') || layer.querySelector('.modal')).focus();
+    }
+    function readStep1() {
+      var sv = $('nbSvc'); if (sv) w.svc = sv.value;
+      var tt = $('nbTitle'); if (tt) w.title = tt.value;
+      var co = $('nbColor'); if (co) w.color = co.value;
+      w.hours = +$('nbH').value; w.mins = +$('nbM').value;
+    }
+    function readStep3() {
+      if (w.newCust || !w.cust) {
+        var f = $('nbFirst'); if (f) w.cust = { first: f.value.trim(), last: $('nbLast').value.trim(), email: $('nbEmail').value.trim(), phone: $('nbPhone').value.trim() };
+      }
+      w.note = $('nbNote').value; w.notify = $('nbNotify').checked;
+    }
+    function wire() {
+      var sv = $('nbSvc');
+      if (sv) sv.onchange = function () { readStep1(); if (SVC[w.svc]) { w.hours = Math.floor(SVC[w.svc].dur / 60); w.mins = SVC[w.svc].dur % 60; } draw(); };
+      var rr = $('nbRooms');
+      if (rr) rr.onclick = function (e) { var c = e.target.closest('[data-r]'); if (!c) return; readStep1(); var r = c.getAttribute('data-r'); if (r === 'all') w.rooms = []; else { var i = w.rooms.indexOf(r); if (i >= 0) w.rooms.splice(i, 1); else w.rooms.push(r); } draw(); };
+      var note = $('nbNote');
+      if (note) note.oninput = function () { $('nbCount').textContent = note.value.length + ' / 3000'; };
+      var find = $('nbFind');
+      if (find) find.oninput = function () {
+        var qy = find.value.trim().toLowerCase(), box = $('nbSuggest');
+        if (qy.length < 2) { box.innerHTML = ''; return; }
+        var list = customers().filter(function (c) { return (c.first + ' ' + c.last + ' ' + c.email + ' ' + c.phone).toLowerCase().indexOf(qy) >= 0; }).slice(0, 8);
+        box.innerHTML = list.length ? '<div class="suggest">' + list.map(function (c, i) { return '<button type="button" data-pick="' + i + '"><span>' + esc(c.first + ' ' + c.last) + '</span><small>' + esc(c.email) + '</small></button>'; }).join('') + '</div>' : '<p class="note">No customer found. Add a new one below.</p>';
+        box.onclick = function (e) { var p = e.target.closest('[data-pick]'); if (!p) return; readStep3(); w.cust = list[+p.getAttribute('data-pick')]; w.newCust = false; draw(); };
+      };
+      layer.onclick = function (e) {
+        if (e.target.closest('[data-close]')) return closeLayer();
+        if (e.target.closest('[data-back]')) { if (w.step === 3) readStep3(); w.err = ''; w.step = w.step === 3 && opts.start != null && !w.visitedSlots ? 1 : w.step - 1; return draw(); }
+        var wk = e.target.closest('[data-wk]'); if (wk && !wk.disabled) { w.week = addDays(w.week, 7 * +wk.getAttribute('data-wk')); return draw(); }
+        var sl = e.target.closest('.slot');
+        if (sl) { var s = sl.getAttribute('data-s'), t = +sl.getAttribute('data-t'), i = w.picked.findIndex(function (p) { return p.s === s && p.t === t; }); if (i >= 0) w.picked.splice(i, 1); else w.picked.push({ s: s, t: t, room: sl.getAttribute('data-room') }); return draw(); }
+        var un = e.target.closest('[data-unpick]'); if (un) { readStep3(); w.picked.splice(+un.getAttribute('data-unpick'), 1); if (!w.picked.length) w.step = 2; return draw(); }
+        if (e.target.closest('[data-cust]')) { readStep3(); w.newCust = true; w.cust = null; return draw(); }
+        if (e.target.closest('[data-next]')) {
+          if (w.step === 1) {
+            readStep1();
+            if (w.svc === 'CUSTOM' && !w.title.trim()) { w.err = 'Enter a title for the custom booking.'; return draw(); }
+            if (dur() < 5) { w.err = 'Set a duration.'; return draw(); }
+            w.err = ''; w.step = 2; w.visitedSlots = true;
+            w.picked = w.picked.filter(function (p) { return roomFree(b, p.s, p.room, p.t, dur()); });
+          } else if (w.picked.length) { w.err = ''; w.step = 3; }
+          return draw();
+        }
+        if (e.target.closest('[data-save]')) {
+          readStep3();
+          var c = w.cust || { first: '', last: '', email: '', phone: '' };
+          if (!(c.first || c.last)) { w.err = 'Choose a customer or enter at least a name.'; return draw(); }
+          if (c.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)) { w.err = 'The email address does not look right.'; return draw(); }
+          var clash = w.picked.filter(function (p) { return !roomFree(b, p.s, p.room, p.t, dur()); });
+          if (clash.length) { w.err = 'Slot ' + dm(clash[0].s) + ' ' + hm(clash[0].t) + ' is no longer free. Remove it or go back to pick another time.'; return draw(); }
+          var now = new Date();
+          w.picked.forEach(function (p) {
+            putBooking({ id: 'u-' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 7), gen: false, branch: b.id, date: p.s, room: p.room, start: p.t, dur: dur(), svc: w.svc,
+              title: w.svc === 'CUSTOM' ? w.title.trim() : '', color: w.svc === 'CUSTOM' ? w.color : '', first: c.first, last: c.last, email: c.email, phone: c.phone, note: w.note.trim(),
+              createdAt: ymd(now) + ' ' + hm(now.getHours() * 60 + now.getMinutes()), createdBy: 'You (prototype)', status: 'active', noShow: false, notify: w.notify });
+          });
+          var n = w.picked.length, firstSlot = w.picked[0];
+          closeLayer();
+          state.date = firstSlot.s; if (state.view === 'shift') state.view = 'day';
+          render();
+          toast(n + ' booking' + (n > 1 ? 's' : '') + ' saved' + (w.notify ? ' · customer notification simulated' : '') + '. Prototype only, not sent to TIMIFY.');
+        }
+      };
+    }
+    draw();
+  }
+
+  // ── Edit (drawer form) ────────────────────────────────────────────────────
+  function editForm(x, err) {
+    var b = byBranch[x.branch], times = [];
+    for (var t = 480; t < 1140; t += 10) times.push(t);
+    openLayer('<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Edit booking"><div class="dr-head"><div><span class="label">Edit booking</span><h2>' + esc(custName(x)) + '</h2></div>' +
+      '<button type="button" class="btn icon ghost" data-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dr-body"><div class="md-body" style="padding:0">' +
+      (err ? '<div class="err" role="alert">' + esc(err) + '</div>' : '') +
+      '<div class="field"><label for="edSvc">Service</label><select class="in" id="edSvc">' + SERVICES.map(function (s) { return '<option value="' + s.id + '"' + (x.svc === s.id ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + (x.svc === 'CUSTOM' ? '<option value="CUSTOM" selected>' + esc(x.title || 'Custom') + '</option>' : '') + '</select></div>' +
+      '<div class="row2"><div class="field"><label for="edRoom">Room</label><select class="in" id="edRoom">' + b.roomList.map(function (r) { return '<option value="' + r.code + '"' + (x.room === r.code ? ' selected' : '') + '>' + esc(r.name) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="field"><label for="edDate">Date</label><input class="in" type="date" id="edDate" value="' + x.date + '"></div></div>' +
+      '<div class="row2"><div class="field"><label for="edStart">Start</label><select class="in" id="edStart">' + times.map(function (t) { return '<option value="' + t + '"' + (t === x.start ? ' selected' : '') + '>' + hm(t) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="field"><label for="edDur">Duration (min)</label><select class="in" id="edDur">' + [10, 15, 20, 30, 40, 45, 60, 90, 120].map(function (d) { return '<option' + (d === x.dur ? ' selected' : '') + '>' + d + '</option>'; }).join('') + '</select></div></div>' +
+      '<div class="row2"><div class="field"><label for="edFirst">First name</label><input class="in" id="edFirst" value="' + esc(x.first) + '"></div><div class="field"><label for="edLast">Last name</label><input class="in" id="edLast" value="' + esc(x.last) + '"></div></div>' +
+      '<div class="row2"><div class="field"><label for="edEmail">Email</label><input class="in" type="email" id="edEmail" value="' + esc(x.email) + '"></div><div class="field"><label for="edPhone">Phone</label><input class="in" type="tel" id="edPhone" value="' + esc(x.phone) + '"></div></div>' +
+      '<div class="field"><label for="edNote">Notes</label><textarea class="in" id="edNote" maxlength="3000">' + esc(x.note) + '</textarea></div>' +
+      '<div class="row2"><div class="field"><label for="edStatus">Status</label><select class="in" id="edStatus"><option value="active"' + (x.status !== 'cancelled' ? ' selected' : '') + '>Active</option><option value="cancelled"' + (x.status === 'cancelled' ? ' selected' : '') + '>Cancelled</option></select></div>' +
+      '<label class="check" style="align-self:end;min-height:44px"><input type="checkbox" id="edNoShow"' + (x.noShow ? ' checked' : '') + '> Customer did not show up</label></div>' +
+      '<p class="note">Prototype: changes are saved in this browser only. TIMIFY is not changed.</p></div></div>' +
+      '<div class="dr-foot"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn pri" data-save>Save changes</button></div></aside>');
+    $('edSvc').focus();
+    $('edSvc').onchange = function () { var s = SVC[$('edSvc').value]; if (s) $('edDur').value = String(s.dur); };
+    layer.onclick = function (e) {
+      if (e.target.closest('[data-close]')) return closeLayer();
+      if (!e.target.closest('[data-save]')) return;
+      var y = Object.assign({}, x, {
+        svc: $('edSvc').value, room: $('edRoom').value, date: $('edDate').value || x.date, start: +$('edStart').value, dur: +$('edDur').value,
+        first: $('edFirst').value.trim(), last: $('edLast').value.trim(), email: $('edEmail').value.trim(), phone: $('edPhone').value.trim(),
+        note: $('edNote').value.trim(), status: $('edStatus').value, noShow: $('edNoShow').checked
+      });
+      if (!(y.first || y.last)) return editForm(x, 'Enter at least the customer’s name.');
+      if (y.status !== 'cancelled' && !roomFree(b, y.date, y.room, y.start, y.dur, x.id)) {
+        var h = hours(b, y.date);
+        return editForm(x, h.closed ? 'The branch is closed on ' + longDate(y.date) + ' (' + h.why + ').' : 'That time overlaps another booking, the lunch break or closing time in ' + roomName(b, y.room) + '.');
+      }
+      putBooking(y); closeLayer(); state.date = y.date; render(); toast('Booking updated (this browser only).');
+    };
+  }
+
+  // ── Events ────────────────────────────────────────────────────────────────
+  $('branchSel').onchange = function () { state.branch = this.value; state.rooms = null; render(); };
+  $('svcFilter').onchange = function () { state.svc = this.value; render(); };
+  $('todayBtn').onclick = function () { state.date = TODAY; render(); };
+  function step(n) {
+    if (state.view === 'week') state.date = addDays(state.date, 7 * n);
+    else if (state.view === 'shift') { var d = parse(state.date); state.date = ymd(new Date(d.getFullYear(), d.getMonth() + n, 1)); }
+    else state.date = addDays(state.date, n);
+    render();
+  }
+  $('prevBtn').onclick = function () { step(-1); };
+  $('nextBtn').onclick = function () { step(1); };
+  $('dateBtn').onclick = function () { var p = $('datePick'); p.value = state.date; if (p.showPicker) { p.hidden = false; try { p.showPicker(); } catch (e) { p.click(); } p.hidden = true; } else { var v = prompt('Go to date (YYYY-MM-DD)', state.date); if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) { state.date = v; render(); } } };
+  $('datePick').onchange = function () { if (this.value) { state.date = this.value; render(); } };
+  $('viewSeg').onclick = function (e) { var x = e.target.closest('[data-view]'); if (!x) return; state.view = x.dataset.view; render(); };
+  $('roomChips').onclick = function (e) {
+    var c = e.target.closest('[data-room]'); if (!c) return;
+    var r = c.dataset.room, all = branch().roomList.map(function (q) { return q.code; });
+    if (r === 'all') state.rooms = null;
+    else { var cur = state.rooms ? state.rooms.slice() : []; var i = cur.indexOf(r); if (i >= 0) cur.splice(i, 1); else cur.push(r); state.rooms = cur.length && cur.length < all.length ? cur : null; }
+    render();
+  };
+  $('newBtn').onclick = function () { newBooking({ date: state.date < TODAY ? TODAY : state.date }); };
+  $('exportBtn').onclick = function () {
+    var b = branch(), rooms = activeRooms().map(function (r) { return r.code; }), rows = [['date', 'start', 'end', 'room', 'service', 'customer', 'email', 'phone', 'status', 'created_by', 'note']];
+    rangeDays().forEach(function (s) { bookingsOn(b.id, s).forEach(function (x) { if (rooms.indexOf(x.room) >= 0 && visible(x)) rows.push([x.date, hm(x.start), hm(x.start + x.dur), roomName(b, x.room), svcOf(x).name, custName(x), x.email, x.phone, x.status + (x.noShow ? ' (no-show)' : ''), x.createdBy, x.note]); }); });
+    var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'bookings-' + b.id + '-' + rangeDays()[0] + '.csv'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Exported ' + (rows.length - 1) + ' bookings (sample data).');
+  };
+  $('view').addEventListener('click', function (e) {
+    var bk = e.target.closest('[data-id]');
+    if (bk) { var x = findBooking(bk.getAttribute('data-id')); if (!x) return; if (bk.classList.contains('ag-item')) details(x); else quickActions(x, bk); return; }
+    var md = e.target.closest('[data-day]');
+    if (md) { state.date = md.getAttribute('data-day'); state.view = 'day'; render(); return; }
+    var col = e.target.closest('.col');
+    if (col) {
+      var r = col.getBoundingClientRect(), t = GRID_START + Math.floor((e.clientY - r.top) / PX / 10) * 10, s = col.dataset.date, room = col.dataset.room;
+      var b = branch(), h = hours(b, s);
+      if (h.closed) return toast('The branch is closed on this day (' + h.why + ').');
+      if (s < TODAY || (s === TODAY && t < nowMin())) return toast('That time is in the past.');
+      var d = 20; while (d > 0 && !roomFree(b, s, room, t, d)) d -= 10;
+      if (!d) return toast('That time is not free in ' + roomName(b, room) + '.');
+      newBooking({ date: s, start: t, room: room });
+    }
+  });
+  $('view').addEventListener('keydown', function (e) { var md = e.target.closest('[data-day]'); if (md && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); md.click(); } });
+  window.addEventListener('adrial-theme', function () { if (!layer.innerHTML) render(); });
+  document.addEventListener('keydown', function (e) {
+    if (layer.innerHTML || e.target.closest('input, textarea, select')) return;
+    if (e.key === 't' || e.key === 'T') { state.date = TODAY; render(); }
+    else if (e.key === 'n' || e.key === 'N') $('newBtn').click();
+    else if (e.key === 'ArrowLeft' && e.altKey) step(-1);
+    else if (e.key === 'ArrowRight' && e.altKey) step(1);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

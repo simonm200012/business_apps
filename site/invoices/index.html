@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Invoices · Adrial Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F3EF;--card:#FFFFFF;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--line:#E0DDD6;--chip:#EFEDE8;--field:#FFFFFF;
+  --accent:#5B3FE0;--accent-soft:#ECE8FD;--bar:#5B3FE0;--bar-hover:#4A2FD0;--grid:#ECE9E3;--axis:#C9C6BE;
+  --ok-bg:#E3F4EA;--ok-fg:#1F6B43;--warn-bg:#FBF0D5;--warn-fg:#76510A;--bad-bg:#FCE6E2;--bad-fg:#A3271B;
+  --overlay:rgba(12,12,13,.5);--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);--pop:0 1px 2px rgba(12,12,13,.06),0 18px 40px -16px rgba(12,12,13,.32);
+  color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C0C0D;--card:#161618;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--chip:#26262A;--field:#1C1C1F;
+  --accent:#9B88F5;--accent-soft:#2A2440;--bar:#9B88F5;--bar-hover:#B3A4F8;--grid:#242428;--axis:#3A3A40;
+  --ok-bg:#132A1E;--ok-fg:#7FD3A2;--warn-bg:#30260F;--warn-fg:#F0C567;--bad-bg:#371815;--bad-fg:#F4A196;
+  --overlay:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.8);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C0C0D;--card:#161618;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--line:#2E2E33;--chip:#26262A;--field:#1C1C1F;
+  --accent:#9B88F5;--accent-soft:#2A2440;--bar:#9B88F5;--bar-hover:#B3A4F8;--grid:#242428;--axis:#3A3A40;
+  --ok-bg:#132A1E;--ok-fg:#7FD3A2;--warn-bg:#30260F;--warn-fg:#F0C567;--bad-bg:#371815;--bad-fg:#F4A196;
+  --overlay:rgba(0,0,0,.6);--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.8);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.mono,.eyebrow{font-family:'Geist Mono',ui-monospace,Menlo,monospace}
+.eyebrow{font-size:12px;letter-spacing:.04em;color:var(--ink3)}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wrap{max-width:1200px;margin:0 auto;padding:40px 16px 112px;display:flex;flex-direction:column;gap:20px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:20px 24px}
+.titles{flex:1 1 420px;display:flex;flex-direction:column;gap:10px}
+h1{margin:0;font-size:clamp(36px,6vw,56px);line-height:1;font-weight:500;letter-spacing:-.045em}
+h1 span{color:var(--accent)}
+.lede{margin:0;max-width:640px;font-size:16px;color:var(--ink2)}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--chip)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn.primary:hover{opacity:.88;background:var(--ink)}
+.btn.small{min-height:36px;padding:0 14px;font-size:14px}
+.btn.icon{width:44px;padding:0}
+.btn.icon.small{width:36px}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--chip)}
+.btn.danger{color:var(--bad-fg)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn svg,.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+.menu{position:relative}
+.menu>summary{list-style:none}
+.menu>summary::-webkit-details-marker{display:none}
+.menu-list{position:absolute;right:0;top:calc(100% + 6px);z-index:20;min-width:260px;display:flex;flex-direction:column;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--pop)}
+.menu-list button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:10px 12px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer}
+.menu-list button:hover,.menu-list button:focus-visible{background:var(--chip)}
+.menu-list small{color:var(--ink3);font-size:12.5px}
+.menu-list hr{width:100%;border:0;border-top:1px solid var(--line);margin:6px 0}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+
+.banner{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:14px 18px;border-radius:16px;background:var(--warn-bg);color:var(--warn-fg)}
+.banner p{margin:0;flex:1 1 280px}
+.banner strong{font-weight:600}
+.banner .btn{border-color:transparent}
+
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.field-inline{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 6px 0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:14px}
+.field-inline span{color:var(--ink3)}
+.field-inline select{border:0;background:transparent;padding:8px 6px;font-weight:500;cursor:pointer;max-width:200px}
+.field-inline select:focus{outline:none}
+.field-inline:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.search{flex:1 1 220px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.search input{flex:1;min-width:0;border:0;background:transparent;padding:8px 0;outline:none;font-size:14px}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.search svg{width:16px;height:16px;color:var(--ink3)}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 6px 0 12px;border-radius:999px;background:var(--accent-soft);font-size:14px;font-weight:500}
+.chip button{display:grid;place-items:center;width:26px;height:26px;border:0;border-radius:50%;background:transparent;cursor:pointer;color:inherit}
+.chip button:hover{background:var(--card)}
+.chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.kpi{display:flex;flex-direction:column;gap:6px;padding:18px 20px}
+.kpi .label{font-size:13.5px;color:var(--ink2)}
+.kpi .value{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.kpi.hero .value{font-size:clamp(34px,4.6vw,48px);letter-spacing:-.035em}
+.kpi .sub{font-size:13px;color:var(--ink3)}
+.kpi .sub .bad{color:var(--bad-fg)}
+.kpi .sub svg{width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
+.chart-card{display:flex;flex-direction:column;gap:14px;padding:20px}
+.chart-card.wide{grid-column:1/-1}
+.chart-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.chart-head h2{margin:0;font-size:17px;font-weight:500;letter-spacing:-.01em}
+.chart-head .note{font-size:13px;color:var(--ink3)}
+
+.cols{position:relative;height:240px;margin-left:56px}
+.cols .gridline{position:absolute;left:0;right:0;border-top:1px solid var(--grid)}
+.cols .gridline.base{border-top-color:var(--axis)}
+.cols .tick{position:absolute;right:calc(100% + 10px);transform:translateY(-50%);font-size:12px;color:var(--ink3);white-space:nowrap}
+.cols-row{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr))}
+.col{position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;padding:0;border:0;background:transparent;cursor:pointer}
+.col .bar{width:min(24px,62%);border-radius:4px 4px 0 0;background:var(--bar);min-height:0}
+.col:hover .bar,.col:focus-visible .bar{background:var(--bar-hover)}
+.col.dim .bar{opacity:.35}
+.col .cap{position:absolute;left:50%;transform:translate(-50%,-100%);margin-top:-6px;font-size:12px;font-weight:500;color:var(--ink2);white-space:nowrap}
+.col-labels{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));margin-left:56px;font-size:12px;color:var(--ink3);text-align:center}
+.col-labels .on{color:var(--ink);font-weight:600}
+
+.hbars{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+.hbar{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 124px;align-items:center;gap:12px;width:100%;min-height:40px;padding:4px 8px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer}
+.hbar:hover,.hbar:focus-visible{background:var(--chip)}
+.hbar.on{background:var(--accent-soft)}
+.hbar .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.hbar .track{height:10px;border-radius:0 4px 4px 0;background:transparent}
+.hbar .fill{height:100%;border-radius:0 4px 4px 0;background:var(--bar)}
+.hbar .val{font-size:13.5px;font-weight:500;text-align:right;white-space:nowrap}
+.hbar .val small{display:block;font-size:12px;font-weight:400;color:var(--ink3)}
+.empty-note{margin:0;padding:24px 8px;color:var(--ink3);font-size:14px;text-align:center}
+
+.table-card{display:flex;flex-direction:column}
+.table-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;padding:18px 20px 12px}
+.table-head h2{margin:0;font-size:17px;font-weight:500}
+.table-head .note{font-size:13px;color:var(--ink3)}
+.table-scroll{overflow-x:auto}
+table{width:100%;min-width:820px;border-collapse:collapse;font-size:14px}
+thead th{position:sticky;top:0;padding:0;border-bottom:1px solid var(--line);background:var(--card);font-size:12.5px;font-weight:500;color:var(--ink3);text-align:left;white-space:nowrap}
+thead th>span,thead th>button{display:flex;align-items:center;gap:4px;width:100%;min-height:40px;padding:0 12px;border:0;background:transparent;color:inherit;font:inherit;text-align:inherit;cursor:pointer}
+thead th>span{cursor:default}
+thead th.r>span,thead th.r>button{justify-content:flex-end}
+thead th button:hover{color:var(--ink)}
+thead th[aria-sort] button{color:var(--ink)}
+thead th svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--chip)}
+td.r{text-align:right;white-space:nowrap}
+td.date{white-space:nowrap;color:var(--ink2)}
+.vendor-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;max-width:280px;padding:0;border:0;background:transparent;text-align:left;cursor:pointer}
+.vendor-btn .v{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.vendor-btn .n{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:var(--ink3)}
+.muted{color:var(--ink3)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:500;white-space:nowrap;background:var(--chip);color:var(--ink2)}
+.pill svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pill.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.pill.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.foreign{display:block;font-size:12px;color:var(--ink3)}
+
+.onboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:240px;padding:32px 20px;border:1.5px dashed var(--axis);border-radius:18px;background:var(--card);text-align:center}
+.drop h2{margin:0;font-size:22px;font-weight:500;letter-spacing:-.02em}
+.drop p{margin:0;max-width:440px;color:var(--ink2)}
+.drop .ico-lg{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--ink);color:var(--bg)}
+.step{display:flex;flex-direction:column;gap:6px;padding:18px 20px}
+.step b{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;font-weight:500;color:var(--ink3)}
+.step h3{margin:0;font-size:16px;font-weight:500}
+.step p{margin:0;font-size:14px;color:var(--ink2)}
+
+.foot{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--ink3)}
+
+#drop-overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:24px;background:var(--overlay)}
+#drop-overlay div{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 48px;border:2px dashed var(--accent);border-radius:24px;background:var(--card);font-size:20px;font-weight:500;text-align:center}
+#drop-overlay small{font-size:14px;font-weight:400;color:var(--ink2)}
+
+#toasts{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;flex-direction:column;gap:8px;max-width:min(420px,calc(100vw - 32px))}
+.toast{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;background:var(--ink);color:var(--bg);box-shadow:var(--pop);font-size:14px}
+.toast p{margin:0;flex:1}
+.toast button{border:0;background:transparent;color:inherit;font-weight:600;cursor:pointer;padding:0 2px;text-decoration:underline}
+.toast .spin{width:16px;height:16px;margin-top:2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.toast .spin{animation-duration:3s}}
+
+#tooltip{position:fixed;z-index:70;pointer-events:none;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line);box-shadow:var(--pop);font-size:13px;min-width:160px}
+#tooltip .tv{font-size:16px;font-weight:600}
+#tooltip .tl{color:var(--ink2)}
+#tooltip .tm{color:var(--ink3);font-size:12.5px}
+
+dialog{padding:0;border:0;color:var(--ink);background:transparent}
+dialog::backdrop{background:var(--overlay)}
+#detail{width:min(1180px,calc(100vw - 32px));max-width:none;height:min(860px,calc(100vh - 32px));max-height:none}
+#detail form,#settings form{display:flex;flex-direction:column;height:100%;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--pop);overflow:hidden}
+.d-head{display:flex;align-items:center;gap:12px;padding:14px 16px 14px 22px;border-bottom:1px solid var(--line)}
+.d-head .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.d-head h2{margin:0;font-size:19px;font-weight:500;letter-spacing:-.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.d-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(380px,1fr);grid-template-rows:minmax(0,1fr)}
+.d-preview{min-width:0;min-height:0;overflow:auto;padding:16px;background:var(--chip);display:flex;flex-direction:column;align-items:center;gap:12px}
+.d-preview canvas{display:block;max-width:100%;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.18);background:#fff}
+.d-preview .more{font-size:13px;color:var(--ink3)}
+.scanned{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:14px;background:var(--warn-bg);color:var(--warn-fg);font-size:14px;width:100%}
+.scanned p{margin:0}
+.d-fields{min-width:0;min-height:0;overflow:auto;padding:18px 22px 24px;display:flex;flex-direction:column;gap:16px}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;font-size:13.5px}
+.alert.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.alert.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.alert svg{width:16px;height:16px;margin-top:2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 14px}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.span2{grid-column:span 2}
+.f label,.f .lbl{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--ink2)}
+.f input,.f select,.f textarea{width:100%;min-height:42px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);font-size:15px}
+.f textarea{min-height:72px;resize:vertical}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.f input.amount{text-align:right;font-variant-numeric:tabular-nums}
+.f .hint{font-size:12.5px;color:var(--ink3)}
+.f .hint button{padding:0;border:0;background:none;color:var(--accent);font:inherit;cursor:pointer;text-decoration:underline}
+.tag{padding:1px 7px;border-radius:999px;background:var(--warn-bg);color:var(--warn-fg);font-size:11.5px;font-weight:600}
+.check-row{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;cursor:pointer}
+.check-row input{width:20px;height:20px;accent-color:var(--accent);margin:0}
+.paid-box{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 14px;border:1px solid var(--line);border-radius:12px}
+.paid-box .f{flex:1 1 160px}
+details.text summary{cursor:pointer;font-size:13.5px;color:var(--ink2)}
+details.text pre{margin:8px 0 0;max-height:240px;overflow:auto;padding:12px;border-radius:10px;background:var(--chip);font:12px/1.5 'Geist Mono',ui-monospace,monospace;white-space:pre-wrap;word-break:break-word}
+.d-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.d-foot .spacer{flex:1}
+
+#settings{width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
+#settings .s-body{flex:1;min-height:0;overflow:auto;padding:18px 22px 24px;display:flex;flex-direction:column;gap:20px}
+#settings h3{margin:0 0 4px;font-size:15px;font-weight:600}
+#settings p.help{margin:0;font-size:13.5px;color:var(--ink3)}
+.rules{display:flex;flex-direction:column;margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:12px}
+.rules li{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.rules li:last-child{border-bottom:0}
+.rules li span{flex:1;min-width:0}
+.rules li small{color:var(--ink3);font-family:'Geist Mono',ui-monospace,monospace;font-size:12px}
+.danger-zone{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px;border-radius:12px;background:var(--bad-bg);color:var(--bad-fg)}
+.danger-zone p{margin:0;flex:1 1 240px;font-size:13.5px}
+
+/* ---------- PDF viewer with field selection ---------- */
+.pv-bar{position:sticky;top:-16px;z-index:6;align-self:stretch;margin:-16px -16px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.pv-bar .spacer{flex:1}
+.pv-grp{display:inline-flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+.pv-grp .btn{min-height:32px;width:32px;padding:0;border:0}
+.pv-pg{min-width:58px;text-align:center;font-size:13px;color:var(--ink2)}
+.pv-grp .pv-zoom{width:auto;min-width:52px;padding:0 8px;font-size:12.5px;font-weight:500}
+#pv-select[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+#pv-list-btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.pv-help{align-self:stretch;margin:0;padding:8px 12px;border-radius:12px;background:var(--accent-soft);color:var(--ink);font-size:13px}
+.pv-list{align-self:stretch;display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.pv-list select[multiple]{min-height:150px;padding:4px;font-size:13px}
+.pv-list select[multiple] option{padding:4px 6px;border-radius:6px}
+.pv-list-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
+.pv-list-row .f{flex:1 1 180px}
+.pv-pages{display:block;align-self:stretch;width:auto}
+.pv-stage{position:relative;margin:0 auto}
+.d-preview .pv-stage canvas{max-width:none;width:100%;height:auto;border-radius:2px}
+.pv-ov{position:absolute;inset:0;pointer-events:none;-webkit-user-select:none;user-select:none}
+.pv-ov.on{pointer-events:auto;cursor:crosshair;touch-action:none}
+.rgn{position:absolute;border:2px solid var(--c);background:var(--cf);border-radius:3px;pointer-events:none}
+.pv-ov.on .rgn{pointer-events:auto;cursor:move;touch-action:none}
+.rgn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rgn-lbl{position:absolute;left:-2px;bottom:100%;display:inline-flex;align-items:center;gap:2px;max-width:240px;padding:0 3px 0 7px;border-radius:6px 6px 6px 0;background:var(--c);color:#fff;font-size:11.5px;font-weight:600;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rgn.lbl-in .rgn-lbl{bottom:auto;top:100%;border-radius:0 6px 6px 6px}
+.rgn-x{display:none;place-items:center;width:20px;height:20px;padding:0;border:0;border-radius:4px;background:transparent;color:#fff;cursor:pointer}
+.rgn-x svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.rgn-x:hover{background:rgba(255,255,255,.22)}
+.pv-ov.on .rgn-x{display:grid}
+.rgn-h{display:none;position:absolute;right:-7px;bottom:-7px;width:14px;height:14px;border:2px solid var(--c);border-radius:50%;background:#fff;cursor:nwse-resize;touch-action:none}
+.pv-ov.on .rgn-h{display:block}
+@media (pointer:coarse){.rgn-h{right:-12px;bottom:-12px;width:24px;height:24px}}
+.rgn.flash{animation:rgnflash 1.2s ease-out 1}
+@keyframes rgnflash{0%{box-shadow:0 0 0 0 var(--c)}30%{box-shadow:0 0 0 6px var(--cf)}100%{box-shadow:0 0 0 0 transparent}}
+.pv-draft{position:absolute;border:2px dashed var(--accent);background:rgba(91,63,224,.12);pointer-events:none}
+.pv-hover{position:absolute;border-radius:2px;outline:1.5px solid var(--accent);background:rgba(91,63,224,.10);pointer-events:none}
+.pv-notext{margin:0;font-size:12.5px;color:var(--warn-fg);background:var(--warn-bg);padding:6px 10px;border-radius:10px;align-self:stretch}
+.pv-save{position:sticky;bottom:-16px;z-index:6;align-self:stretch;margin:0 -16px -16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;border-top:1px solid var(--line);background:var(--card);font-size:13.5px;color:var(--ink2)}
+.pv-save span{flex:1 1 160px}
+.pv-pop{position:fixed;z-index:80;width:min(380px,calc(100vw - 24px));max-height:min(72vh,560px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);box-shadow:var(--pop)}
+.pv-pop-head{display:flex;align-items:center;gap:8px}
+.pv-pop-head h3{flex:1;margin:0;font-size:15px;font-weight:600}
+.pv-pop-text{margin:4px 0 0;max-height:120px;overflow:auto;padding:8px 10px;border-radius:10px;background:var(--chip);font:12.5px/1.45 'Geist Mono',ui-monospace,monospace;white-space:pre-wrap;word-break:break-word}
+.pv-pop-text.empty{font-family:inherit;color:var(--ink3)}
+.pv-pop-ocr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;color:var(--ink2)}
+.pv-pop-ocr progress{flex:1 1 120px;height:8px;accent-color:var(--accent)}
+.pv-pop-fields{display:flex;flex-wrap:wrap;gap:6px}
+.fbtn{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 12px 0 10px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:13.5px;cursor:pointer;text-align:left}
+.fbtn:hover{background:var(--chip)}
+.fbtn i,.src-hint i,.tpl-chip i{flex:none;width:9px;height:9px;border-radius:50%;background:var(--c)}
+.fbtn.sug{border-color:var(--accent);background:var(--accent-soft)}
+.fbtn[aria-pressed="true"]{border-color:var(--ink);font-weight:600}
+.fbtn small{color:var(--ink3);font-size:12px}
+.pv-pop-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.pv-pop-foot .spacer{flex:1}
+@media (max-width:600px){.pv-pop{left:0!important;right:0;top:auto!important;bottom:0;width:100%;max-height:72vh;border-radius:18px 18px 0 0}}
+.src-hint{display:flex;align-items:center;gap:6px;min-width:0;font-size:12.5px;color:var(--ink3)}
+.src-hint>span:not(.q){white-space:nowrap}
+.src-hint .q{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:var(--ink2)}
+.src-hint button{flex:none;padding:0;border:0;background:none;color:var(--accent);font:inherit;cursor:pointer;text-decoration:underline}
+.src-hint .warn{color:var(--warn-fg)}
+.tag.tpl{background:var(--accent-soft);color:var(--accent)}
+.tplnote{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:13.5px}
+.tplnote p{flex:1 1 220px;margin:0}
+.tplnote .link{padding:0;border:0;background:none;color:var(--accent);font:inherit;font-weight:500;text-decoration:underline;cursor:pointer}
+.tplnote select{min-height:36px;max-width:100%;padding:4px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field)}
+details.more{border:1px solid var(--line);border-radius:12px;padding:0 14px}
+details.more>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:14px;font-weight:500;color:var(--ink2)}
+details.more[open]{padding-bottom:14px}
+
+/* ---------- billed to: bulk bar, pick column, company editor ---------- */
+.bulk{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 20px 12px;padding:10px 12px;border-radius:14px;background:var(--accent-soft);font-size:14px}
+.bulk>span{font-weight:500}
+th.pick,td.pick{width:44px;padding-left:16px!important;padding-right:0!important}
+th.pick>span{padding:0!important}
+td.pick input,th.pick input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+tbody tr.sel td{background:var(--accent-soft)}
+.companies{display:flex;flex-direction:column;gap:10px}
+.warn-text{color:var(--warn-fg)}
+fieldset.user .actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;justify-content:space-between}
+fieldset.company{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+fieldset.company .grid2{width:100%}
+
+/* ---------- photos, reminders, payments, QR, duplicates, accountant export ---------- */
+@media (hover:hover) and (pointer:fine){#camera-btn{display:none}}
+.due-badge{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-width:44px;min-height:44px;padding:0 12px;border:0;border-radius:999px;background:var(--warn-bg);color:var(--warn-fg);font:600 15px 'Geist Mono',ui-monospace,monospace;cursor:pointer}
+.due-badge::before{content:'⏰';margin-right:6px;font-family:system-ui,sans-serif}
+.banner.info{background:var(--accent-soft);color:var(--ink)}
+.pill.part{background:var(--accent-soft);color:var(--accent)}
+.foreign.due-soon{color:var(--warn-fg)}
+.foreign.dup{color:var(--bad-fg)}
+.alert.info{background:var(--chip);color:var(--ink2)}
+.alert .btn{margin-left:auto;flex:none}
+.d-preview .loading{display:flex;align-items:center;gap:8px}
+.d-preview .loading .spin,.toast .spin{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+.pay-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px 24px}
+.pay-grid h3{margin:0 0 8px;font-size:14px;font-weight:500;color:var(--ink2)}
+.hbar.static{cursor:default}
+.hbar.static:hover{background:transparent}
+.hbar .fill.bad{background:var(--bad-fg)}
+.due-list{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+.due-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;width:100%;min-height:40px;padding:4px 8px;border:0;border-radius:10px;background:transparent;text-align:left;cursor:pointer;font-size:14px}
+.due-item:hover,.due-item:focus-visible{background:var(--chip)}
+.due-item .v{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:480px){.due-item{grid-template-columns:minmax(0,1fr) auto}.due-item .pill{grid-column:1;justify-self:start}}
+.pay-box{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:14px}
+.pay-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.pay-head h3{margin:0;font-size:15px;font-weight:600}
+.pay-box .paid-box{border:0;padding:0}
+.pay-list{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.pay-list li{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pay-list li:last-child{border-bottom:0}
+.pay-list .muted{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pay-add{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;align-items:end;gap:8px}
+@media (max-width:620px){.pay-add{grid-template-columns:repeat(2,minmax(0,1fr))}.pay-add .btn{grid-column:1/-1}}
+.qr-wrap{display:flex;flex-direction:column;gap:10px;padding-top:6px;border-top:1px solid var(--line)}
+.qr-tabs{display:flex;gap:6px}
+.qr-tabs .btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.qr-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px 16px}
+.qr-box:empty{display:none}
+.qr-box{flex:none;width:min(220px,100%);padding:6px;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.qr-box svg{display:block;width:100%;height:auto}
+.qr-note{flex:1 1 200px;margin:0;font-size:13.5px;color:var(--ink2)}
+#dup,#acct{width:min(900px,calc(100vw - 32px));max-width:none;max-height:calc(100vh - 32px)}
+#acct{width:min(620px,calc(100vw - 32px))}
+#dup .dlg-shell,#acct .dlg-shell{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--pop);overflow:hidden}
+#dup .s-body,#acct .s-body{flex:1;min-height:0;overflow:auto;padding:18px 22px 24px;display:flex;flex-direction:column;gap:14px}
+#dup p.help,#acct p.help{margin:0;font-size:13.5px;color:var(--ink3)}
+.dup-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dup-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.dup-col h3{margin:0;font-size:15px;font-weight:600}
+.dup-thumb{min-height:120px;max-height:320px;overflow:auto;border-radius:8px;background:var(--chip);font-size:13px;color:var(--ink3);padding:6px}
+.dup-thumb canvas{display:block;width:100%;height:auto;background:#fff;border-radius:4px}
+.dup-col dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:13.5px}
+.dup-col dt{color:var(--ink3)}
+.dup-col dd{margin:0;overflow-wrap:anywhere}
+.dup-col dd.same{font-weight:600;color:var(--warn-fg)}
+@media (max-width:620px){.dup-cols{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- templates dialog ---------- */
+#templates{width:min(900px,calc(100vw - 32px));max-width:none;max-height:calc(100vh - 32px)}
+#templates .dlg-shell{display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--pop);overflow:hidden}
+#templates .s-body{flex:1;min-height:0;overflow:auto;padding:18px 22px 24px;display:flex;flex-direction:column;gap:18px}
+#templates p.help{margin:0;font-size:13.5px;color:var(--ink3)}
+.tpl-list{display:flex;flex-direction:column;margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:14px}
+.tpl-list>li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:12px 10px 12px 14px;border-bottom:1px solid var(--line)}
+.tpl-list>li:last-child{border-bottom:0}
+.tpl-main{flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:5px}
+.tpl-name{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tpl-meta{font-size:12.5px;color:var(--ink3)}
+.tpl-chips{display:flex;flex-wrap:wrap;gap:4px}
+.tpl-chip{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:999px;background:var(--chip);font-size:12px;color:var(--ink2)}
+.tpl-acts{display:flex;flex-wrap:wrap;gap:4px}
+.tpl-rename{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tpl-rename input{flex:1 1 180px;min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field)}
+.tp-test{display:flex;flex-direction:column;gap:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.tp-test h3{margin:0;font-size:15px;font-weight:600}
+.tp-run{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
+.tp-run .f{flex:1 1 260px}
+.tp-cmp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:14px;align-items:start}
+.tp-page{position:relative;background:#fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.tp-page canvas{display:block;width:100%;height:auto}
+.tp-table{min-width:0;font-size:13px}
+.tp-table th,.tp-table td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tp-table thead th{position:static;padding:7px 8px}
+.tp-table tbody tr{cursor:default}
+.tp-table tbody tr:hover td{background:transparent}
+.tp-table .raw{display:block;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;color:var(--ink3)}
+.tp-table .same{color:var(--ok-fg)}
+.tp-table .diff{color:var(--warn-fg)}
+@media (max-width:700px){.tp-cmp{grid-template-columns:minmax(0,1fr)}}
+
+@media (max-width:900px){
+  .d-body{display:block;overflow:auto}
+  .d-preview{max-height:46vh}
+  .d-preview.selecting{max-height:74vh}
+  .d-fields{overflow:visible}
+}
+@media (max-width:720px){
+  .wrap{padding-top:28px}
+  #detail{width:100vw;height:100vh;height:100dvh;max-height:none;margin:0}
+  #detail form{border-radius:0;border:0}
+  #templates,#dup,#acct{width:100vw;height:100vh;height:100dvh;max-height:none;margin:0}
+  #templates .dlg-shell,#dup .dlg-shell,#acct .dlg-shell{height:100%;max-height:none;border-radius:0;border:0}
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cols,.col-labels{margin-left:44px}
+}
+@media (max-width:420px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.f.span2{grid-column:auto}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="parser.js"></script>
+<script src="regions.js"></script>
+<script src="zip.js"></script>
+<script src="qr.js"></script>
+<script src="media.js"></script>
+<script src="/_shared/adrial-sync.js"></script>
+<script src="fieldmap.js" defer></script>
+<script src="features.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="titles">
+      <span class="eyebrow">ADRIAL APPS · INVOICES</span>
+      <h1>Invoices<span>.</span></h1>
+      <p class="lede">Drop your PDF invoices or photos here. Vendor, dates, VAT and totals are read automatically; you check each one once and every cost is filed by month, category and vendor.</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" id="add-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add invoices
+      </button>
+      <button type="button" class="btn" id="camera-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7H8l1.5-2h5L16 7h2.5A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.2"/></svg>Take photo
+      </button>
+      <button type="button" class="due-badge" id="due-badge" hidden title="Due soon and overdue invoices"></button>
+      <details class="menu" id="export-menu">
+        <summary class="btn" role="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>Export
+        </summary>
+        <div class="menu-list" role="menu">
+          <button type="button" role="menuitem" data-act="csv">Spreadsheet (.csv)<small>The invoices currently shown, for Excel</small></button>
+          <button type="button" role="menuitem" data-act="accountant">For the accountant (.zip)…<small>One company and month: files renamed + spreadsheet + summary</small></button>
+          <button type="button" role="menuitem" data-act="ics">Due dates calendar (.ics)<small>Unpaid invoices with a reminder before each due date</small></button>
+          <hr>
+          <button type="button" role="menuitem" data-act="backup">Full backup (.zip)<small>Every invoice and setting, to restore later</small></button>
+          <button type="button" role="menuitem" data-act="restore">Restore a backup…<small>Adds invoices from a backup .zip</small></button>
+        </div>
+      </details>
+      <button type="button" class="btn" id="templates-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h5M8 12h3"/><rect x="12.5" y="11" width="4.5" height="5" rx="1" stroke-dasharray="2 1.6"/></svg>Templates
+      </button>
+      <button type="button" class="btn icon" id="settings-btn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+      <input type="file" id="file-input" accept="application/pdf,.pdf,image/*,.heic,.heif" multiple hidden>
+      <input type="file" id="camera-input" accept="image/*,application/pdf" capture="environment" hidden>
+      <input type="file" id="restore-input" accept=".zip,application/zip" hidden>
+    </div>
+  </header>
+
+  <div id="storage-error" class="banner" hidden><p><strong>This browser blocks storage for this page.</strong> Invoices can't be saved here — open the app in a normal (not private) window.</p></div>
+
+  <section id="review-banner" class="banner" hidden aria-live="polite">
+    <p id="review-text"></p>
+    <button type="button" class="btn small primary" id="review-btn">Check them now</button>
+  </section>
+
+  <section id="due-banner" class="banner info" hidden aria-live="polite">
+    <p id="due-text"></p>
+    <button type="button" class="btn small" id="due-btn">Show them</button>
+  </section>
+
+  <section id="onboard" class="onboard" hidden>
+    <div class="drop" style="grid-column:1/-1">
+      <span class="ico-lg"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9.5 14.5 12 12l2.5 2.5"/></svg></span>
+      <h2>Drop PDF invoices or photos anywhere on this page</h2>
+      <p>Or pick them from your computer, or take a photo on your phone. Add a whole folder's worth at once; duplicates are flagged.</p>
+      <button type="button" class="btn primary" id="add-btn-2">Choose files</button>
+    </div>
+    <div class="card step"><b>01</b><h3>Add</h3><p>Text is read from each PDF in your browser. Photos and scans are read with OCR.</p></div>
+    <div class="card step"><b>02</b><h3>Check</h3><p>Confirm vendor, dates and amounts next to the PDF. Corrections are remembered per vendor.</p></div>
+    <div class="card step"><b>03</b><h3>See your costs</h3><p>Monthly totals, VAT, categories, top vendors and what's still unpaid. Export for your accountant.</p></div>
+  </section>
+
+  <div id="dash">
+    <section class="filters" aria-label="Filters">
+      <label class="field-inline"><span>Year</span><select id="f-year"></select></label>
+      <label class="field-inline"><span>Month</span><select id="f-month"></select></label>
+      <label class="field-inline"><span>Billed to</span><select id="f-company"></select></label>
+      <label class="field-inline"><span>Person</span><select id="f-person"></select></label>
+      <label class="field-inline"><span>Category</span><select id="f-cat"></select></label>
+      <label class="field-inline"><span>Status</span><select id="f-status">
+        <option value="">All</option><option value="review">To check</option><option value="unpaid">Unpaid</option><option value="partial">Partially paid</option><option value="attention">Due soon &amp; overdue</option><option value="duesoon">Due soon</option><option value="overdue">Overdue</option><option value="paid">Paid</option><option value="dupes">Possible duplicates</option>
+      </select></label>
+      <span id="f-vendor-chip" class="chip" hidden><span id="f-vendor-name"></span><button type="button" id="f-vendor-clear" aria-label="Show all vendors"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></span>
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span class="sr">Search invoices</span><input id="f-q" type="search" placeholder="Search vendor, number or any text in the PDF" autocomplete="off"></label>
+    </section>
+
+    <section class="kpis" aria-label="Totals" style="margin-top:20px">
+      <div class="card kpi hero"><span class="label" id="k-spent-label">Spent</span><span class="value" id="k-spent">–</span><span class="sub" id="k-spent-sub"></span></div>
+      <div class="card kpi"><span class="label" id="k-avg-label">Monthly average</span><span class="value" id="k-avg">–</span><span class="sub" id="k-avg-sub"></span></div>
+      <div class="card kpi"><span class="label">VAT on these invoices</span><span class="value" id="k-vat">–</span><span class="sub" id="k-vat-sub"></span></div>
+      <div class="card kpi"><span class="label">Unpaid</span><span class="value" id="k-unpaid">–</span><span class="sub" id="k-unpaid-sub"></span></div>
+    </section>
+
+    <section class="card chart-card pay-card" aria-labelledby="pay-h" style="margin-top:20px">
+      <div class="chart-head"><h2 id="pay-h">Payments</h2><span class="note" id="pay-note"></span></div>
+      <div class="pay-grid">
+        <div><h3>Ageing of what is unpaid</h3><ul class="hbars" id="pay-ageing"></ul></div>
+        <div><h3 id="pay-due-h">Due soon</h3><ul class="due-list" id="pay-due"></ul></div>
+        <div><h3>Unpaid by company</h3><ul class="hbars" id="pay-co"></ul></div>
+        <div><h3>Unpaid by person</h3><ul class="hbars" id="pay-person"></ul></div>
+      </div>
+    </section>
+
+    <section class="charts" style="margin-top:20px">
+      <article class="card chart-card wide" aria-labelledby="c-month-h">
+        <div class="chart-head"><h2 id="c-month-h">Costs by month</h2><span class="note" id="c-month-note"></span></div>
+        <div>
+          <div class="cols" id="c-month"></div>
+          <div class="col-labels" id="c-month-labels" aria-hidden="true"></div>
+        </div>
+      </article>
+      <article class="card chart-card" aria-labelledby="c-person-h">
+        <div class="chart-head"><h2 id="c-person-h">By person</h2><span class="note">Billed to person · select one to filter</span></div>
+        <ul class="hbars" id="c-person"></ul>
+      </article>
+      <article class="card chart-card" aria-labelledby="c-co-h">
+        <div class="chart-head"><h2 id="c-co-h">By company</h2><span class="note">Billed to · select one to filter</span></div>
+        <ul class="hbars" id="c-co"></ul>
+      </article>
+      <article class="card chart-card" aria-labelledby="c-cat-h">
+        <div class="chart-head"><h2 id="c-cat-h">By category</h2><span class="note">Select one to filter</span></div>
+        <ul class="hbars" id="c-cat"></ul>
+      </article>
+      <article class="card chart-card" aria-labelledby="c-ven-h">
+        <div class="chart-head"><h2 id="c-ven-h">Top vendors</h2><span class="note" id="c-ven-note"></span></div>
+        <ul class="hbars" id="c-ven"></ul>
+      </article>
+    </section>
+
+    <section class="card table-card" aria-labelledby="t-h" style="margin-top:20px">
+      <div class="table-head"><h2 id="t-h">Invoices</h2><span class="note" id="t-note"></span></div>
+      <div class="bulk" id="bulk" hidden role="region" aria-label="Selected invoices">
+        <span id="bulk-count"></span>
+        <label class="field-inline"><span>Set billed to</span><select id="bulk-company"></select></label>
+        <button type="button" class="btn small primary" id="bulk-apply">Apply</button>
+        <label class="field-inline"><span>Set person</span><select id="bulk-person"></select></label>
+        <button type="button" class="btn small primary" id="bulk-person-apply">Apply</button>
+        <button type="button" class="btn small" id="bulk-paid">Mark paid</button>
+        <button type="button" class="btn small ghost" id="bulk-clear">Clear selection</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <caption class="sr">Invoices matching the filters. Select a row to open it.</caption>
+          <thead><tr>
+            <th scope="col" class="pick"><span><input type="checkbox" id="t-pick-all" aria-label="Select all shown invoices"></span></th>
+            <th scope="col" data-sort="issueDate"><button type="button">Date</button></th>
+            <th scope="col" data-sort="vendor"><button type="button">Vendor · number</button></th>
+            <th scope="col" data-sort="billedTo"><button type="button">Billed to</button></th>
+            <th scope="col" data-sort="billedPerson"><button type="button">Billed to person</button></th>
+            <th scope="col" data-sort="category"><button type="button">Category</button></th>
+            <th scope="col" class="r" data-sort="net"><button type="button">Net</button></th>
+            <th scope="col" class="r" data-sort="vat"><button type="button">VAT</button></th>
+            <th scope="col" class="r" data-sort="eur"><button type="button">Total</button></th>
+            <th scope="col" data-sort="dueDate"><button type="button">Due</button></th>
+            <th scope="col"><span>Status</span></th>
+          </tr></thead>
+          <tbody id="t-body"></tbody>
+        </table>
+      </div>
+      <p class="empty-note" id="t-empty" hidden>No invoices match these filters. <button type="button" class="btn small" id="t-clear">Show all invoices</button></p>
+    </section>
+  </div>
+
+  <footer class="foot"><span id="storage-line">Stored only in this browser.</span><span>Back up regularly from Export → Full backup.</span></footer>
+</div>
+
+<div id="drop-overlay" hidden><div>Drop to add invoices<small>PDF files and photos · duplicates are flagged</small></div></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="tooltip" role="tooltip" hidden></div>
+
+<dialog id="detail" aria-labelledby="d-title">
+  <form id="detail-form" novalidate>
+    <header class="d-head">
+      <div class="t"><span class="eyebrow" id="d-eyebrow"></span><h2 id="d-title">Invoice</h2></div>
+      <button type="button" class="btn icon small ghost" id="d-download" aria-label="Download PDF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg></button>
+      <button type="button" class="btn icon small ghost" id="d-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="d-body">
+      <section class="d-preview" id="d-preview" aria-label="PDF preview">
+        <div class="pv-bar" id="pv-bar" hidden>
+          <div class="pv-grp" role="group" aria-label="Pages">
+            <button type="button" class="btn icon small ghost" id="pv-prev" aria-label="Previous page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button>
+            <span class="pv-pg mono" id="pv-pg" aria-live="polite">1 / 1</span>
+            <button type="button" class="btn icon small ghost" id="pv-next" aria-label="Next page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="pv-grp" role="group" aria-label="Zoom">
+            <button type="button" class="btn icon small ghost" id="pv-zout" aria-label="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/></svg></button>
+            <button type="button" class="btn small ghost pv-zoom mono" id="pv-zfit" aria-label="Fit page width">Fit</button>
+            <button type="button" class="btn icon small ghost" id="pv-zin" aria-label="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button>
+          </div>
+          <span class="spacer"></span>
+          <button type="button" class="btn small" id="pv-list-btn" aria-expanded="false" aria-controls="pv-list">Pick from text</button>
+          <button type="button" class="btn small" id="pv-select" aria-pressed="false">Select fields on PDF</button>
+        </div>
+        <p class="pv-help" id="pv-help" hidden>Drag a box around a value on the page, or click a single word. Then choose which field it is. Drag a box to move it, its corner to resize it.</p>
+        <div class="pv-list" id="pv-list" hidden>
+          <div class="f"><label for="pv-items">Text on this page</label><select id="pv-items" multiple size="7"></select><span class="hint">Choose one or more pieces (Ctrl or Shift to combine), then the field.</span></div>
+          <div class="pv-list-row">
+            <div class="f"><label for="pv-field">Field</label><select id="pv-field"></select></div>
+            <button type="button" class="btn small primary" id="pv-assign">Use for this field</button>
+          </div>
+        </div>
+        <div class="scanned" id="d-scanned" hidden>
+          <p><strong>No text could be read from this file yet</strong> (it's a scan or a photo). Read it with OCR, or type the amounts in.</p>
+          <div><button type="button" class="btn small" id="d-ocr">Read with OCR</button> <span id="d-ocr-status" class="mono" style="font-size:12px"></span></div>
+        </div>
+        <div id="d-pages" class="pv-pages"></div>
+        <div class="pv-save" id="pv-save" hidden>
+          <span id="pv-save-note"></span>
+          <label class="check-row" id="pv-fixco-row" hidden style="min-height:36px"><input type="checkbox" id="pv-fixco"> <span id="pv-fixco-label">Always this company for this vendor</span></label>
+          <label class="check-row" id="pv-fixperson-row" hidden style="min-height:36px"><input type="checkbox" id="pv-fixperson"> <span id="pv-fixperson-label">Always this person for this vendor</span></label>
+          <button type="button" class="btn small primary" id="pv-save-btn">Save as template</button>
+        </div>
+      </section>
+      <section class="d-fields" aria-label="Invoice details">
+        <div class="alerts" id="d-alerts"></div>
+        <div class="tplnote" id="d-tpl" hidden></div>
+        <p class="sr" id="pv-live" aria-live="polite"></p>
+        <div class="grid2">
+          <div class="f span2"><label for="d-vendor">Vendor <span class="tag" data-for="vendor" hidden>Check</span></label><input id="d-vendor" list="vendor-list" autocomplete="off" spellcheck="false"><datalist id="vendor-list"></datalist></div>
+          <div class="f span2"><label for="d-company">Billed to (company / account) <span class="tag" data-for="billedTo" hidden>Check</span></label><select id="d-company"></select><span class="hint" id="d-company-hint"></span></div>
+          <div class="f span2"><label for="d-person">Billed to person (user) <span class="tag" data-for="billedPerson" hidden>Check</span></label><input id="d-person" type="email" list="person-list" autocomplete="off" spellcheck="false" placeholder="name@company.com" aria-describedby="d-person-hint"><datalist id="person-list"></datalist><span class="hint" id="d-person-hint"></span></div>
+          <div class="f"><label for="d-number">Invoice number <span class="tag" data-for="number" hidden>Check</span></label><input id="d-number" autocomplete="off" spellcheck="false"></div>
+          <div class="f"><label for="d-taxid">Vendor VAT ID</label><input id="d-taxid" autocomplete="off" spellcheck="false" placeholder="SI12345678"></div>
+          <div class="f"><label for="d-issue">Invoice date <span class="tag" data-for="issueDate" hidden>Check</span></label><input id="d-issue" type="date"></div>
+          <div class="f"><label for="d-due">Due date <span class="tag" data-for="dueDate" hidden>Check</span></label><input id="d-due" type="date"></div>
+          <div class="f span2"><label for="d-cat">Category</label><select id="d-cat"></select></div>
+        </div>
+        <div class="grid3">
+          <div class="f"><label for="d-total">Total <span class="tag" data-for="total" hidden>Check</span></label><input id="d-total" class="amount" inputmode="decimal" autocomplete="off"></div>
+          <div class="f"><label for="d-vat">VAT <span class="tag" data-for="vat" hidden>Check</span></label><input id="d-vat" class="amount" inputmode="decimal" autocomplete="off"></div>
+          <div class="f"><label for="d-net">Net <span class="tag" data-for="net" hidden>Check</span></label><input id="d-net" class="amount" inputmode="decimal" autocomplete="off"></div>
+          <div class="f"><label for="d-cur">Currency</label><select id="d-cur"><option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option></select></div>
+          <div class="f span2" id="d-eur-wrap"><label for="d-eur">Amount in EUR</label><input id="d-eur" class="amount" inputmode="decimal" autocomplete="off" placeholder="From your bank statement"><span class="hint">Used for the totals and charts.</span></div>
+        </div>
+        <p class="hint" id="d-math" style="margin:-6px 0 0;font-size:12.5px;color:var(--ink3)"></p>
+        <details class="more" id="d-more">
+          <summary>Service date, VAT rate, payment &amp; order details</summary>
+          <div class="grid2">
+            <div class="f"><label for="d-service">Delivery / service date</label><input id="d-service" type="date"></div>
+            <div class="f"><label for="d-rate">VAT rate (%)</label><input id="d-rate" class="amount" inputmode="decimal" autocomplete="off" placeholder="22"></div>
+            <div class="f span2"><label for="d-iban">IBAN</label><input id="d-iban" class="mono" autocomplete="off" spellcheck="false" placeholder="SI56 …"></div>
+            <div class="f"><label for="d-ref">Reference / model</label><input id="d-ref" autocomplete="off" spellcheck="false" placeholder="SI00 …"></div>
+            <div class="f"><label for="d-po">PO number</label><input id="d-po" autocomplete="off" spellcheck="false"></div>
+          </div>
+        </details>
+        <section class="pay-box" aria-labelledby="pay-title">
+          <div class="pay-head"><h3 id="pay-title">Payments</h3><span class="pill" id="pay-state">Unpaid</span></div>
+          <div class="paid-box">
+            <label class="check-row"><input type="checkbox" id="d-paid"> Paid in full</label>
+            <div class="f" id="d-paid-date-wrap"><label for="d-paid-date">Paid on</label><input id="d-paid-date" type="date"></div>
+          </div>
+          <ul class="pay-list" id="pay-list" aria-label="Recorded payments"></ul>
+          <p class="hint" id="pay-empty">No payments recorded. Add one when it's paid (also part payments).</p>
+          <div class="pay-add" role="group" aria-label="Record a payment">
+            <div class="f"><label for="pay-date">Date</label><input id="pay-date" type="date"></div>
+            <div class="f"><label for="pay-amount">Amount</label><input id="pay-amount" class="amount" inputmode="decimal" autocomplete="off"></div>
+            <div class="f"><label for="pay-method">Method</label><select id="pay-method"></select></div>
+            <div class="f"><label for="pay-note">Note</label><input id="pay-note" autocomplete="off"></div>
+            <button type="button" class="btn small" id="pay-add">Add payment</button>
+          </div>
+          <p class="sr" id="pay-live" aria-live="polite"></p>
+          <div class="qr-wrap" id="qr-wrap">
+            <div class="qr-tabs" id="qr-tabs" role="group" aria-label="QR code type" hidden>
+              <button type="button" class="btn small" data-kind="upn" aria-pressed="true">UPN QR</button>
+              <button type="button" class="btn small" data-kind="epc" aria-pressed="false">SEPA QR</button>
+            </div>
+            <div class="qr-row">
+              <div class="qr-box" id="qr-box"></div>
+              <p class="qr-note" id="qr-note" aria-live="polite"></p>
+            </div>
+            <details class="more qr-addr"><summary>Vendor address on the payment code</summary>
+              <div class="grid2">
+                <div class="f"><label for="d-payee-street">Street and number</label><input id="d-payee-street" autocomplete="off" maxlength="70"></div>
+                <div class="f"><label for="d-payee-city">Post code and town</label><input id="d-payee-city" autocomplete="off" maxlength="70"></div>
+              </div>
+            </details>
+          </div>
+        </section>
+        <div class="f"><label for="d-notes">Notes</label><textarea id="d-notes" rows="2"></textarea></div>
+        <label class="check-row"><input type="checkbox" id="d-remember" checked> Remember this vendor name and category for future invoices from this sender</label>
+        <details class="text"><summary>Text read from the PDF</summary><pre id="d-text"></pre></details>
+      </section>
+    </div>
+    <footer class="d-foot">
+      <button type="button" class="btn small ghost danger" id="d-delete">Delete</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn small" id="d-skip" hidden>Skip for now</button>
+      <button type="submit" class="btn small primary" id="d-save">Save</button>
+    </footer>
+    <div class="pv-pop" id="pv-pop" role="dialog" aria-modal="false" aria-labelledby="pv-pop-title" hidden>
+      <div class="pv-pop-head"><h3 id="pv-pop-title">Which field is this?</h3><button type="button" class="btn icon small ghost" id="pv-pop-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div><span class="eyebrow" id="pv-pop-text-label">TEXT IN THE BOX</span><p class="pv-pop-text" id="pv-pop-text" aria-labelledby="pv-pop-text-label"></p></div>
+      <div class="pv-pop-ocr" id="pv-pop-ocr" hidden>
+        <button type="button" class="btn small" id="pv-pop-ocr-btn">Read this area (OCR)</button>
+        <progress id="pv-pop-prog" max="1" value="0" hidden aria-label="OCR progress"></progress>
+        <span id="pv-pop-ocr-msg" role="status"></span>
+      </div>
+      <div class="pv-pop-fields" id="pv-pop-fields" role="group" aria-label="Field for this text"></div>
+      <div class="pv-pop-foot"><button type="button" class="btn small ghost danger" id="pv-pop-remove" hidden>Remove box</button><span class="spacer"></span><button type="button" class="btn small" id="pv-pop-cancel">Cancel</button></div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="templates" aria-labelledby="tp-title">
+  <div class="dlg-shell">
+    <header class="d-head">
+      <div class="t"><span class="eyebrow">INVOICES</span><h2 id="tp-title">Vendor templates</h2></div>
+      <button type="button" class="btn small ghost" id="tp-import-btn">Import</button>
+      <button type="button" class="btn small ghost" id="tp-export-btn">Export</button>
+      <button type="button" class="btn icon small ghost" id="tp-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="s-body">
+      <p class="help">A template remembers where each field sits on one vendor's invoices. Make one by opening an invoice, choosing <strong>Select fields on PDF</strong>, boxing the values and saving it. New invoices from that vendor are then read from the same spots first.</p>
+      <ul class="tpl-list" id="tp-list"></ul>
+      <section class="tp-test" id="tp-test" hidden aria-labelledby="tp-test-h"></section>
+    </div>
+  </div>
+  <input type="file" id="tp-import" accept=".json,application/json" hidden>
+</dialog>
+
+<dialog id="dup" aria-labelledby="dup-title" aria-describedby="dup-why">
+  <div class="dlg-shell">
+    <header class="d-head">
+      <div class="t"><span class="eyebrow">POSSIBLE DUPLICATE</span><h2 id="dup-title">Is this the same invoice?</h2></div>
+      <button type="button" class="btn icon small ghost" id="dup-close" aria-label="Decide later"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="s-body">
+      <p class="help" id="dup-why"></p>
+      <div class="dup-cols" id="dup-cols"></div>
+    </div>
+    <footer class="d-foot">
+      <button type="button" class="btn small ghost danger" id="dup-discard">Discard the new one</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn small" id="dup-replace">Replace the saved one</button>
+      <button type="button" class="btn small primary" id="dup-keep">Keep both</button>
+    </footer>
+  </div>
+</dialog>
+
+<dialog id="acct" aria-labelledby="ac-title">
+  <div class="dlg-shell">
+    <header class="d-head">
+      <div class="t"><span class="eyebrow">EXPORT</span><h2 id="ac-title">For the accountant</h2></div>
+      <button type="button" class="btn icon small ghost" id="ac-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="s-body">
+      <p class="help">One .zip with the original files renamed, a spreadsheet and a short summary. Everything is put together in this browser.</p>
+      <div class="grid2">
+        <div class="f span2"><label for="ac-company">Billed to</label><select id="ac-company"></select></div>
+        <div class="f"><label for="ac-from">From month</label><input id="ac-from" type="month"></div>
+        <div class="f"><label for="ac-to">To month</label><input id="ac-to" type="month"></div>
+        <div class="f span2"><label for="ac-pattern">File names</label><input id="ac-pattern" autocomplete="off" spellcheck="false" aria-describedby="ac-pattern-hint ac-example"><span class="hint" id="ac-pattern-hint">Use {date} {vendor} {number} {company} {person} {category} {total}. Saved for next time.</span><span class="hint mono" id="ac-example"></span></div>
+        <div class="f span2"><label for="ac-sep">Spreadsheet</label><select id="ac-sep"><option value=";">Excel (semicolon, decimal comma)</option><option value=",">Comma-separated (decimal point)</option></select></div>
+      </div>
+      <p class="help" id="ac-count" aria-live="polite"></p>
+      <p class="help" id="ac-status" role="status"></p>
+    </div>
+    <footer class="d-foot"><span class="spacer"></span><button type="button" class="btn small" id="ac-cancel">Cancel</button><button type="button" class="btn small primary" id="ac-go">Download .zip</button></footer>
+  </div>
+</dialog>
+
+<dialog id="settings" aria-labelledby="s-title">
+  <form id="settings-form" novalidate>
+    <header class="d-head">
+      <div class="t"><span class="eyebrow">INVOICES</span><h2 id="s-title">Settings</h2></div>
+      <button type="button" class="btn icon small ghost" id="s-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </header>
+    <div class="s-body">
+      <div>
+        <h3>Cloud sync</h3>
+        <p class="help">Keep invoices, templates and settings in sync across your devices. Files are uploaded once and downloaded when you open them elsewhere.</p>
+        <div id="s-sync"></div>
+      </div>
+      <div>
+        <h3>Reminders</h3>
+        <div class="grid2">
+          <div class="f"><label for="s-remind">Remind me this many days before the due date</label><input id="s-remind" type="number" min="0" max="60" step="1" inputmode="numeric"></div>
+          <div class="f"><span class="lbl" id="s-notify-lbl">Browser notifications</span><label class="check-row"><input type="checkbox" id="s-notify" aria-describedby="s-notify-hint"> Notify me when an invoice is due soon</label><span class="hint" id="s-notify-hint"></span></div>
+        </div>
+      </div>
+      <div class="f"><label for="s-own">Your company names</label><input id="s-own" autocomplete="off" spellcheck="false"><span class="hint">Comma-separated. Never picked as the vendor, because they appear as the buyer.</span></div>
+      <div class="f"><label for="s-ownids">Your VAT IDs</label><input id="s-ownids" autocomplete="off" spellcheck="false" placeholder="SI12345678"><span class="hint">Comma-separated. Ignored when reading the vendor's VAT ID.</span></div>
+      <div>
+        <h3>Your companies (billed to)</h3>
+        <p class="help">Each invoice is booked to the company it is addressed to. The app looks for these names and VAT IDs in the buyer block (Kupec, Prejemnik, Bill to …).</p>
+        <div id="s-companies" class="companies"></div>
+        <div class="actions" style="margin-top:10px"><button type="button" class="btn small" id="s-add-company">Add company</button><button type="button" class="btn small" id="s-detect" hidden>Detect</button></div>
+      </div>
+      <div>
+        <h3>People (billed to person)</h3>
+        <p class="help">Whose account an invoice was billed to, found by the email in the buyer block. People are added here automatically the first time their email appears on an invoice; check the ones marked new.</p>
+        <div class="actions" style="margin:8px 0 10px"><button type="button" class="btn small" id="s-add-user">Add person</button></div>
+        <p class="help" id="s-users-empty">No people yet.</p>
+        <div id="s-users" class="companies"></div>
+      </div>
+      <div class="f"><label for="s-cats">Categories</label><textarea id="s-cats" rows="6"></textarea><span class="hint">One per line. Invoices keep their category if you remove it here.</span></div>
+      <div>
+        <h3>Remembered vendors</h3>
+        <p class="help" id="s-rules-help">When you save an invoice with "Remember" on, its vendor and category are reused for that sender.</p>
+        <ul class="rules" id="s-rules"></ul>
+      </div>
+      <div>
+        <h3>Storage</h3>
+        <p class="help" id="s-storage"></p>
+      </div>
+      <div class="danger-zone"><p>Delete every invoice and setting from this browser. Download a full backup first.</p><button type="button" class="btn small" id="s-wipe">Delete everything</button></div>
+    </div>
+    <footer class="d-foot"><span class="spacer"></span><button type="button" class="btn small" id="s-cancel">Cancel</button><button type="submit" class="btn small primary">Save settings</button></footer>
+  </form>
+</dialog>
+</body>
+</html>

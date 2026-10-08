@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<script src="/_shared/adrial-bus.js"></script>
+<script src="/_shared/adrial-sync.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Adrial Mail — Adrial Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+<a class="skip" href="#main" id="skipLink">Skip to content</a>
+<div class="app">
+  <aside class="side" id="side" aria-label="Adrial Mail navigation">
+    <a class="brand" href="#/"><b>Adrial Mail<span>.</span></b><small>Email &amp; SMS marketing</small></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#/" data-nav="dash"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z"/></svg>Dashboard</a>
+      <span class="label nav-label">Messaging</span>
+      <a href="#/campaigns" data-nav="campaigns"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l16-8-6 16-3-7z"/></svg>Campaigns<span class="cnt" id="navCampaigns"></span></a>
+      <a href="#/flows" data-nav="flows"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10M8 5h4a4 4 0 0 1 4 4v1"/></svg>Flows<span class="cnt" id="navFlows"></span></a>
+      <a href="#/sms" data-nav="sms"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></svg>SMS</a>
+      <a href="#/forms" data-nav="forms"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>Sign-up forms</a>
+      <a href="#/templates" data-nav="templates"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Templates</a>
+      <span class="label nav-label">Audience</span>
+      <a href="#/profiles" data-nav="profiles"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c1.9.7 3.1 2.5 3.5 5.4"/></svg>Profiles<span class="cnt" id="navProfiles"></span></a>
+      <a href="#/lists" data-nav="lists"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>Lists &amp; segments</a>
+      <span class="label nav-label">Insights</span>
+      <a href="#/analytics" data-nav="analytics"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analytics</a>
+      <span class="label nav-label">Demo tools</span>
+      <a href="#/simulator" data-nav="simulator"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></svg>Event simulator</a>
+    </nav>
+    <div class="side-foot">
+      <span class="demo-pill" title="All profiles, emails, phone numbers and results are fictional. No email or SMS is ever sent and no network call is made."><i></i>Demo · nothing is sent. Fictional data, kept in this browser (plus your private cloud copy if you sign in to sync).</span>
+      <div id="syncPanel" class="sync-panel" aria-live="polite"></div>
+      <button type="button" class="btn sm" data-act="reset"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg>Reset demo data</button>
+    </div>
+  </aside>
+  <div class="side-scrim" id="sideScrim" hidden></div>
+  <div class="maincol">
+    <header class="top">
+      <button type="button" class="btn icon menubtn" id="menuBtn" aria-label="Open navigation" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <form class="topsearch" id="topSearch" role="search">
+        <label class="sr" for="topQ">Search profiles</label>
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="topQ" type="search" placeholder="Search profiles by name or email…" autocomplete="off">
+      </form>
+      <span class="grow"></span>
+      <button type="button" class="clock" id="clockBtn" data-act="clock" title="Demo clock — fast-forward it in the Event simulator"></button>
+      <span class="demo-tag" title="No email or SMS is ever sent. All data is fictional."><i></i>Demo · nothing is sent</span>
+    </header>
+    <main id="main" tabindex="-1"><p class="loading">Loading Adrial Mail…</p></main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="util.js?v=2" defer></script>
+<script src="email.js?v=2" defer></script>
+<script src="engine.js?v=2" defer></script>
+<script src="data.js?v=2" defer></script>
+<script src="store.js?v=2" defer></script>
+<script src="charts.js?v=2" defer></script>
+<script src="ui.js?v=2" defer></script>
+<script src="editor.js?v=2" defer></script>
+<script src="flows.js?v=2" defer></script>
+<script src="pages-audience.js?v=2" defer></script>
+<script src="pages-messaging.js?v=2" defer></script>
+<script src="pages-insights.js?v=2" defer></script>
+<script src="app.js?v=2" defer></script>
+</body>
+</html>
