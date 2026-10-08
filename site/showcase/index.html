@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<script>document.documentElement.classList.add('js')</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Stratum — Data platforms, Power BI, analytics and business apps</title>
+<meta name="description" content="Data warehousing, Power BI, analytics tools, predictions, automation and custom business apps — designed, built and run by one partner.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<script src="app.js?v=1" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gMark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B66F0"/><stop offset=".55" stop-color="#5B3FE0"/><stop offset="1" stop-color="#17869C"/></linearGradient>
+    <linearGradient id="gLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7B66F0"/><stop offset="1" stop-color="#26B5CE"/></linearGradient>
+    <linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7B66F0" stop-opacity=".35"/><stop offset="1" stop-color="#7B66F0" stop-opacity="0"/></linearGradient>
+  </defs>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="#top" aria-label="Stratum — back to top">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="url(#gMark)"/><rect x="11.5" y="8.6" width="13" height="3.4" rx="1.7" fill="#fff" opacity=".55"/><rect x="9.5" y="14.3" width="15" height="3.4" rx="1.7" fill="#fff" opacity=".8"/><rect x="7.5" y="20" width="17" height="3.4" rx="1.7" fill="#fff"/></svg>
+      <span>Stratum</span>
+    </a>
+    <nav class="links" aria-label="Sections">
+      <a href="#platform">Data platform</a>
+      <a href="#powerbi">Power BI</a>
+      <a href="#analytics">Analytics</a>
+      <a href="#ai">Predictions</a>
+      <a href="#apps">Apps</a>
+      <a href="#automation">Automation</a>
+      <a href="#process">How we work</a>
+    </nav>
+    <button type="button" class="kbtn" data-open-palette aria-label="Jump to a section (Command K)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7.2" cy="7.2" r="4.5"/><path d="m10.6 10.6 3 3"/></svg><kbd>⌘K</kbd></button>
+    <a class="btn primary sm" href="#contact">Start a project</a>
+    <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mnav" aria-label="Menu"><span></span><span></span></button>
+  </div>
+  <nav class="mnav" id="mnav" aria-label="Sections" hidden>
+    <a href="#platform">Data platform</a><a href="#powerbi">Power BI</a><a href="#analytics">Analytics</a><a href="#ai">Predictions</a><a href="#apps">Apps</a><a href="#automation">Automation</a><a href="#process">How we work</a><a href="#faq">FAQ</a><a href="#contact">Start a project</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ── Hero ─────────────────────────────────────────────── -->
+<section class="hero" id="top" aria-labelledby="heroTitle">
+  <div class="glow g1" aria-hidden="true"></div><div class="glow g2" aria-hidden="true"></div><div class="glow g3" aria-hidden="true"></div>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="wrap hero-in">
+    <a class="tagline reveal" href="#services"><span class="pulse" aria-hidden="true"></span>Data · Analytics · Software — one partner<span aria-hidden="true">→</span></a>
+    <h1 id="heroTitle" class="reveal">Your data,<br><span class="grad">working for you.</span></h1>
+    <p class="lead reveal">The data warehouse, the Power BI reports, the analytics tools and the everyday apps your team runs on — designed, built and kept running by one partner.</p>
+    <div class="ctas reveal">
+      <a class="btn primary lg" href="#contact">Start a project</a>
+      <button type="button" class="btn lg" data-open-palette>Explore what we build <kbd>⌘K</kbd></button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="window hero-window" aria-hidden="true">
+      <div class="win-bar"><i></i><i></i><i></i><span>Ask your data</span></div>
+      <div class="cmd-in">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7.2" cy="7.2" r="4.5"/><path d="m10.6 10.6 3 3"/></svg>
+        <span class="typed" id="typed"></span><span class="caret"></span>
+        <kbd>↵</kbd>
+      </div>
+      <div class="cmd-body">
+        <ul class="cmd-list" id="cmdList"></ul>
+        <div class="cmd-preview" id="cmdPreview"></div>
+      </div>
+      <div class="win-foot"><span>Illustrative data</span><span><kbd>↑</kbd><kbd>↓</kbd> navigate <kbd>↵</kbd> open</span></div>
+    </div>
+    <p class="sr">Animated example: questions such as revenue by store, customers likely to reorder and stock in transit are answered with charts and tables.</p>
+  </div>
+  <div class="stack" aria-label="Technologies we work with">
+    <div class="stack-track">
+      <span>Google BigQuery</span><span>Power BI</span><span>Microsoft Fabric</span><span>Google Cloud Run</span><span>n8n</span><span>Python</span><span>SQL</span><span>Node.js</span><span>React</span><span>GA4</span><span>Google Ads</span><span>Meta Ads</span><span>Excel</span><span>REST APIs</span>
+      <span aria-hidden="true">Google BigQuery</span><span aria-hidden="true">Power BI</span><span aria-hidden="true">Microsoft Fabric</span><span aria-hidden="true">Google Cloud Run</span><span aria-hidden="true">n8n</span><span aria-hidden="true">Python</span><span aria-hidden="true">SQL</span><span aria-hidden="true">Node.js</span><span aria-hidden="true">React</span><span aria-hidden="true">GA4</span><span aria-hidden="true">Google Ads</span><span aria-hidden="true">Meta Ads</span><span aria-hidden="true">Excel</span><span aria-hidden="true">REST APIs</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Numbers ──────────────────────────────────────────── -->
+<section class="stats wrap" aria-label="In numbers">
+  <div class="stat reveal"><b><span data-count="30">30</span>+</b><span>apps and dashboards built and running in production</span></div>
+  <div class="stat reveal"><b><span data-count="10">10</span>M+</b><span>records modelled and refreshed automatically every night</span></div>
+  <div class="stat reveal"><b>€0.00</b><span>difference to Power BI on reports we rebuilt — reconciled to the cent</span></div>
+  <div class="stat reveal"><b>1</b><span>partner from raw data to the finished, running app</span></div>
+</section>
+
+<!-- ── Services bento ───────────────────────────────────── -->
+<section class="sec" id="services" aria-labelledby="svcTitle">
+  <div class="wrap">
+    <p class="eyebrow reveal">What we build</p>
+    <h2 id="svcTitle" class="reveal">Everything between raw data<br><span class="dim">and a better decision.</span></h2>
+    <div class="bento">
+      <a class="tile t-wh reveal" href="#platform">
+        <div class="tile-txt"><span class="kicker">Data warehousing</span><h3>One source of truth.</h3><p>ERP, web shop, stores, ads and suppliers modelled into clean tables on BigQuery — fresh every morning.</p></div>
+        <svg class="pipe" viewBox="0 0 440 250" aria-hidden="true">
+          <g class="pipe-lines">
+            <path d="M92 30 C170 30 170 125 214 125"/><path d="M92 78 C170 78 170 125 214 125"/><path d="M92 125 L214 125"/><path d="M92 172 C170 172 170 125 214 125"/><path d="M92 220 C170 220 170 125 214 125"/>
+            <path d="M262 125 C300 125 300 62 346 62"/><path d="M262 125 L346 125"/><path d="M262 125 C300 125 300 188 346 188"/>
+          </g>
+          <g class="pipe-src"><rect x="6" y="16" width="86" height="28" rx="14"/><text x="49" y="34">ERP</text><rect x="6" y="64" width="86" height="28" rx="14"/><text x="49" y="82">Web shop</text><rect x="6" y="111" width="86" height="28" rx="14"/><text x="49" y="129">Stores · POS</text><rect x="6" y="158" width="86" height="28" rx="14"/><text x="49" y="176">GA4 · Ads</text><rect x="6" y="206" width="86" height="28" rx="14"/><text x="49" y="224">Suppliers</text></g>
+          <g class="pipe-core"><rect x="214" y="95" width="48" height="60" rx="14"/><path d="M226 112h24M226 125h24M226 138h24"/></g>
+          <g class="pipe-out"><rect x="346" y="48" width="88" height="28" rx="14"/><text x="390" y="66">Power BI</text><rect x="346" y="111" width="88" height="28" rx="14"/><text x="390" y="129">Apps</text><rect x="346" y="174" width="88" height="28" rx="14"/><text x="390" y="192">AI models</text></g>
+        </svg>
+      </a>
+      <a class="tile t-pbi reveal" href="#powerbi">
+        <div class="tile-txt"><span class="kicker">Power BI</span><h3>Reports people trust.</h3><p>Semantic models, DAX and row-level security — or rebuilt as fast web apps, matched to the cent.</p></div>
+        <div class="mini-report" aria-hidden="true">
+          <div class="mr-kpis"><span><i>Revenue</i><b>€1.28M</b></span><span><i>Margin</i><b>61.4%</b></span><span><i>Orders</i><b>18,402</b></span></div>
+          <svg viewBox="0 0 300 90" class="mr-bars"><g><rect x="8" y="40" width="22" height="50" rx="4"/><rect x="40" y="28" width="22" height="62" rx="4"/><rect x="72" y="46" width="22" height="44" rx="4"/><rect x="104" y="20" width="22" height="70" rx="4"/><rect x="136" y="34" width="22" height="56" rx="4"/><rect x="168" y="12" width="22" height="78" rx="4" class="hi"/><rect x="200" y="30" width="22" height="60" rx="4"/><rect x="232" y="24" width="22" height="66" rx="4"/><rect x="264" y="8" width="22" height="82" rx="4"/></g></svg>
+        </div>
+      </a>
+      <a class="tile t-an reveal" href="#analytics">
+        <div class="tile-txt"><span class="kicker">Analytics tools</span><h3>Answers in a click.</h3></div>
+        <div class="spark" aria-hidden="true"><b>+18.4%</b><span>vs last year</span>
+          <svg viewBox="0 0 200 70"><path class="area" d="M0 60 C20 55 30 58 45 48 S75 40 90 42 S120 30 135 26 S170 18 200 8 V70 H0Z"/><path class="line" d="M0 60 C20 55 30 58 45 48 S75 40 90 42 S120 30 135 26 S170 18 200 8"/></svg>
+        </div>
+      </a>
+      <a class="tile t-ai reveal" href="#ai">
+        <div class="tile-txt"><span class="kicker">Predictions</span><h3>See it coming.</h3></div>
+        <ul class="prob" aria-hidden="true"><li><span>Will reorder</span><i style="--w:92%"></i><b>92%</b></li><li><span>Stock-out risk</span><i style="--w:74%"></i><b>74%</b></li><li><span>Churn risk</span><i style="--w:31%"></i><b>31%</b></li></ul>
+      </a>
+      <a class="tile t-apps reveal" href="#apps">
+        <div class="tile-txt"><span class="kicker">Business apps</span><h3>Software shaped like your process.</h3><p>Billing, purchasing, stores, tasks, CRM — built for how you actually work.</p></div>
+        <div class="app-grid" aria-hidden="true"><i style="--c:#7B66F0">€</i><i style="--c:#26B5CE">▦</i><i style="--c:#F2994A">✓</i><i style="--c:#4CB782">◎</i><i style="--c:#E5689A">✉</i><i style="--c:#3E5BA9">⇄</i><i style="--c:#B4561C">▤</i><i style="--c:#9B88F5">★</i></div>
+      </a>
+      <a class="tile t-auto reveal" href="#automation">
+        <div class="tile-txt"><span class="kicker">Automation</span><h3>Busywork, gone.</h3></div>
+        <div class="flow" aria-hidden="true"><span>E-mail</span><i></i><span>Extract</span><i></i><span>Check</span><i></i><span>Post</span></div>
+      </a>
+      <a class="tile t-price reveal" href="#ai">
+        <div class="tile-txt"><span class="kicker">Market intelligence</span><h3>Know every price.</h3></div>
+        <ul class="prices" aria-hidden="true"><li><span>You</span><b>€129</b></li><li><span>Competitor A</span><b>€134</b></li><li><span>Competitor B</span><b class="lo">€127</b></li><li><span>Competitor C</span><b>€139</b></li></ul>
+      </a>
+      <a class="tile t-cost reveal" href="#platform">
+        <div class="tile-txt"><span class="kicker">Cloud cost control</span><h3>Faster queries. Smaller bills.</h3><p>Partitioning, incremental loads and caching — with spend tracked per app, so costs stay predictable as you grow.</p></div>
+        <svg class="costbars" viewBox="0 0 420 120" aria-hidden="true"><g><rect x="10" y="10" width="34" height="100" rx="6"/><rect x="58" y="16" width="34" height="94" rx="6"/><rect x="106" y="22" width="34" height="88" rx="6"/><rect x="154" y="44" width="34" height="66" rx="6"/><rect x="202" y="62" width="34" height="48" rx="6" class="hi"/><rect x="250" y="70" width="34" height="40" rx="6" class="hi"/><rect x="298" y="72" width="34" height="38" rx="6" class="hi"/><rect x="346" y="74" width="34" height="36" rx="6" class="hi"/></g><text x="400" y="20" text-anchor="end">Illustrative</text></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Data platform (dark band) ────────────────────────── -->
+<section class="sec band" id="platform" aria-labelledby="platTitle">
+  <div class="glow g4" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">Data platform</p>
+    <h2 id="platTitle" class="reveal">One version of the truth.<br><span class="dim">Finally.</span></h2>
+    <p class="lead reveal">We connect every system you run on, model it into clean, documented tables and keep it fresh every night — with access control and cloud costs under control.</p>
+    <div class="arch reveal">
+      <div class="arch-col">
+        <span class="arch-h">Sources</span>
+        <span class="node">ERP &amp; accounting</span><span class="node">Web shops</span><span class="node">Stores &amp; POS</span><span class="node">GA4 · Google Ads · Meta</span><span class="node">Suppliers &amp; price lists</span><span class="node">Excel &amp; shared drives</span>
+      </div>
+      <svg class="arch-lines" viewBox="0 0 100 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 52 C50 52 50 150 100 150"/><path d="M0 92 C50 92 50 150 100 150"/><path d="M0 132 C50 132 50 150 100 150"/><path d="M0 172 C50 172 50 150 100 150"/><path d="M0 212 C50 212 50 150 100 150"/><path d="M0 252 C50 252 50 150 100 150"/></svg>
+      <div class="arch-core">
+        <span class="arch-h">Warehouse</span>
+        <div class="layers">
+          <div class="layer"><b>Raw</b><span>Loaded as-is, every night</span></div>
+          <div class="layer"><b>Clean</b><span>Typed, deduplicated, tested</span></div>
+          <div class="layer hi"><b>Business</b><span>Revenue, margin, stock, customers — defined once</span></div>
+        </div>
+        <span class="core-foot">Google BigQuery · EU region</span>
+      </div>
+      <svg class="arch-lines" viewBox="0 0 100 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 150 C50 150 50 70 100 70"/><path d="M0 150 C50 150 50 125 100 125"/><path d="M0 150 C50 150 50 180 100 180"/><path d="M0 150 C50 150 50 235 100 235"/></svg>
+      <div class="arch-col">
+        <span class="arch-h">Delivered as</span>
+        <span class="node out">Power BI reports</span><span class="node out">Web dashboards</span><span class="node out">Business apps</span><span class="node out">Predictions &amp; alerts</span>
+      </div>
+    </div>
+    <div class="feat3">
+      <div class="reveal"><h3>Every source connected</h3><p>ERP, accounting, web shops, POS, GA4, Google Ads, Meta, supplier files and price scrapers — loaded on a schedule, with failures alerted, not discovered.</p></div>
+      <div class="reveal"><h3>Defined once, used everywhere</h3><p>Revenue, margin, stock and customer metrics are calculated in one place, so Power BI, the apps and the AI all show the same number.</p></div>
+      <div class="reveal"><h3>Governed and affordable</h3><p>Access per team and app, a searchable data catalogue, and query costs tracked and trimmed with partitioning and incremental loads.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Power BI ─────────────────────────────────────────── -->
+<section class="sec" id="powerbi" aria-labelledby="pbiTitle">
+  <div class="wrap split">
+    <div class="split-txt">
+      <p class="eyebrow reveal">Power BI &amp; Microsoft Fabric</p>
+      <h2 id="pbiTitle" class="reveal">Power BI,<br><span class="dim">done properly.</span></h2>
+      <p class="lead reveal">Models the business trusts, reports people actually open — and a clean way out when a report has outgrown Power BI.</p>
+      <ul class="checks reveal">
+        <li><b>Semantic models &amp; DAX</b> with measures defined once and documented.</li>
+        <li><b>Row-level security</b> per store, region, team or customer.</li>
+        <li><b>Embedded</b> in your own apps, portals and intranet — one model, many audiences.</li>
+        <li><b>Rebuilt as web apps</b> when speed or flexibility matter — every number reconciled to the cent.</li>
+      </ul>
+    </div>
+    <div class="split-vis reveal">
+      <div class="seg" role="tablist" aria-label="Power BI examples">
+        <button type="button" role="tab" id="pbiT1" aria-controls="pbiP1" aria-selected="true" class="on">Report</button>
+        <button type="button" role="tab" id="pbiT2" aria-controls="pbiP2" aria-selected="false" tabindex="-1">Reconcile</button>
+        <button type="button" role="tab" id="pbiT3" aria-controls="pbiP3" aria-selected="false" tabindex="-1">Embed</button>
+      </div>
+      <div class="window pbi-win">
+        <div class="win-bar"><i></i><i></i><i></i><span>Sales overview</span></div>
+        <div role="tabpanel" id="pbiP1" aria-labelledby="pbiT1" class="pbi-panel">
+          <div class="slicers"><span>Year: 2026</span><span>Market: All</span><span>Channel: All</span></div>
+          <div class="kpi4"><div><i>Revenue</i><b>€1,284,330</b><em class="up">+8.2%</em></div><div><i>Gross margin</i><b>61.4%</b><em class="up">+1.1 pp</em></div><div><i>Orders</i><b>18,402</b><em class="up">+5.7%</em></div><div><i>Avg. order</i><b>€69.79</b><em class="dn">−0.6%</em></div></div>
+          <svg class="pbi-line" viewBox="0 0 520 140" aria-hidden="true"><path class="grid" d="M0 35H520M0 70H520M0 105H520"/><path class="area" d="M0 110 L43 98 L86 102 L130 84 L173 88 L216 70 L260 74 L303 58 L346 62 L390 44 L433 50 L476 30 L520 26 V140 H0Z"/><path class="line" d="M0 110 L43 98 L86 102 L130 84 L173 88 L216 70 L260 74 L303 58 L346 62 L390 44 L433 50 L476 30 L520 26"/><path class="line2" d="M0 118 L43 112 L86 114 L130 100 L173 104 L216 92 L260 94 L303 82 L346 86 L390 70 L433 76 L476 60 L520 58"/></svg>
+          <div class="pbi-legend"><span><i class="l1"></i>2026</span><span><i class="l2"></i>2025</span><span class="note">Illustrative data</span></div>
+        </div>
+        <div role="tabpanel" id="pbiP2" aria-labelledby="pbiT2" class="pbi-panel" hidden>
+          <table class="recon">
+            <thead><tr><th scope="col">Measure</th><th scope="col">Power BI</th><th scope="col">Web app</th><th scope="col"><span class="sr">Match</span></th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Revenue</th><td>€1,284,330.52</td><td>€1,284,330.52</td><td class="ok">✓</td></tr>
+              <tr><th scope="row">Gross margin</th><td>€788,578.94</td><td>€788,578.94</td><td class="ok">✓</td></tr>
+              <tr><th scope="row">Orders</th><td>18,402</td><td>18,402</td><td class="ok">✓</td></tr>
+              <tr><th scope="row">Returns</th><td>€41,207.10</td><td>€41,207.10</td><td class="ok">✓</td></tr>
+              <tr><th scope="row">Stock value</th><td>€2,016,884.33</td><td>€2,016,884.33</td><td class="ok">✓</td></tr>
+            </tbody>
+          </table>
+          <p class="recon-foot"><span class="okpill">Δ €0.00</span> Every measure checked against the original report before go-live. <span class="note">Illustrative data</span></p>
+        </div>
+        <div role="tabpanel" id="pbiP3" aria-labelledby="pbiT3" class="pbi-panel" hidden>
+          <div class="embed">
+            <div class="embed-nav"><b>Store portal</b><span>Overview</span><span class="on">Sales</span><span>Stock</span><span>Team</span></div>
+            <div class="embed-body">
+              <div class="rls"><span class="lock">🔒</span> Row-level security · <b>Store = Koper</b></div>
+              <div class="kpi4 sm"><div><i>Today</i><b>€3,412</b></div><div><i>Month to date</i><b>€61,980</b></div><div><i>vs target</i><b>104%</b></div><div><i>Eye exams</i><b>38</b></div></div>
+              <svg class="pbi-bars" viewBox="0 0 520 110" aria-hidden="true"><g><rect x="10" y="50" width="30" height="60" rx="5"/><rect x="60" y="36" width="30" height="74" rx="5"/><rect x="110" y="58" width="30" height="52" rx="5"/><rect x="160" y="30" width="30" height="80" rx="5"/><rect x="210" y="44" width="30" height="66" rx="5"/><rect x="260" y="20" width="30" height="90" rx="5" class="hi"/><rect x="310" y="40" width="30" height="70" rx="5"/><rect x="360" y="26" width="30" height="84" rx="5"/><rect x="410" y="48" width="30" height="62" rx="5"/><rect x="460" y="34" width="30" height="76" rx="5"/></g></svg>
+              <p class="note">Each store sees only its own numbers — same report, one model.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Analytics tools ──────────────────────────────────── -->
+<section class="sec alt" id="analytics" aria-labelledby="anTitle">
+  <div class="wrap">
+    <p class="eyebrow reveal">Analytics tools</p>
+    <h2 id="anTitle" class="reveal">Analytics your team<br><span class="dim">actually opens.</span></h2>
+    <p class="lead reveal">Purpose-built dashboards for each team, on the same numbers as finance. Fast, filterable, and on any screen.</p>
+    <div class="seg center reveal" role="tablist" aria-label="Dashboard examples" id="anTabs"></div>
+    <div class="window dash-win reveal">
+      <div class="win-bar"><i></i><i></i><i></i><span id="anTitleBar">Sales</span></div>
+      <div class="dash" id="anPanel" role="tabpanel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Predictions & AI ─────────────────────────────────── -->
+<section class="sec" id="ai" aria-labelledby="aiTitle">
+  <div class="wrap">
+    <p class="eyebrow reveal">Predictions &amp; AI</p>
+    <h2 id="aiTitle" class="reveal">From what happened<br><span class="dim">to what happens next.</span></h2>
+    <div class="cards3">
+      <article class="card reveal">
+        <span class="kicker">Customer predictions</span>
+        <h3>Who will buy again — and when.</h3>
+        <p>Reorder and lifetime-value models scored every night, so marketing reaches the right customers before they drift.</p>
+        <ul class="plist" aria-hidden="true"><li><span>Customer 10482</span><i style="--w:92%"></i><b>92%</b></li><li><span>Customer 22917</span><i style="--w:81%"></i><b>81%</b></li><li><span>Customer 30155</span><i style="--w:67%"></i><b>67%</b></li><li><span>Customer 41870</span><i style="--w:44%"></i><b>44%</b></li></ul>
+      </article>
+      <article class="card reveal">
+        <span class="kicker">Demand &amp; stock</span>
+        <h3>Order the right amount.</h3>
+        <p>Forecasts per product and location with stock-out warnings and suggested reorder quantities.</p>
+        <svg class="fc" viewBox="0 0 300 130" aria-hidden="true"><path class="band" d="M150 52 C190 46 230 40 300 30 L300 74 C230 80 190 84 150 82Z"/><path class="hist" d="M0 96 C20 88 40 92 60 84 S100 80 120 72 S140 70 150 66"/><path class="fut" d="M150 66 C190 62 230 56 300 50"/><line x1="150" y1="10" x2="150" y2="120" class="now"/><text x="154" y="18">today</text></svg>
+      </article>
+      <article class="card reveal">
+        <span class="kicker">Pricing</span>
+        <h3>Price with the market.</h3>
+        <p>Competitor prices collected daily and rule-based repricing that protects margin — you approve, it applies.</p>
+        <ul class="prices sm" aria-hidden="true"><li><span>Current</span><b>€129.00</b></li><li><span>Market median</span><b>€133.50</b></li><li><span>Suggested</span><b class="hi">€131.90</b></li><li><span>Margin kept</span><b>58.2%</b></li></ul>
+      </article>
+    </div>
+    <div class="chat reveal" aria-label="Example: asking an AI assistant about your data">
+      <div class="msg q"><span class="who">You</span><p>How many contact-lens customers are due to reorder in November, and what are they worth?</p></div>
+      <div class="msg a"><span class="who"><svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="url(#gMark)"/><rect x="11.5" y="8.6" width="13" height="3.4" rx="1.7" fill="#fff" opacity=".55"/><rect x="9.5" y="14.3" width="15" height="3.4" rx="1.7" fill="#fff" opacity=".8"/><rect x="7.5" y="20" width="17" height="3.4" rx="1.7" fill="#fff"/></svg>Assistant</span>
+        <p><b>1,284 customers</b> are likely to reorder in November, worth about <b>€96,300</b>. 412 of them haven't opened an e-mail in 60 days — worth an SMS instead.</p>
+        <div class="chat-chips"><span>Open the segment</span><span>Send to marketing</span><span>Show the query</span></div>
+        <span class="note">Illustrative data · answers come from your own warehouse, not the internet</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Apps ─────────────────────────────────────────────── -->
+<section class="sec alt" id="apps" aria-labelledby="appsTitle">
+  <div class="wrap">
+    <p class="eyebrow reveal">Business apps</p>
+    <h2 id="appsTitle" class="reveal">Software for running<br><span class="dim">the business.</span></h2>
+    <p class="lead reveal">When a spreadsheet becomes the system, we turn it into an app: built around your process, on your data, ready on day one. Every card below opens a working demo.</p>
+    <div class="apps" id="appsGrid"></div>
+  </div>
+</section>
+
+<!-- ── Automation ───────────────────────────────────────── -->
+<section class="sec" id="automation" aria-labelledby="autoTitle">
+  <div class="wrap split rev">
+    <div class="split-txt">
+      <p class="eyebrow reveal">Automation</p>
+      <h2 id="autoTitle" class="reveal">Let the work<br><span class="dim">move itself.</span></h2>
+      <p class="lead reveal">Invoices read from e-mail, orders synced between systems, reports delivered before anyone asks — monitored, logged, and alerting a person only when it matters.</p>
+      <ul class="checks reveal">
+        <li><b>Documents to data:</b> invoices, delivery notes and statements read and posted.</li>
+        <li><b>Systems in sync:</b> shop, ERP, warehouse and couriers talk to each other.</li>
+        <li><b>Watched, not hoped:</b> every run tracked, missed runs and failures alerted.</li>
+      </ul>
+    </div>
+    <div class="split-vis reveal">
+      <div class="window auto-win" aria-hidden="true">
+        <div class="win-bar"><i></i><i></i><i></i><span>Supplier invoice → accounting</span></div>
+        <ol class="steps" id="steps">
+          <li><span class="si">✉</span><div><b>Invoice arrives</b><small>invoices@ · PDF attached</small></div><em>0.2 s</em></li>
+          <li><span class="si">⌁</span><div><b>Read the document</b><small>Supplier, dates, VAT, lines</small></div><em>1.8 s</em></li>
+          <li><span class="si">≡</span><div><b>Match the order</b><small>PO-2026-0418 · 3 of 3 lines</small></div><em>0.4 s</em></li>
+          <li><span class="si">✓</span><div><b>Check totals &amp; VAT</b><small>€4,812.40 · 22 %</small></div><em>0.1 s</em></li>
+          <li><span class="si">→</span><div><b>Post to accounting</b><small>Booked, PDF archived</small></div><em>0.6 s</em></li>
+        </ol>
+        <div class="win-foot"><span>Illustrative run</span><span class="okpill">Done in 3.1 s</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Process ──────────────────────────────────────────── -->
+<section class="sec band" id="process" aria-labelledby="procTitle">
+  <div class="glow g5" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">How we work</p>
+    <h2 id="procTitle" class="reveal">Value in weeks,<br><span class="dim">not quarters.</span></h2>
+    <ol class="timeline">
+      <li class="reveal"><span class="num">01</span><h3>Discover</h3><p>We map your systems, reports and the decisions that matter, and agree on the first outcome worth shipping.</p></li>
+      <li class="reveal"><span class="num">02</span><h3>Foundation</h3><p>Sources connected, the warehouse modelled, and the key numbers reconciled with finance.</p></li>
+      <li class="reveal"><span class="num">03</span><h3>First value</h3><p>The first dashboard or app in people's hands, used in real work — then improved from their feedback.</p></li>
+      <li class="reveal"><span class="num">04</span><h3>Scale</h3><p>More teams, predictions and automations on the same foundation, without starting over each time.</p></li>
+      <li class="reveal"><span class="num">05</span><h3>Run</h3><p>Monitoring, cost reviews and a steady rhythm of improvements, so it keeps working long after launch.</p></li>
+    </ol>
+    <div class="models">
+      <article class="reveal"><h3>Project</h3><p>A defined outcome — a warehouse, a report suite, an app — with a clear scope and handover.</p></article>
+      <article class="reveal hl"><h3>Retainer</h3><p>A monthly team for continuous delivery: new reports, apps and fixes, prioritised with you every month.</p></article>
+      <article class="reveal"><h3>Rescue</h3><p>Slow reports, numbers nobody trusts, a cloud bill that keeps growing — we audit, fix and document.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ──────────────────────────────────────────────── -->
+<section class="sec" id="faq" aria-labelledby="faqTitle">
+  <div class="wrap narrow">
+    <p class="eyebrow reveal">Questions</p>
+    <h2 id="faqTitle" class="reveal">Good to know.</h2>
+    <div class="faq">
+      <details class="reveal"><summary>We already have Power BI. Can you work with it?</summary><p>Yes. We improve existing models and reports, add row-level security, move heavy logic into the warehouse, or rebuild specific reports as web apps — keeping every number identical.</p></details>
+      <details class="reveal"><summary>Where is our data stored?</summary><p>In your own cloud account by default, in an EU region. Access is granted per team and per app, and nothing is copied to tools you didn't approve.</p></details>
+      <details class="reveal"><summary>How soon do we see results?</summary><p>Usually within the first weeks: one important report or app, on real data, used by the people who need it. Everything else builds on that foundation.</p></details>
+      <details class="reveal"><summary>What does it cost to run?</summary><p>Cloud costs are tracked per app from day one. We design for small bills — partitioned tables, incremental loads and caching — and review spend with you regularly.</p></details>
+      <details class="reveal"><summary>Do you only work with large companies?</summary><p>No. Growing companies whose spreadsheets and reports have started to slow them down are a great fit. Scope follows what you need, not a fixed package.</p></details>
+      <details class="reveal"><summary>Can our own team take it over?</summary><p>Yes. Everything is documented, the data catalogue explains every table, and we can train your team to build their own reports on top.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact / brief builder ──────────────────────────── -->
+<section class="sec contact" id="contact" aria-labelledby="ctaTitle">
+  <div class="glow g6" aria-hidden="true"></div>
+  <div class="wrap narrow">
+    <p class="eyebrow reveal">Start a project</p>
+    <h2 id="ctaTitle" class="reveal">Tell us where you are.<br><span class="grad">We'll tell you where to start.</span></h2>
+    <form class="brief reveal" id="brief" novalidate>
+      <fieldset>
+        <legend>What do you need?</legend>
+        <div class="chips" id="needChips"></div>
+      </fieldset>
+      <div class="brief-row">
+        <label>Company size<select id="bSize"><option>1–20 people</option><option selected>20–100 people</option><option>100–500 people</option><option>500+ people</option></select></label>
+        <label>Timeline<select id="bTime"><option>As soon as possible</option><option selected>This quarter</option><option>Next quarter</option><option>Just exploring</option></select></label>
+      </div>
+      <label class="full">Anything else?<textarea id="bNote" rows="3" placeholder="Systems you use today, the report everyone complains about, the spreadsheet that runs the company…"></textarea></label>
+      <div class="brief-out">
+        <div class="brief-head"><span>Your brief</span><span class="note">Nothing is sent until you choose to</span></div>
+        <pre id="briefText"></pre>
+      </div>
+      <div class="brief-acts">
+        <button type="button" class="btn primary lg" id="copyBrief">Copy brief</button>
+        <a class="btn lg" id="mailBrief" href="#" hidden>E-mail it to us</a>
+        <span class="status" id="briefStatus" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a class="logo" href="#top"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="url(#gMark)"/><rect x="11.5" y="8.6" width="13" height="3.4" rx="1.7" fill="#fff" opacity=".55"/><rect x="9.5" y="14.3" width="15" height="3.4" rx="1.7" fill="#fff" opacity=".8"/><rect x="7.5" y="20" width="17" height="3.4" rx="1.7" fill="#fff"/></svg><span>Stratum</span></a>
+    <nav aria-label="Footer"><a href="#platform">Data platform</a><a href="#powerbi">Power BI</a><a href="#analytics">Analytics</a><a href="#apps">Apps</a><a href="#faq">FAQ</a><a href="/">Adrial Apps</a></nav>
+    <p>Stratum — every layer of your data, done right. Data platforms, Power BI, analytics and business apps. Charts and figures on this page use illustrative data.</p>
+  </div>
+</footer>
+
+<div class="palette-wrap" id="palette" hidden>
+  <div class="palette-scrim" data-close-palette></div>
+  <div class="palette" role="dialog" aria-modal="true" aria-label="Jump to">
+    <div class="pal-in"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="7.2" cy="7.2" r="4.5"/><path d="m10.6 10.6 3 3"/></svg><input id="palIn" type="text" placeholder="Jump to a service, section or demo…" aria-label="Search" role="combobox" aria-expanded="true" aria-controls="palList" aria-autocomplete="list" autocomplete="off"><kbd>esc</kbd></div>
+    <ul class="pal-list" id="palList" role="listbox"></ul>
+  </div>
+</div>
+</body>
+</html>

@@ -16,11 +16,10 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 ## What is not done yet
 
 1. ~~Cloudflare Access~~ done: policy `business-apps owner` (Allow, simonm2000@outlook.com, One-time PIN) is attached to the worker for all traffic and verified.
-2. **Stratum (`showcase/`) is not in the repo.** It is private on the original server (needs sign-in). Add it only after step 1 works.
-   - Download it while signed in on the original site, or copy `C:\hub\public\showcase` from your PC into `site/showcase/`.
-3. **Eight apps that need your server are not in `site/`:** ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop. Without the server they only show a sign-in page. Copy them from `C:\hub\public\` if you want the tiles to open.
+2. ~~Stratum (`showcase/`)~~ done: copied into `site/showcase/` and its tile is visible on the home page.
+3. ~~Eight server apps~~ done: ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop are in `site/` with the full home page. Only Billing works fully offline; the others call `/api/...` and will not show live data.
 4. ~~Cleanup~~ done.
-5. **Home page:** `site/index.html` tiles for the apps above need adding back (copy the full `C:\hub\public\index.html`).
+5. ~~Home page~~ done: full tile list restored.
 
 ## Run locally
 
