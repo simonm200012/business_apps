@@ -15,10 +15,7 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 
 ## What is not done yet
 
-1. **Cloudflare Access is not protecting the site.** A test showed the pages open without any login. Fix:
-   - Workers & Pages -> `business-apps` -> Settings -> Domains & Routes -> turn on Cloudflare Access for the workers.dev route.
-   - Or Zero Trust -> Access controls -> Applications -> Add -> Self-hosted, hostname exactly `business-apps.simonm2000.workers.dev`, policy Allow with your e-mail, login method One-time PIN.
-   - Check in a private window: it must ask for your e-mail first.
+1. ~~Cloudflare Access~~ done: policy `business-apps owner` (Allow, simonm2000@outlook.com, One-time PIN) is attached to the worker for all traffic and verified.
 2. **Stratum (`showcase/`) is not in the repo.** It is private on the original server (needs sign-in). Add it only after step 1 works.
    - Download it while signed in on the original site, or copy `C:\hub\public\showcase` from your PC into `site/showcase/`.
 3. **Eight apps that need your server are not in `site/`:** ads, billing, cs-quality, hub-usage, margin, n8n, refill, webshop. Without the server they only show a sign-in page. Copy them from `C:\hub\public\` if you want the tiles to open.
