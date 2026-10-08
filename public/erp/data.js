@@ -114,7 +114,7 @@
       st[p.id] = {};
       var big = p.cat === 'contacts' || p.cat === 'solutions';
       LOCATIONS.forEach(function (l) {
-        var q = l.id === 'WH' ? (big ? ri(150, 300) : p.cat === 'lenses' ? ri(40, 90) : ri(70, 140)) : l.id === 'ESHOP' ? ri(10, 24) : ri(6, 14);
+        var q = l.id === 'WH' ? (big ? ri(150, 300) : p.cat === 'lenses' ? ri(40, 90) : ri(70, 140)) : l.id === 'ESHOP' ? ri(6, 20) : ri(3, 10);
         move(start, p.id, l.id, q, 'init', 'Opening stock');
       });
     });

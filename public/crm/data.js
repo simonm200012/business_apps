@@ -107,7 +107,7 @@
         for (var q = 0; q < nl; q++) { var pr = pick(PRODUCTS); if (used[pr.id]) continue; used[pr.id] = 1; lines.push({ productId: pr.id, name: pr.name, qty: pr.unit === 'day' ? 1 + rnd(3) : 1 + rnd(co.segment === 'Corporate' || co.segment === 'Reseller' ? 8 : 3), price: pr.price, disc: ch(0.25) ? 5 * (1 + rnd(3)) : 0 }); }
         var cur = addD(today, -(8 + rnd(537))), hist = [{ stage: 'lead', date: iso(wd(cur)) }], stage = 'lead', lost = '', periods = [];
         for (var s = 0; s < 4; s++) {
-          var next = addD(cur, 5 + rnd(26)); if (next > today) break;
+          var next = addD(cur, 10 + rnd(46)); if (next > today) break;
           if (ch(LOSS[s])) { stage = 'lost'; lost = pick(LOST_REASONS); hist.push({ stage: 'lost', date: iso(wd(next)) }); break; }
           stage = s < 3 ? CHAIN[s + 1] : 'won'; hist.push({ stage: stage, date: iso(wd(next)) }); cur = next;
         }

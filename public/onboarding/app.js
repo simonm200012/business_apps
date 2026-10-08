@@ -177,7 +177,7 @@
   function newCaseDialog(type, st) {
     st = st || {}; type = type || 'joiner';
     var pe = db.people.filter(function (p) { return p.status === 'active' && !IX.openCase[p.id]; }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
-    var sel = st.pid || (pe[0] && pe[0].id), sp = IX.p[sel], loc = st.loc || (sp && sp.loc) || 'LJ-BTC', kind = (J.locOf(loc) || {}).kind;
+    var sel = st.pid || (pe[0] && pe[0].id), sp = IX.p[sel], loc = st.loc || (type !== 'joiner' && sp && sp.loc) || 'LJ-BTC', kind = (J.locOf(loc) || {}).kind;
     var tpls = db.templates.filter(function (t) { return t.type === type; }), tplSel = st.tpl && IX.tpl[st.tpl] && IX.tpl[st.tpl].type === type ? st.tpl : (type === 'joiner' ? (tpls.filter(function (t) { return t.kind === kind; })[0] || tpls[0]).id : tpls[0].id);
     var body = '<label class="f">Type<select name="type" data-chg="nctype">' + Object.keys(TYPE).map(function (k) { return opt(k, TYPE[k], k === type); }).join('') + '</select></label>';
     if (type === 'joiner') body += '<label class="f">Full name<input name="name" required value="' + esc(st.name || '') + '"></label><label class="f">Role<select name="role">' + J.ROLES.map(function (r) { return opt(r.id, r.id, r.id === (st.role || 'Optician')); }).join('') + '</select></label><label class="f">Location<select name="loc" data-chg="ncloc">' + J.LOCATIONS.map(function (l) { return opt(l.id, l.name, l.id === loc); }).join('') + '</select></label><label class="f">Contract<select name="contract">' + J.CONTRACTS.map(function (k) { return opt(k.id, k.name, k.id === st.contract); }).join('') + '</select></label>';
@@ -255,7 +255,8 @@
     var key = { date: function (c) { return c.date; }, no: function (c) { return c.no; }, name: function (c) { return person(c).name; }, type: function (c) { return c.type; }, loc: function (c) { return locName(c.loc); }, pct: function (c) { return stats(c).pct; }, state: function (c) { return caseState(c); } }[f.sort] || function (c) { return c.date; };
     return list.sort(function (a, b) { var x = key(a), y = key(b); return (x < y ? -1 : x > y ? 1 : 0) * f.dir; });
   }
-  function pageCases() {
+  function pageCases(parts) {
+    if (parts[1]) return pageCase(parts);
     var f = ui.cases, list = filteredCases(), th = function (k, t) { return '<th><button data-act="sortc" data-k="' + k + '">' + t + (f.sort === k ? (f.dir > 0 ? ' ▲' : ' ▼') : '') + '</button></th>'; };
     return '<div class="head"><div><h1>Cases</h1><p class="sub">' + list.length + ' of ' + db.cases.length + ' cases</p></div><div class="row"><button class="btn" data-act="csvcases" type="button">Export CSV</button>' + newBtn() + '</div></div>' +
       '<div class="row card" style="margin-bottom:12px"><input type="search" placeholder="Search name, number, location" aria-label="Search" value="' + esc(f.q) + '" data-inp="cq"><select aria-label="Type" data-chg="cf" data-k="type">' + opt('', 'All types') + Object.keys(TYPE).map(function (k) { return opt(k, TYPE[k], f.type === k); }).join('') + '</select><select aria-label="State" data-chg="cf" data-k="state">' + opt('', 'Any state') + opt('active', 'All open', f.state === 'active') + Object.keys(STATE_LBL).map(function (k) { return opt(k, STATE_LBL[k], f.state === k); }).join('') + '</select><select aria-label="Company" data-chg="cf" data-k="co">' + opt('', 'All companies') + J.COMPANIES.map(function (k) { return opt(k.id, k.name, f.co === k.id); }).join('') + '</select></div>' +
