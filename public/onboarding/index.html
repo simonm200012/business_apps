@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Joiners &amp; leavers</title>
+<script src="/_shared/adrial-shell.js" data-pos="br"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <a class="brand" href="#/">Joiners &amp; leavers</a>
+    <nav id="nav" aria-label="Main"></nav>
+    <label class="actor">Acting as
+      <select id="actorSel" data-chg="actor"></select>
+    </label>
+    <div id="syncPanel" class="sync"></div>
+    <button id="resetBtn" class="btn ghost small" type="button">Reset demo data</button>
+  </aside>
+  <main id="main" tabindex="-1"></main>
+</div>
+<div id="layers"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/_shared/adrial-sync.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
