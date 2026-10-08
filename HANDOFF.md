@@ -21,6 +21,10 @@ Goal: run the Adrial Apps on Cloudflare for free, private to you, using the orig
 4. ~~Cleanup~~ done.
 5. ~~Home page~~ done: full tile list restored.
 
+## Added since
+
+- **Cash forecast** (`site/cashflow/`): a 13-week cash forecast app with demo data, built to sell to companies. Tile on the home page. Tests: `node tools/tests/cashflow-engine.test.js`.
+
 ## Run locally
 
 ```

@@ -1791,3 +1791,42 @@ The two plans are stored separately: IndexedDB key `data` for demo and `live` fo
 - A new campaign gets a random `seed` (`strHash(name + Date.now())`), so its demo numbers cannot be predicted until it exists.
 - The type `other` is never generated. It exists only for live imports.
 - `refresh()` does nothing while a drag is in progress.
+
+---
+
+## Cash forecast (`/cashflow/`)
+
+**What it does.** A 13-week cash forecast for a fictional wholesale distributor (Nordvik Distribucija d.o.o., about €13M a year). It combines open receivables, open payables, recurring payments (payroll, VAT, rent, loans), run-rate lines for sales and purchases not invoiced yet, one-off payments and probability-weighted pipeline deals into a Monday–Sunday weekly forecast. Receivables are dated by how each customer really pays (due date + their average days late), not just by due date. The app warns when the lowest daily balance drops below the minimum cash buffer, lists what would close the gap, and compares Base, Pessimistic, Optimistic and a custom scenario.
+
+### Files
+
+| File | Role |
+|---|---|
+| `index.html` | Shell markup; loads shell, `engine.js`, `data.js`, `app.js` |
+| `engine.js` | `CashEngine`: pure date rules, recurring-rule expansion, `forecast(db, opts)`, `remedies(db, f)` (UMD, loads in Node) |
+| `data.js` | `CashData.generate(today)`: deterministic demo company; sets the opening balance so the base case dips to about €92k against a €150k minimum |
+| `app.js` | Storage, routing, pages, charts (inline SVG), drawers, forms, CSV import and export |
+| `style.css` | Base copied from Contracts, plus the cash-forecast section at the end |
+| `tools/tests/cashflow-engine.test.js` | 12 Node tests: `node tools/tests/cashflow-engine.test.js` |
+
+### Forecast rules (`engine.js`)
+
+- **Receivables:** expected on the due date + the customer's `avgLate` (+ scenario `delay`), moved to the next working day. A date set by the user (`expected`) always wins. Disputed invoices and invoices over 90 days overdue are left out (listed under "Left out on purpose"). Already-late invoices are expected a few days after today.
+- **Payables:** paid on the due date, or the user's `planned` date. Bills on hold are left out. The scenario's `payDelay` moves only non-critical suppliers.
+- **Recurring rules:** `weekly` (day 1–5 = Mon–Fri), `monthly`/`quarterly`/`yearly` (day 1–31, or 0 = last working day). `shift: 'before'` moves a weekend date back (payroll on the 18th), otherwise forward.
+- **Scenario levers:** `delay` (days), `sales` (% on "not yet invoiced" sales; purchases follow at 70 %), `pipeline` (% of the weighted value), `payDelay` (days).
+- **Lowest day:** within each week, payments are applied before receipts on the same day, so the low point is the cautious figure.
+
+### State and storage
+
+- IndexedDB `adrial-cashflow`, store `kv`, key `db`: `{version, company, settings:{minCash, creditLine}, accounts, customers, suppliers, ar, ap, recurring, planned, history, log}`.
+- localStorage `adrial-cashflow-ui`: chosen scenario, mode (`behaviour`/`due`), custom levers, list filters.
+- BroadcastChannel `adrial-cashflow`. No cloud sync.
+
+### Screens
+
+`#/` overview (verdict, KPIs, balance chart, in/out chart, remedies, due dates vs reality, forecast accuracy, items left out) · `#/weeks` week-by-week table with drill-down and CSV export · `#/receivables` · `#/payables` · `#/plan` recurring and one-offs · `#/scenarios` four-scenario chart with sliders · `#/settings` balances, minimum, credit line, CSV templates, reset.
+
+### CSV import
+
+Columns `number; customer|supplier; issued; due; amount`, comma or semicolon separated, dates as `2026-10-31` or `31.10.2026`, amounts as `1234.56` or `1.234,56`. All-or-nothing: any bad row stops the import and lists the errors. Unknown customers or suppliers are created (customers start at 0 days late).
