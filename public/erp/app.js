@@ -365,7 +365,7 @@
   /* ---------- charts ---------- */
   function barChart(labels, series, fmt) {
     const W = 640, H = 230, pl = 52, pb = 26, pt = 10, pr = 8, max = Math.max(1, ...series.flatMap(s => s.vals));
-    const mag = Math.pow(10, Math.floor(Math.log10(max))), nice = [1, 2, 2.5, 5, 10].map(x => x * mag).find(x => x >= max);
+    const mag = Math.pow(10, Math.floor(Math.log10(max))), nice = [1, 2, 4, 8, 10].map(x => x * mag).find(x => x >= max);
     const bw = (W - pl - pr) / labels.length, gw = bw * 0.72, sw = gw / series.length, short = v => v >= 1000 ? Math.round(v / 1000) + 'k' : Math.round(v);
     let g = '';
     for (let i = 0; i <= 4; i++) { const y = pt + (H - pt - pb) * (1 - i / 4); g += `<line class="grid" x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}"/><text class="ax" x="${pl - 6}" y="${y + 4}" text-anchor="end">${short(nice * i / 4)}</text>`; }
@@ -727,8 +727,15 @@
   const DRAWER_ROUTES = { products: openProductDrawer, suppliers: openSupplierDrawer, customers: openCustomerDrawer };
   const TITLES = { '': 'Overview', products: 'Products', replenishment: 'Replenishment', transfers: 'Transfers', counts: 'Stock counts', movements: 'Movements', purchasing: 'Purchasing', suppliers: 'Suppliers', pos: 'Point of sale', quotes: 'Quotes', sales: 'Sales orders', customers: 'Customers', invoices: 'Invoices' };
   function parseHash() { const p = location.hash.replace(/^#\/?/, '').split('?')[0].split('/').filter(Boolean).map(decodeURIComponent); return { base: p[0] || '', id: p[1], sub: p[2] }; }
+  let rendering = false, again = false;
   function render(keep) {
     if (!db) return;
+    if (rendering) { again = true; return; }
+    rendering = true;
+    try { renderNow(keep); } finally { rendering = false; }
+    if (again) { again = false; render(true); }
+  }
+  function renderNow(keep) {
     const r = parseHash(), fn = PAGES[r.base];
     if (!fn) { location.replace('#/'); return; }
     const y = window.scrollY, active = document.activeElement && document.activeElement.id;
@@ -761,7 +768,7 @@
     });
     if (!lines.length) throw new Error('Order has no lines');
     let cu = (vat && db.customers.find(c => c.vatId && c.vatId.toLowerCase() === vat.toLowerCase())) || (name && db.customers.find(c => c.name.toLowerCase() === name.toLowerCase()));
-    if (!cu) { if (!name) throw new Error('Order has no company name'); cu = { id: nextId(), name, type: 'B2B', country: vat.slice(0, 2).toUpperCase() === 'HR' ? 'HR' : 'SI', vatId: vat, email: p.email || '', city: p.city || '', terms: 30 }; db.customers.push(cu); }
+    if (!cu) { if (!name) throw new Error('Order has no company name'); cu = { id: nextId(), name, type: 'B2B', country: vat.slice(0, 2).toUpperCase() === 'HR' ? 'HR' : 'SI', vatId: vat, email: p.email || '', city: p.city || '', terms: 30 }; db.customers.push(cu); IX.c[cu.id] = cu; }
     const so = newSO({ custId: cu.id, loc: 'WH', channel: 'b2b', lines, source: { app: 'crm', dealId: p.dealId != null ? p.dealId : p.id, msgId, company: name }, note: p.note || '' });
     commit('Order from CRM: ' + so.no); return so;
   }
