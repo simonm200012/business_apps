@@ -1,0 +1,13 @@
+# Business Apps (Adrial Apps)
+
+Static browser apps (no build step, no server). Web root is `public/`. Spec: `docs/APPS-CODE-GUIDE.md`.
+
+Run locally: `cd public && python3 -m http.server 8080`, then open http://localhost:8080/
+
+## Deploy free on Cloudflare Pages
+1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick this repo.
+2. Framework preset: None. Build command: leave empty. Build output directory: `public`.
+3. Save and Deploy. You get `https://<name>.pages.dev`; add your own domain under Custom domains (free).
+4. To keep it private: Zero Trust → Access → Applications → add the pages.dev/domain, allow only your e-mail (free up to 50 users).
+
+Data is stored per browser (IndexedDB), so each device/browser has its own copy; there is no cloud sync.
