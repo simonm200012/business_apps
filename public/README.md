@@ -2,7 +2,7 @@
 
 The public sales site: a landing page in Slovenian (first), Croatian and English, a privacy page and a legal notice
 (Slovenian), and demo-only copies of four apps (Data health check, Collections, Cash forecast, Budget vs actual).
-It is a separate Cloudflare Worker (`stratum-site`) from the private Business Apps site: no Cloudflare Access, no cloud
+It is a separate Cloudflare Worker (`clearfigure`) from the private Business Apps site: no Cloudflare Access, no cloud
 sync, no link into the private apps. The only server code is the contact form (`POST /api/contact`).
 
 ## Where to change things
@@ -60,13 +60,13 @@ node tools/build-public.mjs
 npx wrangler deploy -c public/wrangler.jsonc
 ```
 
-It is served at `https://stratum-site.<your-subdomain>.workers.dev`. Nothing in the site is tied to a host name, so the
+It is served at `https://clearfigure.<your-subdomain>.workers.dev`. Nothing in the site is tied to a host name, so the
 same build works there and on a custom domain.
 
 ### A custom domain later
 
 1. Add the domain to Cloudflare (its DNS must be on Cloudflare).
-2. Either in the dashboard: Workers & Pages → stratum-site → Settings → Domains & Routes → Add → Custom domain
+2. Either in the dashboard: Workers & Pages → clearfigure → Settings → Domains & Routes → Add → Custom domain
    (e.g. `www.example.si`), or in `public/wrangler.jsonc`: `"routes": [{ "pattern": "www.example.si", "custom_domain": true }]`
    and deploy again.
 3. Set `siteUrl: 'https://www.example.si'` in `public/data/company.mjs`, build with `--index` when you launch, deploy.

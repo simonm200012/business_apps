@@ -484,7 +484,7 @@ textarea.note:focus, .field textarea:focus, .outbox textarea:focus { outline: no
     <p class="pane-sub">The companies and people you are talking to, with the next follow-up. Follow-ups that are due show on the home page under “Needs you today”.</p>
     <div class="lead-bar">
       <div class="lead-filters" id="leadFilters" role="group" aria-label="Show leads"></div>
-      <div class="lead-acts"><button type="button" class="btn primary" id="leadAdd">+ Add lead</button><button type="button" class="btn" id="leadCsv">Export CSV</button></div>
+      <div class="lead-acts"><button type="button" class="btn primary" id="leadAdd">+ Add lead</button><button type="button" class="btn" id="leadCsv">Export CSV</button><button type="button" class="btn" id="leadWeb" hidden title="Messages from the contact form on the public site">Import from website</button></div>
     </div>
     <form class="form lead-form" id="leadForm" autocomplete="off" hidden>
       <div class="field"><label for="lf-company">Company</label><input id="lf-company" maxlength="120" placeholder="e.g. Kovina d.o.o."></div>
@@ -598,7 +598,7 @@ textarea.note:focus, .field textarea:focus, .outbox textarea:focus { outline: no
 </main>
 
 <script src="/_shared/stratum-sync.js"></script>
-<script src="leads.js?v=1"></script>
+<script src="leads.js?v=2"></script>
 <script>
 (function () {
   "use strict";
@@ -987,10 +987,11 @@ textarea.note:focus, .field textarea:focus, .outbox textarea:focus { outline: no
 
   /* ---------- Progress store: db when available, browser otherwise ---------- */
   // P.leads (added Oct 2026): copies saved before it existed simply have no leads; one that lacks them never clears them
-  const P = { status: {}, notes: {}, leads: [] };
+  // P.webLast: the last website message imported (GET /api/leads?after=…), so a deleted lead never comes back
+  const P = { status: {}, notes: {}, leads: [], webLast: "" };
   const store = { mode: "local", ref: null, writing: false, again: false, noteTimer: null };
   const local = lsGet("atlas.pipeline", null);
-  if (local) { P.status = Object.assign({}, local.status); P.notes = Object.assign({}, local.notes); P.leads = AtlasLeads.cleanList(local.leads); }
+  if (local) { P.status = Object.assign({}, local.status); P.notes = Object.assign({}, local.notes); P.leads = AtlasLeads.cleanList(local.leads); P.webLast = typeof local.webLast === "string" ? local.webLast : ""; }
 
   function setSavedLabel() {
     const el = $("#saved");
@@ -1030,13 +1031,14 @@ textarea.note:focus, .field textarea:focus, .outbox textarea:focus { outline: no
     try {
       atlasSync = StratumSync.attach({
         app: "client-atlas", label: "Client Atlas",
-        getSnapshot: () => Promise.resolve({ status: P.status, notes: P.notes, leads: P.leads }),
+        getSnapshot: () => Promise.resolve({ status: P.status, notes: P.notes, leads: P.leads, webLast: P.webLast }),
         applySnapshot: d => {
           if (!d || typeof d.status !== "object" || typeof d.notes !== "object") throw new Error("This is not Client Atlas data.");
           P.status = Object.assign({}, d.status); P.notes = Object.assign({}, d.notes);
           // a copy saved by a page from before the Leads tab has no "leads": keep this browser's leads and send them up again
           const keepLeads = !Array.isArray(d.leads) && P.leads.length > 0;
           if (!keepLeads) P.leads = AtlasLeads.cleanList(d.leads);
+          if (typeof d.webLast === "string" && d.webLast > P.webLast) P.webLast = d.webLast;
           lsSet("atlas.pipeline", P); syncCards(); renderLeads();
           if (keepLeads) setTimeout(() => { if (atlasSync) atlasSync.changed(); }, 0);
         },
@@ -1615,6 +1617,28 @@ Reply with only the message. First line "Subject: ..." translated into the targe
     f.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
     $("#lf-company").focus({ preventScroll: true });
   }
+  let webBusy = false;
+  async function importWebsite(manual) {
+    if (webBusy || store.mode === "db" || !/^https?:$/.test(location.protocol)) return;
+    webBusy = true;
+    try {
+      let added = 0, after = P.webLast, rounds = 0, more = true;
+      while (more && rounds++ < 20) {
+        const r = await fetch("/api/leads" + (after ? "?after=" + encodeURIComponent(after) : ""), { cache: "no-store", credentials: "same-origin" });
+        if (r.status === 404 || r.status === 503 || r.status === 403) { if (manual) { $("#saved").textContent = r.status === 403 ? "Website messages: owner only" : "Website messages are not connected here"; setTimeout(setSavedLabel, 3000); } return; }
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const d = await r.json();
+        $("#leadWeb").hidden = false;
+        added += L.addWebsite(P.leads, d.leads);
+        more = !!d.truncated && d.last && d.last !== after;
+        if (d.last) after = d.last;
+      }
+      if (after !== P.webLast || added) { P.webLast = after; saveLeads(added ? (added === 1 ? "1 new website enquiry added" : added + " new website enquiries added") : ""); }
+      else if (manual) { $("#saved").textContent = "No new website enquiries"; setTimeout(setSavedLabel, 2500); }
+    } catch (e) {
+      if (manual) { $("#saved").textContent = "Couldn't reach the website messages. Try again."; setTimeout(setSavedLabel, 3000); }
+    } finally { webBusy = false; }
+  }
   function closeLeadForm() { LF.editing = null; $("#leadForm").hidden = true; }
   function saveLeads(msg) { persist(); renderLeads(); if (msg) $("#saved").textContent = msg; setTimeout(setSavedLabel, 2500); }
   function initLeads() {
@@ -1655,6 +1679,11 @@ Reply with only the message. First line "Subject: ..." translated into the targe
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "leads-" + todayIso() + ".csv";
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     });
+    // website messages (the public site's contact form → GET /api/leads, owner only): checked when the page opens and
+    // every 10 minutes while it is shown; the button checks now. Off where the site has no sync server.
+    $("#leadWeb").addEventListener("click", () => importWebsite(true));
+    importWebsite(false);
+    setInterval(() => { if (document.visibilityState === "visible") importWebsite(false); }, 600000);
     // a new day (the page left open overnight, or shown again) moves follow-ups into "due"
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") renderLeads(); });
   }

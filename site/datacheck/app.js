@@ -10,12 +10,13 @@
  * (meta.first). The VIES answers of a check live with its rows (record.vies), so they stay in this browser.
  * Online VAT check: only when the person asks for it, GET /api/vies/:country/:number (worker/index.js) sends the VAT IDs, and
  * nothing else, to the EU's VIES service. Everything else works without it.
- * UI preferences: localStorage "stratum-datacheck-ui".
+ * UI preferences: localStorage "stratum-datacheck-ui" ({ sev, exp, lang }). Screen language English, Slovene or Croatian
+ * (i18n.js: tx() for screen texts, lx() for the English texts the engine writes); ?lang=sl|hr|en in the URL picks it too.
  * Routes: #/, #/check/:id[/summary|columns|issues|rows|duplicates|export][/rule], #/report/:id, #/settings. */
 (function () {
   'use strict';
 
-  var E = window.DataCheckEngine, X = window.DataCheckData;
+  var E = window.DataCheckEngine, X = window.DataCheckData, I18N = window.DcI18n;
   var $ = function (id) { return document.getElementById(id); };
   var UIKEY = 'stratum-datacheck-ui', DB_NAME = 'stratum-datacheck', VERSION = 1;
   var SHEETJS = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
@@ -62,7 +63,7 @@
     }
     return idbP;
   }
-  function tx(store, mode, fn) {
+  function idbTx(store, mode, fn) {
     return idbOpen().then(function (d) {
       return new Promise(function (resolve, reject) {
         var t, out;
@@ -72,8 +73,8 @@
       });
     });
   }
-  var kvGet = function () { return tx('kv', 'readonly', function (s) { return s.get('db'); }); };
-  var kvPut = function (v) { return tx('kv', 'readwrite', function (s) { s.put(v, 'db'); }); };
+  var kvGet = function () { return idbTx('kv', 'readonly', function (s) { return s.get('db'); }); };
+  var kvPut = function (v) { return idbTx('kv', 'readwrite', function (s) { s.put(v, 'db'); }); };
   // rows are stored as one string each (cells joined by U+001F): cloning 50.000 strings is far quicker than 2 million
   var SEP = '\u001F';
   /** the record with its rows joined, built a slice at a time so a big file does not stall the page */
@@ -100,17 +101,17 @@
     delete rec.packed; delete rec.width;
     return rec;
   }
-  var tGet = function (id) { return tx('tables', 'readonly', function (s) { return s.get(id); }).then(unpack); };
-  var tPut = function (rec) { return pack(rec).then(function (p) { return tx('tables', 'readwrite', function (s) { s.put(p); }); }); };
-  var tDel = function (id) { return tx('tables', 'readwrite', function (s) { s.delete(id); }); };
-  var tKeys = function () { return tx('tables', 'readonly', function (s) { return s.getAllKeys(); }); };
-  var tClear = function () { return tx('tables', 'readwrite', function (s) { s.clear(); }); };
+  var tGet = function (id) { return idbTx('tables', 'readonly', function (s) { return s.get(id); }).then(unpack); };
+  var tPut = function (rec) { return pack(rec).then(function (p) { return idbTx('tables', 'readwrite', function (s) { s.put(p); }); }); };
+  var tDel = function (id) { return idbTx('tables', 'readwrite', function (s) { s.delete(id); }); };
+  var tKeys = function () { return idbTx('tables', 'readonly', function (s) { return s.getAllKeys(); }); };
+  var tClear = function () { return idbTx('tables', 'readwrite', function (s) { s.clear(); }); };
 
   var saveTimer = null, dirty = {}, writeQ = Promise.resolve(), warned = false, syncWanted = false, applying = false;
   function failed(err) {
     idbOK = false;
     if (window.console) console.warn('Data health check: browser storage unavailable, keeping data in memory.', err);
-    if (!warned) { warned = true; setTimeout(function () { toast('Browser storage is unavailable: checks last until you reload.'); }, 50); }
+    if (!warned) { warned = true; setTimeout(function () { toast(tx('Browser storage is unavailable: checks last until you reload.')); }, 50); }
   }
   function enqueue(job) { var p = writeQ.then(job); writeQ = p.catch(failed); return p; }
   /** save the document (and the named check's rows); byPerson: the person changed something, so cloud sync follows */
@@ -147,7 +148,8 @@
   function defaultSettings() {
     var req = {};
     E.TYPES.forEach(function (t) { req[t.id] = { required: E.DEFAULT_REQ[t.id].required.slice(), recommended: E.DEFAULT_REQ[t.id].recommended.slice() }; });
-    return { req: req, dupThreshold: 85, home: 'SI', vatRates: { SI: [22, 9.5, 5], HR: [25, 13, 5] }, preparedBy: 'Simon Modic, Clearfigure', preparedFor: '', reportLang: 'en', keepFiles: true, bookingUrl: '' };
+    // reportLang '' = the screen language; reportLangSet: the person picked a report language themselves
+    return { req: req, dupThreshold: 85, home: 'SI', vatRates: { SI: [22, 9.5, 5], HR: [25, 13, 5] }, preparedBy: 'Simon Modic, Clearfigure', preparedFor: '', reportLang: '', reportLangSet: false, keepFiles: true, bookingUrl: '' };
   }
   function validDb(o) { return !!(o && o.version === VERSION && o.settings && typeof o.settings === 'object' && Array.isArray(o.checks)); }
   function ensureSchema(d) {
@@ -156,6 +158,8 @@
     E.TYPES.forEach(function (t) { var r = s.req[t.id]; if (!r || !Array.isArray(r.required) || !Array.isArray(r.recommended)) s.req[t.id] = def.req[t.id]; });
     ['SI', 'HR'].forEach(function (cc) { if (!Array.isArray(s.vatRates[cc])) s.vatRates[cc] = def.vatRates[cc]; });
     if (s.home !== 'SI' && s.home !== 'HR') s.home = 'SI';
+    // 'en' was the default before the screens had languages: unless the person chose it, the report follows the screens
+    if (['', 'en', 'sl', 'hr'].indexOf(s.reportLang) < 0 || (s.reportLang === 'en' && !s.reportLangSet)) s.reportLang = '';
     d.checks = d.checks.filter(function (c) { return c && typeof c.id === 'string' && typeof c.name === 'string'; });
     d.recipes = Array.isArray(d.recipes) ? d.recipes.filter(function (x) { return x && typeof x.id === 'string' && typeof x.name === 'string' && Array.isArray(x.cols); }) : [];
     if (!safeUrl(s.bookingUrl)) s.bookingUrl = '';
@@ -171,7 +175,42 @@
   ui.sev = ['all', 'error', 'warning', 'info'].indexOf(ui.sev) >= 0 ? ui.sev : 'all';
   ui.exp = Object.assign({ delim: ';', dropIgnored: false, dropErrors: false, isoDates: false, dec: 'keep', merge: true }, ui.exp || {});
   // "Only one-click fixes" is a filter for the open check only: it is never saved, so it cannot hide issues later
-  function saveUi() { lsSet(UIKEY, JSON.stringify({ sev: ui.sev, exp: ui.exp })); }
+  function saveUi() { lsSet(UIKEY, JSON.stringify({ sev: ui.sev, exp: ui.exp, lang: ui.lang })); }
+
+  // ── screen language (English, Slovene, Croatian) ─────────────────────────
+  function defaultLang() { var n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase(); return n.indexOf('sl') === 0 ? 'sl' : n.indexOf('hr') === 0 || n.indexOf('bs') === 0 || n.indexOf('sr') === 0 ? 'hr' : 'en'; }
+  if (I18N.LANGS.indexOf(ui.lang) < 0) delete ui.lang;
+  (function () { // ?lang=sl|hr|en (the public site's demo links): used and kept as the choice
+    var q = null; try { q = new URLSearchParams(location.search).get('lang'); } catch (e) { q = null; }
+    if (I18N.LANGS.indexOf(q) >= 0 && q !== ui.lang) { ui.lang = q; saveUi(); }
+  })();
+  var LANG = ui.lang || defaultLang(), I = I18N.make(LANG);
+  /** a screen text in the chosen language; {name} placeholders filled from v */
+  function tx(s, v) { return I.t(s, v); }
+  /** a text the engine wrote in English (rule titles, messages, role names…): translated by dictionary and pattern */
+  function lx(s) { return I.x(s); }
+  function setLang(l) {
+    if (I18N.LANGS.indexOf(l) < 0) return;
+    LANG = l; I = I18N.make(l); ui.lang = l; saveUi();
+    shellText(); closeLayer(); render();
+  }
+  /** the texts in index.html */
+  function shellText() {
+    document.documentElement.lang = LANG;
+    $('skipLink').textContent = tx('Skip to content');
+    $('brandName').textContent = tx('Data health check');
+    $('brandSub').textContent = tx('Files stay in this browser');
+    $('menuLabel').textContent = tx('Menu');
+    $('side').setAttribute('aria-label', tx('Data health check navigation'));
+    $('nav').setAttribute('aria-label', tx('Sections'));
+    $('demoPill').title = tx('The three demo files are fictional exports with planted problems. Files you check are read in this browser and never uploaded; with cloud sync on, only settings and the list of checks with their scores travel.');
+    $('demoPillText').textContent = tx('Demo data · saved in this browser only');
+    $('langLabel').textContent = tx('Language');
+    $('uiLang').value = LANG;
+    var bt = $('bootText'); if (bt) bt.textContent = tx('Opening the data health check…');
+    $('dropText').textContent = tx('Drop the file to check it');
+    $('busyTrack').setAttribute('aria-label', tx('Progress'));
+  }
   var view = { open: {}, rowsF: 'all', rowsQ: '', rowsPage: 0, dupPage: 0, lastId: null, fixOnly: false };
 
   // ── formatting ───────────────────────────────────────────────────────────
@@ -180,11 +219,12 @@
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function n0(n) { return nf0.format(n || 0); }
   function pct(part, whole) { if (!whole || !part) return '0 %'; var p = part / whole * 100; return (p < 1 ? '<1' : nf0.format(Math.round(p))) + ' %'; }
-  function plural(n, one, many) { return n0(n) + ' ' + (n === 1 ? one : many); }
-  function dt(iso) { if (!iso) return '—'; var d = String(iso).slice(0, 10); return +d.slice(8, 10) + '. ' + +d.slice(5, 7) + '. ' + d.slice(0, 4); }
+  /** "3 rows" in the screen language (Slovene has four forms, Croatian three); cs: a case form from i18n.js NOUNS ('in' …) */
+  function plural(n, one, many, cs) { return n0(n) + ' ' + I.noun(n, one, many, cs); }
+  function dt(iso) { if (!iso) return '—'; var d = String(iso).slice(0, 10); return +d.slice(8, 10) + '. ' + +d.slice(5, 7) + '. ' + d.slice(0, 4) + (LANG === 'hr' ? '.' : ''); }
   function dtTime(iso) {
     if (!iso) return '—';
-    try { return new Intl.DateTimeFormat('sl-SI', { timeZone: 'Europe/Ljubljana', day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); }
+    try { return new Intl.DateTimeFormat(LANG === 'hr' ? 'hr-HR' : 'sl-SI', { timeZone: 'Europe/Ljubljana', day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); }
     catch (e) { return dt(iso); }
   }
   function cut(s, n) { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
@@ -192,7 +232,7 @@
   function showWs(v, n) {
     v = String(v == null ? '' : v);
     if (n && v.length > n) v = v.slice(0, n - 1) + '…';
-    if (v === '') return '<span class="muted">(empty)</span>';
+    if (v === '') return '<span class="muted">' + esc(tx('(empty)')) + '</span>';
     var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(v), out = '';
     function mark(s) { return s.replace(/[\s\S]/g, function (c) { return c === '\n' || c === '\r' ? (c === '\n' ? '↵' : '') : c === '\t' ? '⇥' : c === '\u00A0' ? '⍽' : c === ' ' ? '␣' : c.charCodeAt(0) < 32 ? '¤' : c; }); }
     out += m[1] ? '<mark class="ws">' + esc(mark(m[1])) + '</mark>' : '';
@@ -229,13 +269,13 @@
   }
   function drawer(eyebrow, title, body, foot, wide) {
     openLayer('<aside class="drawer' + (wide ? ' wide' : '') + '" role="dialog" aria-modal="true" aria-labelledby="drH"><div class="dr-head"><div><span class="eyebrow">' + esc(eyebrow) + '</span><h2 id="drH">' + esc(title) + '</h2></div>' +
-      '<button type="button" class="btn icon sm" data-act="close" aria-label="Close">' + ic('x') + '</button></div><div class="dr-body">' + body + '</div>' + (foot ? '<div class="dr-foot">' + foot + '</div>' : '') + '</aside>', 'drawer');
+      '<button type="button" class="btn icon sm" data-act="close" aria-label="' + esc(tx('Close')) + '">' + ic('x') + '</button></div><div class="dr-body">' + body + '</div>' + (foot ? '<div class="dr-foot">' + foot + '</div>' : '') + '</aside>', 'drawer');
   }
   function modal(title, body, submitLabel, onSubmit, opts) {
     opts = opts || {};
     openLayer('<form class="modal' + (opts.wide ? ' wide' : '') + '" id="mdForm" role="dialog" aria-modal="true" aria-labelledby="mdH" novalidate><div class="md-head"><h2 id="mdH">' + esc(title) + '</h2>' +
-      '<button type="button" class="btn icon sm" data-act="close" aria-label="Close">' + ic('x') + '</button></div><div class="md-body">' + body + '<div class="err" id="mdErr" hidden></div></div>' +
-      '<div class="md-foot"><button type="button" class="btn" data-act="close">Cancel</button>' + (submitLabel ? '<button type="submit" class="btn ' + (opts.danger ? 'danger' : 'pri') + '">' + esc(submitLabel) + '</button>' : '') + '</div></form>', 'modal');
+      '<button type="button" class="btn icon sm" data-act="close" aria-label="' + esc(tx('Close')) + '">' + ic('x') + '</button></div><div class="md-body">' + body + '<div class="err" id="mdErr" hidden></div></div>' +
+      '<div class="md-foot"><button type="button" class="btn" data-act="close">' + esc(tx(submitLabel ? 'Cancel' : 'Close')) + '</button>' + (submitLabel ? '<button type="submit" class="btn ' + (opts.danger ? 'danger' : 'pri') + '">' + esc(submitLabel) + '</button>' : '') + '</div></form>', 'modal');
     modalSubmit = onSubmit;
     var first = $('layers').querySelector('.md-body [autofocus], .md-body input, .md-body select, .md-body textarea');
     if (first) first.focus(); else { var b = $('layers').querySelector('.md-foot .pri, .md-foot .danger'); if (b) b.focus(); }
@@ -278,7 +318,7 @@
         var t0 = performance.now();
         try { while (!job.done && performance.now() - t0 < 25) job.step(12000); }
         catch (e) { busyN--; hideBusy(); reject(e); return; }
-        showBusy(job.label || label, job.progress);
+        showBusy(job.label ? lx(job.label) : label, job.progress);
         if (job.done) { busyN--; hideBusy(); resolve(job.result || job); } else nextTick(tick);
       }
       setTimeout(tick, 0);
@@ -289,14 +329,14 @@
   var EXCEL = /\.(xlsx|xlsm|xls|xlsb|ods)$/i;
   function importFile(file) {
     if (!file) return;
-    if (file.size > MAX_BYTES) return toast('That file is larger than 150 MB. Split it or export fewer columns.');
+    if (file.size > MAX_BYTES) return toast(tx('That file is larger than 150 MB. Split it or export fewer columns.'));
     if (EXCEL.test(file.name)) return importExcel(file);
-    if (/\.(pdf|docx?|zip|png|jpe?g|gif)$/i.test(file.name)) return toast('Use a CSV, TXT or Excel file.');
-    showBusy('Opening ' + file.name, 0.02);
+    if (/\.(pdf|docx?|zip|png|jpe?g|gif)$/i.test(file.name)) return toast(tx('Use a CSV, TXT or Excel file.'));
+    showBusy(tx('Opening {name}', { name: file.name }), 0.02);
     file.arrayBuffer().then(function (buf) { busyN++; return importBytes(new Uint8Array(buf), file.name, 'file'); })
       .then(function () { busyN = Math.max(0, busyN - 1); hideBusy(); }, function (err) { busyN = Math.max(0, busyN - 1); hideBusy(); readFailed(err); });
   }
-  function readFailed(err) { if (window.console) console.error(err); toast('Could not read the file: ' + (err && err.message || err)); }
+  function readFailed(err) { if (window.console) console.error(err); toast(tx('Could not read the file: {msg}', { msg: lx(err && err.message || err) })); }
   /** bytes → text → table → a new check (or, with `into`, new contents for an existing check) */
   function importBytes(bytes, name, kind, opts) {
     opts = opts || {};
@@ -305,7 +345,7 @@
   }
   function importText(text, name, kind, read, bytes) {
     var delim = read.delim || E.sniffDelimiter(text), job = E.csvJob(text, delim);
-    return runJob(job, 'Reading ' + name).then(function () {
+    return runJob(job, tx('Reading {name}', { name: name })).then(function () {
       var hi = read.header != null ? read.header : E.detectHeader(job.rows).index;
       var table = E.buildTable(job.rows, job.lines, hi);
       var info = { encoding: read.encoding || '', fallback: !!read.fallback, delim: delim, header: table.header, hasHeader: table.hasHeader, skipped: table.skipped, short: table.short, long: table.long };
@@ -313,12 +353,12 @@
     });
   }
   function finishImport(table, name, kind, info, bytes, read) {
-    if (!table.rows.length) { toast('No data rows found in ' + name + '.'); return null; }
+    if (!table.rows.length) { toast(tx('No data rows found in {name}.', { name: name })); return null; }
     var cutRows = table.rows.length > MAX_ROWS;
     if (cutRows) { table.rows.length = MAX_ROWS; table.lines.length = MAX_ROWS; info.cut = true; }
     if (read && read.into) return reread(read.into, table, info, bytes);
     var meta = createCheck(name, kind, table, info, bytes, read && read.demo);
-    if (cutRows) toast('Only the first ' + n0(MAX_ROWS) + ' rows are checked.');
+    if (cutRows) toast(tx('Only the first {n} rows are checked.', { n: n0(MAX_ROWS) }));
     if (!(read && read.quiet)) location.hash = '#/check/' + meta.id;
     return meta;
   }
@@ -365,29 +405,29 @@
     return xlsxP;
   }
   function excelOffline() {
-    modal('Excel needs a connection the first time', '<p>Excel files are read with SheetJS, which this page downloads from cdnjs when you open your first Excel file. It could not be loaded, so this browser is probably offline.</p>' +
-      '<p>CSV works offline: in Excel choose <b>File → Save As → CSV UTF-8 (comma delimited)</b> and drop that file here. Your data still stays in this browser.</p>', '', null);
+    modal(tx('Excel needs a connection the first time'), '<p>' + esc(tx('Excel files are read with SheetJS, which this page downloads from cdnjs when you open your first Excel file. It could not be loaded, so this browser is probably offline.')) + '</p>' +
+      '<p>' + tx('CSV works offline: in Excel choose <b>File → Save As → CSV UTF-8 (comma delimited)</b> and drop that file here. Your data still stays in this browser.') + '</p>', '', null);
   }
   function importExcel(file) {
-    showBusy('Loading the Excel reader', 0.05);
+    showBusy(tx('Loading the Excel reader'), 0.05);
     Promise.all([loadXlsx(), file.arrayBuffer()]).then(function (r) {
-      showBusy('Reading the workbook', 0.15);
+      showBusy(tx('Reading the workbook'), 0.15);
       setTimeout(function () {
         var XLSX = r[0], wb;
         try { wb = XLSX.read(new Uint8Array(r[1]), { type: 'array', cellNF: true, cellText: false, cellDates: false }); }
-        catch (e) { hideBusy(); return toast('This Excel file could not be read. Save it again, or as CSV.'); }
+        catch (e) { hideBusy(); return toast(tx('This Excel file could not be read. Save it again, or as CSV.')); }
         var sheets = wb.SheetNames.map(function (n) {
           var ws = wb.Sheets[n], ref = ws && ws['!ref'], rg = ref ? XLSX.utils.decode_range(ref) : null;
           return { name: n, rows: rg ? rg.e.r - rg.s.r + 1 : 0, cols: rg ? rg.e.c - rg.s.c + 1 : 0 };
         });
         var withData = sheets.filter(function (s) { return s.rows > 0; }).sort(function (a, b) { return b.rows * b.cols - a.rows * a.cols; });
         hideBusy();
-        if (!withData.length) return toast('The workbook has no data.');
+        if (!withData.length) return toast(tx('The workbook has no data.'));
         if (withData.length === 1) return readSheet(XLSX, wb, withData[0].name, file.name);
-        modal('Which sheet?', '<p>' + esc(file.name) + ' has ' + sheets.length + ' sheets.</p><fieldset class="grp"><legend>Sheet to check</legend><div class="sheets">' + sheets.map(function (s, i) {
-          return '<label class="radio"><input type="radio" name="sheet" value="' + esc(s.name) + '"' + (s === withData[0] ? ' checked' : '') + (s.rows ? '' : ' disabled') + '><span><b>' + esc(s.name) + '</b><small>' + (s.rows ? plural(s.rows, 'row', 'rows') + ' · ' + plural(s.cols, 'column', 'columns') : 'empty') + '</small></span></label>';
-        }).join('') + '</div></fieldset>', 'Check this sheet', function () {
-          var pick = $('layers').querySelector('input[name=sheet]:checked'); if (!pick) return modalError('Choose a sheet.');
+        modal(tx('Which sheet?'), '<p>' + esc(tx('{name} has {n} sheets.', { name: file.name, n: sheets.length })) + '</p><fieldset class="grp"><legend>' + esc(tx('Sheet to check')) + '</legend><div class="sheets">' + sheets.map(function (s, i) {
+          return '<label class="radio"><input type="radio" name="sheet" value="' + esc(s.name) + '"' + (s === withData[0] ? ' checked' : '') + (s.rows ? '' : ' disabled') + '><span><b>' + esc(s.name) + '</b><small>' + (s.rows ? plural(s.rows, 'row', 'rows') + ' · ' + plural(s.cols, 'column', 'columns') : esc(tx('empty'))) + '</small></span></label>';
+        }).join('') + '</div></fieldset>', tx('Check this sheet'), function () {
+          var pick = $('layers').querySelector('input[name=sheet]:checked'); if (!pick) return modalError(tx('Choose a sheet.'));
           var name = pick.value; closeLayer(); readSheet(XLSX, wb, name, file.name);
         });
       }, 30);
@@ -411,7 +451,7 @@
   }
   function readSheet(XLSX, wb, sheet, fileName) {
     var ws = wb.Sheets[sheet], rg = XLSX.utils.decode_range(ws['!ref']), rows = [], lines = [];
-    showBusy('Reading ' + sheet, 0.3);
+    showBusy(tx('Reading {name}', { name: sheet }), 0.3);
     setTimeout(function () {
       for (var r = rg.s.r; r <= rg.e.r && rows.length < MAX_ROWS + 50; r++) {
         var row = [], any = false;
@@ -470,7 +510,7 @@
   function byImpact(a, b) { return weightOf(b[0], b[2] || b[1]) - weightOf(a[0], a[2] || a[1]) || E.RULES[a[0]].order - E.RULES[b[0]].order; }
   function analyseRecord(meta, data, opts) {
     var job = E.analysisJob(data, cfgFor(meta, data, opts));
-    return runJob(job, 'Checking ' + meta.name);
+    return runJob(job, tx('Checking {name}', { name: meta.name }));
   }
   /** (re)check the open file; byPerson: a change the person made, so the new summary is synced */
   function analyse(opts) {
@@ -488,7 +528,7 @@
     }, function (err) {
       if (cur && cur.id === id) { cur.busy = false; cur.failed = String(err && err.message || err); }
       if (window.console) console.error(err);
-      toast('Checking stopped: ' + (err && err.message || err)); render();
+      toast(tx('Checking stopped: {msg}', { msg: lx(err && err.message || err) })); render();
     });
   }
   function regroup() {
@@ -512,7 +552,7 @@
   /** apply cell changes as one undoable step, then check again */
   function commitChanges(label, changes, quiet) {
     if (!cur || !cur.data) return;
-    if (cur.busy) { toast('Wait until the check has finished.'); return; }
+    if (cur.busy) { toast(tx('Wait until the check has finished.')); return; }
     var d = cur.data, ch = [], touchesDup = false;
     changes.forEach(function (x) {
       var before = d.rows[x.r][x.c];
@@ -520,12 +560,12 @@
       ch.push([x.r, x.c, before, x.v]); d.rows[x.r][x.c] = x.v;
       if (DUP_ROLES[d.roles[x.c]]) touchesDup = true;
     });
-    if (!ch.length) { toast('Nothing to change.'); return; }
+    if (!ch.length) { toast(tx('Nothing to change.')); return; }
     d.history.push({ label: label, at: new Date().toISOString(), ch: ch });
     if (d.history.length > 25) d.history.shift();
     save(true, cur.id);
     analyse({ byPerson: true, reuseDup: touchesDup ? null : cur.res && cur.res.dup });
-    if (!quiet) toast(label + ' · ' + plural(ch.length, 'cell', 'cells') + ' changed. Undo is at the top.');
+    if (!quiet) toast(tx('{label} · {cells} changed. Undo is at the top.', { label: histLabel(label), cells: plural(ch.length, 'cell', 'cells') }));
   }
   function undo() {
     var d = cur && cur.data; if (!d || !d.history.length) return;
@@ -533,8 +573,10 @@
     for (var i = h.ch.length - 1; i >= 0; i--) d.rows[h.ch[i][0]][h.ch[i][1]] = h.ch[i][2];
     save(true, cur.id);
     analyse({ byPerson: true });
-    toast('Undone: ' + h.label);
+    toast(tx('Undone: {label}', { label: histLabel(h.label) }));
   }
+  /** an undo step's label: stored in English (saved checks keep working), shown in the screen language */
+  function histLabel(l) { return lx(l); }
   function noteFixed(d, rules) {
     if (!Array.isArray(d.fixedRules)) d.fixedRules = [];
     rules.forEach(function (k) { if (d.fixedRules.indexOf(k) < 0) d.fixedRules.push(k); });
@@ -543,7 +585,7 @@
    * more (a cell with spaces and capitals needs two passes), at most 5 times. Every cell keeps its value from before the step. */
   function runFixes(label, rules) {
     if (!cur || !cur.data || !cur.res) return Promise.resolve(0);
-    if (cur.busy) { toast('Wait until the check has finished.'); return Promise.resolve(0); }
+    if (cur.busy) { toast(tx('Wait until the check has finished.')); return Promise.resolve(0); }
     var id = cur.id, d = cur.data, entry = { label: label, at: new Date().toISOString(), ch: [] }, seen = {}, pass = 0, before = cur.res.score, used = {};
     return new Promise(function (resolve) {
       function step() {
@@ -567,7 +609,8 @@
         noteFixed(d, Object.keys(used));
         save(true, id); render();
         var after = cur && cur.id === id && cur.res ? cur.res.score : before;
-        toast(label + ' · ' + plural(entry.ch.length, 'cell', 'cells') + ' changed' + (after !== before ? ', score ' + before + ' → ' + after : '') + '. Undo is at the top.');
+        toast(after !== before ? tx('{label} · {cells} changed, score {a} → {b}. Undo is at the top.', { label: histLabel(label), cells: plural(entry.ch.length, 'cell', 'cells'), a: before, b: after }) :
+          tx('{label} · {cells} changed. Undo is at the top.', { label: histLabel(label), cells: plural(entry.ch.length, 'cell', 'cells') }));
         resolve(entry.ch.length);
       }
       step();
@@ -576,22 +619,23 @@
   /** "Fix N values": what changes, per kind of problem, then all of it in one step */
   function fixEverything() {
     if (!cur || !cur.res) return;
-    if (cur.busy) return toast('Wait until the check has finished.');
+    if (cur.busy) return toast(tx('Wait until the check has finished.'));
     var res = cur.res, d = cur.data, plan = E.planFixes(res, d);
-    if (!plan.length) return toast('Nothing left to fix automatically.');
+    if (!plan.length) return toast(tx('Nothing left to fix automatically.'));
     var rules = Object.keys(res.rules).map(function (k) { return res.rules[k]; }).filter(function (o) { return o.fixable; })
       .sort(function (a, b) { return b.fixable - a.fixable || E.RULES[a.k].order - E.RULES[b.k].order; });
     var sample = plan.slice(0, 12);
-    modal('Fix ' + n0(res.issues.filter(function (x) { return x.f !== undefined; }).length) + ' values in one step',
-      '<p>Every one-click fix is applied at once' + (res.scoreAfter > res.score ? ', which lifts the score from ' + res.score + ' to about ' + res.scoreAfter : '') + '. It is one step: <b>Undo</b> puts every cell back as it was.</p>' +
+    modal(tx('Fix {n} values in one step', { n: n0(res.issues.filter(function (x) { return x.f !== undefined; }).length) }),
+      '<p>' + (res.scoreAfter > res.score ? tx('Every one-click fix is applied at once, which lifts the score from {a} to about {b}. It is one step: <b>Undo</b> puts every cell back as it was.', { a: res.score, b: res.scoreAfter }) :
+        tx('Every one-click fix is applied at once. It is one step: <b>Undo</b> puts every cell back as it was.')) + '</p>' +
       '<ul class="list fixlist">' + rules.map(function (o) {
         var R = E.RULES[o.k];
-        return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><b>' + esc(R.title) + '</b></div><div class="r">' + n0(o.fixable) + '</div></li>';
+        return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><b>' + esc(lx(R.title)) + '</b></div><div class="r">' + n0(o.fixable) + '</div></li>';
       }).join('') + '</ul>' +
-      '<div class="tw prev"><table class="t compact"><thead><tr><th>Row</th><th>Column</th><th>Before</th><th>After</th></tr></thead><tbody>' + sample.map(function (x) {
+      '<div class="tw prev"><table class="t compact"><thead><tr><th>' + esc(tx('Row')) + '</th><th>' + esc(tx('Column')) + '</th><th>' + esc(tx('Before')) + '</th><th>' + esc(tx('After')) + '</th></tr></thead><tbody>' + sample.map(function (x) {
         return '<tr><td class="mono">' + d.lines[x.r] + '</td><td class="nw">' + esc(d.headers[x.c]) + '</td><td class="val">' + showWs(d.rows[x.r][x.c], 60) + '</td><td class="val after">' + showWs(x.v, 60) + '</td></tr>';
-      }).join('') + '</tbody></table></div>' + (plan.length > sample.length ? '<p class="hint">Examples: ' + sample.length + ' of ' + n0(plan.length) + ' cells.</p>' : ''),
-      'Apply all fixes', function () { closeLayer(); runFixes('All one-click fixes'); }, { wide: true });
+      }).join('') + '</tbody></table></div>' + (plan.length > sample.length ? '<p class="hint">' + esc(tx('Examples: {a} of {b} cells.', { a: sample.length, b: n0(plan.length) })) + '</p>' : ''),
+      tx('Apply all fixes'), function () { closeLayer(); runFixes('All one-click fixes'); }, { wide: true });
   }
 
   // ── demo files ───────────────────────────────────────────────────────────
@@ -638,8 +682,8 @@
       var live = !!list, text = X.erpCsv(live ? list : X.erpSample());
       var old = db.checks.filter(function (c) { return c.demo === 'erp'; }).map(function (c) { return c.id; });
       if (old.length) { db.checks = db.checks.filter(function (c) { return old.indexOf(c.id) < 0; }); old.forEach(function (id) { delete tables[id]; delete stored[id]; dirty[id] = 1; }); if (cur && old.indexOf(cur.id) >= 0) cur = null; }
-      return importText(text, live ? 'ERP demo · customers' : 'ERP demo · sample customers', 'erp', { encoding: 'utf-8', demo: 'erp' }).then(function (meta) {
-        if (meta) { meta.read.source = live ? 'erp' : 'sample'; save(false); render(); toast(live ? 'Read ' + plural(meta.rows, 'customer', 'customers') + ' from the ERP demo in this browser.' : 'The ERP demo has no data in this browser yet, so this is a sample in the same shape.'); }
+      return importText(text, live ? tx('ERP demo · customers') : tx('ERP demo · sample customers'), 'erp', { encoding: 'utf-8', demo: 'erp' }).then(function (meta) {
+        if (meta) { meta.read.source = live ? 'erp' : 'sample'; save(false); render(); toast(live ? tx('Read {n} from the ERP demo in this browser.', { n: plural(meta.rows, 'customer', 'customers') }) : tx('The ERP demo has no data in this browser yet, so this is a sample in the same shape.')); }
       });
     }).catch(readFailed);
   }
@@ -663,41 +707,44 @@
   }
   function renderNav(r) {
     var recent = db.checks.slice(0, 8);
-    $('nav').innerHTML = '<a href="#/"' + (r.page === 'start' ? ' aria-current="page"' : '') + '>' + ic('up') + '<span>New check</span></a>' +
-      (recent.length ? '<h2>Recent checks</h2>' + recent.map(function (c) {
+    $('nav').innerHTML = '<a href="#/"' + (r.page === 'start' ? ' aria-current="page"' : '') + '>' + ic('up') + '<span>' + esc(tx('New check')) + '</span></a>' +
+      (recent.length ? '<h2>' + esc(tx('Recent checks')) + '</h2>' + recent.map(function (c) {
         var on = (r.page === 'check' || r.page === 'report') && r.id === c.id;
         return '<a href="#/check/' + esc(c.id) + '"' + (on ? ' aria-current="page"' : '') + ' title="' + esc(c.name) + '">' + ic('file') + '<span>' + esc(c.name) + '</span>' + scoreBadge(c.summary) + '</a>';
       }).join('') : '') +
-      '<a href="#/settings"' + (r.page === 'settings' ? ' aria-current="page"' : '') + ' class="nav-set">' + ic('set') + '<span>Settings</span></a>';
+      '<a href="#/settings"' + (r.page === 'settings' ? ' aria-current="page"' : '') + ' class="nav-set">' + ic('set') + '<span>' + esc(tx('Settings')) + '</span></a>';
   }
   function head(eyebrow, title, sub, actions) {
     return '<div class="head"><div class="head-t"><span class="eyebrow">' + eyebrow + '</span><h1 tabindex="-1">' + esc(title) + '</h1>' + (sub ? '<p class="sub">' + sub + '</p>' : '') + '</div>' +
       (actions ? '<div class="head-actions no-print">' + actions + '</div>' : '') + '</div>';
   }
-  function typeName(t) { return (E.TYPE[t] || E.TYPE.customers).name; }
+  function typeName(t) { return lx((E.TYPE[t] || E.TYPE.customers).name); }
   function encName(e) { var x = E.ENCODINGS.filter(function (p) { return p[0] === e; })[0]; return x ? x[1].replace(/ \(.*\)$/, '') : e || ''; }
+  function sevName(s) { return tx(SEV_NAME[s]); }
+  function roleName(r) { return lx((E.ROLE[r] || E.ROLE.text).name); }
+  function ruleT(k) { return lx(E.RULES[k].title); }
 
   // ── page: start ──────────────────────────────────────────────────────────
   function pageStart() {
-    var h = head('Data health check', 'Check a customer or product list', 'See in seconds what is broken: invalid VAT IDs and IBANs, duplicates, missing fields. Then download a cleaned file.');
-    h += '<section class="drop-card" id="dropCard"><div class="drop-in">' + ic('up') + '<h2>Drop a CSV or Excel file here</h2><p>or</p>' +
-      '<button type="button" class="btn pri" data-act="pick">' + ic('file') + 'Choose a file</button>' +
-      '<p class="hint">CSV, TXT or TSV (any of ; , tab |), XLSX or XLS · up to 50.000 rows</p></div>' +
-      '<p class="privacy">' + ic('lock') + 'Files are read in this browser and never uploaded.</p></section>';
-    h += '<div class="grid2 start-grid"><section class="card pad"><span class="label">No file at hand?</span><h2>Try a demo file</h2><div class="demos">' + X.DEMOS.map(function (d) {
-      return '<button type="button" class="demo" data-act="demo" data-v="' + d.id + '"><b>' + esc(d.title) + '</b><small>' + esc(d.sub) + '</small><span class="mono">' + esc(d.name) + '</span></button>';
-    }).join('') + '<button type="button" class="demo erp" data-act="erpdemo"><b>Try with demo data: ERP customers</b><small>The customer list of the ERP demo, read straight from this browser (a sample in the same shape if you have not opened the ERP demo)</small><span class="mono">ERP demo</span></button>' +
-      '</div><p class="hint">Exports of Nordvik Distribucija, the fictional wholesaler from the other demos, with typical problems planted.</p></section>';
-    h += '<section class="card pad"><span class="label">From Excel or another program</span><h2>Paste rows</h2><div class="field"><label for="pasteIn">Copy the rows including the header row, then paste them here</label>' +
+    var h = head(esc(tx('Data health check')), tx('Check a customer or product list'), esc(tx('See in seconds what is broken: invalid VAT IDs and IBANs, duplicates, missing fields. Then download a cleaned file.')));
+    h += '<section class="drop-card" id="dropCard"><div class="drop-in">' + ic('up') + '<h2>' + esc(tx('Drop a CSV or Excel file here')) + '</h2><p>' + esc(tx('or')) + '</p>' +
+      '<button type="button" class="btn pri" data-act="pick">' + ic('file') + esc(tx('Choose a file')) + '</button>' +
+      '<p class="hint">' + esc(tx('CSV, TXT or TSV (any of ; , tab |), XLSX or XLS · up to 50.000 rows')) + '</p></div>' +
+      '<p class="privacy">' + ic('lock') + esc(tx('Files are read in this browser and never uploaded.')) + '</p></section>';
+    h += '<div class="grid2 start-grid"><section class="card pad"><span class="label">' + esc(tx('No file at hand?')) + '</span><h2>' + esc(tx('Try a demo file')) + '</h2><div class="demos">' + X.DEMOS.map(function (d) {
+      return '<button type="button" class="demo" data-act="demo" data-v="' + d.id + '"><b>' + esc(tx(d.title)) + '</b><small>' + esc(tx(d.sub)) + '</small><span class="mono">' + esc(d.name) + '</span></button>';
+    }).join('') + '<button type="button" class="demo erp" data-act="erpdemo"><b>' + esc(tx('Try with demo data: ERP customers')) + '</b><small>' + esc(tx('The customer list of the ERP demo, read straight from this browser (a sample in the same shape if you have not opened the ERP demo)')) + '</small><span class="mono">' + esc(tx('ERP demo')) + '</span></button>' +
+      '</div><p class="hint">' + esc(tx('Exports of Nordvik Distribucija, the fictional wholesaler from the other demos, with typical problems planted.')) + '</p></section>';
+    h += '<section class="card pad"><span class="label">' + esc(tx('From Excel or another program')) + '</span><h2>' + esc(tx('Paste rows')) + '</h2><div class="field"><label for="pasteIn">' + esc(tx('Copy the rows including the header row, then paste them here')) + '</label>' +
       '<textarea class="in paste" id="pasteIn" rows="6" spellcheck="false" placeholder="Šifra&#9;Naziv&#9;Ulica&#9;Pošta&#9;Kraj"></textarea></div>' +
-      '<div class="dr-actions"><button type="button" class="btn" data-act="paste">' + ic('paste') + 'Check pasted rows</button></div></section></div>';
-    h += '<section class="card"><div class="card-h"><div><span class="label">' + plural(db.checks.length, 'check', 'checks') + ' in this browser</span><h2>Recent checks</h2></div></div>';
-    if (!db.checks.length) h += '<p class="empty">No checks yet. Drop a file above or try a demo file.</p>';
-    else h += '<div class="tw"><table class="t recent"><thead><tr><th>File</th><th>Type</th><th class="num">Rows</th><th>Checked</th><th class="num">Score</th><th class="num"><span class="sr">Actions</span></th></tr></thead><tbody>' + db.checks.map(function (c) {
+      '<div class="dr-actions"><button type="button" class="btn" data-act="paste">' + ic('paste') + esc(tx('Check pasted rows')) + '</button></div></section></div>';
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + esc(tx('Checks in this browser: {n}', { n: n0(db.checks.length) })) + '</span><h2>' + esc(tx('Recent checks')) + '</h2></div></div>';
+    if (!db.checks.length) h += '<p class="empty">' + esc(tx('No checks yet. Drop a file above or try a demo file.')) + '</p>';
+    else h += '<div class="tw"><table class="t recent"><thead><tr><th>' + esc(tx('File')) + '</th><th>' + esc(tx('Type')) + '</th><th class="num">' + esc(tx('Rows')) + '</th><th>' + esc(tx('Checked')) + '</th><th class="num">' + esc(tx('Score')) + '</th><th class="num"><span class="sr">' + esc(tx('Actions')) + '</span></th></tr></thead><tbody>' + db.checks.map(function (c) {
       var s = c.summary;
-      return '<tr class="click" data-act="open" data-v="' + esc(c.id) + '"><td class="name"><a href="#/check/' + esc(c.id) + '">' + esc(c.name) + '</a>' + (c.demo ? ' <span class="tag">demo</span>' : '') + (hasData(c) ? '' : ' <span class="tag" title="Only the summary is kept">summary only</span>') + '</td>' +
-        '<td>' + esc(typeName(c.type)) + '</td><td class="num">' + n0(c.rows) + '</td><td class="nw">' + (c.checkedAt ? esc(dtTime(c.checkedAt)) : '<span class="muted">checking…</span>') + '</td>' +
-        '<td class="num">' + scoreBadge(s) + '</td><td class="num"><button type="button" class="btn icon sm ghost" data-act="del" data-v="' + esc(c.id) + '" aria-label="Delete ' + esc(c.name) + '">' + ic('trash') + '</button></td></tr>';
+      return '<tr class="click" data-act="open" data-v="' + esc(c.id) + '"><td class="name"><a href="#/check/' + esc(c.id) + '">' + esc(c.name) + '</a>' + (c.demo ? ' <span class="tag">' + esc(tx('demo')) + '</span>' : '') + (hasData(c) ? '' : ' <span class="tag" title="' + esc(tx('Only the summary is kept')) + '">' + esc(tx('summary only')) + '</span>') + '</td>' +
+        '<td>' + esc(typeName(c.type)) + '</td><td class="num">' + n0(c.rows) + '</td><td class="nw">' + (c.checkedAt ? esc(dtTime(c.checkedAt)) : '<span class="muted">' + esc(tx('checking…')) + '</span>') + '</td>' +
+        '<td class="num">' + scoreBadge(s) + '</td><td class="num"><button type="button" class="btn icon sm ghost" data-act="del" data-v="' + esc(c.id) + '" aria-label="' + esc(tx('Delete {name}', { name: c.name })) + '">' + ic('trash') + '</button></td></tr>';
     }).join('') + '</tbody></table></div>';
     h += '</section>';
     return h;
@@ -707,77 +754,80 @@
   function checkHead(meta, tab) {
     var s = meta.summary, d = tables[meta.id], last = d && d.history.length ? d.history[d.history.length - 1] : null;
     var read = meta.read || {};
-    var how = [read.sheet ? 'sheet ' + esc(read.sheet) : '', read.encoding ? esc(encName(read.encoding)) : '', read.delim ? esc(E.delimName(read.delim)) + '-separated' : ''].filter(Boolean).join(', ');
-    var sub = (meta.checkedAt ? 'Checked ' + esc(dtTime(meta.checkedAt)) : 'Not checked yet') + (how ? ' · ' + how : '');
-    var acts = (last ? '<button type="button" class="btn" data-act="undo" title="' + esc(last.label) + '">' + ic('undo') + '<span>Undo</span></button>' : '') +
-      (d ? '<button type="button" class="btn" data-act="recipes">' + ic('copy') + '<span>Recipe</span></button>' : '') +
-      '<a class="btn" href="#/report/' + esc(meta.id) + '">' + ic('report') + '<span>Report</span></a>';
+    var how = [read.sheet ? esc(tx('sheet {name}', { name: read.sheet })) : '', read.encoding ? esc(encName(read.encoding)) : '', read.delim ? esc(tx(delimSep(read.delim))) : ''].filter(Boolean).join(', ');
+    var sub = (meta.checkedAt ? esc(tx('Checked {date}', { date: dtTime(meta.checkedAt) })) : esc(tx('Not checked yet'))) + (how ? ' · ' + how : '');
+    var acts = (last ? '<button type="button" class="btn" data-act="undo" title="' + esc(tx('Undo: {label}', { label: histLabel(last.label) })) + '">' + ic('undo') + '<span>' + esc(tx('Undo')) + '</span></button>' : '') +
+      (d ? '<button type="button" class="btn" data-act="recipes">' + ic('copy') + '<span>' + esc(tx('Recipe')) + '</span></button>' : '') +
+      '<a class="btn" href="#/report/' + esc(meta.id) + '">' + ic('report') + '<span>' + esc(tx('Report')) + '</span></a>';
     var h = head(esc(typeName(meta.type)) + ' · ' + plural(meta.rows, 'row', 'rows') + ' · ' + plural(meta.cols, 'column', 'columns'), meta.name, sub, acts);
-    h += '<nav class="tabs no-print" aria-label="Check sections">' + TABS.map(function (t) {
+    h += '<nav class="tabs no-print" aria-label="' + esc(tx('Check sections')) + '">' + TABS.map(function (t) {
       var cnt = '';
       if (s && t[0] === 'issues' && s.errors + s.warnings) cnt = '<span class="tcount">' + n0(s.errors + s.warnings) + '</span>';
       if (s && t[0] === 'duplicates' && s.groups) cnt = '<span class="tcount">' + n0(s.groups) + '</span>';
-      return '<a href="#/check/' + esc(meta.id) + '/' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + t[1] + cnt + '</a>';
+      return '<a href="#/check/' + esc(meta.id) + '/' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + esc(tx(t[1])) + cnt + '</a>';
     }).join('') + '</nav>';
     return h;
   }
   function pageCheck(r) {
     var meta = findCheck(r.id);
-    if (!meta) return head('Data health check', 'Check not found', 'It may have been deleted in another tab.') + '<p><a class="btn" href="#/">' + ic('back') + 'Back to the start</a></p>';
+    if (!meta) return head(esc(tx('Data health check')), tx('Check not found'), esc(tx('It may have been deleted in another tab.'))) + '<p><a class="btn" href="#/">' + ic('back') + esc(tx('Back to the start')) + '</a></p>';
     if (!cur || cur.id !== r.id) loadCheck(r.id);
     if (view.lastId !== r.id) { view = { open: {}, rowsF: 'all', rowsQ: '', rowsPage: 0, dupPage: 0, lastId: r.id, fixOnly: false }; }
     var h = checkHead(meta, r.tab);
-    if (cur.loading) return h + '<p class="loading" role="status"><i aria-hidden="true"></i>Opening the file…</p>';
+    if (cur.loading) return h + '<p class="loading" role="status"><i aria-hidden="true"></i>' + esc(tx('Opening the file…')) + '</p>';
     if (!cur.data) return h + summaryOnly(meta, r.tab);
-    if (cur.failed && !cur.res) return h + '<div class="notice warn"><div>Checking stopped: ' + esc(cur.failed) + '. Try a different column role, or open the file again.</div></div>';
-    if (!cur.res) return h + '<p class="loading" role="status"><i aria-hidden="true"></i>Checking ' + plural(meta.rows, 'row', 'rows') + '…</p>';
+    if (cur.failed && !cur.res) return h + '<div class="notice warn"><div>' + esc(tx('Checking stopped: {msg}. Try a different column role, or open the file again.', { msg: lx(cur.failed) })) + '</div></div>';
+    if (!cur.res) return h + '<p class="loading" role="status"><i aria-hidden="true"></i>' + esc(tx('Checking {rows}…', { rows: plural(meta.rows, 'row', 'rows') })) + '</p>';
     var fn = { summary: tabSummary, columns: tabColumns, issues: tabIssues, rows: tabRows, duplicates: tabDuplicates, export: tabExport }[r.tab];
     return h + '<div class="tabbody' + (cur.busy ? ' stale' : '') + '">' + fn(meta, cur.data, cur.res, r) + '</div>';
   }
   function summaryOnly(meta, tab) {
     var s = meta.summary;
-    var note = '<div class="notice">' + ic('lock') + '<div>The file itself is not stored in this browser' + (db.settings.keepFiles ? '' : ' ("Keep files in this browser" is off in Settings)') + ', only its summary. Open the file again to see its rows, fix issues and export a cleaned copy.</div></div>';
+    var note = '<div class="notice">' + ic('lock') + '<div>' + esc(db.settings.keepFiles ? tx('The file itself is not stored in this browser, only its summary. Open the file again to see its rows, fix issues and export a cleaned copy.') :
+      tx('The file itself is not stored in this browser ("Keep files in this browser" is off in Settings), only its summary. Open the file again to see its rows, fix issues and export a cleaned copy.')) + '</div></div>';
     if (!s) return note;
     if (tab !== 'summary' && tab !== 'issues') return note;
     var h = note + scoreCards(meta, s) + (s.einv ? '<div class="grid2 sum-extra">' + einvCard(meta, s, false) + '</div>' : '');
-    h += '<section class="card"><div class="card-h"><div><span class="label">From the last check</span><h2>Problems found</h2></div></div><ul class="list toplist">' + s.rules.map(function (x) {
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + esc(tx('From the last check')) + '</span><h2>' + esc(tx('Problems found')) + '</h2></div></div><ul class="list toplist">' + s.rules.map(function (x) {
       var R = E.RULES[x[0]]; if (!R) return '';
-      return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><b>' + esc(R.title) + '</b><small>' + SEV_NAME[R.sev] + ' · ' + plural(x[1], 'value', 'values') + (x[2] ? ' in ' + plural(x[2], 'row', 'rows') : '') + '</small></div></li>';
+      return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><b>' + esc(ruleT(x[0])) + '</b><small>' + esc(sevName(R.sev) + ' · ' + valuesIn(x[1], x[2])) + '</small></div></li>';
     }).join('') + '</ul></section>';
     return h;
   }
 
+  /** "12 values in 9 rows" ("12 values" when the counts are equal or there are no rows) */
+  function valuesIn(n, rows) { return rows && rows !== n ? tx('{values} in {rows}', { values: plural(n, 'value', 'values'), rows: plural(rows, 'row', 'rows', 'in') }) : plural(n, 'value', 'values'); }
+  function delimSep(d) { return { ';': 'semicolon-separated', ',': 'comma-separated', '\t': 'tab-separated', '|': 'pipe-separated' }[d] || d; }
   // summary tab
-  function ring(score, band, label) {
+  function ring(score, band, label, of) {
     var R = 52, C = 2 * Math.PI * R, off = C * (1 - score / 100);
-    return '<svg class="ring ' + band + '" viewBox="0 0 120 120" role="img" aria-label="' + esc(label || 'Score ' + score + ' of 100') + '"><circle class="trk" cx="60" cy="60" r="' + R + '"/>' +
+    return '<svg class="ring ' + band + '" viewBox="0 0 120 120" role="img" aria-label="' + esc(label || tx('Score {n} of 100', { n: score })) + '"><circle class="trk" cx="60" cy="60" r="' + R + '"/>' +
       '<circle class="val" cx="60" cy="60" r="' + R + '" stroke-dasharray="' + C.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '" transform="rotate(-90 60 60)"/>' +
-      '<text x="60" y="64" class="num" text-anchor="middle">' + score + '</text><text x="60" y="84" class="of" text-anchor="middle">of 100</text></svg>';
+      '<text x="60" y="64" class="num" text-anchor="middle">' + score + '</text><text x="60" y="84" class="of" text-anchor="middle">' + esc(of || tx('of 100')) + '</text></svg>';
   }
   var BAND = { good: ['Good', 'Ready to migrate after a quick look.'], fair: ['Fair', 'Usable, but fix the errors before you migrate.'], poor: ['Poor', 'Needs work before it goes into a new system.'], critical: ['Critical', 'Not fit to migrate as it is.'] };
   function scoreCards(meta, s, live) {
     var band = E.scoreBand(s.score), rows = meta.rows;
     // Validation run card: score out of 100 with its band, a bar of rows with errors / warnings / clean, and the two next steps.
     var notesOnly = Math.max(0, rows - s.rowsErr - s.rowsWarn - s.rowsClean);
-    var parts = [['e', s.rowsErr, plural(s.rowsErr, 'row', 'rows') + ' with errors'], ['w', s.rowsWarn, n0(s.rowsWarn) + ' with warnings'], ['n', notesOnly, n0(notesOnly) + ' with notes only'], ['c', s.rowsClean, n0(s.rowsClean) + ' clean']].filter(function (x) { return x[1] > 0; });
-    var h = '<div class="sum-top"><section class="card score-card"><div class="gx-run"><h2 class="label">Data health score · ' + plural(rows, 'row', 'rows') + ' · ' + plural(meta.cols, 'column', 'columns') + '</h2>' + (meta.checkedAt ? '<span class="label">' + esc(dtTime(meta.checkedAt)) + '</span>' : '') + '</div>' +
-      '<div class="gx-sc"><p class="gx-score"><b>' + s.score + '</b><small>/100</small><span class="gx-band ' + band + '">' + BAND[band][0] + '</span></p>' +
-      (s.scoreAfter > s.score ? '<p class="gx-after">After the one-click fixes<b>about ' + s.scoreAfter + '</b></p>' : '') + '</div>' +
-      (meta.first && meta.first.score !== s.score ? '<p class="gx-first">First check ' + esc(dt(meta.first.at)) + ': <b>' + meta.first.score + ' → ' + s.score + '</b>' + (s.score > meta.first.score ? ' <span class="up">+' + (s.score - meta.first.score) + '</span>' : '') + '</p>' : '') +
-      '<p class="gx-say">' + BAND[band][1] + '</p>' +
+    var parts = [['e', s.rowsErr, tx('{rows} with errors', { rows: plural(s.rowsErr, 'row', 'rows') })], ['w', s.rowsWarn, tx('{n} with warnings', { n: n0(s.rowsWarn) })], ['n', notesOnly, tx('{n} with notes only', { n: n0(notesOnly) })], ['c', s.rowsClean, tx('{n} clean', { n: n0(s.rowsClean) })]].filter(function (x) { return x[1] > 0; });
+    var h = '<div class="sum-top"><section class="card score-card"><div class="gx-run"><h2 class="label">' + esc(tx('Data health score') + ' · ' + plural(rows, 'row', 'rows') + ' · ' + plural(meta.cols, 'column', 'columns')) + '</h2>' + (meta.checkedAt ? '<span class="label">' + esc(dtTime(meta.checkedAt)) + '</span>' : '') + '</div>' +
+      '<div class="gx-sc"><p class="gx-score"><b>' + s.score + '</b><small>/100</small><span class="gx-band ' + band + '">' + esc(tx(BAND[band][0])) + '</span></p>' +
+      (s.scoreAfter > s.score ? '<p class="gx-after">' + esc(tx('After the one-click fixes')) + '<b>' + esc(tx('about {n}', { n: s.scoreAfter })) + '</b></p>' : '') + '</div>' +
+      (meta.first && meta.first.score !== s.score ? '<p class="gx-first">' + esc(tx('First check {date}:', { date: dt(meta.first.at) })) + ' <b>' + meta.first.score + ' → ' + s.score + '</b>' + (s.score > meta.first.score ? ' <span class="up">+' + (s.score - meta.first.score) + '</span>' : '') + '</p>' : '') +
+      '<p class="gx-say">' + esc(tx(BAND[band][1])) + '</p>' +
       '<div class="gx-bar" role="img" aria-label="' + esc(parts.map(function (x) { return x[2]; }).join(', ')) + '">' + parts.map(function (x) { return '<i class="' + x[0] + '" style="flex-grow:' + x[1] + '"></i>'; }).join('') + '</div>' +
-      '<p class="gx-lgd" aria-hidden="true">' + parts.map(function (x) { return '<span><i class="' + x[0] + '"></i>' + x[2] + '</span>'; }).join('') + '</p>' +
-      (live ? '<div class="gx-acts no-print">' + (s.fixable ? '<button type="button" class="btn pri" data-act="fixview" data-v="' + esc(meta.id) + '">' + ic('wand') + 'Fix ' + n0(s.fixable) + ' values</button>' : '') +
-        '<a class="btn" href="#/check/' + esc(meta.id) + '/export">' + ic('dl') + 'Cleaned file</a></div>' : '') +
-      '<details class="how"><summary>How the score works</summary><p>Score = 100 × (1 − weighted problem rows ÷ (3 × all rows)). A row with at least one error counts 3, a row with only warnings counts 1, notes count 0. ' +
-      'Column scores use the same formula on the column\'s cells. Missing columns are listed separately and do not change the score.</p></details></section>';
+      '<p class="gx-lgd" aria-hidden="true">' + parts.map(function (x) { return '<span><i class="' + x[0] + '"></i>' + esc(x[2]) + '</span>'; }).join('') + '</p>' +
+      (live ? '<div class="gx-acts no-print">' + (s.fixable ? '<button type="button" class="btn pri" data-act="fixview" data-v="' + esc(meta.id) + '">' + ic('wand') + esc(tx('Fix {n} values', { n: n0(s.fixable) })) + '</button>' : '') +
+        '<a class="btn" href="#/check/' + esc(meta.id) + '/export">' + ic('dl') + esc(tx('Cleaned file')) + '</a></div>' : '') +
+      '<details class="how"><summary>' + esc(tx('How the score works')) + '</summary><p>' + esc(tx('Score = 100 × (1 − weighted problem rows ÷ (3 × all rows)). A row with at least one error counts 3, a row with only warnings counts 1, notes count 0. Column scores use the same formula on the column\'s cells. Missing columns are listed separately and do not change the score.')) + '</p></details></section>';
     h += '<div class="kpis sum-kpis">' +
-      kpi('Rows checked', n0(rows), plural(meta.cols, 'column', 'columns')) +
-      kpi('Errors', n0(s.errors), 'in ' + plural(s.rowsErr, 'row', 'rows') + ' · ' + pct(s.rowsErr, rows), s.errors ? 'bad' : 'good', '#/check/' + meta.id + '/issues') +
-      kpi('Warnings', n0(s.warnings), s.rowsWarn ? plural(s.rowsWarn, 'more row', 'more rows') + ' affected' : 'no other rows', s.warnings ? 'warn' : 'good', '#/check/' + meta.id + '/issues') +
-      kpi('Duplicates', n0(s.dupRows), s.groups ? 'in ' + plural(s.groups, 'group', 'groups') : 'none found', s.groups ? 'warn' : 'good', '#/check/' + meta.id + '/duplicates') +
-      kpi('One-click fixes', n0(s.fixable), s.fixable ? 'values the app can correct' : 'nothing to fix automatically', s.fixable ? 'acc' : '', '#/check/' + meta.id + '/issues') +
-      kpi('Clean rows', pct(s.rowsClean, rows), plural(s.rowsClean, 'row', 'rows') + ' without problems') + '</div></div>';
+      kpi(tx('Rows checked'), n0(rows), esc(plural(meta.cols, 'column', 'columns'))) +
+      kpi(tx('Errors'), n0(s.errors), esc(tx('in {rows}', { rows: plural(s.rowsErr, 'row', 'rows', 'in') }) + ' · ' + pct(s.rowsErr, rows)), s.errors ? 'bad' : 'good', '#/check/' + meta.id + '/issues') +
+      kpi(tx('Warnings'), n0(s.warnings), esc(s.rowsWarn ? tx('{rows} more affected', { rows: plural(s.rowsWarn, 'more row', 'more rows') }) : tx('no other rows')), s.warnings ? 'warn' : 'good', '#/check/' + meta.id + '/issues') +
+      kpi(tx('Duplicates'), n0(s.dupRows), esc(s.groups ? tx('in {groups}', { groups: plural(s.groups, 'group', 'groups', 'in') }) : tx('none found')), s.groups ? 'warn' : 'good', '#/check/' + meta.id + '/duplicates') +
+      kpi(tx('One-click fixes'), n0(s.fixable), esc(s.fixable ? tx('values the app can correct') : tx('nothing to fix automatically')), s.fixable ? 'acc' : '', '#/check/' + meta.id + '/issues') +
+      kpi(tx('Clean rows'), pct(s.rowsClean, rows), esc(tx('{rows} without problems', { rows: plural(s.rowsClean, 'row', 'rows') }))) + '</div></div>';
     return h;
   }
   function kpi(label, value, detail, cls, href) {
@@ -786,45 +836,52 @@
   }
   /** a rule title inside a sentence: "E-mail address…" → "e-mail address…", but "VAT ID…" and "IBAN…" keep their capitals */
   function lc(t) { return /^[A-Z]{2}/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1); }
-  function ruleList(names) { if (names.length <= 1) return names.join(''); return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]; }
+  function ruleList(names) { if (names.length <= 1) return names.join(''); return names.slice(0, -1).join(', ') + ' ' + tx('and') + ' ' + names[names.length - 1]; }
   function meaning(meta, res) {
     var T = E.TYPE[res.type] || E.TYPE.customers, rows = res.nRows, s = summarize(res), p = [];
     var errRules = s.rules.filter(function (x) { return E.RULES[x[0]].sev === 'error' && x[2]; }).slice(0, 3);
-    if (!res.rowsErr && !res.rowsWarn) p.push('All ' + n0(rows) + ' ' + T.many + ' passed every check. Only notes remain, which do not affect the score.');
+    if (!res.rowsErr && !res.rowsWarn) p.push(tx('All {items} passed every check. Only notes remain, which do not affect the score.', { items: plural(rows, T.one, T.many) }));
     else {
-      p.push('Of the ' + n0(rows) + ' ' + (rows === 1 ? T.one : T.many) + ' in this file, ' + n0(res.rowsErr) + ' (' + pct(res.rowsErr, rows) + ') ' + (res.rowsErr === 1 ? 'has' : 'have') + ' at least one error that would block or corrupt an import' +
-        (res.rowsWarn ? ', and ' + n0(res.rowsWarn) + ' more have warnings' : '') + '.' +
-        (errRules.length ? ' The errors are mostly ' + ruleList(errRules.map(function (x) { return lc(E.RULES[x[0]].title) + ' (' + n0(x[2]) + ')'; })) + '.' : ''));
+      var v = { items: plural(rows, T.one, T.many), n: n0(rows), e: n0(res.rowsErr), pct: pct(res.rowsErr, rows), w: n0(res.rowsWarn), wpct: pct(res.rowsWarn, rows) };
+      p.push(tx(res.rowsErr === 1 ? 'Of the {items} in this file, {e} ({pct}) has at least one error that would block or corrupt an import.' : 'Of the {items} in this file, {e} ({pct}) have at least one error that would block or corrupt an import.', v) +
+        (res.rowsWarn ? ' ' + tx(res.rowsWarn === 1 ? 'Another {w} ({wpct}) has warnings only.' : 'Another {w} ({wpct}) have warnings only.', v) : '') +
+        (errRules.length ? ' ' + tx('The errors are mostly {list}.', { list: ruleList(errRules.map(function (x) { return lc(ruleT(x[0])) + ' (' + n0(x[2]) + ')'; })) }) : ''));
     }
-    if (s.groups) p.push(n0(s.dupRows) + ' ' + (s.dupRows === 1 ? T.one + ' looks' : T.many + ' look') + ' like a duplicate of another (' + plural(s.groups, 'group', 'groups') + '). Merge them before the migration, or their history and balances end up split.');
+    if (s.groups) p.push(tx(s.dupRows === 1 ? '{items} looks like a duplicate of another ({groups}). Merge them before the migration, or their history and balances end up split.' : '{items} look like a duplicate of another ({groups}). Merge them before the migration, or their history and balances end up split.',
+      { items: plural(s.dupRows, T.one, T.many), groups: plural(s.groups, 'group', 'groups') }));
     var fixRules = s.rules.filter(function (x) { return x[3]; }), manual = s.rules.filter(function (x) { return !x[3] && E.RULES[x[0]].sev !== 'info'; }).slice(0, 3);
-    if (fixRules.length) p.push(fixRules.length + ' of the ' + s.rules.length + ' kinds of problem can be fixed here in one click (' + n0(s.fixable) + ' values)' + (s.scoreAfter > s.score ? ', which lifts the score from ' + s.score + ' to about ' + s.scoreAfter : '') + '.' +
-      (manual.length ? ' The rest needs someone who knows the ' + T.many + ': ' + ruleList(manual.map(function (x) { return lc(E.RULES[x[0]].title); })) + '.' : ''));
+    if (fixRules.length) p.push((s.scoreAfter > s.score ? tx('{a} of the {b} kinds of problem can be fixed here in one click ({values}), which lifts the score from {from} to about {to}.', { a: fixRules.length, b: s.rules.length, values: plural(s.fixable, 'value', 'values'), from: s.score, to: s.scoreAfter }) :
+      tx('{a} of the {b} kinds of problem can be fixed here in one click ({values}).', { a: fixRules.length, b: s.rules.length, values: plural(s.fixable, 'value', 'values') })) +
+      (manual.length ? ' ' + tx({ customers: 'The rest needs someone who knows the customers: {list}.', suppliers: 'The rest needs someone who knows the suppliers: {list}.', products: 'The rest needs someone who knows the products: {list}.' }[T.id] || 'The rest needs someone who knows the customers: {list}.', { list: ruleList(manual.map(function (x) { return lc(ruleT(x[0])); })) }) : ''));
     var miss = res.structure.filter(function (x) { return x.k === 'req.nocolumn'; });
-    if (miss.length) { var one = miss.length === 1; p.unshift('The file has no ' + ruleList(miss.map(function (x) { return E.ROLE[x.p].name; })) + (one ? ' column' : ' columns') + ', which ' + T.many + ' need, so every row counts as an error. Add ' + (one ? 'it' : 'them') + ' to the export, mark ' + (one ? 'an existing column with that role' : 'existing columns with those roles') + ' on the Columns tab, or make ' + (one ? 'it' : 'them') + ' optional in Settings.'); }
+    if (miss.length) {
+      var one = miss.length === 1, cols = ruleList(miss.map(function (x) { return I.q(roleName(x.p)); }));
+      p.unshift(tx(one ? 'The file has no {cols} column, which {many} need, so every row counts as an error. Add it to the export, mark an existing column with that role on the Columns tab, or make it optional in Settings.' :
+        'The file has no {cols} columns, which {many} need, so every row counts as an error. Add them to the export, mark existing columns with those roles on the Columns tab, or make them optional in Settings.', { cols: cols, many: tx(T.many) }));
+    }
     return p.map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('');
   }
   function tabSummary(meta, d, res) {
     var s = meta.summary || summarize(res), h = recipeNotice(meta, d) + scoreCards(meta, s, true);
-    h += '<section class="card pad meaning"><span class="label">In plain words</span><h2>What this means</h2>' + meaning(meta, res) + '</section>';
+    h += '<section class="card pad meaning"><span class="label">' + esc(tx('In plain words')) + '</span><h2>' + esc(tx('What this means')) + '</h2>' + meaning(meta, res) + '</section>';
     h += '<div class="grid2 sum-extra">' + einvCard(meta, s, true) + viesCard(meta, d, res) + '</div>';
     var miss = res.structure;
-    if (miss.length) h += '<div class="notice ' + (miss.some(function (x) { return x.k === 'req.nocolumn'; }) ? 'warn' : '') + '"><div><b>Columns not in this file:</b> ' + miss.map(function (x) {
-      return esc(E.ROLE[x.p].name) + (x.k === 'req.nocolumn' ? ' (required)' : ' (recommended)'); }).join(', ') + '. <a href="#/check/' + esc(meta.id) + '/columns">Check the column roles</a></div></div>';
+    if (miss.length) h += '<div class="notice ' + (miss.some(function (x) { return x.k === 'req.nocolumn'; }) ? 'warn' : '') + '"><div><b>' + esc(tx('Columns not in this file:')) + '</b> ' + miss.map(function (x) {
+      return esc(roleName(x.p) + ' (' + tx(x.k === 'req.nocolumn' ? 'required' : 'recommended') + ')'); }).join(', ') + '. <a href="#/check/' + esc(meta.id) + '/columns">' + esc(tx('Check the column roles')) + '</a></div></div>';
     h += '<div class="grid21">';
     var top = s.rules.filter(function (x) { return E.RULES[x[0]].sev !== 'info' || x[3]; }).slice(0, 8);
-    h += '<section class="card"><div class="card-h"><div><span class="label">By impact</span><h2>Top issues</h2></div><a class="btn sm" href="#/check/' + esc(meta.id) + '/issues">All issues</a></div><ul class="list toplist">' +
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + esc(tx('By impact')) + '</span><h2>' + esc(tx('Top issues')) + '</h2></div><a class="btn sm" href="#/check/' + esc(meta.id) + '/issues">' + esc(tx('All issues')) + '</a></div><ul class="list toplist">' +
       (top.length ? top.map(function (x) {
         var R = E.RULES[x[0]];
-        return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><a href="#/check/' + esc(meta.id) + '/issues/' + encodeURIComponent(x[0]) + '">' + esc(R.title) + '</a><small>' + SEV_NAME[R.sev] + ' · ' +
-          (x[2] ? plural(x[2], 'row', 'rows') + ' · ' + pct(x[2], res.nRows) : 'file') + '</small></div><div class="r">' +
-          (x[3] ? '<button type="button" class="btn sm" data-act="fixall" data-v="' + esc(x[0]) + '">Fix ' + n0(x[3]) + '</button>' : '<a class="btn sm ghost" href="#/check/' + esc(meta.id) + '/issues/' + encodeURIComponent(x[0]) + '">See</a>') + '</div></li>';
-      }).join('') : '<li><div class="l">No problems found.</div></li>') + '</ul></section>';
+        return '<li><div class="l"><span class="sevdot ' + R.sev + '" aria-hidden="true"></span><a href="#/check/' + esc(meta.id) + '/issues/' + encodeURIComponent(x[0]) + '">' + esc(ruleT(x[0])) + '</a><small>' + esc(sevName(R.sev) + ' · ' +
+          (x[2] ? plural(x[2], 'row', 'rows') + ' · ' + pct(x[2], res.nRows) : tx('file'))) + '</small></div><div class="r">' +
+          (x[3] ? '<button type="button" class="btn sm" data-act="fixall" data-v="' + esc(x[0]) + '">' + esc(tx('Fix {n}', { n: n0(x[3]) })) + '</button>' : '<a class="btn sm ghost" href="#/check/' + esc(meta.id) + '/issues/' + encodeURIComponent(x[0]) + '">' + esc(tx('See')) + '</a>') + '</div></li>';
+      }).join('') : '<li><div class="l">' + esc(tx('No problems found.')) + '</div></li>') + '</ul></section>';
     var cols = d.headers.map(function (hd, c) { return { c: c, h: hd, role: d.roles[c], score: res.colScores[c] }; }).filter(function (x) { return x.score != null; }).sort(function (a, b) { return a.score - b.score || a.c - b.c; });
-    h += '<section class="card"><div class="card-h"><div><span class="label">Lowest first</span><h2>Column scores</h2></div><a class="btn sm" href="#/check/' + esc(meta.id) + '/columns">Columns</a></div><div class="card-b"><ul class="list colscores">' +
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + esc(tx('Lowest first')) + '</span><h2>' + esc(tx('Column scores')) + '</h2></div><a class="btn sm" href="#/check/' + esc(meta.id) + '/columns">' + esc(tx('Columns')) + '</a></div><div class="card-b"><ul class="list colscores">' +
       cols.map(function (x) {
         var b = E.scoreBand(x.score);
-        return '<li><div class="l"><a href="#/check/' + esc(meta.id) + '/columns" data-act="gocol" data-v="' + x.c + '">' + esc(x.h) + '</a><small>' + esc(E.ROLE[x.role].name) + '</small><div class="bar ' + b + '"><i style="width:' + x.score + '%"></i></div></div><div class="r"><b>' + x.score + '</b></div></li>';
+        return '<li><div class="l"><a href="#/check/' + esc(meta.id) + '/columns" data-act="gocol" data-v="' + x.c + '">' + esc(x.h) + '</a><small>' + esc(roleName(x.role)) + '</small><div class="bar ' + b + '"><i style="width:' + x.score + '%"></i></div></div><div class="r"><b>' + x.score + '</b></div></li>';
       }).join('') + '</ul></div></section></div>';
     h += readCard(meta);
     return h;
@@ -834,17 +891,17 @@
   function einvCard(meta, s, live) {
     var e = s && s.einv; if (!e) return '';
     var T = E.TYPE[s.type] || E.TYPE.customers, band = e.pct >= 90 ? 'good' : e.pct >= 70 ? 'fair' : e.pct >= 40 ? 'poor' : 'critical';
-    var first = meta.first && meta.first.einv != null && meta.first.einv !== e.pct ? ' Since the first check: ' + meta.first.einv + ' % → ' + e.pct + ' %.' : '';
-    return '<section class="card pad einv"><div class="split"><div><span class="label">Croatia since 1 Jan 2026 · Slovenia from 1 Jan 2028</span><h2>E-invoice readiness</h2></div>' +
-      (live && e.ready < e.rows ? '<button type="button" class="btn sm" data-act="einvrows">Show ' + plural(e.rows - e.ready, 'record', 'records') + ' not ready</button>' : '') + '</div>' +
-      '<div class="einv-top"><p class="gx-score"><b>' + e.pct + '</b><small>% ready</small><span class="gx-band ' + band + '">' + n0(e.ready) + ' of ' + n0(e.rows) + '</span></p>' +
-      '<p class="sub">' + esc(n0(e.ready) + ' of ' + n0(e.rows) + ' ' + T.many + ' have everything an e-invoice to them needs. The average record meets ' + e.avg + ' % of what applies to it.' + first) + '</p></div>' +
+    var first = meta.first && meta.first.einv != null && meta.first.einv !== e.pct ? ' ' + tx('Since the first check: {a} % → {b} %.', { a: meta.first.einv, b: e.pct }) : '';
+    return '<section class="card pad einv"><div class="split"><div><span class="label">' + esc(tx('Croatia since 1 Jan 2026 · Slovenia from 1 Jan 2028')) + '</span><h2>' + esc(tx('E-invoice readiness')) + '</h2></div>' +
+      (live && e.ready < e.rows ? '<button type="button" class="btn sm" data-act="einvrows">' + esc(tx('Show {records} not ready', { records: plural(e.rows - e.ready, 'record', 'records') })) + '</button>' : '') + '</div>' +
+      '<div class="einv-top"><p class="gx-score"><b>' + e.pct + '</b><small>' + esc(tx('% ready')) + '</small><span class="gx-band ' + band + '">' + esc(tx('{a} of {b}', { a: n0(e.ready), b: n0(e.rows) })) + '</span></p>' +
+      '<p class="sub">' + esc(tx('{a} of {b} {many} have everything an e-invoice to them needs. The average record meets {avg} % of what applies to it.', { a: n0(e.ready), b: n0(e.rows), many: I.noun(5, T.one, T.many), avg: e.avg }) + first) + '</p></div>' +
       '<ul class="list einv-crit">' + e.crit.map(function (c) {
         var nm = EINV_NAME[c[0]] || { name: c[0] }, okN = c[2] - c[1], w = c[2] ? Math.round(100 * okN / c[2]) : 100;
-        return '<li><div class="l"><b>' + esc(nm.name) + '</b><small>' + (c[1] ? n0(c[1]) + ' missing or wrong' : 'all fine') + ' · counts for ' + n0(c[2]) + '</small><div class="bar ' + (w >= 90 ? 'good' : w >= 70 ? 'fair' : w >= 40 ? 'poor' : 'critical') + '"><i style="width:' + w + '%"></i></div></div><div class="r"><b>' + w + ' %</b></div></li>';
+        return '<li><div class="l"><b>' + esc(lx(nm.name)) + '</b><small>' + esc((c[1] ? tx('{n} missing or wrong', { n: n0(c[1]) }) : tx('all fine')) + ' · ' + tx('counts for {n}', { n: n0(c[2]) })) + '</small><div class="bar ' + (w >= 90 ? 'good' : w >= 70 ? 'fair' : w >= 40 ? 'poor' : 'critical') + '"><i style="width:' + w + '%"></i></div></div><div class="r"><b>' + w + ' %</b></div></li>';
       }).join('') + '</ul>' +
-      '<details class="how"><summary>What counts and why</summary><p>A record is ready when every field that applies to it is filled in and passes the checks. The fields follow the buyer part of the European e-invoice standard EN 16931, which Croatian B2B e-invoices use since 1 January 2026 (Fiscalisation Act, NN 89/2025) and Slovene B2B e-invoices will use from 1 January 2028. Fixes that are still open count as missing, so the share rises after the one-click fixes.</p>' +
-      '<ul class="whys">' + E.EINV.map(function (x) { return '<li><b>' + esc(x[1]) + '</b>: ' + esc(x[2]) + '</li>'; }).join('') + '</ul></details></section>';
+      '<details class="how"><summary>' + esc(tx('What counts and why')) + '</summary><p>' + esc(tx('A record is ready when every field that applies to it is filled in and passes the checks. The fields follow the buyer part of the European e-invoice standard EN 16931, which Croatian B2B e-invoices use since 1 January 2026 (Fiscalisation Act, NN 89/2025) and Slovene B2B e-invoices will use from 1 January 2028. Fixes that are still open count as missing, so the share rises after the one-click fixes.')) + '</p>' +
+      '<ul class="whys">' + E.EINV.map(function (x) { return '<li><b>' + esc(lx(x[1])) + '</b>: ' + esc(lx(x[2])) + '</li>'; }).join('') + '</ul></details></section>';
   }
   // online VAT check (VIES): opt-in, the app works the same without it
   var viesRun = null;
@@ -852,21 +909,21 @@
     if (!d || !res || res.cols.vat < 0 || res.type === 'products') return '';
     var c = viesCounts(d, res); if (!c.total) return '';
     var running = viesRun && viesRun.id === meta.id;
-    var done = c.valid + c.invalid;
-    return '<section class="card pad vies"><div class="split"><div><span class="label">Optional · online</span><h2>VAT IDs in VIES</h2></div></div>' +
-      '<p class="sub">' + (done || c.unavailable ? esc(n0(done) + ' of ' + n0(c.total) + ' VAT IDs checked: ' + n0(c.valid) + ' valid, ' + n0(c.invalid) + ' not valid' + (c.unavailable ? ', ' + n0(c.unavailable) + ' could not be checked (the country\'s register did not answer)' : '') + '.') :
-        esc(n0(c.total) + ' VAT IDs pass the check digits here. VIES, the European Commission\'s service, can tell whether each one is registered for trade between EU countries.')) + '</p>' +
-      (running ? '<div class="vies-run" role="status"><span id="viesProg">Checking ' + n0(viesRun.done) + ' of ' + n0(viesRun.total) + '…</span><button type="button" class="btn sm" data-act="viesstop">Stop</button></div>' :
-        c.open ? '<div class="dr-actions"><button type="button" class="btn" data-act="vies">' + ic('check') + 'Check ' + plural(c.open, 'VAT ID', 'VAT IDs') + ' online</button></div>' : '') +
-      '<p class="hint">' + ic('lock') + ' Off until you click. Only the VAT IDs are sent, through our server, to VIES; no names, addresses or other columns, and nothing is stored or logged on the way. The answers stay in this browser with the check.</p></section>';
+    var done = c.valid + c.invalid, v = { done: n0(done), total: n0(c.total), valid: n0(c.valid), invalid: n0(c.invalid), un: n0(c.unavailable) };
+    return '<section class="card pad vies"><div class="split"><div><span class="label">' + esc(tx('Optional · online')) + '</span><h2>' + esc(tx('VAT IDs in VIES')) + '</h2></div></div>' +
+      '<p class="sub">' + (done || c.unavailable ? esc(c.unavailable ? tx('{done} of {total} VAT IDs checked: {valid} valid, {invalid} not valid, {un} could not be checked (the country\'s register did not answer).', v) : tx('{done} of {total} VAT IDs checked: {valid} valid, {invalid} not valid.', v)) :
+        esc(tx('{total} VAT IDs pass the check digits here. VIES, the European Commission\'s service, can tell whether each one is registered for trade between EU countries.', v))) + '</p>' +
+      (running ? '<div class="vies-run" role="status"><span id="viesProg">' + esc(tx('Checking {a} of {b}…', { a: n0(viesRun.done), b: n0(viesRun.total) })) + '</span><button type="button" class="btn sm" data-act="viesstop">' + esc(tx('Stop')) + '</button></div>' :
+        c.open ? '<div class="dr-actions"><button type="button" class="btn" data-act="vies">' + ic('check') + esc(tx('Check {ids} online', { ids: plural(c.open, 'VAT ID', 'VAT IDs') })) + '</button></div>' : '') +
+      '<p class="hint">' + ic('lock') + ' ' + esc(tx('Off until you click. Only the VAT IDs are sent, through our server, to VIES; no names, addresses or other columns, and nothing is stored or logged on the way. The answers stay in this browser with the check.')) + '</p></section>';
   }
   function viesConsent() {
     if (!cur || !cur.res) return;
-    var list = viesTodo(); if (!list.length) return toast('Every VAT ID has an answer from VIES.');
+    var list = viesTodo(); if (!list.length) return toast(tx('Every VAT ID has an answer from VIES.'));
     var cc = {}; list.forEach(function (x) { cc[x.cc] = (cc[x.cc] || 0) + 1; });
-    modal('Check ' + plural(list.length, 'VAT ID', 'VAT IDs') + ' online?', '<p>This sends <b>only the VAT IDs</b> (' + esc(Object.keys(cc).sort().map(function (k) { return k + ' ' + n0(cc[k]); }).join(', ')) + ') to <b>VIES</b>, the European Commission\'s VAT number service, which asks each country\'s tax register. They go through our server, which keeps and logs nothing. No names, addresses, e-mails or any other column leave this browser.</p>' +
-      '<p>VIES confirms registration for trade between EU countries. A Slovene company that is not VAT-registered still has a valid tax number but is "not valid" in VIES, so its VAT ID should not carry the SI prefix.</p>' +
-      '<p class="hint">Without this check the app works the same; it only adds what VIES says. Large files take a while: about two VAT IDs a second.</p>', 'Check online', function () { closeLayer(); viesStart(list); });
+    modal(tx('Check {ids} online?', { ids: plural(list.length, 'VAT ID', 'VAT IDs') }), '<p>' + tx('This sends <b>only the VAT IDs</b> ({list}) to <b>VIES</b>, the European Commission\'s VAT number service, which asks each country\'s tax register. They go through our server, which keeps and logs nothing. No names, addresses, e-mails or any other column leave this browser.', { list: esc(Object.keys(cc).sort().map(function (k) { return k + ' ' + n0(cc[k]); }).join(', ')) }) + '</p>' +
+      '<p>' + esc(tx('VIES confirms registration for trade between EU countries. A Slovene company that is not VAT-registered still has a valid tax number but is "not valid" in VIES, so its VAT ID should not carry the SI prefix.')) + '</p>' +
+      '<p class="hint">' + esc(tx('Without this check the app works the same; it only adds what VIES says. Large files take a while: about two VAT IDs a second.')) + '</p>', tx('Check online'), function () { closeLayer(); viesStart(list); });
   }
   function viesTodo() { var v = (cur.data && cur.data.vies) || {}; return E.viesCandidates(cur.res, cur.data).filter(function (x) { return !v[x.norm] || typeof v[x.norm].valid !== 'boolean'; }); }
   function viesFetch(x) {
@@ -883,7 +940,7 @@
     var id = cur.id, d = cur.data, run = viesRun = { id: id, total: list.length, done: 0, stop: false, valid: 0, invalid: 0, failed: 0 }, i = 0, fatal = null;
     if (!d.vies) d.vies = {};
     render();
-    function prog() { var el = $('viesProg'); if (el) el.textContent = 'Checking ' + n0(run.done) + ' of ' + n0(run.total) + '…'; }
+    function prog() { var el = $('viesProg'); if (el) el.textContent = tx('Checking {a} of {b}…', { a: n0(run.done), b: n0(run.total) }); }
     function worker() {
       if (run.stop || fatal || i >= list.length) return Promise.resolve();
       var x = list[i++];
@@ -899,9 +956,10 @@
     Promise.all([worker(), worker()]).then(function () {
       viesRun = null;
       save(true, id);
-      var msg = fatal === 'off' ? 'The online VAT check is not available here: it needs the Business Apps server. Everything else works without it.' :
-        fatal === 'signin' ? 'Your sign-in has expired. Reload the page, then check again.' : fatal === 'denied' ? 'This account may not use the online VAT check.' :
-        (run.stop ? 'Stopped. ' : '') + 'VIES: ' + n0(run.valid) + ' valid, ' + n0(run.invalid) + ' not valid' + (run.failed ? ', ' + n0(run.failed) + ' without an answer (try again later)' : '') + '.';
+      var vv = { valid: n0(run.valid), invalid: n0(run.invalid), failed: n0(run.failed) };
+      var msg = fatal === 'off' ? tx('The online VAT check is not available here: it needs the Business Apps server. Everything else works without it.') :
+        fatal === 'signin' ? tx('Your sign-in has expired. Reload the page, then check again.') : fatal === 'denied' ? tx('This account may not use the online VAT check.') :
+        (run.stop ? tx('Stopped.') + ' ' : '') + (run.failed ? tx('VIES: {valid} valid, {invalid} not valid, {failed} without an answer (try again later).', vv) : tx('VIES: {valid} valid, {invalid} not valid.', vv));
       if (cur && cur.id === id) analyse({ byPerson: true, reuseDup: cur.res && cur.res.dup }).then(function () { toast(msg); });
       else toast(msg);
       if (fatal && !run.done) render();
@@ -917,8 +975,9 @@
     if (!d || d.recipe || view.recipeHidden) return '';
     var best = recipeMatches(d).filter(function (x) { return x.m.share >= 0.8; })[0];
     if (!best) return '';
-    return '<div class="notice rcp no-print">' + ic('copy') + '<div>This file looks like recipe <b>' + esc(best.rc.name) + '</b> (' + best.m.found + ' of ' + d.headers.length + ' columns). Apply its column roles' + (best.rc.rules.length ? ' and ' + plural(best.rc.rules.length, 'kind of fix', 'kinds of fix') : '') + '?' +
-      '<div class="dr-actions"><button type="button" class="btn sm pri" data-act="rcpapply" data-v="' + esc(best.rc.id) + '">Apply the recipe</button><button type="button" class="btn sm ghost" data-act="rcphide">Not now</button></div></div></div>';
+    var rv = { name: '<b>' + esc(best.rc.name) + '</b>', a: best.m.found, b: d.headers.length, fixes: esc(plural(best.rc.rules.length, 'kind of fix', 'kinds of fix')) };
+    return '<div class="notice rcp no-print">' + ic('copy') + '<div>' + (best.rc.rules.length ? tx('This file looks like recipe {name} ({a} of {b} columns). Apply its column roles and {fixes}?', rv) : tx('This file looks like recipe {name} ({a} of {b} columns). Apply its column roles?', rv)) +
+      '<div class="dr-actions"><button type="button" class="btn sm pri" data-act="rcpapply" data-v="' + esc(best.rc.id) + '">' + esc(tx('Apply the recipe')) + '</button><button type="button" class="btn sm ghost" data-act="rcphide">' + esc(tx('Not now')) + '</button></div></div></div>';
   }
   function recipeDialog() {
     if (!cur || !cur.data || !cur.res) return;
@@ -928,30 +987,34 @@
     var mine = recipeMatches(d);
     var body = '';
     if ((db.recipes || []).length) {
-      body += '<h3>Apply a saved recipe</h3><ul class="list rcp-list">' + mine.concat((db.recipes || []).filter(function (rc) { return !mine.some(function (x) { return x.rc === rc; }); }).map(function (rc) { return { rc: rc, m: { found: 0 } }; })).map(function (x) {
-        return '<li><div class="l"><b>' + esc(x.rc.name) + '</b><small>' + esc(typeName(x.rc.type)) + ' · ' + (x.m.found ? x.m.found + ' of ' + d.headers.length + ' columns match' : 'no matching columns') + ' · ' + plural(x.rc.rules.length, 'kind of fix', 'kinds of fix') + '</small></div><div class="r">' +
-          '<button type="button" class="btn sm' + (x.m.found ? ' pri' : '') + '" data-act="rcpapply" data-v="' + esc(x.rc.id) + '"' + (x.m.found ? '' : ' disabled') + '>Apply</button></div></li>';
+      body += '<h3>' + esc(tx('Apply a saved recipe')) + '</h3><ul class="list rcp-list">' + mine.concat((db.recipes || []).filter(function (rc) { return !mine.some(function (x) { return x.rc === rc; }); }).map(function (rc) { return { rc: rc, m: { found: 0 } }; })).map(function (x) {
+        return '<li><div class="l"><b>' + esc(x.rc.name) + '</b><small>' + esc(typeName(x.rc.type) + ' · ' + (x.m.found ? tx('{a} of {b} columns match', { a: x.m.found, b: d.headers.length }) : tx('no matching columns')) + ' · ' + plural(x.rc.rules.length, 'kind of fix', 'kinds of fix')) + '</small></div><div class="r">' +
+          '<button type="button" class="btn sm' + (x.m.found ? ' pri' : '') + '" data-act="rcpapply" data-v="' + esc(x.rc.id) + '"' + (x.m.found ? '' : ' disabled') + '>' + esc(tx('Apply')) + '</button></div></li>';
       }).join('') + '</ul>';
     }
-    body += '<h3>Save this check as a recipe</h3><p class="hint">Saves the type (' + esc(typeName(cur.meta.type).toLowerCase()) + '), the role of each of the ' + d.headers.length + ' columns' + (d.unitTarget ? ', the unit spelling' : '') + (d.dupThreshold ? ', the duplicate threshold' : '') + ' and the fixes you tick. Next month, open the new export and apply it: one click instead of the same work again. Recipes hold column names and settings, never rows.</p>' +
-      '<div class="field"><label for="rcpName">Name</label><input class="in" id="rcpName" maxlength="80" value="' + esc(d.recipe ? d.recipe.name : baseName(cur.meta.name).replace(/[_-]+/g, ' ')) + '" autofocus></div>' +
-      (all.length ? '<fieldset class="grp"><legend>Fixes to apply</legend>' + all.map(function (k) {
-        return '<label class="check"><input type="checkbox" name="rcpRule" value="' + esc(k) + '" checked> ' + esc(E.RULES[k].title) + '</label>';
-      }).join('') + '</fieldset>' : '<p class="hint">No one-click fixes in this file: the recipe keeps the column roles.</p>');
-    modal('Recipe', body, 'Save recipe', function () {
-      var name = $('rcpName').value.trim(); if (!name) return modalError('Give the recipe a name.');
+    var saves = [tx('the type ({type})', { type: typeName(cur.meta.type).toLowerCase() }), tx('the role of each of the {n} columns', { n: d.headers.length })];
+    if (d.unitTarget) saves.push(tx('the unit spelling'));
+    if (d.dupThreshold) saves.push(tx('the duplicate threshold'));
+    saves.push(tx('the fixes you tick'));
+    body += '<h3>' + esc(tx('Save this check as a recipe')) + '</h3><p class="hint">' + esc(tx('Saves {list}. Next month, open the new export and apply it: one click instead of the same work again. Recipes hold column names and settings, never rows.', { list: ruleList(saves) })) + '</p>' +
+      '<div class="field"><label for="rcpName">' + esc(tx('Name')) + '</label><input class="in" id="rcpName" maxlength="80" value="' + esc(d.recipe ? d.recipe.name : baseName(cur.meta.name).replace(/[_-]+/g, ' ')) + '" autofocus></div>' +
+      (all.length ? '<fieldset class="grp"><legend>' + esc(tx('Fixes to apply')) + '</legend>' + all.map(function (k) {
+        return '<label class="check"><input type="checkbox" name="rcpRule" value="' + esc(k) + '" checked> ' + esc(ruleT(k)) + '</label>';
+      }).join('') + '</fieldset>' : '<p class="hint">' + esc(tx('No one-click fixes in this file: the recipe keeps the column roles.')) + '</p>');
+    modal(tx('Recipe'), body, tx('Save recipe'), function () {
+      var name = $('rcpName').value.trim(); if (!name) return modalError(tx('Give the recipe a name.'));
       var rules = Array.prototype.map.call($('layers').querySelectorAll('input[name=rcpRule]:checked'), function (x) { return x.value; });
       var rc = E.makeRecipe(name, cur.meta.type, d, rules);
       var same = (db.recipes || []).filter(function (x) { return x.name.toLowerCase() === rc.name.toLowerCase(); })[0];
       rc.id = same ? same.id : 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
       db.recipes = (db.recipes || []).filter(function (x) { return x.id !== rc.id; }); db.recipes.unshift(rc);
       d.recipe = { id: rc.id, name: rc.name, at: new Date().toISOString() }; cur.meta.recipe = rc.name;
-      closeLayer(); save(true, cur.id); render(); toast((same ? 'Recipe updated: ' : 'Recipe saved: ') + rc.name);
+      closeLayer(); save(true, cur.id); render(); toast(tx(same ? 'Recipe updated: {name}' : 'Recipe saved: {name}', { name: rc.name }));
     }, { wide: true });
   }
   function applyRecipe(id) {
     var rc = (db.recipes || []).filter(function (x) { return x.id === id; })[0]; if (!rc || !cur || !cur.data) return;
-    if (cur.busy) return toast('Wait until the check has finished.');
+    if (cur.busy) return toast(tx('Wait until the check has finished.'));
     var d = cur.data, m = E.matchRecipe(rc, d.headers);
     closeLayer();
     m.roles.forEach(function (role, c) { if (role) { d.roles[c] = role; d.roleSrc[c] = 'recipe'; } });
@@ -961,59 +1024,59 @@
     d.recipe = { id: rc.id, name: rc.name, at: new Date().toISOString() }; cur.meta.recipe = rc.name;
     save(true, cur.id);
     analyse({ byPerson: true }).then(function () {
-      if (!rc.rules.length) { toast('Recipe applied: ' + rc.name + ' (' + m.found + ' columns)'); return; }
-      runFixes('Recipe "' + rc.name + '"', rc.rules).then(function (n) { if (!n) toast('Recipe applied: ' + rc.name + '. Nothing to fix.'); });
+      if (!rc.rules.length) { toast(tx('Recipe applied: {name} ({n} columns)', { name: rc.name, n: m.found })); return; }
+      runFixes('Recipe "' + rc.name + '"', rc.rules).then(function (n) { if (!n) toast(tx('Recipe applied: {name}. Nothing to fix.', { name: rc.name })); });
     });
   }
 
   function readCard(meta) {
     var r = meta.read || {}, rows = [];
-    if (r.source) rows.push(['Source', r.source === 'erp' ? 'the ERP demo in this browser (read only)' : 'a sample in the shape of the ERP demo']);
-    if (r.sheet) rows.push(['Sheet', esc(r.sheet)]);
-    if (r.encoding) rows.push(['Text encoding', esc(encName(r.encoding)) + (r.fallback ? ' <span class="muted">· the file is not valid UTF-8, so it was read as Windows-1250 (usual for older Slovene and Croatian systems)</span>' : '')]);
-    if (r.delim) rows.push(['Delimiter', esc(E.delimName(r.delim))]);
-    rows.push(['Header row', r.hasHeader === false ? 'none found · columns are named Column 1, 2…' : 'line ' + n0(r.header || 1) + (r.skipped ? ' · ' + plural(r.skipped, 'title line', 'title lines') + ' above it skipped' : '')]);
-    if (r.short || r.long) rows.push(['Uneven rows', [r.short ? plural(r.short, 'row has', 'rows have') + ' fewer cells than the header' : '', r.long ? plural(r.long, 'row has', 'rows have') + ' more' : ''].filter(Boolean).join(', ')]);
-    if (r.cut) rows.push(['Rows checked', 'the first ' + n0(MAX_ROWS)]);
+    if (r.source) rows.push([tx('Source'), esc(tx(r.source === 'erp' ? 'the ERP demo in this browser (read only)' : 'a sample in the shape of the ERP demo'))]);
+    if (r.sheet) rows.push([tx('Sheet'), esc(r.sheet)]);
+    if (r.encoding) rows.push([tx('Text encoding'), esc(encName(r.encoding)) + (r.fallback ? ' <span class="muted">· ' + esc(tx('the file is not valid UTF-8, so it was read as Windows-1250 (usual for older Slovene and Croatian systems)')) + '</span>' : '')]);
+    if (r.delim) rows.push([tx('Delimiter'), esc(tx(E.delimName(r.delim)))]);
+    rows.push([tx('Header row'), esc(r.hasHeader === false ? tx('none found · columns are named Column 1, 2…') : tx('line {n}', { n: n0(r.header || 1) }) + (r.skipped ? ' · ' + tx('title lines above it skipped: {n}', { n: n0(r.skipped) }) : ''))]);
+    if (r.short || r.long) rows.push([tx('Uneven rows'), esc([r.short ? tx('rows with fewer cells than the header: {n}', { n: n0(r.short) }) : '', r.long ? tx('with more: {n}', { n: n0(r.long) }) : ''].filter(Boolean).join(', '))]);
+    if (r.cut) rows.push([tx('Rows checked'), esc(tx('the first {n}', { n: n0(MAX_ROWS) }))]);
     var canChange = !!(raw[meta.id] || (meta.demo && meta.demo !== 'erp')) && meta.kind !== 'excel';
-    return '<section class="card pad readcard"><div class="split"><div><span class="label">How the file was read</span><h2>File</h2></div>' +
-      (meta.kind === 'excel' || meta.kind === 'paste' || meta.kind === 'erp' ? '' : canChange ? '<button type="button" class="btn sm" data-act="reread">Change how it is read</button>' : '<span class="hint">Open the file again to change how it is read.</span>') + '</div>' +
-      '<dl class="kv">' + rows.map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl></section>';
+    return '<section class="card pad readcard"><div class="split"><div><span class="label">' + esc(tx('How the file was read')) + '</span><h2>' + esc(tx('File')) + '</h2></div>' +
+      (meta.kind === 'excel' || meta.kind === 'paste' || meta.kind === 'erp' ? '' : canChange ? '<button type="button" class="btn sm" data-act="reread">' + esc(tx('Change how it is read')) + '</button>' : '<span class="hint">' + esc(tx('Open the file again to change how it is read.')) + '</span>') + '</div>' +
+      '<dl class="kv">' + rows.map(function (x) { return '<div><dt>' + esc(x[0]) + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl></section>';
   }
 
   // columns tab
   function typeSeg(meta) {
-    return '<div class="seg" role="group" aria-label="What the file contains">' + E.TYPES.map(function (t) {
-      return '<button type="button" data-act="type" data-v="' + t.id + '" aria-pressed="' + (meta.type === t.id) + '">' + t.name + '</button>';
+    return '<div class="seg" role="group" aria-label="' + esc(tx('What the file contains')) + '">' + E.TYPES.map(function (t) {
+      return '<button type="button" data-act="type" data-v="' + t.id + '" aria-pressed="' + (meta.type === t.id) + '">' + esc(lx(t.name)) + '</button>';
     }).join('') + '</div>';
   }
   function fmtNum(n) { return Math.abs(n) >= 1000 || Math.round(n) === n ? n0(n) : nf2.format(n); }
   function tabColumns(meta, d, res) {
     var req = db.settings.req[meta.type] || E.DEFAULT_REQ[meta.type];
-    var h = '<div class="toolbar"><span class="label">The file contains</span>' + typeSeg(meta) + '<span class="hint grow">Required: ' + esc(req.required.map(function (r) { return E.ROLE[r].name; }).join(', ')) + '. Change the list in Settings.</span></div>';
+    var h = '<div class="toolbar"><span class="label">' + esc(tx('The file contains')) + '</span>' + typeSeg(meta) + '<span class="hint grow">' + esc(tx('Required: {list}. Change the list in Settings.', { list: req.required.map(roleName).join(', ') })) + '</span></div>';
     var errs = {}; res.issues.forEach(function (x) { var o = errs[x.c] || (errs[x.c] = { error: 0, warning: 0, info: 0 }); o[E.RULES[x.k].sev]++; });
     h += '<div class="colgrid">' + d.headers.map(function (hd, c) {
       var p = res.profiles[c] || {}, role = d.roles[c], sc = res.colScores[c], e = errs[c] || { error: 0, warning: 0, info: 0 };
-      var src = d.roleSrc[c] === 'you' ? 'set by you' : d.roleSrc[c] === 'header' ? 'from the header' : d.roleSrc[c] === 'content' ? 'from the values' : 'no match, so plain text';
-      var stats = '<div class="cc-stats"><span><b>' + pct(p.filled, res.nRows) + '</b> filled</span><span><b>' + (p.capped ? '10.000+' : n0(p.distinct)) + '</b> distinct</span>' +
-        '<span><b class="' + (e.error ? 'neg' : '') + '">' + n0(e.error) + '</b> errors · <b>' + n0(e.warning) + '</b> warnings</span></div>';
+      var src = tx(d.roleSrc[c] === 'you' ? 'set by you' : d.roleSrc[c] === 'header' ? 'from the header' : d.roleSrc[c] === 'content' ? 'from the values' : d.roleSrc[c] === 'recipe' ? 'from the recipe' : 'no match, so plain text');
+      var stats = '<div class="cc-stats"><span>' + tx('<b>{x}</b> filled', { x: pct(p.filled, res.nRows) }) + '</span><span>' + tx('<b>{x}</b> distinct', { x: p.capped ? '10.000+' : n0(p.distinct) }) + '</span>' +
+        '<span>' + tx('<b class="{cls}">{e}</b> errors · <b>{w}</b> warnings', { cls: e.error ? 'neg' : '', e: n0(e.error), w: n0(e.warning) }) + '</span></div>';
       var extra = '';
-      if (p.num) extra += '<div class="cc-num"><span>Min <b>' + fmtNum(p.num.min) + '</b></span><span>Max <b>' + fmtNum(p.num.max) + '</b></span><span>Average <b>' + fmtNum(p.num.avg) + '</b></span></div>';
-      if (p.date) extra += '<div class="cc-num"><span>From <b>' + dt(p.date.min) + '</b></span><span>To <b>' + dt(p.date.max) + '</b></span></div>';
+      if (p.num) extra += '<div class="cc-num"><span>' + esc(tx('Min')) + ' <b>' + fmtNum(p.num.min) + '</b></span><span>' + esc(tx('Max')) + ' <b>' + fmtNum(p.num.max) + '</b></span><span>' + esc(tx('Average')) + ' <b>' + fmtNum(p.num.avg) + '</b></span></div>';
+      if (p.date) extra += '<div class="cc-num"><span>' + esc(tx('From')) + ' <b>' + dt(p.date.min) + '</b></span><span>' + esc(tx('To')) + ' <b>' + dt(p.date.max) + '</b></span></div>';
       if (role === 'unit' && p.unit && p.unit.pc) extra += unitPicker(d, p.unit.pc, 'u' + c);
-      return '<article class="colcard" id="col-' + c + '"><div class="cc-h"><div><span class="label">Column ' + (c + 1) + '</span><h3>' + esc(hd) + '</h3></div>' +
-        (sc == null ? '<span class="score-chip none" title="Not checked">–</span>' : '<span class="score-chip ' + E.scoreBand(sc) + '" title="Column score">' + sc + '</span>') + '</div>' +
-        '<div class="field"><label for="role-' + c + '">Role <small class="muted">· ' + src + '</small></label><select class="in" id="role-' + c + '" data-chg="role" data-c="' + c + '">' +
-        E.ROLES.map(function (R) { return '<option value="' + R.id + '"' + (R.id === role ? ' selected' : '') + '>' + esc(R.name) + '</option>'; }).join('') + '</select></div>' + stats + extra +
-        '<div class="cc-lists"><div><span class="label">Most common values</span><ol class="vals">' + ((p.top || []).map(function (x) { return '<li><span>' + showWs(x[0], 40) + '</span><b>' + n0(x[1]) + '</b></li>'; }).join('') || '<li class="muted">all empty</li>') + '</ol></div>' +
-        '<div><span class="label">Patterns <small>A letter · 9 digit</small></span><ol class="vals mono">' + ((p.patterns || []).map(function (x) { return '<li><span>' + esc(x[0]) + '</span><b>' + n0(x[1]) + '</b></li>'; }).join('') || '<li class="muted">—</li>') + '</ol></div></div></article>';
+      return '<article class="colcard" id="col-' + c + '"><div class="cc-h"><div><span class="label">' + esc(tx('Column {n}', { n: c + 1 })) + '</span><h3>' + esc(hd) + '</h3></div>' +
+        (sc == null ? '<span class="score-chip none" title="' + esc(tx('Not checked')) + '">–</span>' : '<span class="score-chip ' + E.scoreBand(sc) + '" title="' + esc(tx('Column score')) + '">' + sc + '</span>') + '</div>' +
+        '<div class="field"><label for="role-' + c + '">' + esc(tx('Role')) + ' <small class="muted">· ' + esc(src) + '</small></label><select class="in" id="role-' + c + '" data-chg="role" data-c="' + c + '">' +
+        E.ROLES.map(function (R) { return '<option value="' + R.id + '"' + (R.id === role ? ' selected' : '') + '>' + esc(lx(R.name)) + '</option>'; }).join('') + '</select></div>' + stats + extra +
+        '<div class="cc-lists"><div><span class="label">' + esc(tx('Most common values')) + '</span><ol class="vals">' + ((p.top || []).map(function (x) { return '<li><span>' + showWs(x[0], 40) + '</span><b>' + n0(x[1]) + '</b></li>'; }).join('') || '<li class="muted">' + esc(tx('all empty')) + '</li>') + '</ol></div>' +
+        '<div><span class="label">' + esc(tx('Patterns')) + ' <small>' + esc(tx('A letter · 9 digit')) + '</small></span><ol class="vals mono">' + ((p.patterns || []).map(function (x) { return '<li><span>' + esc(x[0]) + '</span><b>' + n0(x[1]) + '</b></li>'; }).join('') || '<li class="muted">—</li>') + '</ol></div></div></article>';
     }).join('') + '</div>';
     return h;
   }
   function unitPicker(d, pc, id) {
     var opts = pc.spellings.slice();
     ['kos', 'kom', 'pcs'].forEach(function (u) { if (opts.indexOf(u) < 0) opts.push(u); });
-    return '<div class="field unitpick"><label for="' + id + '">One spelling for pieces</label><select class="in" id="' + id + '" data-chg="unit">' + opts.map(function (u) {
+    return '<div class="field unitpick"><label for="' + id + '">' + esc(tx('One spelling for pieces')) + '</label><select class="in" id="' + id + '" data-chg="unit">' + opts.map(function (u) {
       return '<option value="' + esc(u) + '"' + (u === pc.target ? ' selected' : '') + '>' + esc(u) + (pc.counts[u] ? ' (' + n0(pc.counts[u]) + ')' : '') + '</option>';
     }).join('') + '</select></div>';
   }
@@ -1022,7 +1085,7 @@
   function recordName(d, res, r) {
     var c = res.cols.name, idc = res.cols.id >= 0 ? res.cols.id : res.cols.sku;
     var nm = c >= 0 ? E.core(E.fixMojibake(d.rows[r][c]) || d.rows[r][c]) : '', id = idc >= 0 ? E.core(d.rows[r][idc]) : '';
-    return (id ? id + (nm ? ' · ' : '') : '') + (nm || (id ? '' : 'Row ' + d.lines[r]));
+    return (id ? id + (nm ? ' · ' : '') : '') + (nm || (id ? '' : tx('Row {n}', { n: d.lines[r] })));
   }
   function tabIssues(meta, d, res, r) {
     var rules = Object.keys(res.rules).map(function (k) { return res.rules[k]; });
@@ -1030,59 +1093,61 @@
     counts.all = counts.error + counts.warning + counts.info;
     if (r.sub && res.rules[r.sub] && view.subDone !== r.sub) { view.open[r.sub] = true; view.subDone = r.sub; if (E.RULES[r.sub].sev !== ui.sev && ui.sev !== 'all') ui.sev = 'all'; }
     var last = d.history.length ? d.history[d.history.length - 1] : null;
-    var h = '<div class="toolbar"><div class="seg" role="group" aria-label="Severity">' + [['all', 'All'], ['error', 'Errors'], ['warning', 'Warnings'], ['info', 'Notes']].map(function (x) {
-      return '<button type="button" data-act="sev" data-v="' + x[0] + '" aria-pressed="' + (ui.sev === x[0]) + '">' + x[1] + ' <span class="muted">' + n0(counts[x[0]]) + '</span></button>';
-    }).join('') + '</div><label class="check"><input type="checkbox" data-chg="fixonly"' + (view.fixOnly ? ' checked' : '') + '> Only one-click fixes</label><span class="grow"></span>' +
-      (last ? '<button type="button" class="btn sm" data-act="undo">' + ic('undo') + 'Undo: ' + esc(cut(last.label, 40)) + '</button>' : '') + '</div>';
+    var h = '<div class="toolbar"><div class="seg" role="group" aria-label="' + esc(tx('Severity')) + '">' + [['all', 'All'], ['error', 'Errors'], ['warning', 'Warnings'], ['info', 'Notes']].map(function (x) {
+      return '<button type="button" data-act="sev" data-v="' + x[0] + '" aria-pressed="' + (ui.sev === x[0]) + '">' + esc(tx(x[1])) + ' <span class="muted">' + n0(counts[x[0]]) + '</span></button>';
+    }).join('') + '</div><label class="check"><input type="checkbox" data-chg="fixonly"' + (view.fixOnly ? ' checked' : '') + '> ' + esc(tx('Only one-click fixes')) + '</label><span class="grow"></span>' +
+      (last ? '<button type="button" class="btn sm" data-act="undo">' + ic('undo') + esc(tx('Undo: {label}', { label: cut(histLabel(last.label), 40) })) + '</button>' : '') + '</div>';
     var shown = rules.filter(function (o) { var R = E.RULES[o.k]; return (ui.sev === 'all' || R.sev === ui.sev) && (!view.fixOnly || o.fixable); });
-    if (!shown.length) return h + '<div class="card"><p class="empty">' + (rules.length ? (view.fixOnly ? 'No one-click fixes left. ' : 'Nothing matches this filter. ') +
-      '<button type="button" class="btn sm" data-act="showall">Show all issues</button>' : 'No problems found. Every value passed every check.') + '</p></div>';
+    if (!shown.length) return h + '<div class="card"><p class="empty">' + (rules.length ? esc(tx(view.fixOnly ? 'No one-click fixes left.' : 'Nothing matches this filter.')) + ' ' +
+      '<button type="button" class="btn sm" data-act="showall">' + esc(tx('Show all issues')) + '</button>' : esc(tx('No problems found. Every value passed every check.'))) + '</p></div>';
     E.GROUPS.forEach(function (g) {
       var list = shown.filter(function (o) { return E.RULES[o.k].group === g[0]; }).sort(function (a, b) { return byImpact([a.k, a.n, a.rows], [b.k, b.n, b.rows]); });
       if (!list.length) return;
-      h += '<h2 class="grp-h">' + esc(g[1]) + '</h2>' + list.map(function (o) { return ruleCard(meta, d, res, o); }).join('');
+      h += '<h2 class="grp-h">' + esc(lx(g[1])) + '</h2>' + list.map(function (o) { return ruleCard(meta, d, res, o); }).join('');
     });
     return h;
   }
   function ruleCard(meta, d, res, o) {
     var R = E.RULES[o.k], open = !!view.open[o.k], sevc = R.sev === 'error' ? 'e' : R.sev === 'warning' ? 'w' : 'i';
-    var counts = o.rows ? plural(o.n, 'value', 'values') + (o.n !== o.rows ? ' in ' + plural(o.rows, 'row', 'rows') : '') + ' · ' + pct(o.rows, res.nRows) + ' of rows' : 'the whole file';
+    var counts = o.rows ? valuesIn(o.n, o.rows) + ' · ' + tx('{pct} of rows', { pct: pct(o.rows, res.nRows) }) : tx('the whole file');
     var h = '<section class="rule sev-' + sevc + '" id="rule-' + esc(o.k) + '"><div class="rule-h"><button type="button" class="rule-t" data-act="rule" data-v="' + esc(o.k) + '" aria-expanded="' + open + '" aria-controls="rb-' + esc(o.k) + '">' +
-      '<span class="sev ' + sevc + '">' + SEV_NAME[R.sev] + '</span><span class="rt"><b>' + esc(R.title) + '</b><small>' + counts + '</small></span></button>' +
-      (o.fixable ? '<button type="button" class="btn sm pri" data-act="fixall" data-v="' + esc(o.k) + '">' + ic('wand') + 'Fix all (' + n0(o.fixable) + ')</button>' : '') + '</div>';
+      '<span class="sev ' + sevc + '">' + esc(sevName(R.sev)) + '</span><span class="rt"><b>' + esc(ruleT(o.k)) + '</b><small>' + esc(counts) + '</small></span></button>' +
+      (o.fixable ? '<button type="button" class="btn sm pri" data-act="fixall" data-v="' + esc(o.k) + '">' + ic('wand') + esc(tx('Fix all ({n})', { n: n0(o.fixable) })) + '</button>' : '') + '</div>';
     if (open) {
-      h += '<div class="rule-b" id="rb-' + esc(o.k) + '"><p class="why">' + esc(R.why) + '</p>';
+      h += '<div class="rule-b" id="rb-' + esc(o.k) + '"><p class="why">' + esc(lx(R.why)) + '</p>';
       if (o.k === 'unit.variant') {
         var uc = res.roles.indexOf('unit'), pc = uc >= 0 && res.profiles[uc].unit && res.profiles[uc].unit.pc;
         if (pc) h += unitPicker(d, pc, 'uRule');
       }
       var ex = o.first.slice(0, 10);
       if (o.rows) {
-        h += '<div class="tw"><table class="t compact ex"><thead><tr><th>Row</th><th>Record</th><th>Column</th><th>Value</th><th>Problem</th><th>' + (R.fix ? 'After the fix' : R.sug ? 'Suggestion' : '') + '</th></tr></thead><tbody>' + ex.map(function (x) {
+        h += '<div class="tw"><table class="t compact ex"><thead><tr><th>' + esc(tx('Row')) + '</th><th>' + esc(tx('Record')) + '</th><th>' + esc(tx('Column')) + '</th><th>' + esc(tx('Value')) + '</th><th>' + esc(tx('Problem')) + '</th><th>' + (R.fix ? esc(tx('After the fix')) : R.sug ? esc(tx('Suggestion')) : '') + '</th></tr></thead><tbody>' + ex.map(function (x) {
           var v = d.rows[x.r][x.c], fix = x.f !== undefined ? x.f : x.s;
           return '<tr><td class="nw mono"><a href="#" data-act="row" data-v="' + x.r + '">' + d.lines[x.r] + '</a></td><td class="rec">' + esc(cut(recordName(d, res, x.r), 46)) + '</td><td class="nw">' + esc(d.headers[x.c]) + '</td>' +
-            '<td class="val">' + showWs(v, 60) + '</td><td class="msg">' + esc(E.message(x, { table: d, res: res })) + '</td><td class="val">' +
-            (fix !== undefined ? '<span class="after">' + showWs(fix, 60) + '</span> <button type="button" class="btn sm ghost" data-act="useone" data-r="' + x.r + '" data-c="' + x.c + '" data-k="' + esc(x.k) + '">Use</button>' : '') + '</td></tr>';
+            '<td class="val">' + showWs(v, 60) + '</td><td class="msg">' + esc(msgOf(x, d, res)) + '</td><td class="val">' +
+            (fix !== undefined ? '<span class="after">' + showWs(fix, 60) + '</span> <button type="button" class="btn sm ghost" data-act="useone" data-r="' + x.r + '" data-c="' + x.c + '" data-k="' + esc(x.k) + '">' + esc(tx('Use')) + '</button>' : '') + '</td></tr>';
         }).join('') + '</tbody></table></div>';
-        h += '<div class="dr-actions"><a class="btn sm" href="#/check/' + esc(meta.id) + '/rows" data-act="rowsrule" data-v="' + esc(o.k) + '">' + ic('table') + 'Show all ' + plural(o.rows, 'row', 'rows') + '</a>' +
-          (o.n > ex.length ? '<span class="hint">Showing ' + ex.length + ' of ' + n0(o.n) + '.</span>' : '') + '</div>';
+        h += '<div class="dr-actions"><a class="btn sm" href="#/check/' + esc(meta.id) + '/rows" data-act="rowsrule" data-v="' + esc(o.k) + '">' + ic('table') + esc(tx('Show all rows ({n})', { n: n0(o.rows) })) + '</a>' +
+          (o.n > ex.length ? '<span class="hint">' + esc(tx('Showing {a} of {b}.', { a: ex.length, b: n0(o.n) })) + '</span>' : '') + '</div>';
       } else {
-        h += '<ul class="list">' + res.structure.filter(function (x) { return x.k === o.k; }).map(function (x) { return '<li><div class="l">' + esc(E.message(x, { table: d, res: res })) + '</div></li>'; }).join('') + '</ul>';
+        h += '<ul class="list">' + res.structure.filter(function (x) { return x.k === o.k; }).map(function (x) { return '<li><div class="l">' + esc(msgOf(x, d, res)) + '</div></li>'; }).join('') + '</ul>';
       }
       h += '</div>';
     }
     return h + '</section>';
   }
+  /** the engine's sentence for an issue, in the screen language */
+  function msgOf(x, d, res) { return lx(E.message(x, { table: d, res: res })); }
   function fixPreview(k) {
-    if (cur.busy) return toast('Wait until the check has finished.');
+    if (cur.busy) return toast(tx('Wait until the check has finished.'));
     var res = cur.res, d = cur.data, R = E.RULES[k], list = res.issues.filter(function (x) { return x.k === k && x.f !== undefined; });
-    if (!list.length) return toast('Nothing left to fix for this rule.');
+    if (!list.length) return toast(tx('Nothing left to fix for this rule.'));
     var cols = {}; list.forEach(function (x) { cols[d.headers[x.c]] = 1; });
-    modal('Fix all: ' + R.title, '<p>' + plural(list.length, 'value changes', 'values change') + ' in ' + esc(Object.keys(cols).join(', ')) + '. You can undo it.</p>' +
-      '<div class="tw prev"><table class="t compact"><thead><tr><th>Row</th><th>Column</th><th>Before</th><th>After</th></tr></thead><tbody>' + list.slice(0, 40).map(function (x) {
+    modal(tx('Fix all: {title}', { title: ruleT(k) }), '<p>' + esc(tx(list.length === 1 ? '{n} value changes in {cols}. You can undo it.' : '{n} values change in {cols}. You can undo it.', { n: n0(list.length), cols: Object.keys(cols).join(', ') })) + '</p>' +
+      '<div class="tw prev"><table class="t compact"><thead><tr><th>' + esc(tx('Row')) + '</th><th>' + esc(tx('Column')) + '</th><th>' + esc(tx('Before')) + '</th><th>' + esc(tx('After')) + '</th></tr></thead><tbody>' + list.slice(0, 40).map(function (x) {
         return '<tr><td class="mono">' + d.lines[x.r] + '</td><td class="nw">' + esc(d.headers[x.c]) + '</td><td class="val">' + showWs(d.rows[x.r][x.c], 70) + '</td><td class="val after">' + showWs(x.f, 70) + '</td></tr>';
-      }).join('') + '</tbody></table></div>' + (list.length > 40 ? '<p class="hint">And ' + n0(list.length - 40) + ' more.</p>' : ''),
-    'Apply ' + n0(list.length) + ' fixes', function () {
+      }).join('') + '</tbody></table></div>' + (list.length > 40 ? '<p class="hint">' + esc(tx('And {n} more.', { n: n0(list.length - 40) })) + '</p>' : ''),
+    tx('Apply {n} fixes', { n: n0(list.length) }), function () {
       closeLayer();
       noteFixed(d, [k]);
       commitChanges(R.title + ' fixed', list.map(function (x) { return { r: x.r, c: x.c, v: x.f }; }));
@@ -1091,10 +1156,10 @@
 
   // rows tab
   function rowFilterOptions(res) {
-    var o = [['all', 'All rows', res.nRows], ['err', 'Rows with errors', res.rowsErr], ['warn', 'Rows with warnings only', res.rowsWarn], ['any', 'Rows with any problem', null], ['clean', 'Rows without problems', null], ['dup', 'Rows in duplicate groups', null]];
-    if (cur && cur.einv) o.push(['einv', 'Not ready for e-invoices', cur.einv.rows - cur.einv.ready]);
+    var o = [['all', tx('All rows'), res.nRows], ['err', tx('Rows with errors'), res.rowsErr], ['warn', tx('Rows with warnings only'), res.rowsWarn], ['any', tx('Rows with any problem'), null], ['clean', tx('Rows without problems'), null], ['dup', tx('Rows in duplicate groups'), null]];
+    if (cur && cur.einv) o.push(['einv', tx('Not ready for e-invoices'), cur.einv.rows - cur.einv.ready]);
     var rules = Object.keys(res.rules).filter(function (k) { return res.rules[k].rows; }).sort(function (a, b) { return E.RULES[a].order - E.RULES[b].order; });
-    return o.concat(rules.map(function (k) { return ['rule:' + k, E.RULES[k].title, res.rules[k].rows]; }));
+    return o.concat(rules.map(function (k) { return ['rule:' + k, ruleT(k), res.rules[k].rows]; }));
   }
   function filteredRows(d, res) {
     var f = view.rowsF, q = (view.rowsQ || '').toLowerCase().trim(), out = [], set = null;
@@ -1122,25 +1187,25 @@
     var list = filteredRows(d, res), pages = Math.max(1, Math.ceil(list.length / PAGE));
     if (view.rowsPage >= pages) view.rowsPage = pages - 1;
     var from = view.rowsPage * PAGE, slice = list.slice(from, from + PAGE);
-    var h = '<div class="toolbar"><label class="sr" for="rowsF">Show</label><select class="select" id="rowsF" data-chg="rowsF">' + rowFilterOptions(res).map(function (o) {
+    var h = '<div class="toolbar"><label class="sr" for="rowsF">' + esc(tx('Show')) + '</label><select class="select" id="rowsF" data-chg="rowsF">' + rowFilterOptions(res).map(function (o) {
       return '<option value="' + esc(o[0]) + '"' + (o[0] === view.rowsF ? ' selected' : '') + '>' + esc(o[1]) + (o[2] != null ? ' (' + n0(o[2]) + ')' : '') + '</option>';
-    }).join('') + '</select><input class="search" type="search" id="rowsQ" data-inp="rowsQ" placeholder="Search in every column" aria-label="Search rows" value="' + esc(view.rowsQ) + '"></div>';
-    if (!list.length) return h + '<div class="card"><p class="empty">No rows match. Choose another filter or clear the search.</p></div>';
+    }).join('') + '</select><input class="search" type="search" id="rowsQ" data-inp="rowsQ" placeholder="' + esc(tx('Search in every column')) + '" aria-label="' + esc(tx('Search rows')) + '" value="' + esc(view.rowsQ) + '"></div>';
+    if (!list.length) return h + '<div class="card"><p class="empty">' + esc(tx('No rows match. Choose another filter or clear the search.')) + '</p></div>';
     var cols = d.headers.map(function (x, c) { return c; });
-    h += '<section class="card"><div class="stats"><span><b>' + n0(list.length) + '</b> rows</span><span>Click a row to edit it. Coloured cells have a problem; hover or focus for details.</span></div>' +
-      '<div class="tw rows-wrap"><table class="t grid"><thead><tr><th class="rn" scope="col">Row</th>' + cols.map(function (c) {
-        return '<th scope="col">' + esc(cut(d.headers[c], 28)) + '<small>' + esc(E.ROLE[d.roles[c]].name) + '</small></th>';
+    h += '<section class="card"><div class="stats"><span>' + tx('Rows: <b>{n}</b>', { n: n0(list.length) }) + '</span><span>' + esc(tx('Click a row to edit it. Coloured cells have a problem; hover or focus for details.')) + '</span></div>' +
+      '<div class="tw rows-wrap"><table class="t grid"><thead><tr><th class="rn" scope="col">' + esc(tx('Row')) + '</th>' + cols.map(function (c) {
+        return '<th scope="col">' + esc(cut(d.headers[c], 28)) + '<small>' + esc(roleName(d.roles[c])) + '</small></th>';
       }).join('') + '</tr></thead><tbody>' + slice.map(function (r) {
         var m = cellIssues(res, r), w = res.rowW[r];
-        return '<tr class="click" data-act="row" data-v="' + r + '" tabindex="0" title="Edit row ' + d.lines[r] + '"><th scope="row" class="rn ' + (w === 3 ? 'e' : w === 1 ? 'w' : '') + '">' + d.lines[r] + (res.groupOf[r] >= 0 ? '<span class="dupmark" title="In a duplicate group">D</span>' : '') + '</th>' + cols.map(function (c) {
+        return '<tr class="click" data-act="row" data-v="' + r + '" tabindex="0" title="' + esc(tx('Edit row {n}', { n: d.lines[r] })) + '"><th scope="row" class="rn ' + (w === 3 ? 'e' : w === 1 ? 'w' : '') + '">' + d.lines[r] + (res.groupOf[r] >= 0 ? '<span class="dupmark" title="' + esc(tx('In a duplicate group')) + '">' + esc(tx('D')) + '</span>' : '') + '</th>' + cols.map(function (c) {
           var iss = m[c], v = d.rows[r][c];
           if (!iss) return '<td>' + (v === '' ? '' : showWs(v, 48)) + '</td>';
-          var sv = worst(iss), tip = iss.map(function (x) { return E.RULES[x.k].title + ': ' + E.message(x, { table: d, res: res }); }).join('\n');
-          return '<td class="c' + sv.charAt(0) + '" title="' + esc(tip) + '">' + (v === '' ? '<span class="muted">(empty)</span>' : showWs(v, 48)) + '</td>';
+          var sv = worst(iss), tip = iss.map(function (x) { return ruleT(x.k) + ': ' + msgOf(x, d, res); }).join('\n');
+          return '<td class="c' + sv.charAt(0) + '" title="' + esc(tip) + '">' + showWs(v, 48) + '</td>';
         }).join('') + '</tr>';
       }).join('') + '</tbody></table></div>' +
-      '<div class="pager"><span>Rows ' + n0(from + 1) + '–' + n0(from + slice.length) + ' of ' + n0(list.length) + '</span><div><button type="button" class="btn sm" data-act="page" data-v="-1"' + (view.rowsPage ? '' : ' disabled') + '>Previous</button>' +
-      '<button type="button" class="btn sm" data-act="page" data-v="1"' + (view.rowsPage < pages - 1 ? '' : ' disabled') + '>Next</button></div></div></section>';
+      '<div class="pager"><span>' + esc(tx('Rows {from}–{to} of {total}', { from: n0(from + 1), to: n0(from + slice.length), total: n0(list.length) })) + '</span><div><button type="button" class="btn sm" data-act="page" data-v="-1"' + (view.rowsPage ? '' : ' disabled') + '>' + esc(tx('Previous')) + '</button>' +
+      '<button type="button" class="btn sm" data-act="page" data-v="1"' + (view.rowsPage < pages - 1 ? '' : ' disabled') + '>' + esc(tx('Next')) + '</button></div></div></section>';
     return h;
   }
   function openRow(r) {
@@ -1149,18 +1214,19 @@
     var body = '<form id="rowForm" data-r="' + r + '" novalidate>' + d.headers.map(function (hd, c) {
       var v = d.rows[r][c], iss = m[c] || [], multi = /[\r\n]/.test(v) || v.length > 70;
       var input = multi ? '<textarea class="in" id="rf-' + c + '" data-c="' + c + '" rows="2">' + esc(v) + '</textarea>' : '<input class="in" id="rf-' + c + '" data-c="' + c + '" value="' + esc(v) + '"' + (iss.length ? ' aria-describedby="rfi-' + c + '"' : '') + '>';
-      return '<div class="field rf' + (iss.length ? ' has-' + worst(iss) : '') + '"><label for="rf-' + c + '">' + esc(hd) + ' <small class="muted">· ' + esc(E.ROLE[d.roles[c]].name) + '</small></label>' + input +
+      return '<div class="field rf' + (iss.length ? ' has-' + worst(iss) : '') + '"><label for="rf-' + c + '">' + esc(hd) + ' <small class="muted">· ' + esc(roleName(d.roles[c])) + '</small></label>' + input +
         (iss.length ? '<ul class="cell-iss" id="rfi-' + c + '">' + iss.map(function (x) {
           var fix = x.f !== undefined ? x.f : x.s, R = E.RULES[x.k];
-          return '<li class="' + R.sev + '"><span>' + esc(E.message(x, { table: d, res: res })) + '</span>' + (fix !== undefined ? '<button type="button" class="btn sm ghost" data-act="usefield" data-c="' + c + '" data-v="' + esc(fix) + '">Use “' + esc(cut(fix, 40) || '(empty)') + '”</button>' : '') + '</li>';
+          return '<li class="' + R.sev + '"><span>' + esc(msgOf(x, d, res)) + '</span>' + (fix !== undefined ? '<button type="button" class="btn sm ghost" data-act="usefield" data-c="' + c + '" data-v="' + esc(fix) + '">' + esc(tx('Use {value}', { value: I.q(cut(fix, 40) || tx('(empty)'), true) })) + '</button>' : '') + '</li>';
         }).join('') + '</ul>' : '') + '</div>';
     }).join('') + '</form>';
     var g = res.groupOf[r] >= 0 ? res.groups[res.groupOf[r]] : null;
-    var ei = cur.einv, miss = ei ? E.EINV.filter(function (x, i) { return ei.masks[r] & (1 << i); }).map(function (x) { return x[1].toLowerCase(); }) : [];
+    var ei = cur.einv, miss = ei ? E.EINV.filter(function (x, i) { return ei.masks[r] & (1 << i); }).map(function (x) { return lc(lx(x[1])); }) : [];
     var vat = res.cols.vat >= 0 && d.vies ? d.vies[(E.vatCheck(E.core(d.rows[r][res.cols.vat]), res.rowCC[r]) || {}).norm] : null;
-    var lead = (ei ? '<div class="notice ' + (miss.length ? '' : 'ok') + '">E-invoice readiness ' + ei.scores[r] + ' of 100' + (miss.length ? ': missing or wrong ' + esc(ruleList(miss)) + '.' : ': ready.') + '</div>' : '') +
-      (vat && typeof vat.valid === 'boolean' ? '<div class="notice ' + (vat.valid ? 'ok' : 'warn') + '">VIES ' + esc(dt(vat.at)) + ': ' + (vat.valid ? 'valid' + (vat.name ? ' · ' + esc(vat.name) : '') + (vat.address ? ' · ' + esc(vat.address) : '') : 'not valid') + '</div>' : '') + (g ? '<div class="notice">In a duplicate group of ' + g.rows.length + ' rows' + (g.survivor === r ? ', kept as the survivor' : ', merging into row ' + d.lines[g.survivor]) + '. <a href="#/check/' + esc(cur.id) + '/duplicates" data-act="close">See duplicates</a></div>' : '');
-    drawer('Row ' + d.lines[r], recordName(d, res, r), lead + body, '<button type="button" class="btn pri" data-act="saverow" data-v="' + r + '">Save changes</button><button type="button" class="btn" data-act="close">Cancel</button>', false);
+    var lead = (ei ? '<div class="notice ' + (miss.length ? '' : 'ok') + '">' + esc(miss.length ? tx('E-invoice readiness {n} of 100: missing or wrong {list}.', { n: ei.scores[r], list: ruleList(miss) }) : tx('E-invoice readiness {n} of 100: ready.', { n: ei.scores[r] })) + '</div>' : '') +
+      (vat && typeof vat.valid === 'boolean' ? '<div class="notice ' + (vat.valid ? 'ok' : 'warn') + '">' + esc(tx('VIES {date}:', { date: dt(vat.at) })) + ' ' + (vat.valid ? esc(tx('valid')) + (vat.name ? ' · ' + esc(vat.name) : '') + (vat.address ? ' · ' + esc(vat.address) : '') : esc(tx('not valid'))) + '</div>' : '') +
+      (g ? '<div class="notice">' + esc(g.survivor === r ? tx('In a duplicate group of {n} rows, kept as the survivor.', { n: g.rows.length }) : tx('In a duplicate group of {n} rows, merging into row {row}.', { n: g.rows.length, row: d.lines[g.survivor] })) + ' <a href="#/check/' + esc(cur.id) + '/duplicates" data-act="close">' + esc(tx('See duplicates')) + '</a></div>' : '');
+    drawer(tx('Row {n}', { n: d.lines[r] }), recordName(d, res, r), lead + body, '<button type="button" class="btn pri" data-act="saverow" data-v="' + r + '">' + esc(tx('Save changes')) + '</button><button type="button" class="btn" data-act="close">' + esc(tx('Cancel')) + '</button>', false);
   }
 
   // duplicates tab
@@ -1169,34 +1235,34 @@
     if (view.dupPage >= pages) view.dupPage = pages - 1;
     var dupRows = 0; groups.forEach(function (g) { dupRows += g.rows.length; });
     var decided = Object.keys(d.survivors).length + Object.keys(d.notDup).length;
-    var h = '<div class="toolbar dup-tools"><div class="field thr"><label for="thr">Match threshold <b id="thrV">' + thr + '</b></label><input type="range" id="thr" min="' + E.MIN_PAIR + '" max="100" step="1" value="' + thr + '" data-chg="thr" data-inp="thrV"></div>' +
-      '<div class="dup-count"><b>' + plural(groups.length, 'group', 'groups') + '</b> · ' + plural(dupRows, 'record', 'records') + ' · ' + n0(dupRows - groups.length) + ' to merge</div>' +
-      (decided ? '<button type="button" class="btn sm ghost" data-act="dupreset">Reset my decisions</button>' : '') + '</div>';
-    h += '<details class="how card pad"><summary>How the match works</summary><p>' + (res.dup.kind === 'products' ?
+    var h = '<div class="toolbar dup-tools"><div class="field thr"><label for="thr">' + esc(tx('Match threshold')) + ' <b id="thrV">' + thr + '</b></label><input type="range" id="thr" min="' + E.MIN_PAIR + '" max="100" step="1" value="' + thr + '" data-chg="thr" data-inp="thrV"></div>' +
+      '<div class="dup-count"><b>' + esc(plural(groups.length, 'group', 'groups')) + '</b> · ' + esc(plural(dupRows, 'record', 'records')) + ' · ' + esc(tx('to merge: {n}', { n: n0(dupRows - groups.length) })) + '</div>' +
+      (decided ? '<button type="button" class="btn sm ghost" data-act="dupreset">' + esc(tx('Reset my decisions')) + '</button>' : '') + '</div>';
+    h += '<details class="how card pad"><summary>' + esc(tx('How the match works')) + '</summary><p>' + esc(tx(res.dup.kind === 'products' ?
       'Names are compared without capitals, punctuation or Slovene and Croatian letters, word by word (Jaro-Winkler) and as a whole. The same barcode adds 30 and the same SKU 10; a different barcode takes off 30, different numbers in the name (sizes, powers) 40, and a missing barcode 10. 100 is a certain match.' :
-      'Names are compared without legal forms (d.o.o., GmbH…), capitals, punctuation or Slovene and Croatian letters, word by word (Jaro-Winkler) and as a whole. The same VAT ID adds 25, the same e-mail or IBAN 15, the same phone 10, a matching street 8 and postal code 4; a different VAT ID takes off 35, a different street or postal code 10. 100 is a certain match.') +
-      ' Rows are only compared when they share the first letters of the name, a VAT ID, e-mail, phone or barcode, so even large files stay fast. The suggested record to keep is the most complete one.</p></details>';
-    if (!res.dup.ok) return h + '<div class="card"><p class="empty">Duplicates need a Name column. Mark one on the Columns tab.</p></div>';
-    if (!groups.length) return h + '<div class="card"><p class="empty">No duplicates at this threshold. Lower it to see weaker matches.</p></div>';
+      'Names are compared without legal forms (d.o.o., GmbH…), capitals, punctuation or Slovene and Croatian letters, word by word (Jaro-Winkler) and as a whole. The same VAT ID adds 25, the same e-mail or IBAN 15, the same phone 10, a matching street 8 and postal code 4; a different VAT ID takes off 35, a different street or postal code 10. 100 is a certain match.') + ' ' +
+      tx('Rows are only compared when they share the first letters of the name, a VAT ID, e-mail, phone or barcode, so even large files stay fast. The suggested record to keep is the most complete one.')) + '</p></details>';
+    if (!res.dup.ok) return h + '<div class="card"><p class="empty">' + esc(tx('Duplicates need a Name column. Mark one on the Columns tab.')) + '</p></div>';
+    if (!groups.length) return h + '<div class="card"><p class="empty">' + esc(tx('No duplicates at this threshold. Lower it to see weaker matches.')) + '</p></div>';
     var cols = d.headers.map(function (x, c) { return c; }).filter(function (c) { return d.roles[c] !== 'ignore'; });
     groups.slice(view.dupPage * DUP_PAGE, view.dupPage * DUP_PAGE + DUP_PAGE).forEach(function (g, i) {
       var gi = view.dupPage * DUP_PAGE + i, sv = g.survivor, title = recordName(d, res, sv);
-      h += '<section class="card dupg"><div class="card-h"><div><span class="label">Group ' + (gi + 1) + ' · best match ' + g.score + ' · ' + g.rows.length + ' records</span><h3>' + esc(cut(title, 70)) + '</h3></div>' +
-        '<button type="button" class="btn sm" data-act="notdup" data-v="' + gi + '">Not duplicates</button></div><div class="tw"><table class="t cmp"><thead><tr><th scope="col">Field</th>' + g.rows.map(function (r) {
-          return '<th scope="col"><label class="keep"><input type="radio" name="sv-' + gi + '" data-chg="survivor" data-g="' + gi + '" value="' + r + '"' + (r === sv ? ' checked' : '') + '> Keep row ' + d.lines[r] + '</label>' +
-            '<small>' + (r === sv ? (g.auto ? 'suggested: most complete' : 'kept') : 'match ' + (g.match[r] || '–') + ' · merges into ' + d.lines[sv]) + '</small></th>';
+      h += '<section class="card dupg"><div class="card-h"><div><span class="label">' + esc(tx('Group {n}', { n: gi + 1 }) + ' · ' + tx('best match {n}', { n: g.score }) + ' · ' + plural(g.rows.length, 'record', 'records')) + '</span><h3>' + esc(cut(title, 70)) + '</h3></div>' +
+        '<button type="button" class="btn sm" data-act="notdup" data-v="' + gi + '">' + esc(tx('Not duplicates')) + '</button></div><div class="tw"><table class="t cmp"><thead><tr><th scope="col">' + esc(tx('Field')) + '</th>' + g.rows.map(function (r) {
+          return '<th scope="col"><label class="keep"><input type="radio" name="sv-' + gi + '" data-chg="survivor" data-g="' + gi + '" value="' + r + '"' + (r === sv ? ' checked' : '') + '> ' + esc(tx('Keep row {n}', { n: d.lines[r] })) + '</label>' +
+            '<small>' + esc(r === sv ? tx(g.auto ? 'suggested: most complete' : 'kept') : tx('match {m} · merges into {row}', { m: g.match[r] || '–', row: d.lines[sv] })) + '</small></th>';
         }).join('') + '</tr></thead><tbody>' + cols.map(function (c) {
           var base = E.core(d.rows[sv][c]).toLowerCase();
           if (g.rows.every(function (r) { return !E.core(d.rows[r][c]); })) return '';
           return '<tr><th scope="row">' + esc(d.headers[c]) + '</th>' + g.rows.map(function (r) {
             var v = d.rows[r][c], k = E.core(v).toLowerCase(), cls = r === sv ? 'sv' : !k ? '' : !base ? 'fill' : k !== base ? 'diff' : '';
-            return '<td class="' + cls + '"' + (cls === 'fill' ? ' title="Fills an empty field of the kept record"' : cls === 'diff' ? ' title="Differs from the kept record"' : '') + '>' + (v === '' ? '<span class="muted">—</span>' : showWs(v, 60)) + '</td>';
+            return '<td class="' + cls + '"' + (cls === 'fill' ? ' title="' + esc(tx('Fills an empty field of the kept record')) + '"' : cls === 'diff' ? ' title="' + esc(tx('Differs from the kept record')) + '"' : '') + '>' + (v === '' ? '<span class="muted">—</span>' : showWs(v, 60)) + '</td>';
           }).join('') + '</tr>';
         }).join('') + '</tbody></table></div></section>';
     });
-    if (pages > 1) h += '<div class="pager card"><span>Groups ' + (view.dupPage * DUP_PAGE + 1) + '–' + Math.min(groups.length, (view.dupPage + 1) * DUP_PAGE) + ' of ' + groups.length + '</span><div>' +
-      '<button type="button" class="btn sm" data-act="duppage" data-v="-1"' + (view.dupPage ? '' : ' disabled') + '>Previous</button><button type="button" class="btn sm" data-act="duppage" data-v="1"' + (view.dupPage < pages - 1 ? '' : ' disabled') + '>Next</button></div></div>';
-    h += '<p class="hint">Highlighted: <span class="key diff">differs from the kept record</span> <span class="key fill">fills one of its empty fields</span>. Your choices are saved with the check and used in the exports.</p>';
+    if (pages > 1) h += '<div class="pager card"><span>' + esc(tx('Groups {from}–{to} of {total}', { from: view.dupPage * DUP_PAGE + 1, to: Math.min(groups.length, (view.dupPage + 1) * DUP_PAGE), total: groups.length })) + '</span><div>' +
+      '<button type="button" class="btn sm" data-act="duppage" data-v="-1"' + (view.dupPage ? '' : ' disabled') + '>' + esc(tx('Previous')) + '</button><button type="button" class="btn sm" data-act="duppage" data-v="1"' + (view.dupPage < pages - 1 ? '' : ' disabled') + '>' + esc(tx('Next')) + '</button></div></div>';
+    h += '<p class="hint">' + esc(tx('Highlighted:')) + ' <span class="key diff">' + esc(tx('differs from the kept record')) + '</span> <span class="key fill">' + esc(tx('fills one of its empty fields')) + '</span>. ' + esc(tx('Your choices are saved with the check and used in the exports.')) + '</p>';
     return h;
   }
 
@@ -1204,25 +1270,27 @@
   function baseName(n) { return String(n).replace(/\.[^.]+$/, '').replace(/[^\w\-. ]+/g, '_').trim() || 'data'; }
   function tabExport(meta, d, res) {
     var x = ui.exp, groups = res.groups, errRows = res.rowsErr;
-    var h = '<div class="grid2 exports"><section class="card pad"><span class="label">CSV · UTF-8 with BOM, opens correctly in Excel</span><h2>Cleaned file</h2><p class="sub">All rows with your fixes and edits.</p>' +
-      '<fieldset class="grp"><legend>Delimiter</legend><div class="seg" role="group" aria-label="Delimiter">' + [[';', 'Semicolon ;'], [',', 'Comma ,'], ['\t', 'Tab'], ['|', 'Pipe |']].map(function (o) {
-        return '<button type="button" data-act="expdelim" data-v="' + (o[0] === '\t' ? 'tab' : esc(o[0])) + '" aria-pressed="' + (x.delim === o[0]) + '">' + o[1] + '</button>';
+    var T = E.TYPE[res.type] || E.TYPE.customers;
+    var h = '<div class="grid2 exports"><section class="card pad"><span class="label">' + esc(tx('CSV · UTF-8 with BOM, opens correctly in Excel')) + '</span><h2>' + esc(tx('Cleaned file')) + '</h2><p class="sub">' + esc(tx('All rows with your fixes and edits.')) + '</p>' +
+      '<fieldset class="grp"><legend>' + esc(tx('Delimiter')) + '</legend><div class="seg" role="group" aria-label="' + esc(tx('Delimiter')) + '">' + [[';', tx('Semicolon ;')], [',', tx('Comma ,')], ['\t', tx('Tab')], ['|', tx('Pipe |')]].map(function (o) {
+        return '<button type="button" data-act="expdelim" data-v="' + (o[0] === '\t' ? 'tab' : esc(o[0])) + '" aria-pressed="' + (x.delim === o[0]) + '">' + esc(o[1]) + '</button>';
       }).join('') + '</div></fieldset>' +
-      '<label class="check"><input type="checkbox" data-chg="exp" data-k="dropErrors"' + (x.dropErrors ? ' checked' : '') + '> Leave out the ' + plural(errRows, 'row', 'rows') + ' with errors</label>' +
-      '<label class="check"><input type="checkbox" data-chg="exp" data-k="dropIgnored"' + (x.dropIgnored ? ' checked' : '') + '> Leave out columns marked Ignore</label>' +
-      '<label class="check"><input type="checkbox" data-chg="exp" data-k="isoDates"' + (x.isoDates ? ' checked' : '') + '> Write dates as yyyy-mm-dd</label>' +
-      '<div class="field"><label for="expDec">Numbers and prices</label><select class="in" id="expDec" data-chg="expdec"><option value="keep"' + (x.dec === 'keep' ? ' selected' : '') + '>As they are</option><option value=","' + (x.dec === ',' ? ' selected' : '') + '>Plain, decimal comma (1234,56)</option><option value="."' + (x.dec === '.' ? ' selected' : '') + '>Plain, decimal point (1234.56)</option></select></div>' +
-      '<div class="dr-actions"><button type="button" class="btn pri" data-act="dlclean">' + ic('dl') + 'Download cleaned file</button></div></section>';
-    h += '<section class="card pad"><span class="label">CSV</span><h2>Issues list</h2><p class="sub">Every problem with its row, column, value and the suggested fix: ' + plural(res.issues.length + res.structure.length, 'line', 'lines') + '. Useful as a to-do list for whoever corrects the source system.</p>' +
-      '<div class="dr-actions"><button type="button" class="btn" data-act="dlissues">' + ic('dl') + 'Download issues</button></div>' +
-      '<h2 class="mt">Duplicate merge map</h2><p class="sub">For every duplicate: its code and the code of the record it merges into, so open documents can be repointed.</p>' +
-      '<div class="dr-actions"><button type="button" class="btn" data-act="dlmap"' + (groups.length ? '' : ' disabled') + '>' + ic('dl') + 'Download merge map</button>' + (groups.length ? '' : '<span class="hint">No duplicates found.</span>') + '</div>' +
-      '<h2 class="mt">Deduplicated file</h2><p class="sub">One row per ' + esc((E.TYPE[res.type] || E.TYPE.customers).one) + ': the duplicates are left out' + (groups.length ? ' (' + plural(res.nRows - countAfterDedup(res), 'row', 'rows') + ')' : '') + '.</p>' +
-      '<label class="check"><input type="checkbox" data-chg="exp" data-k="merge"' + (x.merge ? ' checked' : '') + '> Fill empty fields of the kept record from its duplicates</label>' +
-      '<div class="dr-actions"><button type="button" class="btn" data-act="dldedup"' + (groups.length ? '' : ' disabled') + '>' + ic('dl') + 'Download deduplicated file</button></div></section></div>';
-    h += '<section class="card pad report-cta"><div><span class="label">For the prospect or the project team</span><h2>Printable report</h2><p class="sub">Score, problems by rule with examples, duplicates and what to fix before the migration, in English, Slovene or Croatian.</p></div>' +
-      '<a class="btn pri" href="#/report/' + esc(meta.id) + '">' + ic('report') + 'Open the report</a></section>';
-    h += '<p class="hint">' + ic('lock') + ' Files are created in this browser. Nothing is uploaded.</p>';
+      '<label class="check"><input type="checkbox" data-chg="exp" data-k="dropErrors"' + (x.dropErrors ? ' checked' : '') + '> ' + esc(tx('Leave out the rows with errors ({n})', { n: n0(errRows) })) + '</label>' +
+      '<label class="check"><input type="checkbox" data-chg="exp" data-k="dropIgnored"' + (x.dropIgnored ? ' checked' : '') + '> ' + esc(tx('Leave out columns marked Ignore')) + '</label>' +
+      '<label class="check"><input type="checkbox" data-chg="exp" data-k="isoDates"' + (x.isoDates ? ' checked' : '') + '> ' + esc(tx('Write dates as yyyy-mm-dd')) + '</label>' +
+      '<div class="field"><label for="expDec">' + esc(tx('Numbers and prices')) + '</label><select class="in" id="expDec" data-chg="expdec"><option value="keep"' + (x.dec === 'keep' ? ' selected' : '') + '>' + esc(tx('As they are')) + '</option><option value=","' + (x.dec === ',' ? ' selected' : '') + '>' + esc(tx('Plain, decimal comma (1234,56)')) + '</option><option value="."' + (x.dec === '.' ? ' selected' : '') + '>' + esc(tx('Plain, decimal point (1234.56)')) + '</option></select></div>' +
+      '<div class="dr-actions"><button type="button" class="btn pri" data-act="dlclean">' + ic('dl') + esc(tx('Download cleaned file')) + '</button></div></section>';
+    h += '<section class="card pad"><span class="label">CSV</span><h2>' + esc(tx('Issues list')) + '</h2><p class="sub">' + esc(tx('Every problem with its row, column, value and the suggested fix: {lines}. Useful as a to-do list for whoever corrects the source system.', { lines: plural(res.issues.length + res.structure.length, 'line', 'lines') })) + '</p>' +
+      '<div class="dr-actions"><button type="button" class="btn" data-act="dlissues">' + ic('dl') + esc(tx('Download issues')) + '</button></div>' +
+      '<h2 class="mt">' + esc(tx('Duplicate merge map')) + '</h2><p class="sub">' + esc(tx('For every duplicate: its code and the code of the record it merges into, so open documents can be repointed.')) + '</p>' +
+      '<div class="dr-actions"><button type="button" class="btn" data-act="dlmap"' + (groups.length ? '' : ' disabled') + '>' + ic('dl') + esc(tx('Download merge map')) + '</button>' + (groups.length ? '' : '<span class="hint">' + esc(tx('No duplicates found.')) + '</span>') + '</div>' +
+      '<h2 class="mt">' + esc(tx('Deduplicated file')) + '</h2><p class="sub">' + esc(groups.length ? tx({ customers: 'One row per customer: the duplicates are left out ({rows}).', suppliers: 'One row per supplier: the duplicates are left out ({rows}).', products: 'One row per product: the duplicates are left out ({rows}).' }[T.id], { rows: plural(res.nRows - countAfterDedup(res), 'row', 'rows') }) :
+        tx({ customers: 'One row per customer: the duplicates are left out.', suppliers: 'One row per supplier: the duplicates are left out.', products: 'One row per product: the duplicates are left out.' }[T.id])) + '</p>' +
+      '<label class="check"><input type="checkbox" data-chg="exp" data-k="merge"' + (x.merge ? ' checked' : '') + '> ' + esc(tx('Fill empty fields of the kept record from its duplicates')) + '</label>' +
+      '<div class="dr-actions"><button type="button" class="btn" data-act="dldedup"' + (groups.length ? '' : ' disabled') + '>' + ic('dl') + esc(tx('Download deduplicated file')) + '</button></div></section></div>';
+    h += '<section class="card pad report-cta"><div><span class="label">' + esc(tx('For the prospect or the project team')) + '</span><h2>' + esc(tx('Printable report')) + '</h2><p class="sub">' + esc(tx('Score, problems by rule with examples, duplicates and what to fix before the migration, in English, Slovene or Croatian.')) + '</p></div>' +
+      '<a class="btn pri" href="#/report/' + esc(meta.id) + '">' + ic('report') + esc(tx('Open the report')) + '</a></section>';
+    h += '<p class="hint">' + ic('lock') + ' ' + esc(tx('Files are created in this browser. Nothing is uploaded.')) + '</p>';
     return h;
   }
   function countAfterDedup(res) { var n = res.nRows; res.groups.forEach(function (g) { n -= g.rows.length - 1; }); return n; }
@@ -1249,17 +1317,18 @@
   }
   function dlClean(dedup) {
     var d = cur.data, res = cur.res, out = exportRows(d, res, { dedup: dedup });
-    download(baseName(cur.meta.name) + (dedup ? '-deduplicated' : '-cleaned') + '.csv', E.toCsv(out.headers, out.rows, ui.exp.delim, true));
-    toast((dedup ? 'Deduplicated' : 'Cleaned') + ' file: ' + plural(out.rows.length, 'row', 'rows'));
+    download(baseName(cur.meta.name) + '-' + tx(dedup ? 'deduplicated' : 'cleaned') + '.csv', E.toCsv(out.headers, out.rows, ui.exp.delim, true));
+    toast(tx(dedup ? 'Deduplicated file: {rows}' : 'Cleaned file: {rows}', { rows: plural(out.rows.length, 'row', 'rows') }));
   }
   function dlIssues() {
     var d = cur.data, res = cur.res, rows = [];
-    res.structure.forEach(function (x) { rows.push(['', '', '', '', '', SEV_NAME[E.RULES[x.k].sev], E.RULES[x.k].title, E.message(x, { table: d, res: res }), '']); });
+    res.structure.forEach(function (x) { rows.push(['', '', '', '', '', sevName(E.RULES[x.k].sev), ruleT(x.k), msgOf(x, d, res), '']); });
     res.issues.forEach(function (x) {
       var idc = res.cols.id >= 0 ? res.cols.id : res.cols.sku, fix = x.f !== undefined ? x.f : x.s;
-      rows.push([d.lines[x.r], idc >= 0 ? d.rows[x.r][idc] : '', res.cols.name >= 0 ? d.rows[x.r][res.cols.name] : '', d.headers[x.c], d.rows[x.r][x.c], SEV_NAME[E.RULES[x.k].sev], E.RULES[x.k].title, E.message(x, { table: d, res: res }), fix == null ? '' : fix]);
+      rows.push([d.lines[x.r], idc >= 0 ? d.rows[x.r][idc] : '', res.cols.name >= 0 ? d.rows[x.r][res.cols.name] : '', d.headers[x.c], d.rows[x.r][x.c], sevName(E.RULES[x.k].sev), ruleT(x.k), msgOf(x, d, res), fix == null ? '' : fix]);
     });
-    download(baseName(cur.meta.name) + '-issues.csv', E.toCsv(['Row', 'ID', 'Name', 'Column', 'Value', 'Severity', 'Problem', 'Details', 'Suggested value'], rows, ui.exp.delim, true));
+    var ISSUE_COLS = ['Row', 'ID', 'Name', 'Column', 'Value', 'Severity', 'Problem', 'Details', 'Suggested value'];
+    download(baseName(cur.meta.name) + '-' + tx('issues') + '.csv', E.toCsv(ISSUE_COLS.map(function (c) { return tx(c); }), rows, ui.exp.delim, true));
   }
   function dlMap() {
     var d = cur.data, res = cur.res, rows = [], idc = res.cols.id >= 0 ? res.cols.id : res.cols.sku, nc = res.cols.name;
@@ -1270,7 +1339,8 @@
         rows.push([gi + 1, g.match[r] || g.score, d.lines[r], val(r, idc), val(r, nc), d.lines[g.survivor], val(g.survivor, idc), val(g.survivor, nc)]);
       });
     });
-    download(baseName(cur.meta.name) + '-merge-map.csv', E.toCsv(['Group', 'Match', 'Duplicate row', 'Duplicate ID', 'Duplicate name', 'Survivor row', 'Survivor ID', 'Survivor name'], rows, ui.exp.delim, true));
+    var MAP_COLS = ['Group', 'Match', 'Duplicate row', 'Duplicate ID', 'Duplicate name', 'Survivor row', 'Survivor ID', 'Survivor name'];
+    download(baseName(cur.meta.name) + '-' + tx('merge-map') + '.csv', E.toCsv(MAP_COLS.map(function (c) { return tx(c); }), rows, ui.exp.delim, true));
   }
 
   // ── page: report (Slovene, Croatian and English) ─────────────────────────
@@ -1321,48 +1391,15 @@
       vies: 'Online provjera PDV ID-a (VIES): {v} valjanih, {i} nevaljanih, {u} bez odgovora, od {t} brojeva.',
       erp: 'Što bismo uredili u vašem ERP-u', erpLead: 'Jednokratno čišćenje datoteke pola je posla. Ovim promjenama u sustavu isti se problemi neće vraćati:', book: 'Rezervirajte 20 minuta za pregled nalaza' }
   };
-  var RT = { // rule titles: [sl, hr]
-    'vat.vies': ['ID za DDV ni veljaven v sistemu VIES', 'PDV ID nije valjan u sustavu VIES'], 'postal.unknown': ['Poštna številka ne obstaja', 'Poštanski broj ne postoji'],
-    'req.nocolumn': ['Manjka obvezen stolpec', 'Nedostaje obavezni stupac'], 'rec.nocolumn': ['Manjka priporočen stolpec', 'Nedostaje preporučeni stupac'],
-    'req.missing': ['Prazno obvezno polje', 'Prazno obavezno polje'], 'rec.missing': ['Prazno priporočeno polje', 'Prazno preporučeno polje'],
-    'text.placeholder': ['Nadomestni znak namesto vrednosti', 'Zamjenski znak umjesto vrijednosti'], 'id.dup': ['Podvojena šifra', 'Dvostruka šifra'],
-    'dup.record': ['Verjetno podvojen zapis', 'Mogući dvostruki zapis'], 'vat.dup': ['Ista davčna številka pri različnih zapisih', 'Isti PDV ID na različitim zapisima'],
-    'ean.dup': ['Ista črtna koda pri več artiklih', 'Isti barkod na više artikala'], 'text.mojibake': ['Pokvarjeni znaki zaradi napačnega kodiranja', 'Oštećeni znakovi zbog pogrešnog kodiranja'],
-    'text.lost': ['Znak, izgubljen pri prejšnji pretvorbi', 'Znak izgubljen pri ranijoj pretvorbi'], 'ws.trim': ['Presledki na začetku ali koncu', 'Razmaci na početku ili kraju'],
-    'ws.nbsp': ['Nedeljivi ali nevidni presledki', 'Neprekidni ili nevidljivi razmaci'], 'ws.newline': ['Prelom vrstice v celici', 'Prijelom retka u ćeliji'],
-    'ws.control': ['Tabulator ali kontrolni znak', 'Tabulator ili kontrolni znak'], 'ws.double': ['Dvojni presledki', 'Dvostruki razmaci'],
-    'text.caps': ['Zapisano z velikimi črkami', 'Napisano velikim slovima'], 'vat.format': ['Napačna oblika identifikacijske številke za DDV', 'Pogrešan oblik PDV identifikacijskog broja'],
-    'vat.checksum': ['Napačna kontrolna številka davčne številke', 'Pogrešna kontrolna znamenka PDV identifikacijskog broja'], 'vat.country': ['Predpona ID za DDV se ne ujema z državo', 'Prefiks PDV ID-a ne odgovara državi'],
-    'vat.clean': ['ID za DDV s presledki, pikami ali malimi črkami', 'PDV ID s razmacima, točkama ili malim slovima'], 'oib.invalid': ['Neveljaven OIB', 'Neispravan OIB'],
-    'regno.format': ['Nenavadna oblika matične številke', 'Neuobičajen oblik matičnog broja'], 'iban.format': ['Napačna oblika ali dolžina IBAN', 'Pogrešan oblik ili duljina IBAN-a'],
-    'iban.checksum': ['Napačni kontrolni števki IBAN', 'Pogrešne kontrolne znamenke IBAN-a'], 'iban.local': ['Številka računa brez predpone IBAN', 'Broj računa bez IBAN prefiksa'],
-    'iban.clean': ['IBAN s presledki ali malimi črkami', 'IBAN s razmacima ili malim slovima'], 'bic.format': ['Napačna oblika BIC', 'Pogrešan oblik BIC-a'],
-    'bic.mismatch': ['Država BIC se razlikuje od države IBAN', 'Država BIC-a razlikuje se od države IBAN-a'], 'bic.clean': ['BIC s presledki ali malimi črkami', 'BIC s razmacima ili malim slovima'],
-    'email.invalid': ['Neveljaven e-poštni naslov', 'Neispravna adresa e-pošte'], 'email.typo': ['Verjetna tipkarska napaka v domeni e-pošte', 'Vjerojatna tipkarska pogreška u domeni e-pošte'],
-    'email.clean': ['E-pošta s presledki ali odvečnimi znaki', 'E-pošta s razmacima ili suvišnim znakovima'], 'email.multi': ['Več e-poštnih naslovov v eni celici', 'Više adresa e-pošte u jednoj ćeliji'],
-    'phone.invalid': ['Neveljavna telefonska številka', 'Neispravan broj telefona'], 'phone.multi': ['Več telefonskih številk v eni celici', 'Više brojeva telefona u jednoj ćeliji'],
-    'phone.format': ['Telefonska številka ni v mednarodni obliki', 'Broj telefona nije u međunarodnom obliku'], 'web.invalid': ['Neveljaven spletni naslov', 'Neispravna web adresa'],
-    'postal.format': ['Napačna oblika poštne številke', 'Pogrešan oblik poštanskog broja'], 'postal.zero': ['Poštni številki manjka vodilna ničla', 'Poštanskom broju nedostaje početna nula'],
-    'postal.city': ['Kraj se ne ujema s poštno številko', 'Mjesto ne odgovara poštanskom broju'], 'postal.clean': ['Predpona države v poštni številki', 'Prefiks države u poštanskom broju'],
-    'country.unknown': ['Neznana država', 'Nepoznata država'], 'country.mixed': ['Država zapisana na različne načine', 'Država napisana na različite načine'],
-    'country.code': ['Država ni zapisana s kodo ISO', 'Država nije napisana ISO kodom'], 'ean.sci': ['Excel je črtno kodo spremenil v število', 'Excel je barkod pretvorio u broj'],
-    'ean.checksum': ['Napačna kontrolna številka črtne kode', 'Pogrešna kontrolna znamenka barkoda'], 'ean.format': ['Napačna dolžina ali znaki črtne kode', 'Pogrešna duljina ili znakovi barkoda'],
-    'ean.zero': ['Črtni kodi manjka vodilna ničla', 'Barkodu nedostaje početna nula'], 'ean.clean': ['Črtna koda s presledki ali vezaji', 'Barkod s razmacima ili crticama'],
-    'unit.variant': ['Enota mere zapisana na različne načine', 'Jedinica mjere napisana na različite načine'], 'vatrate.invalid': ['Stopnja DDV ni število', 'Stopa PDV-a nije broj'],
-    'vatrate.unusual': ['Nenavadna stopnja DDV', 'Neuobičajena stopa PDV-a'], 'vatrate.fraction': ['Stopnja DDV zapisana kot ulomek', 'Stopa PDV-a napisana kao razlomak'],
-    'price.negative': ['Negativna cena', 'Negativna cijena'], 'price.zero': ['Cena je nič', 'Cijena je nula'], 'price.outlier': ['Cena močno odstopa od običajnih', 'Cijena znatno odstupa od uobičajenih'],
-    'num.invalid': ['Vrednost ni število', 'Vrijednost nije broj'], 'num.mixed': ['Različna decimalna ločila', 'Različiti decimalni separatori'],
-    'num.format': ['Ločila tisočic ali znaki valute', 'Separatori tisućica ili oznake valute'], 'date.invalid': ['Neveljaven datum', 'Neispravan datum'],
-    'date.future': ['Datum v prihodnosti', 'Datum u budućnosti'], 'date.mixed': ['Datumi v različnih oblikah', 'Datumi u različitim oblicima']
-  };
-  var ROLE_T = { sl: { id: 'Šifra', name: 'Naziv', vat: 'ID za DDV', regno: 'Matična številka', oib: 'OIB', street: 'Ulica', postal: 'Poštna številka', city: 'Kraj', country: 'Država', phone: 'Telefon',
-      email: 'E-pošta', website: 'Spletna stran', iban: 'IBAN', bic: 'BIC', ean: 'Črtna koda (EAN)', sku: 'Šifra artikla', price: 'Cena', vatrate: 'Stopnja DDV', unit: 'Enota mere', date: 'Datum', number: 'Število', text: 'Besedilo', ignore: '—' },
-    hr: { id: 'Šifra', name: 'Naziv', vat: 'PDV ID', regno: 'Matični broj', oib: 'OIB', street: 'Ulica', postal: 'Poštanski broj', city: 'Mjesto', country: 'Država', phone: 'Telefon',
-      email: 'E-pošta', website: 'Web stranica', iban: 'IBAN', bic: 'BIC', ean: 'Barkod (EAN)', sku: 'Šifra artikla', price: 'Cijena', vatrate: 'Stopa PDV-a', unit: 'Jedinica mjere', date: 'Datum', number: 'Broj', text: 'Tekst', ignore: '—' } };
-  function ruleTitle(k, lang) { return lang === 'en' ? E.RULES[k].title : (RT[k] || [E.RULES[k].title, E.RULES[k].title])[lang === 'sl' ? 0 : 1]; }
-  function roleName(r, lang) { return lang === 'en' ? E.ROLE[r].name : ROLE_T[lang][r] || E.ROLE[r].name; }
+  // rule titles, column roles and e-invoice criteria in the report's language come from i18n.js (the same texts as the screens)
+  var RI = {};
+  function rx(lang) { return (RI[lang] || (RI[lang] = I18N.make(lang))).x; }
+  function ruleTitle(k, lang) { return rx(lang)(E.RULES[k].title); }
+  function roleNameL(r, lang) { return rx(lang)((E.ROLE[r] || E.ROLE.text).name); }
   function fill(s, o) { return s.replace(/\{(\w+)\}/g, function (a, k) { return o[k] != null ? o[k] : ''; }); }
-  function dateLang(iso, lang) { var s = dt(iso); return lang === 'hr' ? s + '.' : s; }
+  function dateLang(iso, lang) { if (!iso) return '—'; var d = String(iso).slice(0, 10); return +d.slice(8, 10) + '. ' + +d.slice(5, 7) + '. ' + d.slice(0, 4) + (lang === 'hr' ? '.' : ''); }
+  /** the report's language: the one picked for reports, else the screen language */
+  function reportLang() { return L[db.settings.reportLang] ? db.settings.reportLang : LANG; }
   // what to fix, in order of priority: a lead sentence, then "label: count" for each part that is not zero
   var THEMES = [
     { t: { en: 'Fill in the required fields.', sl: 'Izpolnite obvezna polja.', hr: 'Popunite obavezna polja.' },
@@ -1393,9 +1430,7 @@
         hr: 'Primijenite automatske ispravke razmaka, velikih slova, oštećenih znakova, kodova država te oblika brojeva telefona, brojeva i datuma. Podatke uređuju bez promjene njihova značenja.' },
       parts: [[null, { en: 'values', sl: 'vrednosti', hr: 'vrijednosti' }]] }
   ];
-  var EINV_T = { sl: { name: 'Naziv podjetja', taxid: 'Veljavna ID za DDV ali OIB', street: 'Ulica in hišna številka', postal: 'Poštna številka', city: 'Kraj, ki ustreza pošti', country: 'Država', email: 'E-pošta za račune', iban: 'IBAN' },
-    hr: { name: 'Naziv tvrtke', taxid: 'Ispravan PDV ID ili OIB', street: 'Ulica i kućni broj', postal: 'Poštanski broj', city: 'Mjesto koje odgovara poštanskom broju', country: 'Država', email: 'E-pošta za račune', iban: 'IBAN' } };
-  function einvName(id, lang) { return lang === 'en' ? (EINV_NAME[id] || { name: id }).name : (EINV_T[lang] || {})[id] || id; }
+  function einvName(id, lang) { return rx(lang)((EINV_NAME[id] || { name: id }).name); }
   // what to change in the customer's system so the problems do not come back: [rules that trigger it, en, sl, hr]
   var ERP_FIX = [
     [['vat.checksum', 'vat.format', 'oib.invalid', 'vat.vies', 'vat.country'], 'Check VAT IDs and OIBs when they are entered: the check digit at once, VIES once a month for EU partners.',
@@ -1407,7 +1442,7 @@
     [['einv'], 'An e-invoice check on every partner record that lists what is missing, well before the e-invoice deadline.',
       'Preverjanje pripravljenosti na e-račune pri vsakem partnerju, s seznamom manjkajočih podatkov, pravočasno pred rokom za e-račune.', 'Provjera spremnosti za e-račune na svakom partneru, s popisom podataka koji nedostaju, na vrijeme prije roka za e-račune.'],
     [['email.invalid', 'email.typo', 'email.multi', 'email.clean', 'rec.missing:email'], 'A field "e-mail for invoices", checked on entry and kept apart from the general contact address.',
-      'Polje »e-pošta za račune«, preverjeno ob vnosu in ločeno od splošnega kontaktnega naslova.', 'Polje »e-pošta za račune«, provjereno pri unosu i odvojeno od općenite kontaktne adrese.'],
+      'Polje »e-pošta za račune«, preverjeno ob vnosu in ločeno od splošnega kontaktnega naslova.', 'Polje „e-pošta za račune”, provjereno pri unosu i odvojeno od općenite kontaktne adrese.'],
     [['iban.checksum', 'iban.format', 'iban.local', 'bic.format', 'bic.mismatch'], 'IBAN and BIC checked on entry, and domestic account numbers stored as IBAN.',
       'Preverjanje IBAN in BIC ob vnosu ter domače številke računov shranjene kot IBAN.', 'Provjera IBAN-a i BIC-a pri unosu te domaći brojevi računa spremljeni kao IBAN.'],
     [['req.missing', 'req.nocolumn'], 'Required fields enforced in the entry form, so an incomplete record cannot be saved.',
@@ -1439,27 +1474,27 @@
   }
   function pageReport(r) {
     var meta = findCheck(r.id);
-    if (!meta) return head('Report', 'Check not found', '') + '<p><a class="btn" href="#/">' + ic('back') + 'Back</a></p>';
+    if (!meta) return head(esc(tx('Report')), tx('Check not found'), '') + '<p><a class="btn" href="#/">' + ic('back') + esc(tx('Back')) + '</a></p>';
     if (!cur || cur.id !== r.id) loadCheck(r.id);
-    var lang = L[db.settings.reportLang] ? db.settings.reportLang : 'en', T = L[lang], s = meta.summary, d = cur && cur.id === r.id ? cur.data : null, res = cur && cur.id === r.id ? cur.res : null;
-    var tools = '<div class="report-tools no-print"><a class="btn" href="#/check/' + esc(meta.id) + '">' + ic('back') + 'Back to the check</a><div class="seg" role="group" aria-label="Report language">' +
-      Object.keys(L).map(function (k) { return '<button type="button" data-act="rlang" data-v="' + k + '" aria-pressed="' + (k === lang) + '">' + L[k].lang + '</button>'; }).join('') + '</div>' +
-      '<div class="field pf"><label for="rFor">' + esc(L.en.for) + '</label><input class="in" id="rFor" data-chg="rfor" maxlength="120" value="' + esc(meta.preparedFor || db.settings.preparedFor) + '" placeholder="Company name"></div>' +
-      '<button type="button" class="btn pri" data-act="print">' + ic('print') + 'Print or save as PDF</button></div>';
-    if (cur && cur.id === r.id && (cur.loading || (cur.data && !cur.res))) return tools + '<p class="loading" role="status"><i aria-hidden="true"></i>Preparing the report…</p>';
-    if (!s) return tools + '<p class="empty">This file has not been checked yet.</p>';
+    var lang = reportLang(), T = L[lang], s = meta.summary, d = cur && cur.id === r.id ? cur.data : null, res = cur && cur.id === r.id ? cur.res : null;
+    var tools = '<div class="report-tools no-print"><a class="btn" href="#/check/' + esc(meta.id) + '">' + ic('back') + esc(tx('Back to the check')) + '</a><div class="seg" role="group" aria-label="' + esc(tx('Report language')) + '">' +
+      Object.keys(L).map(function (k) { return '<button type="button" data-act="rlang" data-v="' + k + '" aria-pressed="' + (k === lang) + '" lang="' + k + '">' + L[k].lang + '</button>'; }).join('') + '</div>' +
+      '<div class="field pf"><label for="rFor">' + esc(tx('Prepared for')) + '</label><input class="in" id="rFor" data-chg="rfor" maxlength="120" value="' + esc(meta.preparedFor || db.settings.preparedFor) + '" placeholder="' + esc(tx('Company name')) + '"></div>' +
+      '<button type="button" class="btn pri" data-act="print">' + ic('print') + esc(tx('Print or save as PDF')) + '</button></div>';
+    if (cur && cur.id === r.id && (cur.loading || (cur.data && !cur.res))) return tools + '<p class="loading" role="status"><i aria-hidden="true"></i>' + esc(tx('Preparing the report…')) + '</p>';
+    if (!s) return tools + '<p class="empty">' + esc(tx('This file has not been checked yet.')) + '</p>';
     var band = E.scoreBand(s.score), rows = meta.rows, cnt = themeCounts(s);
     var h = tools + '<article class="report" lang="' + lang + '"><header class="rp-head"><div><span class="rp-brand"><i aria-hidden="true"></i>Clearfigure</span><h1>' + esc(T.title) + '</h1></div>' +
       '<dl class="rp-meta"><div><dt>' + T.for + '</dt><dd>' + esc(meta.preparedFor || db.settings.preparedFor || '—') + '</dd></div><div><dt>' + T.by + '</dt><dd>' + esc(db.settings.preparedBy || '—') + '</dd></div>' +
       '<div><dt>' + T.date + '</dt><dd>' + dateLang(meta.checkedAt || new Date().toISOString(), lang) + '</dd></div><div><dt>' + T.file + '</dt><dd>' + esc(meta.name) + '</dd></div>' +
       '<div><dt>' + T.contents + '</dt><dd>' + esc(T.types[meta.type] || meta.type) + '</dd></div><div><dt>' + T.records + ' · ' + T.columns + '</dt><dd>' + n0(rows) + ' · ' + n0(meta.cols) + '</dd></div>' +
       (meta.recipe ? '<div><dt>' + T.recipe + '</dt><dd>' + esc(meta.recipe) + '</dd></div>' : '') + '</dl></header>';
-    h += '<section class="rp-score">' + ring(s.score, band, T.score + ': ' + s.score + ' ' + T.of100).replace('>of 100<', '>' + esc(T.of100) + '<') + '<div><span class="label">' + esc(T.score) + '</span><p class="rp-band ' + band + '">' + esc(T.band[band]) + '</p>' +
+    h += '<section class="rp-score">' + ring(s.score, band, T.score + ': ' + s.score + ' ' + T.of100, T.of100) + '<div><span class="label">' + esc(T.score) + '</span><p class="rp-band ' + band + '">' + esc(T.band[band]) + '</p>' +
       '<p>' + esc(fill(T.split, { e: n0(s.rowsErr), w: n0(s.rowsWarn), c: n0(s.rowsClean) })) + '</p>' + (s.scoreAfter > s.score ? '<p>' + esc(fill(T.after, { n: s.scoreAfter })) + '</p>' : '') +
       (meta.first && meta.first.score !== s.score ? '<p class="rp-since"><b>' + esc(fill(T.since, { d: dateLang(meta.first.at, lang), a: meta.first.score, b: s.score })) + '</b></p>' : '') +
       '<p class="rp-small">' + esc(T.how) + '</p></div></section>';
     var struct = s.structure || [];
-    if (struct.length) h += '<section class="rp-sec"><h2>' + esc(T.missing) + '</h2><p>' + struct.map(function (x) { var p = x.split(':'); return esc(roleName(p[1], lang)) + ' (' + (p[0] === 'req.nocolumn' ? T.required : T.recommended) + ')'; }).join(', ') + '</p></section>';
+    if (struct.length) h += '<section class="rp-sec"><h2>' + esc(T.missing) + '</h2><p>' + struct.map(function (x) { var p = x.split(':'); return esc(roleNameL(p[1], lang)) + ' (' + (p[0] === 'req.nocolumn' ? T.required : T.recommended) + ')'; }).join(', ') + '</p></section>';
     var fixes = [];
     THEMES.forEach(function (th) {
       var parts = th.parts.map(function (p) { return [p[1][lang], p[0] ? cnt(p[0]) : s.fixable]; }).filter(function (p) { return p[1] > 0; });
@@ -1512,40 +1547,44 @@
   var REQ_ROLES = ['id', 'sku', 'name', 'street', 'postal', 'city', 'country', 'vat', 'oib', 'regno', 'phone', 'email', 'website', 'iban', 'bic', 'ean', 'unit', 'price', 'vatrate', 'date'];
   function pageSettings() {
     var s = db.settings;
-    var h = head('Data health check', 'Settings', 'Rules, report header and what this browser keeps. Rates and rules are defaults to check, not legal or tax advice.');
-    h += '<form class="card" id="reqForm"><div class="card-h"><div><span class="label">Per type of file</span><h2>Required and recommended fields</h2></div></div><div class="tw"><table class="t compact req"><thead><tr><th>Field</th>' +
-      E.TYPES.map(function (t) { return '<th>' + t.name + '</th>'; }).join('') + '</tr></thead><tbody>' + REQ_ROLES.map(function (rid) {
-        return '<tr><th scope="row">' + esc(E.ROLE[rid].name) + '</th>' + E.TYPES.map(function (t) {
+    var h = head(esc(tx('Data health check')), tx('Settings'), esc(tx('Rules, report header and what this browser keeps. Rates and rules are defaults to check, not legal or tax advice.')));
+    h += '<section class="card pad lang-card"><div class="split"><div><span class="label">' + esc(tx('This browser')) + '</span><h2>' + esc(tx('Screen language')) + '</h2></div>' +
+      '<div class="seg" role="group" aria-label="' + esc(tx('Screen language')) + '">' + [['en', 'English'], ['sl', 'Slovenščina'], ['hr', 'Hrvatski']].map(function (o) {
+        return '<button type="button" data-act="uilang" data-v="' + o[0] + '" lang="' + o[0] + '" aria-pressed="' + (LANG === o[0]) + '">' + o[1] + '</button>';
+      }).join('') + '</div></div><p class="hint">' + esc(tx('The language of the screens and, unless you choose another one below, of the printable report.')) + '</p></section>';
+    h += '<form class="card" id="reqForm"><div class="card-h"><div><span class="label">' + esc(tx('Per type of file')) + '</span><h2>' + esc(tx('Required and recommended fields')) + '</h2></div></div><div class="tw"><table class="t compact req"><thead><tr><th>' + esc(tx('Field')) + '</th>' +
+      E.TYPES.map(function (t) { return '<th>' + esc(lx(t.name)) + '</th>'; }).join('') + '</tr></thead><tbody>' + REQ_ROLES.map(function (rid) {
+        return '<tr><th scope="row">' + esc(roleName(rid)) + '</th>' + E.TYPES.map(function (t) {
           var q = s.req[t.id], v = q.required.indexOf(rid) >= 0 ? 'req' : q.recommended.indexOf(rid) >= 0 ? 'rec' : '';
-          return '<td><label class="sr" for="rq-' + t.id + '-' + rid + '">' + esc(E.ROLE[rid].name) + ' for ' + t.name + '</label><select class="in sm" id="rq-' + t.id + '-' + rid + '" data-t="' + t.id + '" data-r="' + rid + '">' +
-            '<option value=""' + (v ? '' : ' selected') + '>—</option><option value="req"' + (v === 'req' ? ' selected' : '') + '>Required</option><option value="rec"' + (v === 'rec' ? ' selected' : '') + '>Recommended</option></select></td>';
+          return '<td><label class="sr" for="rq-' + t.id + '-' + rid + '">' + esc(tx('{field} for {type}', { field: roleName(rid), type: lx(t.name) })) + '</label><select class="in sm" id="rq-' + t.id + '-' + rid + '" data-t="' + t.id + '" data-r="' + rid + '">' +
+            '<option value=""' + (v ? '' : ' selected') + '>—</option><option value="req"' + (v === 'req' ? ' selected' : '') + '>' + esc(tx('Required')) + '</option><option value="rec"' + (v === 'rec' ? ' selected' : '') + '>' + esc(tx('Recommended')) + '</option></select></td>';
         }).join('') + '</tr>';
-      }).join('') + '</tbody></table></div><div class="card-b"><p class="hint">An empty required field is an error, an empty recommended field a warning. A missing column is listed separately.</p>' +
-      '<div class="dr-actions"><button type="submit" class="btn pri">Save fields</button><button type="button" class="btn ghost" data-act="reqreset">Back to the defaults</button></div></div></form>';
-    h += '<div class="grid2"><form class="card pad" id="ruleForm"><span class="label">Checks</span><h2>Rules</h2>' +
-      '<div class="field"><label for="sHome">Home country</label><select class="in" id="sHome"><option value="SI"' + (s.home === 'SI' ? ' selected' : '') + '>Slovenia</option><option value="HR"' + (s.home === 'HR' ? ' selected' : '') + '>Croatia</option></select>' +
-      '<small class="hint">Used for values without a country: 041 123 456, a tax number without SI, VAT rates of products.</small></div>' +
-      '<div class="field"><label for="sThr">Duplicate threshold for new checks <b id="sThrV">' + s.dupThreshold + '</b></label><input type="range" id="sThr" min="' + E.MIN_PAIR + '" max="100" value="' + s.dupThreshold + '" data-inp="sThrV"></div>' +
-      '<div class="row2"><div class="field"><label for="sRateSI">VAT rates, Slovenia (%)</label><input class="in" id="sRateSI" value="' + esc(s.vatRates.SI.map(fmtRate).join('; ')) + '"></div>' +
-      '<div class="field"><label for="sRateHR">VAT rates, Croatia (%)</label><input class="in" id="sRateHR" value="' + esc(s.vatRates.HR.map(fmtRate).join('; ')) + '"></div></div>' +
-      '<p class="hint">Defaults to check: Slovenia 22 %, 9,5 % and 5 %; Croatia 25 %, 13 % and 5 %. A product with any other rate is flagged as a warning; add 0 if you sell exempt goods.</p>' +
-      '<div class="err" id="ruleErr" hidden></div><div class="dr-actions"><button type="submit" class="btn pri">Save rules</button></div></form>';
-    h += '<form class="card pad" id="repForm"><span class="label">Printable report</span><h2>Report header</h2>' +
-      '<div class="field"><label for="sBy">Prepared by</label><input class="in" id="sBy" maxlength="120" value="' + esc(s.preparedBy) + '"></div>' +
-      '<div class="field"><label for="sFor">Prepared for (default; each report can change it)</label><input class="in" id="sFor" maxlength="120" value="' + esc(s.preparedFor) + '"></div>' +
-      '<div class="field"><label for="sLang">Report language</label><select class="in" id="sLang">' + Object.keys(L).map(function (k) { return '<option value="' + k + '"' + (s.reportLang === k ? ' selected' : '') + '>' + L[k].lang + '</option>'; }).join('') + '</select></div>' +
-      '<div class="field"><label for="sBook">Booking link (ends the report; empty = no link)</label><input class="in" id="sBook" type="url" inputmode="url" maxlength="300" placeholder="https://…" value="' + esc(s.bookingUrl) + '"><small class="hint">For example a Microsoft Bookings or Cal.com page. Only https links.</small></div>' +
-      '<div class="err" id="repErr" hidden></div><div class="dr-actions"><button type="submit" class="btn pri">Save header</button></div></form></div>';
-    h += '<section class="card"><div class="card-h"><div><span class="label">Same mapping and fixes every month</span><h2>Recipes</h2></div></div>' + ((db.recipes || []).length ? '<ul class="list rcp-list">' + db.recipes.map(function (rc) {
-      return '<li><div class="l"><b>' + esc(rc.name) + '</b><small>' + esc(typeName(rc.type)) + ' · ' + plural(rc.cols.length, 'column', 'columns') + ' · ' + plural(rc.rules.length, 'kind of fix', 'kinds of fix') + ' · saved ' + esc(dt(rc.createdAt)) + '</small></div><div class="r">' +
-        '<button type="button" class="btn icon sm ghost" data-act="rcpdel" data-v="' + esc(rc.id) + '" aria-label="Delete recipe ' + esc(rc.name) + '">' + ic('trash') + '</button></div></li>';
-    }).join('') + '</ul>' : '<p class="empty">No recipes yet. Open a check, then Recipe → Save this check as a recipe.</p>') + '</section>';
-    h += '<div class="grid2"><section class="card pad"><span class="label">Privacy</span><h2>What this browser keeps</h2>' +
-      '<label class="switch"><input type="checkbox" data-chg="keep"' + (s.keepFiles ? ' checked' : '') + '> Keep files in this browser</label>' +
-      '<p class="sub">' + (s.keepFiles ? 'On: each check keeps its rows, fixes and decisions in this browser (IndexedDB), so you can come back to it.' : 'Off: only the summary of each check (file name, rows, score, counts) is kept. The rows are gone when you close or reload the page.') + '</p>' +
-      '<p class="hint" id="storeUse"></p><div class="dr-actions"><button type="button" class="btn danger" data-act="delall"' + (db.checks.length ? '' : ' disabled') + '>Delete all checks</button><button type="button" class="btn" data-act="resetdemo">Reset demo data</button></div></section>';
-    h += '<section class="card pad"><span class="label">Across your devices</span><h2>Cloud sync</h2><div id="syncPanel" class="sync-panel"></div>' +
-      '<p class="hint">Sync copies your settings and the list of checks with their scores and counts. The files and their rows (names, addresses, VAT IDs…) never leave this browser.</p></section></div>';
+      }).join('') + '</tbody></table></div><div class="card-b"><p class="hint">' + esc(tx('An empty required field is an error, an empty recommended field a warning. A missing column is listed separately.')) + '</p>' +
+      '<div class="dr-actions"><button type="submit" class="btn pri">' + esc(tx('Save fields')) + '</button><button type="button" class="btn ghost" data-act="reqreset">' + esc(tx('Back to the defaults')) + '</button></div></div></form>';
+    h += '<div class="grid2"><form class="card pad" id="ruleForm"><span class="label">' + esc(tx('Checks')) + '</span><h2>' + esc(tx('Rules')) + '</h2>' +
+      '<div class="field"><label for="sHome">' + esc(tx('Home country')) + '</label><select class="in" id="sHome"><option value="SI"' + (s.home === 'SI' ? ' selected' : '') + '>' + esc(tx('Slovenia')) + '</option><option value="HR"' + (s.home === 'HR' ? ' selected' : '') + '>' + esc(tx('Croatia')) + '</option></select>' +
+      '<small class="hint">' + esc(tx('Used for values without a country: 041 123 456, a tax number without SI, VAT rates of products.')) + '</small></div>' +
+      '<div class="field"><label for="sThr">' + esc(tx('Duplicate threshold for new checks')) + ' <b id="sThrV">' + s.dupThreshold + '</b></label><input type="range" id="sThr" min="' + E.MIN_PAIR + '" max="100" value="' + s.dupThreshold + '" data-inp="sThrV"></div>' +
+      '<div class="row2"><div class="field"><label for="sRateSI">' + esc(tx('VAT rates, Slovenia (%)')) + '</label><input class="in" id="sRateSI" value="' + esc(s.vatRates.SI.map(fmtRate).join('; ')) + '"></div>' +
+      '<div class="field"><label for="sRateHR">' + esc(tx('VAT rates, Croatia (%)')) + '</label><input class="in" id="sRateHR" value="' + esc(s.vatRates.HR.map(fmtRate).join('; ')) + '"></div></div>' +
+      '<p class="hint">' + esc(tx('Defaults to check: Slovenia 22 %, 9,5 % and 5 %; Croatia 25 %, 13 % and 5 %. A product with any other rate is flagged as a warning; add 0 if you sell exempt goods.')) + '</p>' +
+      '<div class="err" id="ruleErr" hidden></div><div class="dr-actions"><button type="submit" class="btn pri">' + esc(tx('Save rules')) + '</button></div></form>';
+    h += '<form class="card pad" id="repForm"><span class="label">' + esc(tx('Printable report')) + '</span><h2>' + esc(tx('Report header')) + '</h2>' +
+      '<div class="field"><label for="sBy">' + esc(tx('Prepared by')) + '</label><input class="in" id="sBy" maxlength="120" value="' + esc(s.preparedBy) + '"></div>' +
+      '<div class="field"><label for="sFor">' + esc(tx('Prepared for (default; each report can change it)')) + '</label><input class="in" id="sFor" maxlength="120" value="' + esc(s.preparedFor) + '"></div>' +
+      '<div class="field"><label for="sLang">' + esc(tx('Report language')) + '</label><select class="in" id="sLang"><option value=""' + (L[s.reportLang] ? '' : ' selected') + '>' + esc(tx('Same as the screens')) + '</option>' + Object.keys(L).map(function (k) { return '<option value="' + k + '" lang="' + k + '"' + (s.reportLang === k ? ' selected' : '') + '>' + L[k].lang + '</option>'; }).join('') + '</select></div>' +
+      '<div class="field"><label for="sBook">' + esc(tx('Booking link (ends the report; empty = no link)')) + '</label><input class="in" id="sBook" type="url" inputmode="url" maxlength="300" placeholder="https://…" value="' + esc(s.bookingUrl) + '"><small class="hint">' + esc(tx('For example a Microsoft Bookings or Cal.com page. Only https links.')) + '</small></div>' +
+      '<div class="err" id="repErr" hidden></div><div class="dr-actions"><button type="submit" class="btn pri">' + esc(tx('Save header')) + '</button></div></form></div>';
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + esc(tx('Same mapping and fixes every month')) + '</span><h2>' + esc(tx('Recipes')) + '</h2></div></div>' + ((db.recipes || []).length ? '<ul class="list rcp-list">' + db.recipes.map(function (rc) {
+      return '<li><div class="l"><b>' + esc(rc.name) + '</b><small>' + esc(typeName(rc.type) + ' · ' + plural(rc.cols.length, 'column', 'columns') + ' · ' + plural(rc.rules.length, 'kind of fix', 'kinds of fix') + ' · ' + tx('saved {date}', { date: dt(rc.createdAt) })) + '</small></div><div class="r">' +
+        '<button type="button" class="btn icon sm ghost" data-act="rcpdel" data-v="' + esc(rc.id) + '" aria-label="' + esc(tx('Delete recipe {name}', { name: rc.name })) + '">' + ic('trash') + '</button></div></li>';
+    }).join('') + '</ul>' : '<p class="empty">' + esc(tx('No recipes yet. Open a check, then Recipe → Save this check as a recipe.')) + '</p>') + '</section>';
+    h += '<div class="grid2"><section class="card pad"><span class="label">' + esc(tx('Privacy')) + '</span><h2>' + esc(tx('What this browser keeps')) + '</h2>' +
+      '<label class="switch"><input type="checkbox" data-chg="keep"' + (s.keepFiles ? ' checked' : '') + '> ' + esc(tx('Keep files in this browser')) + '</label>' +
+      '<p class="sub">' + esc(tx(s.keepFiles ? 'On: each check keeps its rows, fixes and decisions in this browser (IndexedDB), so you can come back to it.' : 'Off: only the summary of each check (file name, rows, score, counts) is kept. The rows are gone when you close or reload the page.')) + '</p>' +
+      '<p class="hint" id="storeUse"></p><div class="dr-actions"><button type="button" class="btn danger" data-act="delall"' + (db.checks.length ? '' : ' disabled') + '>' + esc(tx('Delete all checks')) + '</button><button type="button" class="btn" data-act="resetdemo">' + esc(tx('Reset demo data')) + '</button></div></section>';
+    h += '<section class="card pad"><span class="label">' + esc(tx('Across your devices')) + '</span><h2>' + esc(tx('Cloud sync')) + '</h2><div id="syncPanel" class="sync-panel"></div>' +
+      '<p class="hint">' + esc(tx('Sync copies your settings and the list of checks with their scores and counts. The files and their rows (names, addresses, VAT IDs…) never leave this browser.')) + '</p></section></div>';
     return h;
   }
   function fmtRate(n) { return String(n).replace('.', ','); }
@@ -1572,15 +1611,15 @@
     lastKey = key;
     if (r.page === 'settings') {
       var p = $('syncPanel');
-      if (p) { if (SYNC) panelOff = SYNC.mountPanel(p); else p.innerHTML = '<p class="hint">Cloud sync is not available on this page.</p>'; }
+      if (p) { if (SYNC) panelOff = SYNC.mountPanel(p); else p.innerHTML = '<p class="hint">' + esc(tx('Cloud sync is not available on this page.')) + '</p>'; }
       storageUse();
     }
     var meta = (r.page === 'check' || r.page === 'report') && findCheck(r.id);
-    document.title = (meta ? (r.page === 'report' ? 'Report · ' : '') + meta.name + ' — ' : r.page === 'settings' ? 'Settings — ' : '') + 'Data health check — Business Apps';
+    document.title = (meta ? (r.page === 'report' ? tx('Report') + ' · ' : '') + meta.name + ' — ' : r.page === 'settings' ? tx('Settings') + ' — ' : '') + tx('Data health check') + ' — Business Apps';
   }
   function storageUse() {
     var el = $('storeUse'); if (!el || !navigator.storage || !navigator.storage.estimate) return;
-    navigator.storage.estimate().then(function (e) { if (el.isConnected && e && e.usage != null) el.textContent = 'This site uses about ' + nf0.format(Math.max(1, Math.round(e.usage / 1048576))) + ' MB of browser storage.'; }).catch(function () {});
+    navigator.storage.estimate().then(function (e) { if (el.isConnected && e && e.usage != null) el.textContent = tx('This site uses about {n} MB of browser storage.', { n: nf0.format(Math.max(1, Math.round(e.usage / 1048576))) }); }).catch(function () {});
   }
   window.addEventListener('hashchange', function () { closeLayer(); $('side').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded', 'false'); render(); });
 
@@ -1591,24 +1630,24 @@
     demo: function (v) { openDemo(v); },
     paste: function () {
       var t = $('pasteIn').value;
-      if (!t.trim()) return toast('Paste some rows first.');
-      importText(t, 'Pasted rows ' + dtTime(new Date().toISOString()), 'paste', { encoding: '' }).catch(readFailed);
+      if (!t.trim()) return toast(tx('Paste some rows first.'));
+      importText(t, tx('Pasted rows {date}', { date: dtTime(new Date().toISOString()) }), 'paste', { encoding: '' }).catch(readFailed);
     },
     open: function (v) { location.hash = '#/check/' + v; },
     del: function (v) {
       var m = findCheck(v); if (!m) return;
-      confirmBox('Delete this check?', '"' + m.name + '" and its rows, fixes and decisions are removed from this browser' + (window.StratumSync && StratumSync.user() ? ' and from your cloud copy' : '') + '. The original file is not touched.', 'Delete', function () {
+      confirmBox(tx('Delete this check?'), tx(window.StratumSync && StratumSync.user() ? '{name} and its rows, fixes and decisions are removed from this browser and from your cloud copy. The original file is not touched.' : '{name} and its rows, fixes and decisions are removed from this browser. The original file is not touched.', { name: I.q(m.name, true) }), tx('Delete'), function () {
         db.checks = db.checks.filter(function (c) { return c.id !== v; });
         delete tables[v]; delete raw[v]; delete stored[v];
         if (cur && cur.id === v) cur = null;
-        save(true, v); render(); toast('Check deleted');
+        save(true, v); render(); toast(tx('Check deleted'));
       }, true);
     },
     undo: function () { undo(); },
     type: function (v) {
       if (!cur || !cur.data || cur.meta.type === v) return;
       cur.meta.type = v; cur.data.roles = E.rolesForType(cur.data.roles, v);
-      save(true, cur.id); analyse({ byPerson: true }); toast('Checked as ' + typeName(v).toLowerCase());
+      save(true, cur.id); analyse({ byPerson: true }); toast(tx('Checked as {type}', { type: typeName(v).toLowerCase() }));
     },
     sev: function (v) { ui.sev = v; saveUi(); render(); },
     rule: function (v) { view.open[v] = !view.open[v]; render(); var b = document.querySelector('[data-act="rule"][data-v="' + CSS.escape(v) + '"]'); if (b) b.focus(); },
@@ -1617,21 +1656,21 @@
     showall: function () { view.fixOnly = false; ui.sev = 'all'; saveUi(); render(); },
     einvrows: function () { view.rowsF = 'einv'; view.rowsPage = 0; location.hash = '#/check/' + cur.id + '/rows'; },
     vies: function () { viesConsent(); },
-    viesstop: function () { if (viesRun) { viesRun.stop = true; var el = $('viesProg'); if (el) el.textContent = 'Stopping…'; } },
+    viesstop: function () { if (viesRun) { viesRun.stop = true; var el = $('viesProg'); if (el) el.textContent = tx('Stopping…'); } },
     recipes: function () { recipeDialog(); },
     rcpapply: function (v) { applyRecipe(v); },
     rcphide: function () { view.recipeHidden = true; render(); },
     rcpdel: function (v) {
       var rc = (db.recipes || []).filter(function (x) { return x.id === v; })[0]; if (!rc) return;
-      confirmBox('Delete this recipe?', '"' + rc.name + '" is removed. Checks it was applied to keep their changes.', 'Delete', function () {
-        db.recipes = db.recipes.filter(function (x) { return x.id !== v; }); save(true); render(); toast('Recipe deleted');
+      confirmBox(tx('Delete this recipe?'), tx('{name} is removed. Checks it was applied to keep their changes.', { name: I.q(rc.name, true) }), tx('Delete'), function () {
+        db.recipes = db.recipes.filter(function (x) { return x.id !== v; }); save(true); render(); toast(tx('Recipe deleted'));
       }, true);
     },
     erpdemo: function () { openErpDemo(); },
     useone: function (v, el) {
       var r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'), k = el.getAttribute('data-k');
       var x = cur.res.issues.filter(function (i) { return i.r === r && i.c === c && i.k === k; })[0]; if (!x) return;
-      commitChanges(E.RULES[k].title + ' fixed in row ' + cur.data.lines[r], [{ r: r, c: c, v: x.f !== undefined ? x.f : x.s }]);
+      commitChanges(E.RULES[k].title + ' fixed in row ' + cur.data.lines[r], [{ r: r, c: c, v: x.f !== undefined ? x.f : x.s }]); // stored in English, shown through histLabel()
     },
     row: function (v) { openRow(+v); },
     rowsrule: function (v) { view.rowsF = 'rule:' + v; view.rowsPage = 0; location.hash = '#/check/' + cur.id + '/rows'; },
@@ -1648,52 +1687,53 @@
       var g = cur.res.groups[+v]; if (!g) return;
       g.rows.forEach(function (a) { g.rows.forEach(function (b) { if (a < b) cur.data.notDup[a + ':' + b] = 1; }); });
       g.rows.forEach(function (r) { delete cur.data.survivors[r]; });
-      regroup(); toast('Marked as not duplicates');
+      regroup(); toast(tx('Marked as not duplicates'));
     },
-    dupreset: function () { cur.data.survivors = {}; cur.data.notDup = {}; regroup(); toast('Duplicate decisions reset'); },
+    dupreset: function () { cur.data.survivors = {}; cur.data.notDup = {}; regroup(); toast(tx('Duplicate decisions reset')); },
     gocol: function (v) { location.hash = '#/check/' + cur.id + '/columns'; setTimeout(function () { var el = $('col-' + v); if (el) { el.scrollIntoView({ block: 'start' }); el.classList.add('flash'); } }, 50); },
     reread: function () { rereadDialog(); },
     expdelim: function (v) { ui.exp.delim = v === 'tab' ? '\t' : v; saveUi(); render(); },
     dlclean: function () { dlClean(false); }, dldedup: function () { dlClean(true); }, dlissues: function () { dlIssues(); }, dlmap: function () { dlMap(); },
-    rlang: function (v) { db.settings.reportLang = v; save(true); render(); },
+    rlang: function (v) { if (!L[v]) return; db.settings.reportLang = v; db.settings.reportLangSet = true; save(true); render(); },
+    uilang: function (v) { setLang(v); },
     print: function () { window.print(); },
     reqreset: function () {
       var def = defaultSettings();
-      db.settings.req = def.req; save(true); if (cur) cur.res = null; cur = null; render(); toast('Fields back to the defaults');
+      db.settings.req = def.req; save(true); if (cur) cur.res = null; cur = null; render(); toast(tx('Fields back to the defaults'));
     },
     delall: function () {
-      confirmBox('Delete all checks?', 'Every check in this browser is removed, with its rows, fixes and decisions' + (window.StratumSync && StratumSync.user() ? ', and the list in your cloud copy is emptied' : '') + '. The original files are not touched.', 'Delete all', function () {
+      confirmBox(tx('Delete all checks?'), tx(window.StratumSync && StratumSync.user() ? 'Every check in this browser is removed, with its rows, fixes and decisions, and the list in your cloud copy is emptied. The original files are not touched.' : 'Every check in this browser is removed, with its rows, fixes and decisions. The original files are not touched.'), tx('Delete all'), function () {
         db.checks = []; tables = {}; raw = {}; stored = {}; cur = null; db.seeded = true;
         if (idbOK) enqueue(tClear);
-        save(true); render(); toast('All checks deleted');
+        save(true); render(); toast(tx('All checks deleted'));
       }, true);
     },
     resetdemo: function () {
-      confirmBox('Reset demo data?', 'The three demo checks are created again from the original demo files, without your fixes and decisions. Your own checks stay.', 'Reset demo data', function () {
+      confirmBox(tx('Reset demo data?'), tx('The three demo checks are created again from the original demo files, without your fixes and decisions. Your own checks stay.'), tx('Reset demo data'), function () {
         var ids = db.checks.filter(function (c) { return c.demo; }).map(function (c) { return c.id; });
         db.checks = db.checks.filter(function (c) { return !c.demo; });
         ids.forEach(function (id) { delete tables[id]; delete raw[id]; delete stored[id]; dirty[id] = 1; });
         if (cur && ids.indexOf(cur.id) >= 0) cur = null;
         save(false);
         location.hash = '#/';
-        seedDemos().then(function () { toast('Demo data reset'); render(); });
+        seedDemos().then(function () { toast(tx('Demo data reset')); render(); });
       });
     }
   };
   function rereadDialog() {
     var meta = cur.meta, rd = meta.read || {};
-    modal('Change how the file is read', '<p>Reading the file again replaces its rows and drops your fixes, edits and duplicate decisions for it.</p>' +
-      '<div class="field"><label for="rrEnc">Text encoding</label><select class="in" id="rrEnc">' + E.ENCODINGS.map(function (e) { return '<option value="' + e[0] + '"' + (rd.encoding === e[0] ? ' selected' : '') + '>' + esc(e[1]) + '</option>'; }).join('') + '</select></div>' +
-      '<div class="row2"><div class="field"><label for="rrDel">Delimiter</label><select class="in" id="rrDel">' + E.DELIMS.map(function (d) { return '<option value="' + (d === '\t' ? 'tab' : esc(d)) + '"' + (rd.delim === d ? ' selected' : '') + '>' + E.delimName(d) + '</option>'; }).join('') + '</select></div>' +
-      '<div class="field"><label for="rrHdr">Header row</label><select class="in" id="rrHdr"><option value="auto">Find it automatically</option><option value="none">No header row</option>' +
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (n) { return '<option value="' + n + '">Record ' + n + '</option>'; }).join('') + '</select></div></div>' +
-      '<p class="hint">Records are counted without empty lines.</p>', 'Read again', function () {
+    modal(tx('Change how the file is read'), '<p>' + esc(tx('Reading the file again replaces its rows and drops your fixes, edits and duplicate decisions for it.')) + '</p>' +
+      '<div class="field"><label for="rrEnc">' + esc(tx('Text encoding')) + '</label><select class="in" id="rrEnc">' + E.ENCODINGS.map(function (e) { return '<option value="' + e[0] + '"' + (rd.encoding === e[0] ? ' selected' : '') + '>' + esc(lx(e[1])) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="row2"><div class="field"><label for="rrDel">' + esc(tx('Delimiter')) + '</label><select class="in" id="rrDel">' + E.DELIMS.map(function (d) { return '<option value="' + (d === '\t' ? 'tab' : esc(d)) + '"' + (rd.delim === d ? ' selected' : '') + '>' + esc(tx(E.delimName(d))) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="field"><label for="rrHdr">' + esc(tx('Header row')) + '</label><select class="in" id="rrHdr"><option value="auto">' + esc(tx('Find it automatically')) + '</option><option value="none">' + esc(tx('No header row')) + '</option>' +
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (n) { return '<option value="' + n + '">' + esc(tx('Record {n}', { n: n })) + '</option>'; }).join('') + '</select></div></div>' +
+      '<p class="hint">' + esc(tx('Records are counted without empty lines.')) + '</p>', tx('Read again'), function () {
       var enc = $('rrEnc').value, dl = $('rrDel').value, hd = $('rrHdr').value;
       var bytes = raw[meta.id] || (meta.demo ? X.file(meta.demo, TODAY).bytes : null);
-      if (!bytes) return modalError('The original file is no longer in memory. Open it again.');
+      if (!bytes) return modalError(tx('The original file is no longer in memory. Open it again.'));
       closeLayer();
       importBytes(bytes, meta.name, meta.kind, { encoding: enc, delim: dl === 'tab' ? '\t' : dl, header: hd === 'auto' ? null : hd === 'none' ? -1 : +hd - 1, into: meta.id })
-        .then(function () { toast('Read again as ' + encName(enc)); }, readFailed);
+        .then(function () { toast(tx('Read again as {enc}', { enc: encName(enc) })); }, readFailed);
     });
   }
   document.addEventListener('click', function (e) {
@@ -1716,23 +1756,25 @@
         f.querySelectorAll('select[data-t="' + t.id + '"]').forEach(function (s) { if (s.value === 'req') q.required.push(s.getAttribute('data-r')); else if (s.value === 'rec') q.recommended.push(s.getAttribute('data-r')); });
         db.settings.req[t.id] = q;
       });
-      save(true); cur = null; toast('Fields saved. Checks use them the next time you open them.');
+      save(true); cur = null; toast(tx('Fields saved. Checks use them the next time you open them.'));
     }
     if (f.id === 'ruleForm') {
       e.preventDefault();
       var si = parseRates($('sRateSI').value), hr = parseRates($('sRateHR').value), err = $('ruleErr');
-      if (!si || !hr) { err.hidden = false; err.textContent = 'Write the rates as numbers separated by semicolons, for example 22; 9,5; 5.'; return; }
+      if (!si || !hr) { err.hidden = false; err.textContent = tx('Write the rates as numbers separated by semicolons, for example 22; 9,5; 5.'); return; }
       err.hidden = true;
       db.settings.home = $('sHome').value; db.settings.dupThreshold = +$('sThr').value; db.settings.vatRates = { SI: si, HR: hr };
-      save(true); cur = null; render(); toast('Rules saved');
+      save(true); cur = null; render(); toast(tx('Rules saved'));
     }
     if (f.id === 'repForm') {
       e.preventDefault();
       var bk = $('sBook').value.trim(), re = $('repErr');
-      if (bk && !safeUrl(bk)) { re.hidden = false; re.textContent = 'Write the booking link as a full https address, for example https://cal.com/your-name/20min.'; return; }
+      if (bk && !safeUrl(bk)) { re.hidden = false; re.textContent = tx('Write the booking link as a full https address, for example https://cal.com/your-name/20min.'); return; }
       re.hidden = true;
-      db.settings.preparedBy = $('sBy').value.trim(); db.settings.preparedFor = $('sFor').value.trim(); db.settings.reportLang = $('sLang').value; db.settings.bookingUrl = safeUrl(bk);
-      save(true); toast('Report header saved');
+      var rl = L[$('sLang').value] ? $('sLang').value : '';
+      if (rl !== db.settings.reportLang) { db.settings.reportLang = rl; db.settings.reportLangSet = !!rl; }
+      db.settings.preparedBy = $('sBy').value.trim(); db.settings.preparedFor = $('sFor').value.trim(); db.settings.bookingUrl = safeUrl(bk);
+      save(true); toast(tx('Report header saved'));
     }
   });
   var qT = null;
@@ -1749,11 +1791,12 @@
   document.addEventListener('change', function (e) {
     var t = e.target, k = t.getAttribute && t.getAttribute('data-chg');
     if (t.id === 'filePick' && t.files && t.files[0]) { importFile(t.files[0]); return; }
+    if (t.id === 'uiLang') { setLang(t.value); return; }
     if (!k) return;
     if (k === 'role') {
       var c = +t.getAttribute('data-c');
       cur.data.roles[c] = t.value; cur.data.roleSrc[c] = 'you';
-      save(true, cur.id); analyse({ byPerson: true }); toast(cur.data.headers[c] + ' is now checked as ' + E.ROLE[t.value].name);
+      save(true, cur.id); analyse({ byPerson: true }); toast(tx('{column} is now checked as {role}', { column: cur.data.headers[c], role: roleName(t.value) }));
     } else if (k === 'unit') {
       cur.data.unitTarget = t.value; save(true, cur.id); analyse({ byPerson: true, reuseDup: cur.res && cur.res.dup });
     } else if (k === 'fixonly') { view.fixOnly = t.checked; render(); }
@@ -1770,15 +1813,15 @@
       var on = t.checked;
       if (!on) {
         t.checked = true;
-        confirmBox('Stop keeping files?', 'The rows of every check are removed from this browser. Their summaries stay, and the files you open from now on are kept only until you close the page.', 'Stop keeping files', function () {
+        confirmBox(tx('Stop keeping files?'), tx('The rows of every check are removed from this browser. Their summaries stay, and the files you open from now on are kept only until you close the page.'), tx('Stop keeping files'), function () {
           db.settings.keepFiles = false; stored = {};
           if (idbOK) enqueue(tClear);
-          save(true); render(); toast('Files are no longer kept in this browser');
+          save(true); render(); toast(tx('Files are no longer kept in this browser'));
         }, true);
       } else {
         db.settings.keepFiles = true;
         Object.keys(tables).forEach(function (id) { if (findCheck(id)) { dirty[id] = 1; stored[id] = true; } });
-        save(true); render(); toast('Files are kept in this browser');
+        save(true); render(); toast(tx('Files are kept in this browser'));
       }
     }
   });
@@ -1804,7 +1847,7 @@
     return { version: VERSION, settings: db.settings, seeded: !!db.seeded, recipes: db.recipes || [], checks: db.checks.map(function (c) { return Object.assign({}, c); }) };
   }
   function applyCloud(data) {
-    if (!validDb(data)) return Promise.reject(new Error('The cloud copy is not data this version of the data health check can read.'));
+    if (!validDb(data)) return Promise.reject(new Error(tx('The cloud copy is not data this version of the data health check can read.')));
     applying = true;
     clearTimeout(saveTimer); saveTimer = null;
     var next = ensureSchema(JSON.parse(JSON.stringify(data)));
@@ -1814,13 +1857,13 @@
     gone.forEach(function (id) { delete stored[id]; });
     db = next; cur = null;
     var w = idbOK ? enqueue(function () { var p = kvPut(db); gone.forEach(function (id) { p = p.then(function () { return tDel(id); }); }); return p.then(function () { announce(gone); }); }) : Promise.resolve();
-    return w.then(function () { closeLayer(); render(); toast('Loaded settings and checks from the cloud'); })
+    return w.then(function () { closeLayer(); render(); toast(tx('Loaded settings and checks from the cloud')); })
       .then(function () { applying = false; }, function (e) { applying = false; throw e; });
   }
   function syncStart() {
     if (!window.StratumSync || SYNC) return;
     try {
-      SYNC = window.StratumSync.attach({ app: 'datacheck', label: 'Data health check', getSnapshot: function () { return Promise.resolve(snapshot()); }, applySnapshot: applyCloud });
+      SYNC = window.StratumSync.attach({ app: 'datacheck', label: tx('Data health check'), getSnapshot: function () { return Promise.resolve(snapshot()); }, applySnapshot: applyCloud });
     } catch (e) { SYNC = null; if (window.console) console.warn('Data health check: cloud sync unavailable', e); }
   }
 
@@ -1833,10 +1876,12 @@
       stored = {}; (v[1] || []).forEach(function (k) { stored[k] = true; });
       var ids = e.data.ids || [];
       ids.forEach(function (id) { if (!cur || cur.id !== id || !cur.busy) delete tables[id]; });
-      if (cur && (ids.indexOf(cur.id) >= 0 || !findCheck(cur.id))) { if ($('layers').innerHTML) { closeLayer(); toast('This check changed in another tab.'); } cur = null; }
+      if (cur && (ids.indexOf(cur.id) >= 0 || !findCheck(cur.id))) { if ($('layers').innerHTML) { closeLayer(); toast(tx('This check changed in another tab.')); } cur = null; }
       render();
     }, function () { /* storage gone: keep what this tab has */ });
   };
+
+  shellText();
 
   // ── boot ─────────────────────────────────────────────────────────────────
   enqueue(function () { return Promise.all([kvGet(), tKeys()]); }).then(function (v) {

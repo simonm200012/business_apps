@@ -26,7 +26,7 @@ export default {
 
   // "Book 20 minutes": a Cal.com or Microsoft Bookings link. Until it is an https:// link, the button opens an e-mail
   // asking for a 20-minute call instead.
-  bookingUrl: '[Povezava za rezervacijo termina]',
+  bookingUrl: 'https://cal.com/clearfigure/posvet',   // Cal.com (free plan), 20 min, Mon–Fri 9–17 Europe/Ljubljana
 
   person: {
     name: 'Simon Modic',

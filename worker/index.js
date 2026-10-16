@@ -87,6 +87,8 @@ async function api(request, env, url) {
   if (path.startsWith('/api/auth/')) return json({ error: 'Sign-in is handled by Cloudflare Access on this site.' }, 400);
   if (path === '/api/private/session') return json({ allowed: ['showcase'] });
 
+  if (path === '/api/leads') return who.viewer ? json({ error: 'View-only access does not include this app.', viewer: true }, 403) : leads(request, env, url);
+
   const vm = path.match(/^\/api\/vies\/([^/]+)\/([^/]+)\/?$/);
   if (vm) return vies(request, vm[1], vm[2]);
 
@@ -242,4 +244,25 @@ async function vies(request, rawCc, rawNum) {
   }
   return json({ country: cc, number: num, valid: body.isValid, status: body.isValid ? 'valid' : 'invalid', name: viesText(body.name), address: viesText(body.address),
     requestDate: typeof body.requestDate === 'string' ? body.requestDate.slice(0, 30) : null });
+}
+
+// ── Website messages (the public site's contact form, public/worker.js) ──────────────────────────────────────────────
+// GET /api/leads?after=<key>: up to 50 messages stored after <key> (keys sort by time: leads/<YYYY-MM>/<YYYYMMDDHHMMSS>-<id>.json),
+// oldest first, so Client Atlas fetches only what it hasn't imported. Owner only (viewers are refused above and in access.js).
+const LEAD_KEY = /^leads\/\d{4}-\d{2}\/[A-Za-z0-9_.-]{1,100}\.json$/;
+async function leads(request, env, url) {
+  if (request.method !== 'GET') return json({ error: 'Not found.' }, 404);
+  if (!env.LEADS) return json({ error: 'The website messages are not connected to this site.' }, 503);
+  const after = url.searchParams.get('after') || '';
+  if (after && !LEAD_KEY.test(after)) return json({ error: 'Bad address.' }, 400);
+  const page = await env.LEADS.list({ prefix: 'leads/', limit: 50, ...(after ? { startAfter: after } : {}) });
+  const out = [];
+  for (const o of page.objects || []) {
+    if (!LEAD_KEY.test(o.key)) continue;
+    const got = await env.LEADS.get(o.key);
+    if (!got) continue;
+    try { const rec = JSON.parse(await got.text()); if (rec && typeof rec === 'object') out.push({ ...rec, key: o.key }); } catch { /* a broken file is skipped */ }
+  }
+  const objs = page.objects || [];
+  return json({ leads: out, last: objs.length ? objs[objs.length - 1].key : after, truncated: !!page.truncated });
 }

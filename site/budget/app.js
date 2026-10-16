@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  var E = window.BudgetEngine, X = window.BudgetData;
+  var E = window.BudgetEngine, X = window.BudgetData, I18N = window.BuI18n;
   var $ = function (id) { return document.getElementById(id); };
   var UIKEY = 'stratum-budget-ui';
   var PACK_LANGS = { en: 'English', sl: 'Slovenščina', hr: 'Hrvatski' }; // languages of the board pack and of comment texts
@@ -55,7 +55,7 @@
   function failed(err) {
     idbOK = false;
     if (window.console) console.warn('Budget vs actual: browser storage unavailable, keeping data in memory.', err);
-    if (!warned) { warned = true; setTimeout(function () { toast('Browser storage is unavailable: changes last until you reload.'); }, 50); }
+    if (!warned) { warned = true; setTimeout(function () { toast(tx('Browser storage is unavailable: changes last until you reload.')); }, 50); }
   }
   function save() { if (!idbOK) return; clearTimeout(saveTimer); saveTimer = setTimeout(flush, 250); }
   function flush() {
@@ -77,7 +77,7 @@
     writeQ.then(kvGet).then(function (v) {
       if (!valid(v) || saveTimer) return;
       db = v; ensureSchema(); invalidate(); undoStack = []; imp = null;
-      if ($('layers').innerHTML) { closeLayer(); toast('Changed in another tab: the dialog was closed.'); }
+      if ($('layers').innerHTML) { closeLayer(); toast(tx('Changed in another tab: the dialog was closed.')); }
       render();
     }).catch(function () { /* ignore */ });
   };
@@ -86,14 +86,14 @@
   // A cloud copy is written straight to IndexedDB (not through flush), so taking it does not count as a local change.
   var sync = null, syncPanelOff = null;
   function applyCloud(data) {
-    if (!valid(data)) return Promise.reject(new Error('The cloud copy is not Budget vs actual data this version can read.'));
+    if (!valid(data)) return Promise.reject(new Error(tx('The cloud copy is not Budget vs actual data this version can read.')));
     applying = true;
     clearTimeout(saveTimer); saveTimer = null;
     db = data; ensureSchema(); invalidate(); undoStack = []; imp = null;
     closeLayer(); render();
     var snap = db;
     writeQ = writeQ.then(function () { return idbOK ? kvPut(snap) : null; }).then(announce).catch(failed);
-    return writeQ.then(function () { applying = false; toast('Loaded your data from the cloud copy'); }, function (err) { applying = false; throw err; });
+    return writeQ.then(function () { applying = false; toast(tx('Loaded your data from the cloud copy')); }, function (err) { applying = false; throw err; });
   }
 
   // ── state ────────────────────────────────────────────────────────────────
@@ -152,12 +152,50 @@
   var uOv = part('ov', { chart: 'rev', bridge: 'ytd' });
   var uBud = part('bud', { vid: 'budget', line: 'sales_si', ri: 0, m: 1 });
   var uCm = part('cm', { f: 'attention', line: '' });
-  var uPk = part('pack', { lang: 'en' });
+  // the board pack's language: picked = chosen in the pack; otherwise the pack follows the screen language (an old
+  // saved 'en' was only the default, never a choice; 'sl' and 'hr' could only have been chosen)
+  var uPk = part('pack', { lang: '' });
+  if (typeof uPk.picked !== 'boolean') { uPk.picked = uPk.lang === 'sl' || uPk.lang === 'hr'; if (!uPk.picked) uPk.lang = ''; }
   var uSt = part('set', { q: '', line: '' });
   var uHc = part('hc', { vid: '' });
   var uiT = null;
   function saveUi() { clearTimeout(uiT); uiT = null; lsSet(UIKEY, JSON.stringify(ui)); }
   function saveUiSoon() { clearTimeout(uiT); uiT = setTimeout(saveUi, 400); }
+
+  // ── screen language (English, Slovene, Croatian) ─────────────────────────
+  function defaultLang() { var n = String((navigator.languages && navigator.languages[0]) || navigator.language || '').toLowerCase(); return n.indexOf('sl') === 0 ? 'sl' : n.indexOf('hr') === 0 || n.indexOf('bs') === 0 || n.indexOf('sr') === 0 ? 'hr' : 'en'; }
+  (function () { // ?lang=sl|hr|en (the public site's demo links): use it and keep it as the choice
+    var q = /[?&]lang=(en|sl|hr)\b/.exec(location.search);
+    if (q && ui.lang !== q[1]) { ui.lang = q[1]; saveUi(); }
+  })();
+  var LANG = I18N.LANGS.indexOf(ui.lang) >= 0 ? ui.lang : defaultLang(), I = I18N.make(LANG);
+  /** a screen text in the chosen language; {name} placeholders filled from v (plain text: escape it for HTML) */
+  function tx(s, v) { return I.t(s, v); }
+  /** the same for HTML: the text is escaped, the values in v are inserted as they are (escape them yourself) */
+  function th(s, v) { var t = esc(I.t(s)); return v ? t.replace(/\{(\w+)\}/g, function (m, k) { return v[k] == null ? m : v[k]; }) : t; }
+  /** a text the engine (or older data) wrote in English: translated by pattern */
+  function lx(s) { return I.x(s); }
+  function setLang(l) {
+    if (I18N.LANGS.indexOf(l) < 0) return;
+    LANG = l; I = I18N.make(l); ui.lang = l; saveUi();
+    shellText(); closeLayer(); render();
+  }
+  /** the texts in index.html */
+  function shellText() {
+    document.documentElement.lang = LANG;
+    $('skipLink').textContent = tx('Skip to content');
+    $('menuLabel').textContent = tx('Menu');
+    $('appName').textContent = tx('Budget vs actual');
+    $('side').setAttribute('aria-label', tx('Budget vs actual navigation'));
+    $('nav').setAttribute('aria-label', tx('Sections'));
+    $('demoPill').title = tx('The company, people, accounts and amounts are fictional demo data. Nothing is ever sent anywhere; your changes and imports stay in this browser, plus your private cloud copy if you sign in to sync.');
+    $('demoText').textContent = tx('Demo data · saved in this browser only');
+    $('langLabel').textContent = tx('Language');
+    $('uiLang').value = LANG;
+    var ld = document.querySelector('.loading span'); if (ld) ld.textContent = tx('Adding up the year…');
+  }
+  /** the board pack's language: the one chosen in the pack, else the screen language */
+  function packLang() { return uPk.picked && PACK_LANGS[uPk.lang] ? uPk.lang : LANG; }
 
   var M = null;
   function invalidate() { M = null; }
@@ -185,8 +223,8 @@
     return M;
   }
   function cmpRows(cmp) { var m = model(); return cmp === 'forecast' && m.fcR ? m.fcR : cmp === 'ly' ? m.pyR : m.budR; }
-  function cmpShort(cmp) { var m = model(); return cmp === 'forecast' && m.fc ? 'Forecast' : cmp === 'ly' ? String(m.y - 1) : 'Budget'; }
-  function cmpLong(cmp) { var m = model(); return cmp === 'forecast' && m.fc ? m.fc.name : cmp === 'ly' ? (m.y - 1) + ' actual' : m.bud.name; }
+  function cmpShort(cmp) { var m = model(); return cmp === 'forecast' && m.fc ? tx('Forecast') : cmp === 'ly' ? String(m.y - 1) : tx('Budget'); }
+  function cmpLong(cmp) { var m = model(); return cmp === 'forecast' && m.fc ? vname(m.fc) : cmp === 'ly' ? tx('{year} actual', { year: m.y - 1 }) : vname(m.bud); }
   function attention() { var m = model(); return m.flags.filter(function (f) { var c = m.cIdx[E.commentKey(f.line, f.month, f.scope)]; return !c || c.status !== 'explained'; }); }
   function commit(text, fn, opts) {
     fn();
@@ -223,15 +261,31 @@
     var r = Math.round(p * 10) / 10;
     return (r > 0 && plus ? '+' : r < 0 ? MINUS : '') + nf1.format(Math.abs(r)) + NB + '%';
   }
-  function ppTxt(p) { if (p == null || !isFinite(p)) return '—'; var r = Math.round(p * 10) / 10; return (r > 0 ? '+' : r < 0 ? MINUS : '') + nf1.format(Math.abs(r)) + NB + 'pp'; }
-  function dt(s) { return E.isDate(s) ? +s.slice(8, 10) + '. ' + +s.slice(5, 7) + '. ' + s.slice(0, 4) : '—'; }
-  function mon(m) { return E.MONTHS[m - 1]; }
-  function monL(m) { return E.MONTHS_LONG[m - 1]; }
-  function range(from, to) { return from > to ? 'no months' : from === to ? monL(from) : monL(from) + '–' + monL(to); }
-  function plural(n, one, many) { return nf0.format(n) + ' ' + (n === 1 ? one : many); }
+  function ppTxt(p) { if (p == null || !isFinite(p)) return '—'; var r = Math.round(p * 10) / 10; return (r > 0 ? '+' : r < 0 ? MINUS : '') + nf1.format(Math.abs(r)) + NB + tx('pp'); }
+  /** 15. 10. 2026 (Croatian adds the closing full stop: 15. 10. 2026.) */
+  function dt(s) { return E.isDate(s) ? dt0(s) + (LANG === 'hr' ? '.' : '') : '—'; }
+  function dt0(s) { return E.isDate(s) ? +s.slice(8, 10) + '. ' + +s.slice(5, 7) + '. ' + s.slice(0, 4) : '—'; }
+  function mon(m) { return I.months[m - 1]; }
+  function monL(m) { return I.monthsLong[m - 1]; }
+  /** after "through": do septembra (sl), do rujna (hr); English and the nominative are the same */
+  function monG(m) { return I.monthsGen[m - 1]; }
+  /** a heading or sentence that starts with a (lowercase Slovene or Croatian) month name */
+  function cap(s) { s = String(s); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function range(from, to) { return from > to ? tx('no months') : from === to ? monL(from) : monL(from) + '–' + monL(to); }
+  /** "3 accounts" in the screen language (Slovene has four forms, Croatian three) */
+  function plural(n, one, many) { return nf0.format(n) + ' ' + I.noun(n, one, many); }
+  /** the name of a P&L line, subtotal or margin row in the screen language */
+  function lnm(id) {
+    if (LANG !== 'en' && I18N.LINE_NAMES[LANG][id]) return I18N.LINE_NAMES[LANG][id];
+    return id === 'gm_pct' ? 'Gross margin %' : id === 'ebitda_pct' ? 'EBITDA %' : E.nameOf(id);
+  }
+  function rowName(r) { return r.kind === 'head' ? tx(r.name) : lnm(r.id); }
+  function secName(id) { var s = E.SECTIONS.filter(function (x) { return x.id === id; })[0]; return s ? tx(s.name) : ''; }
+  /** a version's name: the app's own names ("Budget 2026", "Forecast 2026 (Q2)") in the screen language */
+  function vname(v) { return v ? lx(v.name) : ''; }
   function favCls(fav) { return fav === true ? 'pos' : fav === false ? 'neg' : ''; }
   function kcls(fav) { return fav === true ? 'good' : fav === false ? 'bad' : ''; }
-  function favWord(fav) { return fav === true ? 'Favourable' : fav === false ? 'Unfavourable' : 'No difference'; }
+  function favWord(fav) { return tx(fav === true ? 'Favourable' : fav === false ? 'Unfavourable' : 'No difference'); }
   function same(a, b) { if (a.length !== b.length) return false; for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; }
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function keyId(k) { return String(k).replace(/[^a-z0-9]+/gi, '-'); }
@@ -285,8 +339,8 @@
     opts = opts || {};
     modalSubmit = onSubmit;
     openLayer('<form class="modal' + (opts.wide ? ' wide' : '') + '" id="mdForm" role="dialog" aria-modal="true" aria-labelledby="mdTitle" novalidate><div class="md-head"><h2 id="mdTitle">' + esc(title) + '</h2>' +
-      '<button type="button" class="btn icon sm" data-act="close" aria-label="Close">' + ic('x') + '</button></div><div class="md-body">' + body + '<div class="err" id="mdErr" role="alert" hidden></div></div>' +
-      '<div class="md-foot">' + (opts.extra || '') + '<button type="button" class="btn" data-act="close">' + (submitLabel ? 'Cancel' : 'Close') + '</button>' +
+      '<button type="button" class="btn icon sm" data-act="close" aria-label="' + esc(tx('Close')) + '">' + ic('x') + '</button></div><div class="md-body">' + body + '<div class="err" id="mdErr" role="alert" hidden></div></div>' +
+      '<div class="md-foot">' + (opts.extra || '') + '<button type="button" class="btn" data-act="close">' + esc(tx(submitLabel ? 'Cancel' : 'Close')) + '</button>' +
       (submitLabel ? '<button type="submit" class="btn ' + (opts.danger ? 'danger' : 'pri') + '">' + esc(submitLabel) + '</button>' : '') + '</div></form>', '.modal');
   }
   function modalError(msg) { var e = $('mdErr'); if (e) { e.hidden = !msg; e.textContent = msg || ''; } }
@@ -315,13 +369,13 @@
     var r = parseRoute(), m = model(), need = attention().length;
     $('nav').innerHTML = ROUTES.map(function (x) {
       var cur = r.name === x[0] || (r.name === 'line' && x[0] === 'pl');
-      var cnt = x[0] === 'comments' && need ? '<span class="count alert" title="Variances that still need an explanation">' + need + '</span>' : '';
-      return '<a href="#/' + x[0] + '"' + (cur ? ' aria-current="page"' : '') + '>' + ic(x[2]) + '<span>' + (x[3] ? '<span class="nl">' + esc(x[1]) + '</span><span class="ns">' + esc(x[3]) + '</span>' : esc(x[1])) + '</span>' + cnt + '</a>';
+      var cnt = x[0] === 'comments' && need ? '<span class="count alert" title="' + esc(tx('Variances that still need an explanation')) + '">' + need + '</span>' : '';
+      return '<a href="#/' + x[0] + '"' + (cur ? ' aria-current="page"' : '') + '>' + ic(x[2]) + '<span>' + (x[3] ? '<span class="nl">' + esc(tx(x[1])) + '</span><span class="ns">' + esc(tx(x[3])) + '</span>' : esc(tx(x[1]))) + '</span>' + cnt + '</a>';
     }).join('');
     var short = db.company.name.replace(/\s+(d\.\s?o\.\s?o\.|d\.\s?d\.|s\.\s?p\.)$/i, '');
     if (short.length > 14) short = short.split(/\s+/)[0];
     $('brandSub').textContent = short + ' · ' + m.y;
-    $('closePill').innerHTML = '<span>' + (m.closed ? 'Closed through <b>' + esc(monL(m.closed)) + '</b>' : 'No month closed yet') + '</span><small>' + (m.closed < 12 ? plural(12 - m.closed, 'month', 'months') + ' open' : 'The whole year is closed') + (db.settings.closed === 'auto' ? '' : ' · set by hand') + '</small>';
+    $('closePill').innerHTML = '<span>' + (m.closed ? th('Closed through {month}', { month: '<b>' + esc(monG(m.closed)) + '</b>' }) : th('No month closed yet')) + '</span><small>' + (m.closed < 12 ? th('Open: {months}', { months: plural(12 - m.closed, 'month', 'months') }) : th('The whole year is closed')) + (db.settings.closed === 'auto' ? '' : ' · ' + th('set by hand')) + '</small>';
     // home-page summary: the same count as the Comments badge
     try { if (window.StratumShell && StratumShell.needs) StratumShell.needs('budget', [
       { text: 'Variances that need an explanation', count: need, href: '/budget/#/comments', tone: 'warn' }
@@ -341,13 +395,14 @@
     var m = model(), miss = [];
     for (var i = 1; i <= m.closed; i++) if (!db.loaded[m.y][i - 1]) miss.push(monL(i));
     if (!miss.length) return '';
-    return '<div class="notice warn"><p>' + esc(miss.length > 3 ? miss[0] + ' and ' + (miss.length - 1) + ' more months' : miss.join(', ')) + (miss.length === 1 ? ' counts' : ' count') + ' as closed but ' + (miss.length === 1 ? 'has' : 'have') + ' no actuals yet, so ' + (miss.length === 1 ? 'it shows' : 'they show') + ' as zero. Import the actuals, or set the closed month in Settings.</p><a class="btn sm" href="#/import">Import actuals</a></div>';
+    var list = miss.length > 3 ? tx('{month} and {n} more months', { month: miss[0], n: miss.length - 1 }) : miss.join(', ');
+    return '<div class="notice warn"><p>' + th(miss.length === 1 ? 'Counted as closed, but no actuals yet: {list}. It shows as zero. Import the actuals, or set the closed month in Settings.' : 'Counted as closed, but no actuals yet: {list}. They show as zero. Import the actuals, or set the closed month in Settings.', { list: esc(list) }) + '</p><a class="btn sm" href="#/import">' + th('Import actuals') + '</a></div>';
   }
   function basisSeg(label) {
     var m = model();
     if (!m.fc) return '';
-    return '<div class="seg" role="group" aria-label="' + esc(label || 'Outlook uses') + '"><button type="button" data-act="basis" data-v="forecast" aria-pressed="' + (m.basis === m.fc) + '">' + esc(m.fc.name) + '</button>' +
-      '<button type="button" data-act="basis" data-v="budget" aria-pressed="' + (m.basis === m.bud) + '">' + esc(m.bud.name) + '</button></div>';
+    return '<div class="seg" role="group" aria-label="' + esc(label || tx('Outlook uses')) + '"><button type="button" data-act="basis" data-v="forecast" aria-pressed="' + (m.basis === m.fc) + '">' + esc(vname(m.fc)) + '</button>' +
+      '<button type="button" data-act="basis" data-v="budget" aria-pressed="' + (m.basis === m.bud) + '">' + esc(vname(m.bud)) + '</button></div>';
   }
 
   // ── charts ───────────────────────────────────────────────────────────────
@@ -358,7 +413,7 @@
   function axisLbl(c) { var e = c / 100, a = Math.abs(e); var s = a >= 1e6 ? nfx.format(a / 1e6) + ' M' : a >= 1e3 ? nf0.format(a / 1e3) + ' k' : nf0.format(a); return (e < 0 && a ? MINUS : '') + s; }
   function chartBox(id, label, def) {
     CH[id] = def;
-    return '<div class="chart" id="' + id + '" tabindex="0" role="group" aria-roledescription="chart" aria-label="' + esc(label + '. Use the left and right arrow keys to read each month.') + '"><div class="cv"></div><div class="tip" role="status" aria-live="polite" hidden></div></div>';
+    return '<div class="chart" id="' + id + '" tabindex="0" role="group" aria-roledescription="chart" aria-label="' + esc(tx('{chart}. Use the left and right arrow keys to read each month.', { chart: label })) + '"><div class="cv"></div><div class="tip" role="status" aria-live="polite" hidden></div></div>';
   }
   function drawCharts() {
     Object.keys(CH).forEach(function (id) {
@@ -382,7 +437,7 @@
     return { lo: lo, hi: hi, step: step, y: function (v) { return T + (H - T - B) * (hi - v) / (hi - lo); } };
   }
   function monthAxis(g, x, sw, H, narrow) {
-    for (var i = 0; i < 12; i++) g.push('<text class="ax" x="' + f1(x(i) + sw / 2) + '" y="' + (H - 7) + '" text-anchor="middle">' + (narrow ? E.MONTHS[i].charAt(0) : E.MONTHS[i]) + '</text>');
+    for (var i = 0; i < 12; i++) g.push('<text class="ax" x="' + f1(x(i) + sw / 2) + '" y="' + (H - 7) + '" text-anchor="middle">' + (narrow ? I.months[i].charAt(0).toUpperCase() : I.months[i]) + '</text>');
   }
   function gridLines(g, sc, L, W, R) {
     for (var v = sc.lo; v <= sc.hi + sc.step / 2; v += sc.step) {
@@ -417,10 +472,10 @@
       },
       tip: function (i) {
         var isAc = i < o.closed, v = isAc ? o.ac[i] : o.ou[i], va = E.variance(v, o.bu[i], o.type);
-        return '<b>' + esc(monL(i + 1)) + ' ' + model().y + (isAc ? '' : ' · open') + '</b>' +
+        return '<b>' + esc(cap(monL(i + 1))) + ' ' + model().y + (isAc ? '' : ' · ' + th('open')) + '</b>' +
           '<div><span><i style="border-color:var(--c-ac)' + (isAc ? '' : ';border-top-style:dashed') + '"></i>' + esc(isAc ? o.names.ac : o.names.ou) + '</span><span>' + eur(v) + '</span></div>' +
           '<div><span><i style="border-color:var(--c-bu)"></i>' + esc(o.names.bu) + '</span><span>' + eur(o.bu[i]) + '</span></div>' +
-          '<div class="' + favCls(va.fav) + '"><span>Difference</span><span>' + sgn(va.d) + NB + '€ · ' + pctTxt(va.pct, true) + '</span></div>' +
+          '<div class="' + favCls(va.fav) + '"><span>' + th('Difference') + '</span><span>' + sgn(va.d) + NB + '€ · ' + pctTxt(va.pct, true) + '</span></div>' +
           (o.ly ? '<div><span><i style="border-color:var(--c-ly)"></i>' + esc(o.names.ly) + '</span><span>' + eur(o.ly[i]) + '</span></div>' : '');
       }
     });
@@ -450,10 +505,10 @@
       },
       tip: function (i) {
         var isAc = i < o.closed, va = E.variance(cAc[i], cBu[i], o.type);
-        return '<b>Through ' + esc(monL(i + 1)) + (isAc ? '' : ' · outlook') + '</b>' +
-          '<div><span><i style="border-color:var(--c-ac)' + (isAc ? '' : ';border-top-style:dashed') + '"></i>' + (isAc ? 'Actual' : 'Outlook') + '</span><span>' + eur(cAc[i]) + '</span></div>' +
-          '<div><span><i style="border-color:var(--c-bu)"></i>Budget</span><span>' + eur(cBu[i]) + '</span></div>' +
-          '<div class="' + favCls(va.fav) + '"><span>Difference</span><span>' + sgn(va.d) + NB + '€</span></div>' +
+        return '<b>' + th('Through {month}', { month: esc(monG(i + 1)) }) + (isAc ? '' : ' · ' + th('outlook')) + '</b>' +
+          '<div><span><i style="border-color:var(--c-ac)' + (isAc ? '' : ';border-top-style:dashed') + '"></i>' + th(isAc ? 'Actual' : 'Outlook') + '</span><span>' + eur(cAc[i]) + '</span></div>' +
+          '<div><span><i style="border-color:var(--c-bu)"></i>' + th('Budget') + '</span><span>' + eur(cBu[i]) + '</span></div>' +
+          '<div class="' + favCls(va.fav) + '"><span>' + th('Difference') + '</span><span>' + sgn(va.d) + NB + '€</span></div>' +
           (cLy ? '<div><span><i style="border-color:var(--c-ly)"></i>' + (model().y - 1) + '</span><span>' + eur(cLy[i]) + '</span></div>' : '');
       }
     });
@@ -486,25 +541,25 @@
     var h = '<ul class="wf" style="--z:' + sc(0).toFixed(2) + '%">';
     h += '<li class="tot" title="' + esc(o.startLabel + ': ' + eur(b.start)) + '"><span class="wl">' + esc(o.startLabel) + '</span>' + bar('start', 0, b.start) + '<span class="wv">' + esc(o.fmt ? o.fmt(b.start) : kshort(b.start)) + '</span></li>';
     rows.forEach(function (r) {
-      var s = r.s, name = o.names && o.names[s.id] ? o.names[s.id] : s.name, cls = s.effect >= 0 ? 'up' : 'down';
+      var s = r.s, name = o.names && o.names[s.id] ? o.names[s.id] : s.id === 'other' ? tx(s.name) : lnm(s.id), cls = s.effect >= 0 ? 'up' : 'down';
       var lbl = o.link && E.LINE[s.id] ? '<a href="#/line/' + s.id + '">' + esc(name) + '</a>' : esc(name) + (s.ids ? ' (' + s.ids.length + ')' : '');
-      h += '<li title="' + esc(name + ': ' + sgn(s.effect) + NB + '€ on EBITDA') + '"><span class="wl">' + lbl + '</span>' + bar(cls, r.from, r.to) + '<span class="wv ' + (s.effect > 0 ? 'pos' : s.effect < 0 ? 'neg' : '') + '">' + esc(o.fmt ? (s.effect > 0 ? '+' : '') + o.fmt(s.effect) : (s.effect >= 5000 ? '+' : '') + kshort(s.effect)) + '</span></li>';
+      h += '<li title="' + esc(tx('{line}: {amount} on EBITDA', { line: name, amount: sgn(s.effect) + NB + '€' })) + '"><span class="wl">' + lbl + '</span>' + bar(cls, r.from, r.to) + '<span class="wv ' + (s.effect > 0 ? 'pos' : s.effect < 0 ? 'neg' : '') + '">' + esc(o.fmt ? (s.effect > 0 ? '+' : '') + o.fmt(s.effect) : (s.effect >= 5000 ? '+' : '') + kshort(s.effect)) + '</span></li>';
     });
     h += '<li class="tot" title="' + esc(o.endLabel + ': ' + eur(b.end)) + '"><span class="wl">' + esc(o.endLabel) + '</span>' + bar('end', 0, b.end) + '<span class="wv">' + esc(o.fmt ? o.fmt(b.end) : kshort(b.end)) + '</span></li>';
     return h + '</ul>';
   }
   function bridgeTable(br, startLabel, endLabel) {
     var run = br.start;
-    return '<details class="tbl"><summary>Show as table</summary><div class="tw"><table class="t compact"><thead><tr><th>Step</th><th class="num">Effect on EBITDA</th><th class="num">Running total</th></tr></thead><tbody>' +
+    return '<details class="tbl"><summary>' + th('Show as table') + '</summary><div class="tw"><table class="t compact"><thead><tr><th>' + th('Step') + '</th><th class="num">' + th('Effect on EBITDA') + '</th><th class="num">' + th('Running total') + '</th></tr></thead><tbody>' +
       '<tr><td>' + esc(startLabel) + '</td><td class="num"></td><td class="num">' + eur(br.start) + '</td></tr>' +
-      br.steps.map(function (s) { run += s.effect; return '<tr><td>' + esc(s.name) + '</td><td class="num ' + (s.effect > 0 ? 'pos' : s.effect < 0 ? 'neg' : '') + '">' + sgn(s.effect) + '</td><td class="num">' + eur(run) + '</td></tr>'; }).join('') +
+      br.steps.map(function (s) { run += s.effect; return '<tr><td>' + esc(s.id === 'other' ? tx(s.name) : lnm(s.id)) + '</td><td class="num ' + (s.effect > 0 ? 'pos' : s.effect < 0 ? 'neg' : '') + '">' + sgn(s.effect) + '</td><td class="num">' + eur(run) + '</td></tr>'; }).join('') +
       '</tbody><tfoot><tr><td>' + esc(endLabel) + '</td><td class="num">' + sgn(br.end - br.start) + '</td><td class="num">' + eur(br.end) + '</td></tr></tfoot></table></div></details>';
   }
   function monthTable(o, first) {
-    return '<details class="tbl"><summary>Show as table</summary><div class="tw"><table class="t compact"><thead><tr><th>' + esc(first || 'Month') + '</th><th class="num">' + esc(o.names.ac) + ' / ' + esc(o.names.ou) + '</th><th class="num">' + esc(o.names.bu) + '</th><th class="num">Δ</th><th class="num">Δ %</th>' + (o.ly ? '<th class="num">' + esc(o.names.ly) + '</th>' : '') + '</tr></thead><tbody>' +
-      E.MONTHS_LONG.map(function (mn, i) {
+    return '<details class="tbl"><summary>' + th('Show as table') + '</summary><div class="tw"><table class="t compact"><thead><tr><th>' + esc(first || tx('Month')) + '</th><th class="num">' + esc(o.names.ac) + ' / ' + esc(o.names.ou) + '</th><th class="num">' + esc(o.names.bu) + '</th><th class="num">Δ</th><th class="num">Δ %</th>' + (o.ly ? '<th class="num">' + esc(o.names.ly) + '</th>' : '') + '</tr></thead><tbody>' +
+      I.monthsLong.map(function (mn, i) {
         var v = i < o.closed ? o.ac[i] : o.ou[i], va = E.variance(v, o.bu[i], o.type);
-        return '<tr><td>' + mn + (i < o.closed ? '' : ' <span class="tag">open</span>') + '</td><td class="num">' + num(v) + '</td><td class="num">' + num(o.bu[i]) + '</td><td class="num ' + favCls(va.fav) + '">' + sgn(va.d) + '</td><td class="num ' + favCls(va.fav) + '">' + pctTxt(va.pct, true) + '</td>' + (o.ly ? '<td class="num">' + num(o.ly[i]) + '</td>' : '') + '</tr>';
+        return '<tr><td>' + esc(cap(mn)) + (i < o.closed ? '' : ' <span class="tag">' + th('open') + '</span>') + '</td><td class="num">' + num(v) + '</td><td class="num">' + num(o.bu[i]) + '</td><td class="num ' + favCls(va.fav) + '">' + sgn(va.d) + '</td><td class="num ' + favCls(va.fav) + '">' + pctTxt(va.pct, true) + '</td>' + (o.ly ? '<td class="num">' + num(o.ly[i]) + '</td>' : '') + '</tr>';
       }).join('') + '</tbody></table></div></details>';
   }
 
@@ -515,33 +570,35 @@
       (detail ? '<span class="d ' + (cls || '') + '"><i aria-hidden="true"></i><span>' + detail + '</span></span>' : '') + (sub ? '<span class="s">' + sub + '</span>' : '') + '</' + (href ? 'a' : 'div') + '>';
   }
   function statusTag(cm) {
-    if (!cm) return '<span class="st none">No comment yet</span>';
-    return cm.status === 'explained' ? '<span class="st explained">Explained</span>' : '<span class="st open">Open</span>';
+    if (!cm) return '<span class="st none">' + th('No comment yet') + '</span>';
+    return cm.status === 'explained' ? '<span class="st explained">' + th('Explained') + '</span>' : '<span class="st open">' + th('Open') + '</span>';
   }
   var editingC = {};
   function commentForm(key, line, month, scope, cm) {
     var id = keyId(key), prev = '';
     if (!cm && scope === 'ytd') {
       var older = db.comments.filter(function (c) { return c.line === line && c.scope === 'ytd' && c.month < month; }).sort(function (a, b) { return b.month - a.month; })[0];
-      if (older) prev = '<div class="prev"><b>Note through ' + esc(monL(older.month)) + ':</b> ' + esc(older.text) + ' <button type="button" class="btn sm ghost" data-act="creuse" data-v="' + esc(key) + '" data-from="' + esc(older.id) + '">Use it</button></div>';
+      if (older) { var ot = E.commentText(older, LANG); prev = '<div class="prev"><b>' + th('Note through {month}:', { month: esc(monG(older.month)) }) + '</b> <span lang="' + ot.lang + '">' + esc(ot.text) + '</span> <button type="button" class="btn sm ghost" data-act="creuse" data-v="' + esc(key) + '" data-from="' + esc(older.id) + '">' + th('Use it') + '</button></div>'; }
     }
-    var what = E.nameOf(line) + ', ' + (scope === 'ytd' ? 'year to date through ' + monL(month) : monL(month));
+    var what = lnm(line) + ', ' + (scope === 'ytd' ? tx('year to date through {month}', { month: monG(month) }) : monL(month));
+    // a new comment is written in the screen language unless you pick another
+    var wl = (cm && cm.lang) || LANG;
     return '<form class="cf" data-k="' + esc(key) + '" novalidate>' + prev +
-      '<label class="sr" for="ct-' + id + '">Explanation for ' + esc(what) + '</label>' +
-      '<textarea class="in" id="ct-' + id + '" name="text" maxlength="1500" rows="2" placeholder="What happened, and will it continue?">' + esc(cm ? cm.text : '') + '</textarea>' +
+      '<label class="sr" for="ct-' + id + '">' + th('Explanation for {what}', { what: esc(what) }) + '</label>' +
+      '<textarea class="in" id="ct-' + id + '" name="text" maxlength="1500" rows="2" placeholder="' + th('What happened, and will it continue?') + '">' + esc(cm ? cm.text : '') + '</textarea>' +
       translationFields(id, cm) +
-      '<div class="row"><label class="sr" for="cl-' + id + '">Written in</label><select class="in" id="cl-' + id + '" name="lang" title="The language the comment above is written in">' + Object.keys(PACK_LANGS).map(function (k) { return '<option value="' + k + '"' + (((cm && cm.lang) || 'en') === k ? ' selected' : '') + '>Written in ' + esc({ en: 'English', sl: 'Slovenian', hr: 'Croatian' }[k]) + '</option>'; }).join('') + '</select>' +
-      '<label class="sr" for="cs-' + id + '">Status</label><select class="in" id="cs-' + id + '" name="status"><option value="explained"' + (!cm || cm.status === 'explained' ? ' selected' : '') + '>Explained</option><option value="open"' + (cm && cm.status === 'open' ? ' selected' : '') + '>Open: still finding out</option></select>' +
-      '<label class="sr" for="ca-' + id + '">Author</label><input class="in grow" id="ca-' + id + '" name="author" maxlength="60" placeholder="Your name" value="' + esc(cm ? cm.author : db.settings.author) + '">' +
-      '<button type="submit" class="btn sm pri">Save</button>' + (cm || editingC[key] ? '<button type="button" class="btn sm ghost" data-act="ccancel" data-v="' + esc(key) + '">Cancel</button>' : '') +
-      (cm ? '<button type="button" class="btn sm ghost" data-act="cdel" data-v="' + esc(key) + '">' + ic('trash') + 'Delete</button>' : '') + '</div></form>';
+      '<div class="row"><label class="sr" for="cl-' + id + '">' + th('Written in') + '</label><select class="in" id="cl-' + id + '" name="lang" title="' + th('The language the comment above is written in') + '">' + Object.keys(PACK_LANGS).map(function (k) { return '<option value="' + k + '"' + (wl === k ? ' selected' : '') + '>' + th({ en: 'Written in English', sl: 'Written in Slovenian', hr: 'Written in Croatian' }[k]) + '</option>'; }).join('') + '</select>' +
+      '<label class="sr" for="cs-' + id + '">' + th('Status') + '</label><select class="in" id="cs-' + id + '" name="status"><option value="explained"' + (!cm || cm.status === 'explained' ? ' selected' : '') + '>' + th('Explained') + '</option><option value="open"' + (cm && cm.status === 'open' ? ' selected' : '') + '>' + th('Open: still finding out') + '</option></select>' +
+      '<label class="sr" for="ca-' + id + '">' + th('Author') + '</label><input class="in grow" id="ca-' + id + '" name="author" maxlength="60" placeholder="' + th('Your name') + '" value="' + esc(cm ? cm.author : db.settings.author) + '">' +
+      '<button type="submit" class="btn sm pri">' + th('Save') + '</button>' + (cm || editingC[key] ? '<button type="button" class="btn sm ghost" data-act="ccancel" data-v="' + esc(key) + '">' + th('Cancel') + '</button>' : '') +
+      (cm ? '<button type="button" class="btn sm ghost" data-act="cdel" data-v="' + esc(key) + '">' + ic('trash') + th('Delete') + '</button>' : '') + '</div></form>';
   }
   /** The same comment in the board pack's other languages: empty prints the comment as written. */
   function translationFields(id, cm) {
     var tr = (cm && cm.texts) || {}, have = Object.keys(PACK_LANGS).filter(function (k) { return tr[k]; });
-    return '<details class="trx"' + (have.length ? ' open' : '') + '><summary>Board pack text in Slovenian and Croatian' + (have.length ? ' · ' + have.map(function (k) { return k.toUpperCase(); }).join(', ') : '') + '</summary><div class="trx-grid">' +
+    return '<details class="trx"' + (have.length ? ' open' : '') + '><summary>' + th('Board pack text in other languages') + (have.length ? ' · ' + have.map(function (k) { return k.toUpperCase(); }).join(', ') : '') + '</summary><div class="trx-grid">' +
       ['sl', 'hr', 'en'].map(function (k) {
-        return '<div class="field"><label for="cx' + k + '-' + id + '">' + esc(PACK_LANGS[k]) + '</label><textarea class="in" id="cx' + k + '-' + id + '" name="t_' + k + '" lang="' + k + '" rows="2" maxlength="1500" placeholder="' + (k === 'en' ? 'Only when the comment is written in another language' : 'Empty: the pack prints the comment as written') + '">' + esc(tr[k] || '') + '</textarea></div>';
+        return '<div class="field"><label for="cx' + k + '-' + id + '">' + esc(PACK_LANGS[k]) + '</label><textarea class="in" id="cx' + k + '-' + id + '" name="t_' + k + '" lang="' + k + '" rows="2" maxlength="1500" placeholder="' + th(k === 'en' ? 'Only when the comment is written in another language' : 'Empty: the pack prints the comment as written') + '">' + esc(tr[k] || '') + '</textarea></div>';
       }).join('') + '</div></details>';
   }
   /** The comment of a line/month/scope, or a form to write one (collapsed into a button when not asked for). */
@@ -549,11 +606,13 @@
     var key = E.commentKey(line, month, scope), cm = model().cIdx[key];
     if (cm && !editingC[key]) {
       var langs = [cm.lang || 'en'].concat(Object.keys(cm.texts || {}).filter(function (k) { return cm.texts[k] && k !== (cm.lang || 'en'); }));
-      return '<p class="txt">' + esc(cm.text) + '</p><div class="meta">' + esc(cm.author || 'Someone') + ' · ' + dt(cm.at) + (cm.edited && cm.edited !== cm.at ? ' · edited ' + dt(cm.edited) : '') +
-        ' · <span class="langs" title="Languages the board pack can print this comment in">' + langs.map(function (k) { return k.toUpperCase(); }).join(' ') + '</span>' +
-        ' <button type="button" class="btn sm ghost" data-act="cedit" data-v="' + esc(key) + '">Edit</button></div>';
+      // shown in the screen language when the comment has a text in it, otherwise as it was written
+      var ct = E.commentText(cm, LANG);
+      return '<p class="txt" lang="' + ct.lang + '">' + esc(ct.text) + '</p><div class="meta">' + esc(cm.author || tx('Someone')) + ' · ' + dt(cm.at) + (cm.edited && cm.edited !== cm.at ? ' · ' + th('edited {date}', { date: dt(cm.edited) }) : '') +
+        ' · <span class="langs" title="' + th('Languages the board pack can print this comment in') + '">' + langs.map(function (k) { return k.toUpperCase(); }).join(' ') + '</span>' +
+        ' <button type="button" class="btn sm ghost" data-act="cedit" data-v="' + esc(key) + '">' + th('Edit') + '</button></div>';
     }
-    if (!cm && !editingC[key] && collapsed) return '<button type="button" class="btn sm" data-act="cedit" data-v="' + esc(key) + '">' + ic('plus') + 'Add a comment</button>';
+    if (!cm && !editingC[key] && collapsed) return '<button type="button" class="btn sm" data-act="cedit" data-v="' + esc(key) + '">' + ic('plus') + th('Add a comment') + '</button>';
     return commentForm(key, line, month, scope, cm);
   }
   function variancePair(line, month, scope) {
@@ -564,40 +623,40 @@
   function exItem(line, month, scope, opts) {
     opts = opts || {};
     var m = model(), key = E.commentKey(line, month, scope), cm = m.cIdx[key], v = variancePair(line, month, scope), fl = m.fIdx[key];
-    var when = scope === 'ytd' ? 'Year to date · ' + range(1, month) : monL(month) + ' ' + m.y;
-    var big = fl && fl.why === 'always' ? '<span class="tag big" title="Flagged by the rule in Settings: every variance of ' + esc(nf0.format(db.settings.alwaysAbs)) + ' € or more needs an explanation">over ' + esc(nf0.format(db.settings.alwaysAbs)) + NB + '€</span>' : '';
-    return '<li id="ex-' + keyId(key) + '"><div class="ex-h"><a class="ln" href="#/line/' + line + '">' + esc(E.nameOf(line)) + '</a><span class="tag">' + esc(when) + '</span>' + big + (fl || cm ? statusTag(cm) : '') +
-      '<span class="vv ' + favCls(v.fav) + '" title="' + favWord(v.fav) + '">' + sgn(v.d) + NB + '€ · ' + pctTxt(v.pct, true) + '</span></div>' +
-      '<div class="ex-sub">Actual ' + eur(v.a) + ' · budget ' + eur(v.b) + (fl ? '' : ' · within the thresholds') + '</div>' +
+    var when = scope === 'ytd' ? tx('Year to date · {range}', { range: range(1, month) }) : cap(monL(month)) + ' ' + m.y;
+    var big = fl && fl.why === 'always' ? '<span class="tag big" title="' + th('Flagged by the rule in Settings: every variance of {amount} or more needs an explanation', { amount: esc(nf0.format(db.settings.alwaysAbs)) + ' €' }) + '">' + th('over {amount}', { amount: esc(nf0.format(db.settings.alwaysAbs)) + NB + '€' }) + '</span>' : '';
+    return '<li id="ex-' + keyId(key) + '"><div class="ex-h"><a class="ln" href="#/line/' + line + '">' + esc(lnm(line)) + '</a><span class="tag">' + esc(when) + '</span>' + big + (fl || cm ? statusTag(cm) : '') +
+      '<span class="vv ' + favCls(v.fav) + '" title="' + esc(favWord(v.fav)) + '">' + sgn(v.d) + NB + '€ · ' + pctTxt(v.pct, true) + '</span></div>' +
+      '<div class="ex-sub">' + th('Actual {actual} · budget {budget}', { actual: eur(v.a), budget: eur(v.b) }) + (fl ? '' : ' · ' + th('within the thresholds')) + '</div>' +
       '<div class="ex-c">' + commentArea(line, month, scope, opts.collapsed && !fl) + '</div></li>';
   }
 
   // ── page: overview ───────────────────────────────────────────────────────
   function pageOverview() {
     var m = model(), c = m.closed, y = m.y, nc = nextCloseDate();
-    var sub = esc(db.company.name) + ' · ' + (c ? 'actuals for ' + range(1, c) + ' against ' + esc(m.bud.name) : 'no month closed yet, so only the budget') +
-      (c < 12 ? '. The full-year outlook adds ' + esc(m.basis.name) + ' for ' + range(c + 1, 12) + '.' : '.');
-    var h = head('Overview · closed through ' + (c ? dt(E.monthEnd(y, c)) : 'no month yet'), c ? y + ' so far' : 'Budget ' + y, sub,
-      '<a class="btn" href="#/pl">' + ic('pl') + 'Profit and loss</a><a class="btn pri" href="#/print">' + ic('print') + 'Board pack</a>');
-    var bar = '<div class="toolbar no-print board-bar"><span class="fpill"><small>Year</small>' + y + '</span>' + (c ? '<span class="fpill"><small>Actuals</small>' + esc(c > 1 ? mon(1) + '–' + mon(c) : mon(1)) + '</span>' : '') + '<span class="fpill"><small>Version</small>' + esc(m.bud.name) + '</span>' +
-      '<span class="label">Full-year outlook uses</span>' + (m.fc ? basisSeg() : '<span class="tag">' + esc(m.bud.name) + '</span>') +
-      (nc ? '<span class="grow"></span><span class="hint">' + esc(monL(c + 1)) + ' counts as closed from ' + dt(nc) + (db.settings.closed === 'auto' ? '' : ' (closing is set by hand in Settings)') + '</span>' : '') + '</div>';
+    var sub = esc(db.company.name) + ' · ' + (c ? th('actuals for {range} against {version}', { range: esc(range(1, c)), version: esc(vname(m.bud)) }) : th('no month closed yet, so only the budget')) +
+      (c < 12 ? '. ' + th('The full-year outlook adds {version} for {range}.', { version: esc(vname(m.basis)), range: esc(range(c + 1, 12)) }) : '.');
+    var h = head(th('Overview · closed through {date}', { date: c ? dt(E.monthEnd(y, c)) : th('no month yet') }), c ? tx('{year} so far', { year: y }) : tx('Budget {year}', { year: y }), sub,
+      '<a class="btn" href="#/pl">' + ic('pl') + th('Profit and loss') + '</a><a class="btn pri" href="#/print">' + ic('print') + th('Board pack') + '</a>');
+    var bar = '<div class="toolbar no-print board-bar"><span class="fpill"><small>' + th('Year') + '</small>' + y + '</span>' + (c ? '<span class="fpill"><small>' + th('Actuals') + '</small>' + esc(c > 1 ? mon(1) + '–' + mon(c) : mon(1)) + '</span>' : '') + '<span class="fpill"><small>' + th('Version') + '</small>' + esc(vname(m.bud)) + '</span>' +
+      '<span class="label">' + th('Full-year outlook uses') + '</span>' + (m.fc ? basisSeg() : '<span class="tag">' + esc(vname(m.bud)) + '</span>') +
+      (nc ? '<span class="grow"></span><span class="hint">' + th('{month} counts as closed from {date}', { month: esc(cap(monL(c + 1))), date: dt(nc) }) + (db.settings.closed === 'auto' ? '' : ' ' + th('(closing is set by hand in Settings)')) + '</span>' : '') + '</div>';
     h += bar;
     if (!c) {
-      h += '<div class="notice"><p>No month of ' + y + ' is closed yet. Import January’s actuals, or set the closed month in Settings. Until then this page shows the budget only.</p><a class="btn sm" href="#/import">Import actuals</a></div>';
+      h += '<div class="notice"><p>' + th('No month of {year} is closed yet. Import January’s actuals, or set the closed month in Settings. Until then this page shows the budget only.', { year: y }) + '</p><a class="btn sm" href="#/import">' + th('Import actuals') + '</a></div>';
     }
     h += missingNotice();
-    if (m.unmapped.length) h += '<div class="notice warn"><p>' + plural(m.unmapped.length, 'account has', 'accounts have') + ' actuals but no P&amp;L line (' + esc(m.unmapped.slice(0, 5).join(', ')) + '). They are left out of every total until you map them.</p><a class="btn sm" href="#/settings">Map accounts</a></div>';
+    if (m.unmapped.length) h += '<div class="notice warn"><p>' + th('Accounts with actuals but no P&L line: {n} ({list}). They are left out of every total until you map them.', { n: m.unmapped.length, list: esc(m.unmapped.slice(0, 5).join(', ')) }) + '</p><a class="btn sm" href="#/settings">' + th('Map accounts') + '</a></div>';
     var revA = E.sumRange(m.actR.rev, 1, c), revB = E.sumRange(m.budR.rev, 1, c), rv = E.variance(revA, revB, 'income');
     var gmA = E.share(E.sumRange(m.actR.gm, 1, c), revA), gmB = E.share(E.sumRange(m.budR.gm, 1, c), revB);
     var ebA = E.sumRange(m.actR.ebitda, 1, c), ebB = E.sumRange(m.budR.ebitda, 1, c), ev = E.variance(ebA, ebB, 'income');
     var fyA = E.total(m.outR.ebitda), fyB = E.total(m.budR.ebitda), fv = E.variance(fyA, fyB, 'income');
     var gmD = gmA == null || gmB == null ? null : gmA - gmB;
     h += '<div class="kpis">' +
-      kpi('Revenue, year to date', c ? keur(revA) : '—', c ? pctTxt(rv.pct, true) + ' vs budget · ' + skeur(rv.d) : 'no closed month', c ? kcls(rv.fav) : '', '#/line/rev', c ? 'Budget ' + keur(revB) : '') +
-      kpi('Gross margin, year to date', gmA == null ? '—' : pctTxt(gmA), gmD == null ? 'no closed month' : ppTxt(gmD) + ' vs budget', gmD == null ? '' : gmD > 0.05 ? 'good' : gmD < -0.05 ? 'bad' : '', '#/line/gm', gmB == null ? '' : 'Budget ' + pctTxt(gmB) + ' · ' + keur(E.sumRange(m.actR.gm, 1, c))) +
-      kpi('EBITDA, year to date', c ? keur(ebA) : '—', c ? skeur(ev.d) + ' (' + pctTxt(ev.pct, true) + ') vs budget' : 'no closed month', c ? kcls(ev.fav) : '', '#/line/ebitda', c ? 'Budget ' + keur(ebB) + ' · ' + pctTxt(E.share(ebA, revA)) + ' of revenue' : '') +
-      kpi('EBITDA, full-year outlook', keur(fyA), skeur(fv.d) + ' (' + pctTxt(fv.pct, true) + ') vs budget', fv.fav ? 'good' : fv.fav === false ? 'bad' : '', '#/line/ebitda', 'Budget ' + keur(fyB) + (c < 12 ? ' · ' + esc(m.basis === m.bud ? 'on the budget' : 'on ' + m.basis.name) : '')) +
+      kpi(tx('Revenue, year to date'), c ? keur(revA) : '—', c ? th('{pct} vs budget', { pct: pctTxt(rv.pct, true) }) + ' · ' + skeur(rv.d) : th('no closed month'), c ? kcls(rv.fav) : '', '#/line/rev', c ? th('Budget {amount}', { amount: keur(revB) }) : '') +
+      kpi(tx('Gross margin, year to date'), gmA == null ? '—' : pctTxt(gmA), gmD == null ? th('no closed month') : th('{pct} vs budget', { pct: ppTxt(gmD) }), gmD == null ? '' : gmD > 0.05 ? 'good' : gmD < -0.05 ? 'bad' : '', '#/line/gm', gmB == null ? '' : th('Budget {amount}', { amount: pctTxt(gmB) }) + ' · ' + keur(E.sumRange(m.actR.gm, 1, c))) +
+      kpi(tx('EBITDA, year to date'), c ? keur(ebA) : '—', c ? th('{pct} vs budget', { pct: skeur(ev.d) + ' (' + pctTxt(ev.pct, true) + ')' }) : th('no closed month'), c ? kcls(ev.fav) : '', '#/line/ebitda', c ? th('Budget {amount}', { amount: keur(ebB) }) + ' · ' + th('{pct} of revenue', { pct: pctTxt(E.share(ebA, revA)) }) : '') +
+      kpi(tx('EBITDA, full-year outlook'), keur(fyA), th('{pct} vs budget', { pct: skeur(fv.d) + ' (' + pctTxt(fv.pct, true) + ')' }), fv.fav ? 'good' : fv.fav === false ? 'bad' : '', '#/line/ebitda', th('Budget {amount}', { amount: keur(fyB) }) + (c < 12 ? ' · ' + (m.basis === m.bud ? th('on the budget') : th('on {version}', { version: esc(vname(m.basis)) })) : '')) +
       '</div>';
     if (c) h += '<div class="grid2 board">' + plGridCard() + '<div class="stack">' + monthlyCard() + bridgeCard() + '</div></div>';
     else h += '<div class="grid21">' + monthlyCard() + bridgeCard() + '</div>';
@@ -615,30 +674,30 @@
       if (r.kind === 'head' || r.kind === 'pct') continue;
       var a = E.sumRange(m.actR[r.id], 1, c), b = E.sumRange(m.budR[r.id], 1, c), v = E.variance(a, b, r.type);
       var hot = v.fav === false && (flagged[r.id] || (r.kind === 'sub' && v.pct != null && Math.abs(v.pct) >= db.settings.pct));
-      out += '<tr class="' + (r.kind === 'sub' ? (r.strong ? 'g-tot' : 'g-sub') : 'g-line') + '"><th scope="row"><a href="#/line/' + r.id + '">' + esc(r.name) + '</a></th><td>' + k(a) + '</td><td>' + k(b) + '</td>' +
+      out += '<tr class="' + (r.kind === 'sub' ? (r.strong ? 'g-tot' : 'g-sub') : 'g-line') + '"><th scope="row"><a href="#/line/' + r.id + '">' + esc(rowName(r)) + '</a></th><td>' + k(a) + '</td><td>' + k(b) + '</td>' +
         '<td class="' + favCls(v.fav) + '">' + sk(v.d) + '</td><td class="' + favCls(v.fav) + (hot ? ' hot' : '') + '">' + pctTxt(v.pct, true) + '</td></tr>';
       if (r.id === 'ebitda') break;
     }
-    return '<section class="card pl-grid"><div class="card-h"><div><span class="label">' + esc(range(1, c)) + ' ' + m.y + ' · k€</span><h2>P&amp;L · actual vs budget</h2></div><a class="btn sm no-print" href="#/pl">' + ic('pl') + 'Open the P&amp;L</a></div>' +
-      '<div class="tw"><table class="t gt"><caption class="sr">Profit and loss down to EBITDA, ' + esc(range(1, c)) + ' ' + m.y + ', actual against ' + esc(m.bud.name) + ', in thousands of euros</caption><thead><tr><th scope="col">Line</th><th scope="col">Actual</th><th scope="col">Budget</th><th scope="col">Var</th><th scope="col">Var %</th></tr></thead><tbody>' + out + '</tbody></table></div></section>';
+    return '<section class="card pl-grid"><div class="card-h"><div><span class="label">' + esc(range(1, c)) + ' ' + m.y + ' · k€</span><h2>' + th('P&L · actual vs budget') + '</h2></div><a class="btn sm no-print" href="#/pl">' + ic('pl') + th('Open the P&L') + '</a></div>' +
+      '<div class="tw"><table class="t gt"><caption class="sr">' + th('Profit and loss down to EBITDA, {period}, actual against {version}, in thousands of euros', { period: esc(range(1, c)) + ' ' + m.y, version: esc(vname(m.bud)) }) + '</caption><thead><tr><th scope="col">' + th('Line') + '</th><th scope="col">' + th('Actual') + '</th><th scope="col">' + th('Budget') + '</th><th scope="col">' + th('Var') + '</th><th scope="col">' + th('Var %') + '</th></tr></thead><tbody>' + out + '</tbody></table></div></section>';
   }
   function monthlyCard() {
     var m = model(), which = uOv.chart === 'ebitda' ? 'ebitda' : 'rev';
     var o = { ac: m.actR[which], ou: m.outR[which], bu: m.budR[which], ly: which === 'rev' ? m.pyR.rev : null, closed: m.closed, type: 'income',
-      names: { ac: 'Actual', ou: 'Outlook', bu: 'Budget', ly: String(m.y - 1) } };
-    var legend = '<div class="legend"><span><i class="k-ac"></i>Actual</span>' + (m.closed < 12 ? '<span><i class="k-ou"></i>Outlook (' + esc(m.basis === m.bud ? 'budget' : m.basis.name) + ')</span>' : '') + '<span><i class="k-bu"></i>Budget</span>' + (o.ly ? '<span><i class="k-ly"></i>' + (m.y - 1) + '</span>' : '') + '</div>';
-    return '<section class="card"><div class="card-h"><div><span class="label">Month by month · ' + m.y + '</span><h2>' + (which === 'rev' ? 'Revenue against budget and last year' : 'EBITDA against budget') + '</h2></div>' +
-      '<div class="seg no-print" role="group" aria-label="Measure"><button type="button" data-act="ovchart" data-v="rev" aria-pressed="' + (which === 'rev') + '">Revenue</button><button type="button" data-act="ovchart" data-v="ebitda" aria-pressed="' + (which === 'ebitda') + '">EBITDA</button></div></div>' +
-      '<div class="card-b">' + legend + '<div style="margin-top:10px">' + monthBars('chMonth', (which === 'rev' ? 'Revenue' : 'EBITDA') + ' per month: actual, outlook, budget' + (o.ly ? ' and last year' : ''), o) + '</div>' + monthTable(o) + '</div></section>';
+      names: { ac: tx('Actual'), ou: tx('Outlook'), bu: tx('Budget'), ly: String(m.y - 1) } };
+    var legend = '<div class="legend"><span><i class="k-ac"></i>' + th('Actual') + '</span>' + (m.closed < 12 ? '<span><i class="k-ou"></i>' + th('Outlook ({version})', { version: esc(m.basis === m.bud ? tx('budget') : vname(m.basis)) }) + '</span>' : '') + '<span><i class="k-bu"></i>' + th('Budget') + '</span>' + (o.ly ? '<span><i class="k-ly"></i>' + (m.y - 1) + '</span>' : '') + '</div>';
+    return '<section class="card"><div class="card-h"><div><span class="label">' + th('Month by month · {year}', { year: m.y }) + '</span><h2>' + th(which === 'rev' ? 'Revenue against budget and last year' : 'EBITDA against budget') + '</h2></div>' +
+      '<div class="seg no-print" role="group" aria-label="' + th('Measure') + '"><button type="button" data-act="ovchart" data-v="rev" aria-pressed="' + (which === 'rev') + '">' + th('Revenue') + '</button><button type="button" data-act="ovchart" data-v="ebitda" aria-pressed="' + (which === 'ebitda') + '">EBITDA</button></div></div>' +
+      '<div class="card-b">' + legend + '<div style="margin-top:10px">' + monthBars('chMonth', tx(which === 'rev' ? (o.ly ? 'Revenue per month: actual, outlook, budget and last year' : 'Revenue per month: actual, outlook, budget') : 'EBITDA per month: actual, outlook, budget'), o) + '</div>' + monthTable(o) + '</div></section>';
   }
   function bridgeCard() {
     var m = model(), fy = uOv.bridge === 'fy' || !m.closed;
     var br = fy ? E.bridge(m.bud.values, m.out, 1, 12) : E.bridge(m.bud.values, m.act, 1, m.closed);
-    var sl = fy ? 'Budget, full year' : 'Budget, ' + range(1, m.closed), el = fy ? 'Outlook, full year' : 'Actual, ' + range(1, m.closed);
-    return '<section class="card"><div class="card-h"><div><span class="label">EBITDA bridge · ' + (fy ? 'full year' : 'year to date') + '</span><h2>From budget to ' + (fy ? 'outlook' : 'actual') + '</h2></div>' +
-      '<div class="seg no-print" role="group" aria-label="Period"><button type="button" data-act="ovbridge" data-v="ytd" aria-pressed="' + !fy + '"' + (m.closed ? '' : ' disabled') + '>Year to date</button><button type="button" data-act="ovbridge" data-v="fy" aria-pressed="' + fy + '">Full year</button></div></div>' +
-      '<div class="card-b">' + bridgeList(br, { compact: 9, link: true, startLabel: 'Budget EBITDA', endLabel: (fy ? 'Outlook' : 'Actual') + ' EBITDA' }) +
-      '<div class="legend wf-note"><span><i class="k-up"></i>Adds to EBITDA</span><span><i class="k-down"></i>Takes away</span></div>' + bridgeTable(br, sl, el) + '</div></section>';
+    var sl = fy ? tx('Budget, full year') : tx('Budget, {range}', { range: range(1, m.closed) }), el = fy ? tx('Outlook, full year') : tx('Actual, {range}', { range: range(1, m.closed) });
+    return '<section class="card"><div class="card-h"><div><span class="label">' + th(fy ? 'EBITDA bridge · full year' : 'EBITDA bridge · year to date') + '</span><h2>' + th(fy ? 'From budget to outlook' : 'From budget to actual') + '</h2></div>' +
+      '<div class="seg no-print" role="group" aria-label="' + th('Period') + '"><button type="button" data-act="ovbridge" data-v="ytd" aria-pressed="' + !fy + '"' + (m.closed ? '' : ' disabled') + '>' + th('Year to date') + '</button><button type="button" data-act="ovbridge" data-v="fy" aria-pressed="' + fy + '">' + th('Full year') + '</button></div></div>' +
+      '<div class="card-b">' + bridgeList(br, { compact: 9, link: true, startLabel: tx('Budget EBITDA'), endLabel: tx(fy ? 'Outlook EBITDA' : 'Actual EBITDA') }) +
+      '<div class="legend wf-note"><span><i class="k-up"></i>' + th('Adds to EBITDA') + '</span><span><i class="k-down"></i>' + th('Takes away') + '</span></div>' + bridgeTable(br, sl, el) + '</div></section>';
   }
   function explainCard() {
     var m = model(), c = m.closed, items = [];
@@ -649,11 +708,12 @@
     });
     items.sort(function (a, b) { return a.grp - b.grp || a.done - b.done || (a.grp === 2 ? b.f.month - a.f.month : 0) || Math.abs(b.f.effect) - Math.abs(a.f.effect); });
     var s = db.settings, open = items.filter(function (x) { return !x.done; }).length;
-    var hdr = '<div class="card-h"><div><span class="label">Needs an explanation · ' + (open ? open + ' open' : 'all explained') + '</span><h2>Variances over ' + nfx.format(s.pct) + NB + '% and ' + nf0.format(s.monthAbs) + NB + '€ in a month, or ' + nf0.format(s.ytdAbs) + NB + '€ year to date' + (s.alwaysAbs ? ', and every variance over ' + nf0.format(s.alwaysAbs) + NB + '€' : '') + '</h2></div>' +
-      '<a class="btn sm no-print" href="#/comments">' + ic('chat') + 'All comments</a></div>';
-    if (!c) return '<section class="card">' + hdr + '<div class="card-b"><p class="empty">Nothing to explain until the first month is closed.</p></div></section>';
-    if (!items.length) return '<section class="card">' + hdr + '<div class="card-b"><div class="empty-state">' + ic('check') + '<p>Every line is within the thresholds against the budget. Nothing needs explaining.</p></div></div></section>';
-    var groups = [['Year to date, ' + range(1, c), 0], [monL(c) + ' ' + m.y + ', the month just closed', 1], ['Still open from earlier months', 2]];
+    var thv = { pct: nfx.format(s.pct) + NB + '%', month: nf0.format(s.monthAbs) + NB + '€', ytd: nf0.format(s.ytdAbs) + NB + '€', always: nf0.format(s.alwaysAbs) + NB + '€' };
+    var hdr = '<div class="card-h"><div><span class="label">' + th('Needs an explanation · {status}', { status: open ? th('{n} open', { n: open }) : th('all explained') }) + '</span><h2>' + th(s.alwaysAbs ? 'Variances over {pct} and {month} in a month, or {ytd} year to date, and every variance over {always}' : 'Variances over {pct} and {month} in a month, or {ytd} year to date', thv) + '</h2></div>' +
+      '<a class="btn sm no-print" href="#/comments">' + ic('chat') + th('All comments') + '</a></div>';
+    if (!c) return '<section class="card">' + hdr + '<div class="card-b"><p class="empty">' + th('Nothing to explain until the first month is closed.') + '</p></div></section>';
+    if (!items.length) return '<section class="card">' + hdr + '<div class="card-b"><div class="empty-state">' + ic('check') + '<p>' + th('Every line is within the thresholds against the budget. Nothing needs explaining.') + '</p></div></div></section>';
+    var groups = [[tx('Year to date, {range}', { range: range(1, c) }), 0], [tx('{month}, the month just closed', { month: cap(monL(c)) + ' ' + m.y }), 1], [tx('Still open from earlier months'), 2]];
     var h = '<section class="card">' + hdr + '<div class="card-b">';
     groups.forEach(function (g) {
       var list = items.filter(function (x) { return x.grp === g[1]; });
@@ -672,52 +732,55 @@
     var q = uPl.q >= 1 && uPl.q <= 4 && uPl.q * 3 - 2 <= c ? uPl.q : Math.max(1, Math.ceil(c / 3));
     var cmp = uPl.cmp === 'forecast' && m.fc ? 'forecast' : uPl.cmp === 'ly' ? 'ly' : 'budget';
     var p = per === 'month' ? E.period('month', month, c) : per === 'quarter' ? E.period('quarter', q, c) : per === 'ytd' ? E.period('ytd', 0, c) : E.period('fy', 12, c);
-    var label = per === 'month' ? monL(month) + ' ' + m.y : per === 'quarter' ? 'Q' + q + ' ' + m.y + (p.partial ? ' to date (' + range(p.from, p.to) + ')' : '') : per === 'ytd' ? range(1, c) + ' ' + m.y : 'Full year ' + m.y + (c < 12 ? ' (outlook)' : '');
-    return { per: per, month: month, q: q, cmp: cmp, p: p, a: per === 'fy' ? m.outR : m.actR, b: cmpRows(cmp), label: label, aName: per === 'fy' && c < 12 ? 'Outlook' : 'Actual', bName: cmpShort(cmp) };
+    var label = per === 'month' ? cap(monL(month)) + ' ' + m.y : per === 'quarter' ? 'Q' + q + ' ' + m.y + (p.partial ? ' ' + tx('to date ({range})', { range: range(p.from, p.to) }) : '') : per === 'ytd' ? cap(range(1, c)) + ' ' + m.y : tx(c < 12 ? 'Full year {year} (outlook)' : 'Full year {year}', { year: m.y });
+    // file names stay English (slug): the label and the comparison in English
+    var enRange = function (f, t) { return f > t ? 'no months' : f === t ? E.MONTHS_LONG[f - 1] : E.MONTHS_LONG[f - 1] + '–' + E.MONTHS_LONG[t - 1]; };
+    var fileLabel = per === 'month' ? E.MONTHS_LONG[month - 1] + ' ' + m.y : per === 'quarter' ? 'Q' + q + ' ' + m.y + (p.partial ? ' to date (' + enRange(p.from, p.to) + ')' : '') : per === 'ytd' ? enRange(1, c) + ' ' + m.y : 'Full year ' + m.y + (c < 12 ? ' (outlook)' : '');
+    return { per: per, month: month, q: q, cmp: cmp, p: p, a: per === 'fy' ? m.outR : m.actR, b: cmpRows(cmp), label: label, fileLabel: fileLabel, aName: tx(per === 'fy' && c < 12 ? 'Outlook' : 'Actual'), bName: cmpShort(cmp) };
   }
   function accountsOf(line) { return db.accounts.filter(function (a) { return a.line === line; }).sort(function (x, y) { return x.code < y.code ? -1 : 1; }); }
   function accVal(acc, year, from, to) { var arr = (db.actuals[year] || {})[acc.code]; return arr ? E.accountSign(acc) * E.sumRange(arr, from, to) : 0; }
   function pagePl() {
     var m = model(), s = plState(), c = m.closed;
-    var h = head('Profit and loss · amounts in €', s.label, (s.per === 'fy' && c < 12 ? 'Actuals for ' + range(1, c) + ' plus ' + esc(m.basis.name) + ' for ' + range(c + 1, 12) + ', against ' : 'Actual against ') + esc(cmpLong(s.cmp)) + '. Click a line to open it, or the arrow to see its accounts.',
-      '<button type="button" class="btn" data-act="plcsv">' + ic('dl') + 'Export CSV</button><button type="button" class="btn" data-act="print">' + ic('print') + 'Print</button>');
+    var h = head(th('Profit and loss · amounts in €'), s.label, (s.per === 'fy' && c < 12 ? th('Actuals for {closed} plus {version} for {open}, against {cmp}.', { closed: esc(range(1, c)), version: esc(vname(m.basis)), open: esc(range(c + 1, 12)), cmp: esc(cmpLong(s.cmp)) }) : th('Actual against {cmp}.', { cmp: esc(cmpLong(s.cmp)) })) + ' ' + th('Click a line to open it, or the arrow to see its accounts.'),
+      '<button type="button" class="btn" data-act="plcsv">' + ic('dl') + th('Export CSV') + '</button><button type="button" class="btn" data-act="print">' + ic('print') + th('Print') + '</button>');
     var per = [['month', 'Month'], ['quarter', 'Quarter'], ['ytd', 'Year to date'], ['fy', 'Full year']];
-    h += '<div class="toolbar no-print"><div class="seg" role="group" aria-label="Period">' + per.map(function (x) {
-      return '<button type="button" data-act="plper" data-v="' + x[0] + '" aria-pressed="' + (s.per === x[0]) + '"' + (!c && x[0] !== 'fy' ? ' disabled' : '') + '>' + x[1] + '</button>';
+    h += '<div class="toolbar no-print"><div class="seg" role="group" aria-label="' + th('Period') + '">' + per.map(function (x) {
+      return '<button type="button" data-act="plper" data-v="' + x[0] + '" aria-pressed="' + (s.per === x[0]) + '"' + (!c && x[0] !== 'fy' ? ' disabled' : '') + '>' + th(x[1]) + '</button>';
     }).join('') + '</div>';
-    if (s.per === 'month') { var mo = ''; for (var i = c; i >= 1; i--) mo += '<option value="' + i + '"' + (i === s.month ? ' selected' : '') + '>' + monL(i) + ' ' + m.y + '</option>'; h += '<label class="sr" for="plMonth">Month</label><select class="select" id="plMonth" data-ch="plmonth">' + mo + '</select>'; }
-    if (s.per === 'quarter') { var qo = ''; for (var q = 1; q <= 4; q++) if (q * 3 - 2 <= c) qo += '<option value="' + q + '"' + (q === s.q ? ' selected' : '') + '>Q' + q + ' ' + m.y + '</option>'; h += '<label class="sr" for="plQ">Quarter</label><select class="select" id="plQ" data-ch="plq">' + qo + '</select>'; }
-    if (s.per === 'fy' && m.fc && c < 12) h += basisSeg('Outlook uses');
-    h += '<span class="grow"></span><div class="seg" role="group" aria-label="Compare with"><button type="button" data-act="plcmp" data-v="budget" aria-pressed="' + (s.cmp === 'budget') + '">vs Budget</button>' +
-      '<button type="button" data-act="plcmp" data-v="forecast" aria-pressed="' + (s.cmp === 'forecast') + '"' + (m.fc ? '' : ' disabled title="No forecast yet: create one on Budget &amp; forecast"') + '>vs Forecast</button>' +
-      '<button type="button" data-act="plcmp" data-v="ly" aria-pressed="' + (s.cmp === 'ly') + '">vs ' + (m.y - 1) + '</button></div>' +
-      '<button type="button" class="chip" data-act="plpct" aria-pressed="' + !!uPl.pctRev + '">% of revenue</button>' +
-      '<button type="button" class="btn sm ghost" data-act="plall">' + (Object.keys(uPl.open).some(function (k) { return uPl.open[k]; }) ? 'Collapse all' : 'Expand all') + '</button></div>';
+    if (s.per === 'month') { var mo = ''; for (var i = c; i >= 1; i--) mo += '<option value="' + i + '"' + (i === s.month ? ' selected' : '') + '>' + esc(cap(monL(i))) + ' ' + m.y + '</option>'; h += '<label class="sr" for="plMonth">' + th('Month') + '</label><select class="select" id="plMonth" data-ch="plmonth">' + mo + '</select>'; }
+    if (s.per === 'quarter') { var qo = ''; for (var q = 1; q <= 4; q++) if (q * 3 - 2 <= c) qo += '<option value="' + q + '"' + (q === s.q ? ' selected' : '') + '>Q' + q + ' ' + m.y + '</option>'; h += '<label class="sr" for="plQ">' + th('Quarter') + '</label><select class="select" id="plQ" data-ch="plq">' + qo + '</select>'; }
+    if (s.per === 'fy' && m.fc && c < 12) h += basisSeg(tx('Outlook uses'));
+    h += '<span class="grow"></span><div class="seg" role="group" aria-label="' + th('Compare with') + '"><button type="button" data-act="plcmp" data-v="budget" aria-pressed="' + (s.cmp === 'budget') + '">' + th('vs Budget') + '</button>' +
+      '<button type="button" data-act="plcmp" data-v="forecast" aria-pressed="' + (s.cmp === 'forecast') + '"' + (m.fc ? '' : ' disabled title="' + th('No forecast yet: create one on Budget & forecast') + '"') + '>' + th('vs Forecast') + '</button>' +
+      '<button type="button" data-act="plcmp" data-v="ly" aria-pressed="' + (s.cmp === 'ly') + '">' + th('vs {year}', { year: m.y - 1 }) + '</button></div>' +
+      '<button type="button" class="chip" data-act="plpct" aria-pressed="' + !!uPl.pctRev + '">' + th('% of revenue') + '</button>' +
+      '<button type="button" class="btn sm ghost" data-act="plall">' + th(Object.keys(uPl.open).some(function (k) { return uPl.open[k]; }) ? 'Collapse all' : 'Expand all') + '</button></div>';
     h += missingNotice();
     var p = s.p, revA = E.sumRange(s.a.rev, p.from, p.to), revB = E.sumRange(s.b.rev, p.from, p.to);
     var flagged = {};
     if (s.cmp === 'budget' && (s.per === 'month' || s.per === 'ytd')) m.flags.forEach(function (f) { if (s.per === 'month' ? f.scope === 'month' && f.month === s.month : f.scope === 'ytd') flagged[f.line] = true; });
     var cols = 5 + (uPl.pctRev ? 2 : 0);
-    var t = '<div class="tw pl-wrap"><table class="t pl"><caption class="sr">Profit and loss, ' + esc(s.label) + ', ' + esc(s.aName) + ' against ' + esc(cmpLong(s.cmp)) + '</caption><thead><tr><th class="lc" scope="col">Line</th><th class="num" scope="col">' + s.aName + '</th><th class="num cb" scope="col">' + esc(s.bName) + '</th><th class="num" scope="col" title="Difference: ' + s.aName.toLowerCase() + ' minus ' + esc(s.bName.toLowerCase()) + '">Δ</th><th class="num" scope="col">Δ %</th>' +
-      (uPl.pctRev ? '<th class="num" scope="col">% rev.</th><th class="num cb" scope="col">' + esc(s.bName) + ' % rev.</th>' : '') + '</tr></thead><tbody>';
+    var t = '<div class="tw pl-wrap"><table class="t pl"><caption class="sr">' + th('Profit and loss, {period}, {actual} against {cmp}', { period: esc(s.label), actual: esc(s.aName), cmp: esc(cmpLong(s.cmp)) }) + '</caption><thead><tr><th class="lc" scope="col">' + th('Line') + '</th><th class="num" scope="col">' + esc(s.aName) + '</th><th class="num cb" scope="col">' + esc(s.bName) + '</th><th class="num" scope="col" title="' + th('Difference: {a} minus {b}', { a: esc(s.aName.toLowerCase()), b: esc(s.bName.toLowerCase()) }) + '">Δ</th><th class="num" scope="col">Δ %</th>' +
+      (uPl.pctRev ? '<th class="num" scope="col">' + th('% rev.') + '</th><th class="num cb" scope="col">' + esc(s.bName) + ' ' + th('% rev.') + '</th>' : '') + '</tr></thead><tbody>';
     E.ROWS.forEach(function (r) {
-      if (r.kind === 'head') { t += '<tr class="sec"><th scope="rowgroup">' + esc(r.name) + '</th><td colspan="' + (cols - 1) + '"></td></tr>'; return; }
+      if (r.kind === 'head') { t += '<tr class="sec"><th scope="rowgroup">' + esc(rowName(r)) + '</th><td colspan="' + (cols - 1) + '"></td></tr>'; return; }
       if (r.kind === 'pct') {
         var pa = E.share(E.sumRange(s.a[r.of], p.from, p.to), revA), pb = E.share(E.sumRange(s.b[r.of], p.from, p.to), revB), d = pa == null || pb == null ? null : pa - pb;
-        t += '<tr class="pct"><th scope="row">' + esc(r.name) + '</th><td class="num">' + pctTxt(pa) + '</td><td class="num cb">' + pctTxt(pb) + '</td><td class="num d ' + (d == null ? '' : d > 0.05 ? 'pos' : d < -0.05 ? 'neg' : '') + '">' + ppTxt(d) + '</td><td class="num"></td>' + (uPl.pctRev ? '<td></td><td class="cb"></td>' : '') + '</tr>';
+        t += '<tr class="pct"><th scope="row">' + esc(rowName(r)) + '</th><td class="num">' + pctTxt(pa) + '</td><td class="num cb">' + pctTxt(pb) + '</td><td class="num d ' + (d == null ? '' : d > 0.05 ? 'pos' : d < -0.05 ? 'neg' : '') + '">' + ppTxt(d) + '</td><td class="num"></td>' + (uPl.pctRev ? '<td></td><td class="cb"></td>' : '') + '</tr>';
         return;
       }
       var a = E.sumRange(s.a[r.id], p.from, p.to), b = E.sumRange(s.b[r.id], p.from, p.to), v = E.variance(a, b, r.type);
       var cls = r.kind === 'sub' ? 'subt' + (r.strong ? ' strong' : '') : 'line', open = r.kind === 'line' && uPl.open[r.id];
-      var name = r.kind === 'line' ? '<button type="button" class="xbtn" data-act="plx" data-v="' + r.id + '" aria-expanded="' + !!open + '" aria-label="Accounts of ' + esc(r.name) + '">' + ic('chev') + '</button><a class="lname" href="#/line/' + r.id + '">' + esc(r.name) + '</a>' + (flagged[r.id] ? '<span class="flag" title="Needs an explanation"><span class="sr">Needs an explanation</span></span>' : '')
-        : '<a class="lname" href="#/line/' + r.id + '">' + esc(r.name) + '</a>';
-      t += '<tr class="' + cls + '"><th scope="row">' + name + '</th><td class="num">' + num(a) + '</td><td class="num cb">' + num(b) + '</td><td class="num d ' + favCls(v.fav) + '" title="' + favWord(v.fav) + '">' + sgn(v.d) + '</td><td class="num dp ' + favCls(v.fav) + '">' + pctTxt(v.pct, true) + '</td>' +
+      var name = r.kind === 'line' ? '<button type="button" class="xbtn" data-act="plx" data-v="' + r.id + '" aria-expanded="' + !!open + '" aria-label="' + th('Accounts of {line}', { line: esc(rowName(r)) }) + '">' + ic('chev') + '</button><a class="lname" href="#/line/' + r.id + '">' + esc(rowName(r)) + '</a>' + (flagged[r.id] ? '<span class="flag" title="' + th('Needs an explanation') + '"><span class="sr">' + th('Needs an explanation') + '</span></span>' : '')
+        : '<a class="lname" href="#/line/' + r.id + '">' + esc(rowName(r)) + '</a>';
+      t += '<tr class="' + cls + '"><th scope="row">' + name + '</th><td class="num">' + num(a) + '</td><td class="num cb">' + num(b) + '</td><td class="num d ' + favCls(v.fav) + '" title="' + esc(favWord(v.fav)) + '">' + sgn(v.d) + '</td><td class="num dp ' + favCls(v.fav) + '">' + pctTxt(v.pct, true) + '</td>' +
         (uPl.pctRev ? '<td class="num rv">' + pctTxt(E.share(a, revA)) + '</td><td class="num rv cb">' + pctTxt(E.share(b, revB)) + '</td>' : '') + '</tr>';
       if (open) t += accountRows(r.id, s, revA, revB);
     });
     t += '</tbody></table></div>';
-    var phoneNote = '<p class="pl-phone">Δ = ' + esc(s.aName.toLowerCase()) + ' − ' + esc(cmpLong(s.cmp)) + '. Open a line for the ' + esc(s.bName.toLowerCase() === 'budget' ? 'budget' : s.bName.toLowerCase() === 'forecast' ? 'forecast' : (m.y - 1) + ' amount') + ' and its months.</p>';
-    h += '<section class="card">' + phoneNote + t + '<div class="pl-foot"><span><span class="pos">Green</span> is favourable, <span class="neg">red</span> unfavourable: more income or less cost than ' + esc(s.bName.toLowerCase() === 'budget' ? 'the budget' : s.bName.toLowerCase() === 'forecast' ? 'the forecast' : 'last year') + '.</span>' + (Object.keys(flagged).length ? '<span><span class="flag" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bad-dot)"></span> needs an explanation</span>' : '') + '<span>Subtotals are computed from the lines.</span></div></section>';
+    var phoneNote = '<p class="pl-phone">Δ = ' + esc(s.aName.toLowerCase()) + ' − ' + esc(cmpLong(s.cmp)) + '. ' + th(s.cmp === 'budget' ? 'Open a line for the budget and its months.' : s.cmp === 'forecast' ? 'Open a line for the forecast and its months.' : 'Open a line for the {year} amount and its months.', { year: m.y - 1 }) + '</p>';
+    h += '<section class="card">' + phoneNote + t + '<div class="pl-foot"><span>' + th(s.cmp === 'budget' ? '{green} is favourable, {red} unfavourable: more income or less cost than the budget.' : s.cmp === 'forecast' ? '{green} is favourable, {red} unfavourable: more income or less cost than the forecast.' : '{green} is favourable, {red} unfavourable: more income or less cost than last year.', { green: '<span class="pos">' + th('Green') + '</span>', red: '<span class="neg">' + th('red') + '</span>' }) + '</span>' + (Object.keys(flagged).length ? '<span><span class="flag" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bad-dot)"></span> ' + th('needs an explanation') + '</span>' : '') + '<span>' + th('Subtotals are computed from the lines.') + '</span></div></section>';
     return h;
   }
   function accountRows(line, s, revA, revB) {
@@ -727,35 +790,35 @@
       var a = accVal(acc, m.y, p.from, to), b = lyCmp ? accVal(acc, m.y - 1, p.from, p.to) : null;
       if (!a && !b) return;
       var v = b == null ? null : E.variance(a, b, E.LINE[line].type);
-      out += '<tr class="acc"><th scope="row"><span class="code">' + esc(acc.code) + '</span>' + esc(acc.name) + '</th><td class="num">' + num(a) + '</td><td class="num cb">' + (b == null ? '<span class="muted" title="The ' + esc(s.bName.toLowerCase()) + ' is set per line">·</span>' : num(b)) + '</td>' +
+      out += '<tr class="acc"><th scope="row"><span class="code">' + esc(acc.code) + '</span>' + esc(acc.name) + '</th><td class="num">' + num(a) + '</td><td class="num cb">' + (b == null ? '<span class="muted" title="' + th('The comparison is set per line, not per account') + '">·</span>' : num(b)) + '</td>' +
         '<td class="num ' + (v ? favCls(v.fav) : '') + '">' + (v ? sgn(v.d) : '') + '</td><td class="num ' + (v ? favCls(v.fav) : '') + '">' + (v ? pctTxt(v.pct, true) : '') + '</td>' +
         (uPl.pctRev ? '<td class="num rv">' + pctTxt(E.share(a, revA)) + '</td><td class="num rv cb">' + (b == null ? '' : pctTxt(E.share(b, revB))) + '</td>' : '') + '</tr>';
     });
     if (fyOpen) {
       var planned = E.sumRange(m.outR[line], m.closed + 1, 12);
-      out += '<tr class="acc"><th scope="row"><span class="code">' + esc(mon(m.closed + 1)) + '–Dec</span>Open months, ' + esc(m.basis === m.bud ? 'budget' : m.basis.name) + ' (set per line)</th><td class="num">' + num(planned) + '</td><td class="cb"></td><td></td><td></td>' + (uPl.pctRev ? '<td></td><td class="cb"></td>' : '') + '</tr>';
+      out += '<tr class="acc"><th scope="row"><span class="code">' + esc(mon(m.closed + 1)) + '–' + esc(mon(12)) + '</span>' + th('Open months, {version} (set per line)', { version: esc(m.basis === m.bud ? tx('budget') : vname(m.basis)) }) + '</th><td class="num">' + num(planned) + '</td><td class="cb"></td><td></td><td></td>' + (uPl.pctRev ? '<td></td><td class="cb"></td>' : '') + '</tr>';
     }
-    if (!out) out = '<tr class="acc"><th scope="row" colspan="' + (uPl.pctRev ? 7 : 5) + '" class="muted">No actuals on this line’s accounts in this period.</th></tr>';
+    if (!out) out = '<tr class="acc"><th scope="row" colspan="' + (uPl.pctRev ? 7 : 5) + '" class="muted">' + th('No actuals on this line’s accounts in this period.') + '</th></tr>';
     return out;
   }
   function plCsv() {
-    var m = model(), s = plState(), p = s.p, rows = [['level', 'account', 'line', s.aName.toLowerCase(), s.bName.toLowerCase(), 'difference', 'difference %', '% of revenue']];
+    var m = model(), s = plState(), p = s.p, rows = [[tx('level'), tx('account'), tx('line'), s.aName.toLowerCase(), s.bName.toLowerCase(), tx('difference'), tx('difference %'), tx('% of revenue')]];
     var revA = E.sumRange(s.a.rev, p.from, p.to);
     function pc(x) { return x == null ? '' : (Math.round(x * 10) / 10).toFixed(1).replace('.', ','); }
     E.ROWS.forEach(function (r) {
       if (r.kind === 'head') return;
       if (r.kind === 'pct') {
         var pa = E.share(E.sumRange(s.a[r.of], p.from, p.to), revA), pb = E.share(E.sumRange(s.b[r.of], p.from, p.to), E.sumRange(s.b.rev, p.from, p.to));
-        rows.push(['margin', '', r.name, pc(pa), pc(pb), pa == null || pb == null ? '' : pc(pa - pb), '', '']); return;
+        rows.push([tx('margin'), '', rowName(r), pc(pa), pc(pb), pa == null || pb == null ? '' : pc(pa - pb), '', '']); return;
       }
       var a = E.sumRange(s.a[r.id], p.from, p.to), b = E.sumRange(s.b[r.id], p.from, p.to), v = E.variance(a, b, r.type);
-      rows.push([r.kind === 'sub' ? 'subtotal' : 'line', '', r.name, E.centsText(a), E.centsText(b), E.centsText(v.d), pc(v.pct), pc(E.share(a, revA))]);
+      rows.push([tx(r.kind === 'sub' ? 'subtotal' : 'line'), '', rowName(r), E.centsText(a), E.centsText(b), E.centsText(v.d), pc(v.pct), pc(E.share(a, revA))]);
       if (r.kind === 'line') accountsOf(r.id).forEach(function (acc) {
         var aa = accVal(acc, m.y, p.from, s.per === 'fy' ? m.closed : p.to), bb = s.cmp === 'ly' ? accVal(acc, m.y - 1, p.from, p.to) : null;
-        if (aa || bb) rows.push(['account', acc.code, acc.name, E.centsText(aa), bb == null ? '' : E.centsText(bb), bb == null ? '' : E.centsText(aa - bb), bb == null ? '' : pc(E.pctVar(aa, bb)), pc(E.share(aa, revA))]);
+        if (aa || bb) rows.push([tx('account'), acc.code, acc.name, E.centsText(aa), bb == null ? '' : E.centsText(bb), bb == null ? '' : E.centsText(aa - bb), bb == null ? '' : pc(E.pctVar(aa, bb)), pc(E.share(aa, revA))]);
       });
     });
-    download('pl-' + m.y + '-' + slug(s.label) + '-vs-' + slug(s.bName) + '.csv', E.toCsv(rows, ';'));
+    download('pl-' + m.y + '-' + slug(s.fileLabel) + '-vs-' + (s.cmp === 'ly' ? m.y - 1 : s.cmp) + '.csv', E.toCsv(rows, ';'));
   }
 
   // ── page: one line ───────────────────────────────────────────────────────
@@ -766,35 +829,35 @@
     return out;
   }
   function pageLine(id) {
-    if (!E.LINE[id] && !E.SUB[id]) return head('Profit and loss', 'Not found', 'There is no P&amp;L line called "' + esc(id) + '".', '') + '<a class="btn" href="#/pl">' + ic('back') + 'Back to the P&amp;L</a>';
-    var m = model(), c = m.closed, isLine = !!E.LINE[id], type = E.typeOf(id), name = E.nameOf(id), accs = isLine ? accountsOf(id) : [];
-    var sec = isLine ? (E.SECTIONS.filter(function (s) { return s.id === E.LINE[id].section; })[0] || {}).name : 'Subtotal';
-    var h = '<a class="crumb no-print" href="#/pl">' + ic('back') + 'Profit and loss</a>';
-    h += head(esc(sec) + ' · ' + (type === 'cost' ? 'cost: lower is better' : 'income: higher is better'), name, esc(LINE_HINT[id] || '') + (isLine ? ' · ' + plural(accs.length, 'account', 'accounts') : ''),
-      isLine ? '<a class="btn" href="#/budget" data-act="budline" data-v="' + id + '">' + ic('grid') + 'Edit the budget</a>' : '');
+    if (!E.LINE[id] && !E.SUB[id]) return head(th('Profit and loss'), tx('Not found'), th('There is no P&L line called “{id}”.', { id: esc(id) }), '') + '<a class="btn" href="#/pl">' + ic('back') + th('Back to the P&L') + '</a>';
+    var m = model(), c = m.closed, isLine = !!E.LINE[id], type = E.typeOf(id), name = lnm(id), accs = isLine ? accountsOf(id) : [];
+    var sec = isLine ? secName(E.LINE[id].section) : tx('Subtotal');
+    var h = '<a class="crumb no-print" href="#/pl">' + ic('back') + th('Profit and loss') + '</a>';
+    h += head(esc(sec) + ' · ' + th(type === 'cost' ? 'cost: lower is better' : 'income: higher is better'), name, esc(LINE_HINT[id] ? tx(LINE_HINT[id]) : '') + (isLine ? ' · ' + plural(accs.length, 'account', 'accounts') : ''),
+      isLine ? '<a class="btn" href="#/budget" data-act="budline" data-v="' + id + '">' + ic('grid') + th('Edit the budget') + '</a>' : '');
     var ya = E.sumRange(m.actR[id], 1, c), yb = E.sumRange(m.budR[id], 1, c), yv = E.variance(ya, yb, type);
     var fa = E.total(m.outR[id]), fb = E.total(m.budR[id]), fv = E.variance(fa, fb, type);
     var la = E.sumRange(m.pyR[id], 1, c), lv = E.variance(ya, la, type);
     var revA = E.sumRange(m.actR.rev, 1, c), revB = E.sumRange(m.budR.rev, 1, c);
     var sa = E.share(ya, revA), sb = E.share(yb, revB);
     h += '<div class="kpis">' +
-      kpi('Year to date', c ? keur(ya) : '—', c ? skeur(yv.d) + ' (' + pctTxt(yv.pct, true) + ') vs budget' : 'no closed month', yv.fav ? 'good' : yv.fav === false ? 'bad' : '', '', c ? 'Budget ' + keur(yb) + ' · ' + range(1, c) : '') +
-      kpi('Full-year outlook', keur(fa), skeur(fv.d) + ' (' + pctTxt(fv.pct, true) + ') vs budget', fv.fav ? 'good' : fv.fav === false ? 'bad' : '', '', 'Budget ' + keur(fb)) +
-      kpi('Against ' + (m.y - 1), c ? pctTxt(lv.pct, true) : '—', c ? skeur(lv.d) + ' on the same months' : '', lv.fav ? 'good' : lv.fav === false ? 'bad' : '', '', c ? (m.y - 1) + ': ' + keur(la) : '') +
-      (id === 'rev' ? '' : kpi('Share of revenue', sa == null ? '—' : pctTxt(sa), sa == null || sb == null ? '' : ppTxt(sa - sb) + ' vs budget', '', '', sb == null ? '' : 'Budget ' + pctTxt(sb))) + '</div>';
-    var o = { ac: m.actR[id], ou: m.outR[id], bu: m.budR[id], ly: m.pyR[id], closed: c, type: type, names: { ac: 'Actual', ou: 'Outlook', bu: 'Budget', ly: String(m.y - 1) } };
-    var legend = '<div class="legend"><span><i class="k-ac"></i>Actual</span>' + (c < 12 ? '<span><i class="k-ou"></i>Outlook</span>' : '') + '<span><i class="k-bu"></i>Budget</span><span><i class="k-ly"></i>' + (m.y - 1) + '</span></div>';
-    var legend2 = '<div class="legend"><span><i class="k-lnac"></i>Actual</span>' + (c < 12 ? '<span><i class="k-lnou"></i>Outlook</span>' : '') + '<span><i class="k-lnbu"></i>Budget</span><span><i class="k-ly"></i>' + (m.y - 1) + '</span></div>';
-    h += '<div class="grid2"><section class="card"><div class="card-h"><div><span class="label">Month by month</span><h2>Actual, budget and last year</h2></div></div><div class="card-b">' + legend + '<div style="margin-top:10px">' + monthBars('chLine', name + ' per month', o) + '</div>' + monthTable(o) + '</div></section>' +
-      '<section class="card"><div class="card-h"><div><span class="label">Cumulative</span><h2>Running total through the year</h2></div></div><div class="card-b">' + legend2 + '<div style="margin-top:10px">' + cumLines('chCum', name + ', running total', o) + '</div>' + cumTable(o) + '</div></section></div>';
+      kpi(tx('Year to date'), c ? keur(ya) : '—', c ? th('{pct} vs budget', { pct: skeur(yv.d) + ' (' + pctTxt(yv.pct, true) + ')' }) : th('no closed month'), yv.fav ? 'good' : yv.fav === false ? 'bad' : '', '', c ? th('Budget {amount}', { amount: keur(yb) }) + ' · ' + esc(range(1, c)) : '') +
+      kpi(tx('Full-year outlook'), keur(fa), th('{pct} vs budget', { pct: skeur(fv.d) + ' (' + pctTxt(fv.pct, true) + ')' }), fv.fav ? 'good' : fv.fav === false ? 'bad' : '', '', th('Budget {amount}', { amount: keur(fb) })) +
+      kpi(tx('Against {year}', { year: m.y - 1 }), c ? pctTxt(lv.pct, true) : '—', c ? th('{amount} on the same months', { amount: skeur(lv.d) }) : '', lv.fav ? 'good' : lv.fav === false ? 'bad' : '', '', c ? (m.y - 1) + ': ' + keur(la) : '') +
+      (id === 'rev' ? '' : kpi(tx('Share of revenue'), sa == null ? '—' : pctTxt(sa), sa == null || sb == null ? '' : th('{pct} vs budget', { pct: ppTxt(sa - sb) }), '', '', sb == null ? '' : th('Budget {amount}', { amount: pctTxt(sb) }))) + '</div>';
+    var o = { ac: m.actR[id], ou: m.outR[id], bu: m.budR[id], ly: m.pyR[id], closed: c, type: type, names: { ac: tx('Actual'), ou: tx('Outlook'), bu: tx('Budget'), ly: String(m.y - 1) } };
+    var legend = '<div class="legend"><span><i class="k-ac"></i>' + th('Actual') + '</span>' + (c < 12 ? '<span><i class="k-ou"></i>' + th('Outlook') + '</span>' : '') + '<span><i class="k-bu"></i>' + th('Budget') + '</span><span><i class="k-ly"></i>' + (m.y - 1) + '</span></div>';
+    var legend2 = '<div class="legend"><span><i class="k-lnac"></i>' + th('Actual') + '</span>' + (c < 12 ? '<span><i class="k-lnou"></i>' + th('Outlook') + '</span>' : '') + '<span><i class="k-lnbu"></i>' + th('Budget') + '</span><span><i class="k-ly"></i>' + (m.y - 1) + '</span></div>';
+    h += '<div class="grid2"><section class="card"><div class="card-h"><div><span class="label">' + th('Month by month') + '</span><h2>' + th('Actual, budget and last year') + '</h2></div></div><div class="card-b">' + legend + '<div style="margin-top:10px">' + monthBars('chLine', tx('{line} per month', { line: name }), o) + '</div>' + monthTable(o) + '</div></section>' +
+      '<section class="card"><div class="card-h"><div><span class="label">' + th('Cumulative') + '</span><h2>' + th('Running total through the year') + '</h2></div></div><div class="card-b">' + legend2 + '<div style="margin-top:10px">' + cumLines('chCum', tx('{line}, running total', { line: name }), o) + '</div>' + cumTable(o) + '</div></section></div>';
     h += isLine ? accountsCard(id, accs) : partsCard(id);
     if (isLine) h += lineComments(id);
     return h;
   }
   function cumTable(o) {
     var a = 0, b = 0, l = 0;
-    return '<details class="tbl"><summary>Show as table</summary><div class="tw"><table class="t compact"><thead><tr><th>Through</th><th class="num">Actual / outlook</th><th class="num">Budget</th><th class="num">Δ</th><th class="num">' + (model().y - 1) + '</th></tr></thead><tbody>' +
-      E.MONTHS_LONG.map(function (mn, i) { a += o.ou[i]; b += o.bu[i]; l += o.ly[i]; var v = E.variance(a, b, o.type); return '<tr><td>' + mn + '</td><td class="num">' + num(a) + '</td><td class="num">' + num(b) + '</td><td class="num ' + favCls(v.fav) + '">' + sgn(v.d) + '</td><td class="num">' + num(l) + '</td></tr>'; }).join('') + '</tbody></table></div></details>';
+    return '<details class="tbl"><summary>' + th('Show as table') + '</summary><div class="tw"><table class="t compact"><thead><tr><th>' + th('Through') + '</th><th class="num">' + th('Actual / outlook') + '</th><th class="num">' + th('Budget') + '</th><th class="num">Δ</th><th class="num">' + (model().y - 1) + '</th></tr></thead><tbody>' +
+      I.monthsLong.map(function (mn, i) { a += o.ou[i]; b += o.bu[i]; l += o.ly[i]; var v = E.variance(a, b, o.type); return '<tr><td>' + esc(cap(mn)) + '</td><td class="num">' + num(a) + '</td><td class="num">' + num(b) + '</td><td class="num ' + favCls(v.fav) + '">' + sgn(v.d) + '</td><td class="num">' + num(l) + '</td></tr>'; }).join('') + '</tbody></table></div></details>';
   }
   function accountsCard(id, accs) {
     var m = model(), c = m.closed, y = m.y, cols = '';
@@ -802,7 +865,7 @@
     var rows = accs.map(function (acc) {
       var arr = (db.actuals[y] || {})[acc.code] || E.zeros(), sg = E.accountSign(acc), tds = '';
       for (var k = 1; k <= 12; k++) tds += '<td class="num">' + (k <= c ? num(sg * arr[k - 1]) : '<span class="muted">·</span>') + '</td>';
-      return '<tr><td class="nw"><span class="mono">' + esc(acc.code) + '</span> ' + esc(acc.name) + (sg < 0 ? ' <span class="tag" title="Counts against this line">−</span>' : '') + '</td>' + tds + '<td class="num"><b>' + num(accVal(acc, y, 1, c)) + '</b></td><td class="num muted">' + num(accVal(acc, y - 1, 1, c)) + '</td></tr>';
+      return '<tr><td class="nw"><span class="mono">' + esc(acc.code) + '</span> ' + esc(acc.name) + (sg < 0 ? ' <span class="tag" title="' + th('Counts against this line') + '">−</span>' : '') + '</td>' + tds + '<td class="num"><b>' + num(accVal(acc, y, 1, c)) + '</b></td><td class="num muted">' + num(accVal(acc, y - 1, 1, c)) + '</td></tr>';
     }).join('');
     var tot = '', bud = '', dif = '';
     for (i = 1; i <= 12; i++) {
@@ -812,25 +875,25 @@
       dif += '<td class="num ' + (i <= c ? favCls(v.fav) : '') + '">' + (i <= c ? sgn(v.d) : '') + '</td>';
     }
     var ya = E.sumRange(m.actR[id], 1, c), yb = E.sumRange(m.budR[id], 1, c), yv = E.variance(ya, yb, E.typeOf(id));
-    return '<section class="card mb"><div class="card-h"><div><span class="label">' + (db.chart === 'si-2016' ? 'Slovenian chart of accounts (kontni okvir) · map yours in Settings' : 'Chart of accounts · map yours in Settings') + '</span><h2>Accounts by month</h2></div><a class="btn sm no-print" href="#/settings">Mapping</a></div>' +
-      '<div class="tw"><table class="t compact"><thead><tr><th scope="col">Account</th>' + cols + '<th class="num" scope="col">YTD</th><th class="num" scope="col">' + (y - 1) + ' YTD</th></tr></thead><tbody>' + (rows || '<tr><td colspan="15" class="empty">No accounts are mapped to this line yet.</td></tr>') + '</tbody>' +
-      '<tfoot><tr><td>Line total</td>' + tot + '<td class="num">' + num(ya) + '</td><td class="num">' + num(E.sumRange(m.pyR[id], 1, c)) + '</td></tr>' +
-      '<tr><td>Budget</td>' + bud + '<td class="num">' + num(yb) + '</td><td></td></tr>' +
-      '<tr><td>Δ vs budget</td>' + dif + '<td class="num ' + favCls(yv.fav) + '">' + sgn(yv.d) + '</td><td></td></tr></tfoot></table></div></section>';
+    return '<section class="card mb"><div class="card-h"><div><span class="label">' + th(db.chart === 'si-2016' ? 'Slovenian chart of accounts (kontni okvir) · map yours in Settings' : 'Chart of accounts · map yours in Settings') + '</span><h2>' + th('Accounts by month') + '</h2></div><a class="btn sm no-print" href="#/settings">' + th('Mapping') + '</a></div>' +
+      '<div class="tw"><table class="t compact"><thead><tr><th scope="col">' + th('Account') + '</th>' + cols + '<th class="num" scope="col">' + th('YTD') + '</th><th class="num" scope="col">' + (y - 1) + ' ' + th('YTD') + '</th></tr></thead><tbody>' + (rows || '<tr><td colspan="15" class="empty">' + th('No accounts are mapped to this line yet.') + '</td></tr>') + '</tbody>' +
+      '<tfoot><tr><td>' + th('Line total') + '</td>' + tot + '<td class="num">' + num(ya) + '</td><td class="num">' + num(E.sumRange(m.pyR[id], 1, c)) + '</td></tr>' +
+      '<tr><td>' + th('Budget') + '</td>' + bud + '<td class="num">' + num(yb) + '</td><td></td></tr>' +
+      '<tr><td>' + th('Δ vs budget') + '</td>' + dif + '<td class="num ' + favCls(yv.fav) + '">' + sgn(yv.d) + '</td><td></td></tr></tfoot></table></div></section>';
   }
   function partsCard(id) {
     var m = model(), c = m.closed, terms = subTerms(id), cols = '';
     for (var i = 1; i <= 12; i++) cols += '<th class="num" scope="col"' + (i > c ? ' style="opacity:.55"' : '') + '>' + mon(i) + '</th>';
     function row(label, arr, strong) { var t = ''; for (var k = 1; k <= 12; k++) t += '<td class="num">' + num(arr[k - 1]) + '</td>'; return '<tr' + (strong ? ' class="subt"' : '') + '><td class="nw">' + label + '</td>' + t + '<td class="num"><b>' + num(E.total(arr)) + '</b></td></tr>'; }
-    var body = terms.map(function (t) { return row((t[1] < 0 ? '− ' : '+ ') + '<a href="#/line/' + t[0] + '">' + esc(E.nameOf(t[0])) + '</a>', m.outR[t[0]]); }).join('');
-    return '<section class="card mb"><div class="card-h"><div><span class="label">Actual for closed months, outlook for open ones</span><h2>What makes up ' + esc(E.nameOf(id)) + '</h2></div></div><div class="tw"><table class="t compact"><thead><tr><th scope="col">Line</th>' + cols + '<th class="num" scope="col">Year</th></tr></thead><tbody>' + body + '</tbody><tfoot>' + row('= ' + esc(E.nameOf(id)), m.outR[id], true) + '</tfoot></table></div></section>';
+    var body = terms.map(function (t) { return row((t[1] < 0 ? '− ' : '+ ') + '<a href="#/line/' + t[0] + '">' + esc(lnm(t[0])) + '</a>', m.outR[t[0]]); }).join('');
+    return '<section class="card mb"><div class="card-h"><div><span class="label">' + th('Actual for closed months, outlook for open ones') + '</span><h2>' + th('What makes up {line}', { line: esc(lnm(id)) }) + '</h2></div></div><div class="tw"><table class="t compact"><thead><tr><th scope="col">' + th('Line') + '</th>' + cols + '<th class="num" scope="col">' + th('Year') + '</th></tr></thead><tbody>' + body + '</tbody><tfoot>' + row('= ' + esc(lnm(id)), m.outR[id], true) + '</tfoot></table></div></section>';
   }
   function lineComments(id) {
     var m = model(), c = m.closed, h = '';
     if (!c) return '';
-    h += '<h3 class="mgroup">Year to date</h3><ul class="ex">' + exItem(id, c, 'ytd', { collapsed: true }) + '</ul><h3 class="mgroup">By month</h3><ul class="ex">';
+    h += '<h3 class="mgroup">' + th('Year to date') + '</h3><ul class="ex">' + exItem(id, c, 'ytd', { collapsed: true }) + '</ul><h3 class="mgroup">' + th('By month') + '</h3><ul class="ex">';
     for (var i = c; i >= 1; i--) h += exItem(id, i, 'month', { collapsed: true });
-    return '<section class="card"><div class="card-h"><div><span class="label">Comments against the budget</span><h2>Why it happened</h2></div></div><div class="card-b">' + h + '</ul></div></section>';
+    return '<section class="card"><div class="card-h"><div><span class="label">' + th('Comments against the budget') + '</span><h2>' + th('Why it happened') + '</h2></div></div><div class="card-b">' + h + '</ul></div></section>';
   }
 
   // ── page: budget and forecast editor ─────────────────────────────────────
@@ -841,62 +904,63 @@
     return v;
   }
   function frozenOf(v) { return v.kind === 'forecast' ? Math.max(0, Math.min(12, v.actualThrough || 0)) : 0; }
-  function lockedMsg() { var v = curVersion(); return v.kind === 'budget' ? v.name + ' is approved and locked. Unlock it first, or plan in a forecast.' : 'This version is locked.'; }
+  function lockedMsg() { var v = curVersion(); return v.kind === 'budget' ? tx('{version} is approved and locked. Unlock it first, or plan in a forecast.', { version: vname(v) }) : tx('This version is locked.'); }
   function pushUndo(v, label, changes) { undoStack.push({ vid: v.id, label: label, changes: changes }); if (undoStack.length > 60) undoStack.shift(); }
   function gridRows() { return E.ROWS.filter(function (r) { return r.kind !== 'head'; }); }
   function pageBudget() {
     var m = model(), v = curVersion(), fr = frozenOf(v), rows = E.rowsOf(v.values);
-    var status = v.kind === 'budget' ? (v.locked ? 'Approved ' + dt(v.approvedOn) + ' · locked' : 'Being edited · not approved') : 'Forecast made ' + dt(v.createdOn) + (fr ? ' · actuals for ' + range(1, fr) : '');
-    var h = head('Budget &amp; forecast · amounts in €', v.name, esc(v.note || (v.kind === 'budget' ? 'The approved plan every report compares against.' : 'A reforecast: actuals for the closed months, a revised plan for the rest.')), '');
+    var status = v.kind === 'budget' ? (v.locked ? tx('Approved {date} · locked', { date: dt(v.approvedOn) }) : tx('Being edited · not approved')) : tx('Forecast made {date}', { date: dt(v.createdOn) }) + (fr ? ' · ' + tx('actuals for {range}', { range: range(1, fr) }) : '');
+    var h = head(th('Budget & forecast · amounts in €'), vname(v), esc(v.note ? lx(v.note) : tx(v.kind === 'budget' ? 'The approved plan every report compares against.' : 'A reforecast: actuals for the closed months, a revised plan for the rest.')), '');
     var vs = db.versions.slice().sort(function (a, b) { return a.kind === b.kind ? (a.createdOn < b.createdOn ? -1 : 1) : a.kind === 'budget' ? -1 : 1; });
     var last = undoStack[undoStack.length - 1];
-    h += '<div class="vbar no-print">' + (vs.length <= 4 ? '<div class="seg" role="group" aria-label="Version">' + vs.map(function (x) { return '<button type="button" data-act="bver" data-v="' + esc(x.id) + '" aria-pressed="' + (x.id === v.id) + '">' + esc(x.name) + '</button>'; }).join('') + '</div>'
-      : '<label class="sr" for="bVer">Version</label><select class="select" id="bVer" data-ch="bver">' + vs.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === v.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '</select>') +
+    h += '<div class="vbar no-print">' + (vs.length <= 4 ? '<div class="seg" role="group" aria-label="' + th('Version') + '">' + vs.map(function (x) { return '<button type="button" data-act="bver" data-v="' + esc(x.id) + '" aria-pressed="' + (x.id === v.id) + '">' + esc(vname(x)) + '</button>'; }).join('') + '</div>'
+      : '<label class="sr" for="bVer">' + th('Version') + '</label><select class="select" id="bVer" data-ch="bver">' + vs.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === v.id ? ' selected' : '') + '>' + esc(vname(x)) + '</option>'; }).join('') + '</select>') +
       '<span class="lockpill' + (v.locked ? '' : ' open') + '">' + ic(v.locked ? 'lock' : 'unlock') + esc(status) + '</span><span class="grow"></span>' +
-      '<button type="button" class="btn sm" id="undoBtn" data-act="undo"' + (last ? ' title="Undo: ' + esc(last.label) + '"' : ' disabled') + '>' + ic('undo') + 'Undo</button>' +
-      '<button type="button" class="btn sm" data-act="newfc"' + (m.closed ? '' : ' disabled title="Close a month first"') + '>' + ic('fc') + 'New forecast</button>' +
-      (v.kind === 'budget' ? (v.locked ? '<button type="button" class="btn sm ghost" data-act="unlock">' + ic('unlock') + 'Unlock</button>' : '<button type="button" class="btn sm pri" data-act="approve">' + ic('lock') + 'Approve and lock</button>')
-        : '<button type="button" class="btn sm ghost" data-act="delfc">' + ic('trash') + 'Delete</button>') + '</div>';
-    if (v.locked) h += '<div class="notice no-print"><p><b>' + esc(v.name) + ' was approved on ' + dt(v.approvedOn) + '</b> and is locked, so every report keeps the same baseline. To plan the rest of the year, create a forecast from actuals + this version.</p></div>';
-    else if (fr) h += '<div class="notice no-print"><p>' + range(1, fr) + ' hold the actuals from when this forecast was made and cannot be edited. The tools fill in ' + range(fr + 1, 12) + ' only.</p></div>';
+      '<button type="button" class="btn sm" id="undoBtn" data-act="undo"' + (last ? ' title="' + th('Undo: {change}', { change: esc(last.label) }) + '"' : ' disabled') + '>' + ic('undo') + th('Undo') + '</button>' +
+      '<button type="button" class="btn sm" data-act="newfc"' + (m.closed ? '' : ' disabled title="' + th('Close a month first') + '"') + '>' + ic('fc') + th('New forecast') + '</button>' +
+      (v.kind === 'budget' ? (v.locked ? '<button type="button" class="btn sm ghost" data-act="unlock">' + ic('unlock') + th('Unlock') + '</button>' : '<button type="button" class="btn sm pri" data-act="approve">' + ic('lock') + th('Approve and lock') + '</button>')
+        : '<button type="button" class="btn sm ghost" data-act="delfc">' + ic('trash') + th('Delete') + '</button>') + '</div>';
+    if (v.locked) h += '<div class="notice no-print"><p>' + th('{approved} and is locked, so every report keeps the same baseline. To plan the rest of the year, create a forecast from actuals + this version.', { approved: '<b>' + th('{version} was approved on {date}', { version: esc(vname(v)), date: dt(v.approvedOn) }) + '</b>' }) + '</p></div>';
+    else if (fr) h += '<div class="notice no-print"><p>' + th('{closed}: these months hold the actuals from when this forecast was made and cannot be edited. The tools fill in {open} only.', { closed: esc(cap(range(1, fr))), open: esc(range(fr + 1, 12)) }) + '</p></div>';
     // wide grid
     GRID = gridRows();
     var thm = '';
     for (var i = 1; i <= 12; i++) thm += '<th class="num" scope="col">' + mon(i) + '</th>';
     var body = '';
     E.ROWS.forEach(function (r) {
-      if (r.kind === 'head') { body += '<tr class="sec"><th class="lc" scope="rowgroup">' + esc(r.name) + '</th><td colspan="15"></td></tr>'; return; }
+      if (r.kind === 'head') { body += '<tr class="sec"><th class="lc" scope="rowgroup">' + esc(rowName(r)) + '</th><td colspan="15"></td></tr>'; return; }
       var ri = GRID.indexOf(r), cls = r.kind === 'sub' ? 'subt' + (r.strong ? ' strong' : '') : r.kind;
-      var tool = r.kind === 'line' && !v.locked ? '<button type="button" class="btn icon sm ghost tool" data-act="tools" data-v="' + r.id + '" aria-label="Fill in ' + esc(r.name) + ' with a tool" title="Spread, copy or set as % of revenue">' + ic('tools') + '</button>' : '';
+      var tool = r.kind === 'line' && !v.locked ? '<button type="button" class="btn icon sm ghost tool" data-act="tools" data-v="' + r.id + '" aria-label="' + th('Fill in {line} with a tool', { line: esc(rowName(r)) }) + '" title="' + th('Spread, copy or set as % of revenue') + '">' + ic('tools') + '</button>' : '';
       var tds = '';
       for (var k = 1; k <= 13; k++) {
         var ro = r.kind !== 'line' || v.locked || (k <= 12 && k <= fr) || (k === 13 && fr >= 12);
         tds += '<td class="c' + (k === 13 ? ' tot' : '') + (ro ? ' ro' : '') + (r.kind === 'line' && k <= fr ? ' frozen' : '') + '" role="gridcell" tabindex="-1" data-ri="' + ri + '" data-m="' + k + '" data-id="' + r.id + '" data-k="' + r.kind + '"' + (r.of ? ' data-of="' + r.of + '"' : '') + (ro ? ' aria-readonly="true"' : '') + '></td>';
       }
       tds += '<td class="c ly" data-id="' + r.id + '" data-k="' + r.kind + '"' + (r.of ? ' data-of="' + r.of + '"' : '') + ' data-m="14"></td><td class="c lyp" data-id="' + r.id + '" data-k="' + r.kind + '" data-m="15"' + (r.of ? ' data-of="' + r.of + '"' : '') + '></td>';
-      body += '<tr class="' + cls + '"><th class="lc" scope="row"><div class="lcw"><span>' + esc(r.name) + '</span>' + tool + '</div></th>' + tds + '</tr>';
+      body += '<tr class="' + cls + '"><th class="lc" scope="row"><div class="lcw"><span>' + esc(rowName(r)) + '</span>' + tool + '</div></th>' + tds + '</tr>';
     });
-    h += '<section class="card only-wide"><div class="tw" id="bgWrap"><table class="t bud" id="bgGrid" role="grid" aria-label="' + esc(v.name) + ', one row per line, one column per month" aria-readonly="' + !!v.locked + '"><thead><tr><th class="lc" scope="col">Line</th>' + thm + '<th class="num" scope="col">Total</th><th class="num" scope="col">' + (m.y - 1) + '</th><th class="num" scope="col" title="Total against last year">vs ' + (m.y - 1) + '</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
-      '<div class="grid-help"><span><span class="kbd">↑ ↓ ← →</span> move</span><span><span class="kbd">Enter</span> or type to edit, <span class="kbd">Enter</span> to save</span><span><span class="kbd">Tab</span> save and go right</span><span><span class="kbd">Esc</span> cancel</span><span><span class="kbd">Ctrl Z</span> undo</span><span>Paste a block from Excel</span><span>Type in Total to re-spread the year</span><span>12.500 · 12500,50 · 12,5k</span></div></section>';
+    var kbd = function (k) { return '<span class="kbd">' + k + '</span>'; };
+    h += '<section class="card only-wide"><div class="tw" id="bgWrap"><table class="t bud" id="bgGrid" role="grid" aria-label="' + th('{version}, one row per line, one column per month', { version: esc(vname(v)) }) + '" aria-readonly="' + !!v.locked + '"><thead><tr><th class="lc" scope="col">' + th('Line') + '</th>' + thm + '<th class="num" scope="col">' + th('Total') + '</th><th class="num" scope="col">' + (m.y - 1) + '</th><th class="num" scope="col" title="' + th('Total against last year') + '">' + th('vs {year}', { year: m.y - 1 }) + '</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
+      '<div class="grid-help"><span>' + th('{keys} move', { keys: kbd('↑ ↓ ← →') }) + '</span><span>' + th('{enter} or type to edit, {enter} to save', { enter: kbd('Enter') }) + '</span><span>' + th('{tab} save and go right', { tab: kbd('Tab') }) + '</span><span>' + th('{esc} cancel', { esc: kbd('Esc') }) + '</span><span>' + th('{keys} undo', { keys: kbd('Ctrl Z') }) + '</span><span>' + th('Paste a block from Excel') + '</span><span>' + th('Type in Total to re-spread the year') + '</span><span>12.500 · 12500,50 · 12,5k</span></div></section>';
     // phone: one line at a time
     var lid = E.LINE[uBud.line] ? uBud.line : 'sales_si', li = E.LINES.map(function (l) { return l.id; }).indexOf(lid);
-    var opts = E.SECTIONS.map(function (sct) { return '<optgroup label="' + esc(sct.name) + '">' + E.LINES.filter(function (l) { return l.section === sct.id; }).map(function (l) { return '<option value="' + l.id + '"' + (l.id === lid ? ' selected' : '') + '>' + esc(l.name) + '</option>'; }).join('') + '</optgroup>'; }).join('');
+    var opts = lineOptions(lid);
     var list = '';
     for (i = 1; i <= 12; i++) {
       var ro2 = v.locked || i <= fr, val = v.values[lid][i - 1];
-      list += '<li><label for="pm' + i + '">' + monL(i) + '<small>' + (m.y - 1) + ': ' + num(m.py[lid][i - 1]) + '</small></label>' + (ro2 ? '<span class="ro" id="pm' + i + '">' + num(val) + '</span>' : '<input class="in" id="pm' + i + '" inputmode="decimal" autocomplete="off" data-pm="' + i + '" value="' + esc(inputNice(val)) + '">') + '</li>';
+      list += '<li><label for="pm' + i + '">' + esc(cap(monL(i))) + '<small>' + (m.y - 1) + ': ' + num(m.py[lid][i - 1]) + '</small></label>' + (ro2 ? '<span class="ro" id="pm' + i + '">' + num(val) + '</span>' : '<input class="in" id="pm' + i + '" inputmode="decimal" autocomplete="off" data-pm="' + i + '" value="' + esc(inputNice(val)) + '">') + '</li>';
     }
-    h += '<section class="card only-phone"><div class="ph-line"><button type="button" class="btn icon sm" data-act="phprev" aria-label="Previous line"' + (li <= 0 ? ' disabled' : '') + '>' + ic('back') + '</button><label class="sr" for="phLine">Line</label><select class="select" id="phLine" data-ch="phline">' + opts + '</select><button type="button" class="btn icon sm" data-act="phnext" aria-label="Next line"' + (li >= E.LINES.length - 1 ? ' disabled' : '') + '>' + ic('chev') + '</button></div>' +
-      '<ul class="ph-list">' + list + '</ul><div class="ph-tot"><span>Total ' + m.y + '</span><span id="phTot">' + eur(E.total(v.values[lid])) + '</span></div>' +
+    h += '<section class="card only-phone"><div class="ph-line"><button type="button" class="btn icon sm" data-act="phprev" aria-label="' + th('Previous line') + '"' + (li <= 0 ? ' disabled' : '') + '>' + ic('back') + '</button><label class="sr" for="phLine">' + th('Line') + '</label><select class="select" id="phLine" data-ch="phline">' + opts + '</select><button type="button" class="btn icon sm" data-act="phnext" aria-label="' + th('Next line') + '"' + (li >= E.LINES.length - 1 ? ' disabled' : '') + '>' + ic('chev') + '</button></div>' +
+      '<ul class="ph-list">' + list + '</ul><div class="ph-tot"><span>' + th('Total {year}', { year: m.y }) + '</span><span id="phTot">' + eur(E.total(v.values[lid])) + '</span></div>' +
       '<div class="ph-subs" id="phSubs">' + phoneSubs(rows) + '</div>' +
-      (v.locked ? '' : '<div class="ph-line" style="padding-top:0"><button type="button" class="btn" data-act="tools" data-v="' + lid + '">' + ic('tools') + 'Tools for this line</button></div>') + '</section>';
+      (v.locked ? '' : '<div class="ph-line" style="padding-top:0"><button type="button" class="btn" data-act="tools" data-v="' + lid + '">' + ic('tools') + th('Tools for this line') + '</button></div>') + '</section>';
     return h;
   }
   function phoneSubs(rows) {
     var m = model();
-    return '<div><span>Total revenue</span><b>' + eur(E.total(rows.rev)) + '</b></div><div><span>Gross margin</span><b>' + eur(E.total(rows.gm)) + ' · ' + pctTxt(E.share(E.total(rows.gm), E.total(rows.rev))) + '</b></div>' +
-      '<div><span>EBITDA</span><b>' + eur(E.total(rows.ebitda)) + ' · ' + pctTxt(E.share(E.total(rows.ebitda), E.total(rows.rev))) + '</b></div><div><span>Profit before tax</span><b>' + eur(E.total(rows.pbt)) + '</b></div>' +
-      '<div><span>' + (m.y - 1) + ' EBITDA</span><span>' + eur(E.total(m.pyR.ebitda)) + '</span></div>';
+    return '<div><span>' + esc(lnm('rev')) + '</span><b>' + eur(E.total(rows.rev)) + '</b></div><div><span>' + esc(lnm('gm')) + '</span><b>' + eur(E.total(rows.gm)) + ' · ' + pctTxt(E.share(E.total(rows.gm), E.total(rows.rev))) + '</b></div>' +
+      '<div><span>EBITDA</span><b>' + eur(E.total(rows.ebitda)) + ' · ' + pctTxt(E.share(E.total(rows.ebitda), E.total(rows.rev))) + '</b></div><div><span>' + esc(lnm('pbt')) + '</span><b>' + eur(E.total(rows.pbt)) + '</b></div>' +
+      '<div><span>' + th('EBITDA {year}', { year: m.y - 1 }) + '</span><span>' + eur(E.total(m.pyR.ebitda)) + '</span></div>';
   }
   function inputText(c) { return c % 100 === 0 ? String(c / 100) : (c / 100).toFixed(2).replace('.', ','); }
   /** the same, grouped for reading (1.234.567 or -1.234,56); parseInput reads both */
@@ -923,7 +987,7 @@
     if ($('phTot')) $('phTot').textContent = eur(E.total(v.values[lid]));
     if ($('phSubs')) $('phSubs').innerHTML = phoneSubs(rows);
     var u = $('undoBtn'), last = undoStack[undoStack.length - 1];
-    if (u) { u.disabled = !last; u.title = last ? 'Undo: ' + last.label : ''; }
+    if (u) { u.disabled = !last; u.title = last ? tx('Undo: {change}', { change: last.label }) : ''; }
     renderNav();
   }
   function cellAt(ri, m) { return document.querySelector('#bgGrid td.c[data-ri="' + ri + '"][data-m="' + m + '"]'); }
@@ -945,13 +1009,13 @@
   function startEdit(td, initial) {
     if (!canEdit(td)) {
       var v0 = curVersion();
-      if (td && td.getAttribute('data-k') === 'line') toast(v0.locked ? lockedMsg() : 'These months hold the actuals this forecast was made from.');
-      else if (td) toast('Subtotals are computed from the lines.');
+      if (td && td.getAttribute('data-k') === 'line') toast(v0.locked ? lockedMsg() : tx('These months hold the actuals this forecast was made from.'));
+      else if (td) toast(tx('Subtotals are computed from the lines.'));
       return;
     }
     var v = curVersion(), id = td.getAttribute('data-id'), m = +td.getAttribute('data-m');
     var cur = m === 13 ? E.total(v.values[id]) : v.values[id][m - 1];
-    td.innerHTML = '<input class="cell-in" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="' + esc(E.nameOf(id) + ', ' + (m === 13 ? 'total for the year, spread over the months like now' : monL(m))) + '">';
+    td.innerHTML = '<input class="cell-in" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="' + esc(lnm(id) + ', ' + (m === 13 ? tx('total for the year, spread over the months like now') : monL(m))) + '">';
     var inp = td.querySelector('input');
     editing = { td: td, input: inp, id: id, m: m, orig: cur };
     inp.value = initial != null ? initial : inputText(cur);
@@ -961,7 +1025,7 @@
   function endEdit(save2, move) {
     if (!editing) return true;
     var ed = editing, val = E.parseInput(ed.input.value);
-    if (save2 && isNaN(val)) { ed.input.setAttribute('aria-invalid', 'true'); toast('Type a number, for example 12.500, 12500,50 or 12,5k'); ed.input.focus(); return false; }
+    if (save2 && isNaN(val)) { ed.input.setAttribute('aria-invalid', 'true'); toast(tx('Type a number, for example 12.500, 12500,50 or 12,5k')); ed.input.focus(); return false; }
     editing = null;
     if (save2 && val !== ed.orig) applyCell(ed.id, ed.m, val);
     ed.td.textContent = cellText(ed.td, E.rowsOf(curVersion().values));
@@ -976,19 +1040,19 @@
       after = before.slice(0, fr).concat(E.rescale(before.slice(fr), val - frozenSum, model().py[id].slice(fr)));
     } else { after = before.slice(); after[m - 1] = val; }
     if (same(before, after)) return;
-    pushUndo(v, E.nameOf(id) + (m === 13 ? ', total' : ', ' + monL(m)), [{ id: id, before: before, after: after }]);
+    pushUndo(v, lnm(id) + ', ' + (m === 13 ? tx('total') : monL(m)), [{ id: id, before: before, after: after }]);
     commit('', function () { v.values[id] = after; }, { noRender: true });
     refreshGrid();
   }
   function doUndo() {
     var u = undoStack.pop();
-    if (!u) return toast('Nothing to undo');
+    if (!u) return toast(tx('Nothing to undo'));
     var v = db.versions.filter(function (x) { return x.id === u.vid; })[0];
-    if (!v) return toast('That version no longer exists');
-    if (v.locked) { undoStack.push(u); return toast(v.name + ' is locked. Unlock it to undo.'); }
+    if (!v) return toast(tx('That version no longer exists'));
+    if (v.locked) { undoStack.push(u); return toast(tx('{version} is locked. Unlock it to undo.', { version: vname(v) })); }
     commit('', function () { u.changes.forEach(function (ch) { v.values[ch.id] = ch.before.slice(); }); }, { noRender: true });
     if (uBud.vid !== v.id || parseRoute().name !== 'budget') { uBud.vid = v.id; saveUi(); render(); } else refreshGrid();
-    toast('Undone: ' + u.label);
+    toast(tx('Undone: {change}', { change: u.label }));
   }
   function pasteBlock(td, text) {
     var v = curVersion();
@@ -1006,19 +1070,19 @@
       });
     });
     var list = Object.keys(changes).map(function (k) { return changes[k]; }).filter(function (ch) { return !same(ch.before, ch.after); });
-    if (!list.length) return toast(bad ? 'Nothing pasted: the clipboard has no numbers for these cells.' : 'Nothing changed.');
-    pushUndo(v, 'paste of ' + plural(n, 'cell', 'cells'), list);
+    if (!list.length) return toast(tx(bad ? 'Nothing pasted: the clipboard has no numbers for these cells.' : 'Nothing changed.'));
+    pushUndo(v, tx('paste of {cells}', { cells: plural(n, 'cell', 'cells') }), list);
     commit('', function () { list.forEach(function (ch) { v.values[ch.id] = ch.after; }); }, { noRender: true });
     refreshGrid();
-    toast('Pasted ' + plural(n, 'cell', 'cells') + (bad ? ', ' + bad + ' not numbers were skipped' : ''));
+    toast(tx('Pasted {cells}', { cells: plural(n, 'cell', 'cells') }) + (bad ? ', ' + tx('skipped (not numbers): {n}', { n: bad }) : ''));
   }
   function phoneCommit(inp) {
     var v = curVersion(), id = E.LINE[uBud.line] ? uBud.line : 'sales_si', mm = +inp.getAttribute('data-pm'), val = E.parseInput(inp.value);
-    if (isNaN(val)) { inp.setAttribute('aria-invalid', 'true'); toast('Type a number, for example 12.500 or 12500,50'); return; }
+    if (isNaN(val)) { inp.setAttribute('aria-invalid', 'true'); toast(tx('Type a number, for example 12.500 or 12500,50')); return; }
     inp.removeAttribute('aria-invalid');
     if (v.locked || mm <= frozenOf(v) || v.values[id][mm - 1] === val) { inp.value = inputNice(v.values[id][mm - 1]); return; }
     var before = v.values[id].slice(), after = before.slice(); after[mm - 1] = val;
-    pushUndo(v, E.nameOf(id) + ', ' + monL(mm), [{ id: id, before: before, after: after }]);
+    pushUndo(v, lnm(id) + ', ' + monL(mm), [{ id: id, before: before, after: after }]);
     commit('', function () { v.values[id] = after; }, { noRender: true });
     inp.value = inputNice(val);
     refreshGrid();
@@ -1029,24 +1093,24 @@
     var v = curVersion();
     if (v.locked) return toast(lockedMsg());
     var fr = frozenOf(v), n = 12 - fr;
-    if (!n) return toast('Every month of this forecast holds actuals.');
+    if (!n) return toast(tx('Every month of this forecast holds actuals.'));
     var cur = v.values[id].slice(fr), sec = E.LINE[id].section, m = model();
     toolSt = { id: id, fr: fr, cur: cur, ly: m.py[id].slice(fr), rev: E.rowsOf(v.values).rev.slice(fr), tool: 'seasonal' };
-    var span = fr ? range(fr + 1, 12) : 'the year';
+    var span = fr ? range(fr + 1, 12) : tx('the year');
     var curTot = E.sum(cur), share = E.share(E.sum(cur), E.sum(toolSt.rev));
     var opt = function (val, title, small, chk) { return '<div class="tool-opt"><label><input type="radio" name="tool" value="' + val + '"' + (chk ? ' checked' : '') + '>' + esc(title) + '</label><small>' + small + '</small></div>'; };
-    var body = '<fieldset class="grp"><legend>How to fill in ' + esc(span) + '</legend>' +
-      opt('seasonal', 'Spread a total like last year', 'Each month gets the share it had in ' + (m.y - 1) + '.', true) +
-      opt('even', 'Spread a total evenly', 'The same amount every month; leftover euros go to the first months.') +
-      opt('growth', 'Last year + growth', (m.y - 1) + ' month by month, times (1 + growth %).') +
-      (sec === 'rev' ? '' : opt('pct', 'A share of revenue', 'This version’s revenue × the percentage, month by month. Today: ' + pctTxt(share) + '.')) +
-      (id === 'cogs' ? opt('margin', 'Cost of goods at a target margin', 'Revenue × (100 % − margin). Freight is not included.') : '') + '</fieldset>' +
-      '<div class="tool-in"><div class="field" id="tfTotal"><label for="tTotal">Total for ' + esc(span) + ' (€)</label><input class="in" id="tTotal" inputmode="decimal" autocomplete="off" value="' + esc(inputText(curTot)) + '"></div>' +
-      '<div class="field" id="tfGrowth" hidden><label for="tGrowth">Growth (%)</label><input class="in" id="tGrowth" inputmode="decimal" value="5"></div>' +
-      '<div class="field" id="tfPct" hidden><label for="tPct">Share of revenue (%)</label><input class="in" id="tPct" inputmode="decimal" value="' + esc(share == null ? '2' : String(Math.round(share * 10) / 10).replace('.', ',')) + '"></div>' +
-      '<div class="field" id="tfMargin" hidden><label for="tMargin">Target gross margin (%)</label><input class="in" id="tMargin" inputmode="decimal" value="' + esc(share == null ? '26' : String(Math.round((100 - share) * 10) / 10).replace('.', ',')) + '"></div></div>' +
-      '<div id="toolPrev"></div><p class="hint">Tools fill in numbers once; they do not keep a formula. Totals are kept to the cent; whole-euro totals give whole-euro months. Undo puts the old numbers back.</p>';
-    modal('Fill in ' + E.nameOf(id), body, 'Apply', applyTool, { wide: true });
+    var body = '<fieldset class="grp"><legend>' + th('How to fill in {span}', { span: esc(span) }) + '</legend>' +
+      opt('seasonal', tx('Spread a total like last year'), th('Each month gets the share it had in {year}.', { year: m.y - 1 }), true) +
+      opt('even', tx('Spread a total evenly'), th('The same amount every month; leftover euros go to the first months.')) +
+      opt('growth', tx('Last year + growth'), th('{year} month by month, times (1 + growth %).', { year: m.y - 1 })) +
+      (sec === 'rev' ? '' : opt('pct', tx('A share of revenue'), th('This version’s revenue × the percentage, month by month. Today: {pct}.', { pct: pctTxt(share) }))) +
+      (id === 'cogs' ? opt('margin', tx('Cost of goods at a target margin'), th('Revenue × (100 % − margin). Freight is not included.')) : '') + '</fieldset>' +
+      '<div class="tool-in"><div class="field" id="tfTotal"><label for="tTotal">' + th('Total for {span} (€)', { span: esc(span) }) + '</label><input class="in" id="tTotal" inputmode="decimal" autocomplete="off" value="' + esc(inputText(curTot)) + '"></div>' +
+      '<div class="field" id="tfGrowth" hidden><label for="tGrowth">' + th('Growth (%)') + '</label><input class="in" id="tGrowth" inputmode="decimal" value="5"></div>' +
+      '<div class="field" id="tfPct" hidden><label for="tPct">' + th('Share of revenue (%)') + '</label><input class="in" id="tPct" inputmode="decimal" value="' + esc(share == null ? '2' : String(Math.round(share * 10) / 10).replace('.', ',')) + '"></div>' +
+      '<div class="field" id="tfMargin" hidden><label for="tMargin">' + th('Target gross margin (%)') + '</label><input class="in" id="tMargin" inputmode="decimal" value="' + esc(share == null ? '26' : String(Math.round((100 - share) * 10) / 10).replace('.', ',')) + '"></div></div>' +
+      '<div id="toolPrev"></div><p class="hint">' + th('Tools fill in numbers once; they do not keep a formula. Totals are kept to the cent; whole-euro totals give whole-euro months. Undo puts the old numbers back.') + '</p>';
+    modal(tx('Fill in {line}', { line: lnm(id) }), body, tx('Apply'), applyTool, { wide: true });
     toolPreview();
   }
   function pnum(s) { var t = String(s || '').trim().replace(/\s|%/g, '').replace(',', '.'); return t === '' ? NaN : Number(t); }
@@ -1054,18 +1118,18 @@
     var st = toolSt, n = st.cur.length, t = st.tool;
     if (t === 'even' || t === 'seasonal') {
       var tot = E.parseInput($('tTotal').value);
-      if (isNaN(tot)) return 'Type the total, for example 120.000 or 120000,50.';
+      if (isNaN(tot)) return tx('Type the total, for example 120.000 or 120000,50.');
       return t === 'even' ? E.spreadEven(tot, n) : E.spreadSeasonal(tot, st.ly);
     }
     if (t === 'growth') {
       var g = pnum($('tGrowth').value);
-      if (!isFinite(g) || g < -100 || g > 1000) return 'Type the growth in %, for example 5 or -2,5.';
-      if (!E.sum(st.ly.map(Math.abs))) return 'Last year has no amounts on this line, so there is nothing to grow from.';
+      if (!isFinite(g) || g < -100 || g > 1000) return tx('Type the growth in %, for example 5 or -2,5.');
+      if (!E.sum(st.ly.map(Math.abs))) return tx('Last year has no amounts on this line, so there is nothing to grow from.');
       return E.copyGrowth(st.ly, g);
     }
     var p = t === 'margin' ? 100 - pnum($('tMargin').value) : pnum($('tPct').value);
-    if (!isFinite(p) || p < 0 || p > 1000) return t === 'margin' ? 'Type the margin in %, for example 26.' : 'Type the share in %, for example 2 or 74,5.';
-    if (!E.sum(st.rev)) return 'This version has no revenue in these months yet. Fill in the revenue lines first.';
+    if (!isFinite(p) || p < 0 || p > 1000) return tx(t === 'margin' ? 'Type the margin in %, for example 26.' : 'Type the share in %, for example 2 or 74,5.');
+    if (!E.sum(st.rev)) return tx('This version has no revenue in these months yet. Fill in the revenue lines first.');
     return E.pctOf(st.rev, p);
   }
   function toolPreview() {
@@ -1079,38 +1143,43 @@
     var res = toolResult();
     if (typeof res === 'string') { $('toolPrev').innerHTML = '<div class="err">' + esc(res) + '</div>'; st.res = null; return; }
     st.res = res;
-    var rows = res.map(function (x, i) { var d = x - st.cur[i]; return '<tr><td>' + monL(st.fr + i + 1) + '</td><td class="num">' + num(st.cur[i]) + '</td><td class="num"><b>' + num(x) + '</b></td><td class="num ' + (d ? favCls(E.variance(x, st.cur[i], E.typeOf(st.id)).fav) : '') + '">' + sgn(d) + '</td><td class="num muted">' + num(st.ly[i]) + '</td></tr>'; }).join('');
+    var rows = res.map(function (x, i) { var d = x - st.cur[i]; return '<tr><td>' + esc(cap(monL(st.fr + i + 1))) + '</td><td class="num">' + num(st.cur[i]) + '</td><td class="num"><b>' + num(x) + '</b></td><td class="num ' + (d ? favCls(E.variance(x, st.cur[i], E.typeOf(st.id)).fav) : '') + '">' + sgn(d) + '</td><td class="num muted">' + num(st.ly[i]) + '</td></tr>'; }).join('');
     var tn = E.sum(res), tc = E.sum(st.cur);
-    $('toolPrev').innerHTML = '<div class="tw"><table class="t compact prev-t"><caption class="sr">Preview</caption><thead><tr><th>Month</th><th class="num">Now</th><th class="num">New</th><th class="num">Δ</th><th class="num">' + (model().y - 1) + '</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td>Total</td><td class="num">' + num(tc) + '</td><td class="num"><b>' + num(tn) + '</b></td><td class="num">' + sgn(tn - tc) + '</td><td class="num muted">' + num(E.sum(st.ly)) + '</td></tr></tfoot></table></div>';
+    $('toolPrev').innerHTML = '<div class="tw"><table class="t compact prev-t"><caption class="sr">' + th('Preview') + '</caption><thead><tr><th>' + th('Month') + '</th><th class="num">' + th('Now') + '</th><th class="num">' + th('New') + '</th><th class="num">Δ</th><th class="num">' + (model().y - 1) + '</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td>' + th('Total') + '</td><td class="num">' + num(tc) + '</td><td class="num"><b>' + num(tn) + '</b></td><td class="num">' + sgn(tn - tc) + '</td><td class="num muted">' + num(E.sum(st.ly)) + '</td></tr></tfoot></table></div>';
   }
   function applyTool() {
     var st = toolSt; if (!st) return;
     toolPreview();
-    if (!st.res) return modalError('Fix the input first.');
+    if (!st.res) return modalError(tx('Fix the input first.'));
     var v = curVersion(), before = v.values[st.id].slice(), after = before.slice(0, st.fr).concat(st.res);
     var names = { seasonal: 'spread like last year', even: 'spread evenly', growth: 'last year + growth', pct: '% of revenue', margin: 'target margin' };
     closeLayer();
-    if (same(before, after)) return toast('Nothing changed');
-    pushUndo(v, E.nameOf(st.id) + ', ' + names[st.tool], [{ id: st.id, before: before, after: after }]);
+    if (same(before, after)) return toast(tx('Nothing changed'));
+    pushUndo(v, lnm(st.id) + ', ' + tx(names[st.tool]), [{ id: st.id, before: before, after: after }]);
+    // the activity log is written in English and translated when it is shown
     commit(v.name + ': ' + E.nameOf(st.id) + ' filled in (' + names[st.tool] + ')', function () { v.values[st.id] = after; }, { noRender: true });
     refreshGrid();
-    toast(E.nameOf(st.id) + ': ' + names[st.tool] + ', total ' + eur(E.total(after)));
+    toast(tx('{line}: {tool}, total {amount}', { line: lnm(st.id), tool: tx(names[st.tool]), amount: eur(E.total(after)) }));
   }
   function newForecast() {
     var m = model(), v = curVersion(), c = m.closed;
-    if (!c) return toast('Close a month first.');
+    if (!c) return toast(tx('Close a month first.'));
     var name = E.forecastName(m.y, c), k = 2;
     while (db.versions.some(function (x) { return x.name === name; })) name = E.forecastName(m.y, c) + ' · ' + (k++);
-    modal('New forecast', '<p>It takes the actuals for <b>' + range(1, c) + '</b> and <b>' + esc(v.name) + '</b> for ' + range(c + 1, 12) + '. You can then revise the open months. The full-year outlook uses the newest forecast.</p>' +
-      '<div class="field"><label for="fcName">Name</label><input class="in" id="fcName" maxlength="60" value="' + esc(name) + '"></div>', 'Create forecast', function () {
+    // the app's own name is kept in English and shown in the screen language (vname)
+    var shown = lx(name);
+    var enRange = function (f, t) { return f > t ? 'no months' : f === t ? E.MONTHS_LONG[f - 1] : E.MONTHS_LONG[f - 1] + '–' + E.MONTHS_LONG[t - 1]; };
+    modal(tx('New forecast'), '<p>' + th('It takes the actuals for {closed} and {version} for {open}. You can then revise the open months. The full-year outlook uses the newest forecast.', { closed: '<b>' + esc(range(1, c)) + '</b>', version: '<b>' + esc(vname(v)) + '</b>', open: esc(range(c + 1, 12)) }) + '</p>' +
+      '<div class="field"><label for="fcName">' + th('Name') + '</label><input class="in" id="fcName" maxlength="60" value="' + esc(shown) + '"></div>', tx('Create forecast'), function () {
       var nm = $('fcName').value.trim();
-      if (!nm) return modalError('Give it a name.');
-      if (db.versions.some(function (x) { return x.name === nm; })) return modalError('A version with that name already exists.');
-      var nv = { id: 'fc-' + Date.now().toString(36), kind: 'forecast', name: nm, locked: false, createdOn: TODAY, basedOn: v.id, actualThrough: c, note: 'Made on ' + dt(TODAY) + ' from actuals for ' + range(1, c) + ' and ' + v.name + ' for ' + range(c + 1, 12) + '.', values: E.makeForecast(m.act, v.values, c) };
+      if (nm === shown) nm = name;
+      if (!nm) return modalError(tx('Give it a name.'));
+      if (db.versions.some(function (x) { return x.name === nm || vname(x) === nm; })) return modalError(tx('A version with that name already exists.'));
+      var nv = { id: 'fc-' + Date.now().toString(36), kind: 'forecast', name: nm, locked: false, createdOn: TODAY, basedOn: v.id, actualThrough: c, note: 'Made on ' + dt0(TODAY) + ' from actuals for ' + enRange(1, c) + ' and ' + v.name + ' for ' + enRange(c + 1, 12) + '.', values: E.makeForecast(m.act, v.values, c) };
       closeLayer();
       uBud.vid = nv.id; saveUi();
       commit('Created ' + nm, function () { db.versions.push(nv); if (db.settings.basis !== 'forecast') db.settings.basis = 'forecast'; });
-      toast(nm + ' created. The full-year outlook now uses it.');
+      toast(tx('{version} created. The full-year outlook now uses it.', { version: vname(nv) }));
     });
   }
 
@@ -1131,14 +1200,14 @@
       if (f === 'explained') return x.cm && x.cm.status === 'explained';
       return true;
     }).sort(function (a, b) { return b.month - a.month || (a.scope === 'ytd' ? -1 : 0) - (b.scope === 'ytd' ? -1 : 0) || E.LINE[a.line].order - E.LINE[b.line].order; });
-    var h = head('Comments · against ' + esc(m.bud.name), 'Variance comments', 'Every variance over the thresholds, month by month, with what people wrote about it. Status: open while you are still finding out, explained once it is.', '');
+    var h = head(th('Comments · against {version}', { version: esc(vname(m.bud)) }), tx('Variance comments'), th('Every variance over the thresholds, month by month, with what people wrote about it. Status: open while you are still finding out, explained once it is.'), '');
     var segs = [['attention', 'Needs attention'], ['none', 'No comment'], ['open', 'Open'], ['explained', 'Explained'], ['all', 'All']];
-    h += '<div class="toolbar"><div class="seg" role="group" aria-label="Status">' + segs.map(function (s) { return '<button type="button" data-act="cmf" data-v="' + s[0] + '" aria-pressed="' + (f === s[0]) + '">' + s[1] + ' <span class="muted">' + cnt[s[0]] + '</span></button>'; }).join('') + '</div>' +
-      '<label class="sr" for="cmLine">Line</label><select class="select" id="cmLine" data-ch="cmline"><option value="">All lines</option>' + E.LINES.map(function (l) { return '<option value="' + l.id + '"' + (uCm.line === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>'; }).join('') + '</select></div>';
-    if (!shown.length) return h + '<section class="card"><div class="empty-state">' + ic('check') + '<p>' + (f === 'attention' ? 'Nothing needs attention: every flagged variance has an explanation.' : 'No comments match.') + '</p></div></section>';
+    h += '<div class="toolbar"><div class="seg" role="group" aria-label="' + th('Status') + '">' + segs.map(function (s) { return '<button type="button" data-act="cmf" data-v="' + s[0] + '" aria-pressed="' + (f === s[0]) + '">' + th(s[1]) + ' <span class="muted">' + cnt[s[0]] + '</span></button>'; }).join('') + '</div>' +
+      '<label class="sr" for="cmLine">' + th('Line') + '</label><select class="select" id="cmLine" data-ch="cmline"><option value="">' + th('All lines') + '</option>' + E.LINES.map(function (l) { return '<option value="' + l.id + '"' + (uCm.line === l.id ? ' selected' : '') + '>' + esc(lnm(l.id)) + '</option>'; }).join('') + '</select></div>';
+    if (!shown.length) return h + '<section class="card"><div class="empty-state">' + ic('check') + '<p>' + th(f === 'attention' ? 'Nothing needs attention: every flagged variance has an explanation.' : 'No comments match.') + '</p></div></section>';
     var body = '', cur = null;
     shown.forEach(function (x) {
-      if (x.month !== cur) { if (cur !== null) body += '</ul>'; cur = x.month; body += '<h3 class="mgroup">' + esc(monL(x.month) + ' ' + m.y) + '</h3><ul class="ex">'; }
+      if (x.month !== cur) { if (cur !== null) body += '</ul>'; cur = x.month; body += '<h3 class="mgroup">' + esc(cap(monL(x.month)) + ' ' + m.y) + '</h3><ul class="ex">'; }
       body += exItem(x.line, x.month, x.scope);
     });
     return h + '<section class="card"><div class="card-b" style="padding-top:14px">' + body + '</ul></div></section>';
@@ -1148,21 +1217,22 @@
   var imp = null, lastImport = null;
   function pageImport() {
     var m = model(), y = m.y;
-    var h = head('Import actuals · ' + (y - 1) + ' and ' + y, 'Bring in the actuals', 'A trial balance (bruto bilanca) or general ledger (glavna knjiga) exported from Minimax or Pantheon, or one row per account and month from Excel. Each month you import replaces what was there, or adds to it.',
-      '<button type="button" class="btn" data-act="tmpl">' + ic('file') + 'Download template</button><button type="button" class="btn" data-act="actcsv">' + ic('dl') + 'Download current actuals</button>');
+    var h = head(th('Import actuals · {prev} and {year}', { prev: y - 1, year: y }), tx('Bring in the actuals'), th('A trial balance (bruto bilanca) or general ledger (glavna knjiga) exported from Minimax or Pantheon, or one row per account and month from Excel. Each month you import replaces what was there, or adds to it.'),
+      '<button type="button" class="btn" data-act="tmpl">' + ic('file') + th('Download template') + '</button><button type="button" class="btn" data-act="actcsv">' + ic('dl') + th('Download current actuals') + '</button>');
     if (lastImport && lastImport.month > m.closed && lastImport.y === y) {
-      h += '<div class="notice ok"><p>' + esc(monL(lastImport.month)) + ' now has actuals. By the 10-day rule it counts as closed from ' + dt(E.addDays(E.monthEnd(y, lastImport.month), db.settings.grace)) + '.</p><button type="button" class="btn sm" data-act="closenow" data-v="' + lastImport.month + '">Close through ' + esc(monL(lastImport.month)) + ' now</button></div>';
+      h += '<div class="notice ok"><p>' + th('{month} now has actuals. By the {days}-day rule it counts as closed from {date}.', { month: esc(cap(monL(lastImport.month))), days: db.settings.grace, date: dt(E.addDays(E.monthEnd(y, lastImport.month), db.settings.grace)) }) + '</p><button type="button" class="btn sm" data-act="closenow" data-v="' + lastImport.month + '">' + th('Close through {month} now', { month: esc(monG(lastImport.month)) }) + '</button></div>';
     }
     if (!imp) {
-      h += '<div class="grid21"><section class="card"><div class="card-h"><div><span class="label">Step 1</span><h2>Choose a file or paste rows</h2></div></div><div class="card-b">' +
-        '<div class="drop" id="dropZone">' + ic('up') + '<p style="margin:0">Drop a CSV file here, or</p><button type="button" class="btn pri" data-act="pick">' + ic('file') + 'Choose a file</button><span class="hint">Excel (.xlsx), CSV or text, semicolon, comma or tab separated, up to 5 MB</span></div>' +
-        '<details class="tbl" style="margin-top:14px"><summary>Or paste rows from Excel</summary><div class="field" style="margin-top:8px"><label for="impPaste">Rows with month, account, amount and description</label><textarea class="in" id="impPaste" rows="6" spellcheck="false" placeholder="2026-09\t7620\t512.340,12\tSales of goods"></textarea></div><div style="margin-top:8px"><button type="button" class="btn" data-act="pasteimp">Read the pasted rows</button></div></details></div></section>' +
-        '<section class="card"><div class="card-h"><div><span class="label">The format</span><h2>Files it reads</h2></div></div><div class="card-b">' +
-        '<ul class="fmt-list"><li><b>Minimax or Pantheon, bruto bilanca</b> for a month or the year to date: Konto, Naziv, Promet debet, Promet kredit. You pick the month; a year-to-date file has the earlier months subtracted.</li>' +
-        '<li><b>Minimax or Pantheon, glavna knjiga</b>: one row per posting with Datum, Konto, Debet and Kredit (Croatian Duguje / Potražuje too). The month comes from the date.</li>' +
-        '<li><b>Your own file</b>: month, account, amount and an optional description.</li></ul>' +
-        '<div class="fmt">month;account;amount;description\n' + y + '-09;7620;512.340,12;Sales of goods — heating\n' + y + '-09;7020;-1.234,00;Credit note\n30.09.' + y + ';4700;88.410,55;Gross salaries</div>' +
-        '<p class="hint" style="margin-top:10px">Accounts on the Slovenian chart (kontni okvir) are recognised: classes 4 and 7 are imported, balance-sheet accounts, group 49 and subtotal rows are left out. New accounts get a suggested P&amp;L line to check. Title lines above the header, two-row headers and debit/credit columns are handled; the preview shows what was read.</p></div></section></div>';
+      var fh = tmplRows(y);
+      h += '<div class="grid21"><section class="card"><div class="card-h"><div><span class="label">' + th('Step 1') + '</span><h2>' + th('Choose a file or paste rows') + '</h2></div></div><div class="card-b">' +
+        '<div class="drop" id="dropZone">' + ic('up') + '<p style="margin:0">' + th('Drop a CSV file here, or') + '</p><button type="button" class="btn pri" data-act="pick">' + ic('file') + th('Choose a file') + '</button><span class="hint">' + th('Excel (.xlsx), CSV or text, semicolon, comma or tab separated, up to 5 MB') + '</span></div>' +
+        '<details class="tbl" style="margin-top:14px"><summary>' + th('Or paste rows from Excel') + '</summary><div class="field" style="margin-top:8px"><label for="impPaste">' + th('Rows with month, account, amount and description') + '</label><textarea class="in" id="impPaste" rows="6" spellcheck="false" placeholder="' + esc(y + '-09\t7620\t512.340,12\t' + tx('Sales of goods')) + '"></textarea></div><div style="margin-top:8px"><button type="button" class="btn" data-act="pasteimp">' + th('Read the pasted rows') + '</button></div></details></div></section>' +
+        '<section class="card"><div class="card-h"><div><span class="label">' + th('The format') + '</span><h2>' + th('Files it reads') + '</h2></div></div><div class="card-b">' +
+        '<ul class="fmt-list"><li>' + th('{name} for a month or the year to date: Konto, Naziv, Promet debet, Promet kredit. You pick the month; a year-to-date file has the earlier months subtracted.', { name: '<b>' + th('Minimax or Pantheon, bruto bilanca') + '</b>' }) + '</li>' +
+        '<li>' + th('{name}: one row per posting with Datum, Konto, Debet and Kredit (Croatian Duguje / Potražuje too). The month comes from the date.', { name: '<b>' + th('Minimax or Pantheon, glavna knjiga') + '</b>' }) + '</li>' +
+        '<li>' + th('{name}: month, account, amount and an optional description.', { name: '<b>' + th('Your own file') + '</b>' }) + '</li></ul>' +
+        '<div class="fmt">' + esc(fh[0].join(';') + '\n' + y + '-09;7620;512.340,12;' + tx('Sales of goods — heating') + '\n' + y + '-09;7020;-1.234,00;' + tx('Credit note') + '\n30.09.' + y + ';4700;88.410,55;' + tx('Gross salaries')) + '</div>' +
+        '<p class="hint" style="margin-top:10px">' + th('Accounts on the Slovenian chart (kontni okvir) are recognised: classes 4 and 7 are imported, balance-sheet accounts, group 49 and subtotal rows are left out. New accounts get a suggested P&L line to check. Title lines above the header, two-row headers and debit/credit columns are handled; the preview shows what was read.') + '</p></div></section></div>';
     } else h += importPreview();
     h += loadedCard();
     return h;
@@ -1174,13 +1244,13 @@
       var tds = '';
       for (var i = 1; i <= 12; i++) {
         var ok = db.loaded[yy] && db.loaded[yy][i - 1];
-        tds += '<td class="num">' + (ok ? '<span title="' + esc(monL(i) + ' ' + yy + ': revenue ' + eur(ag[yy].rev[i - 1]) + ', EBITDA ' + eur(ag[yy].ebitda[i - 1])) + '">' + keur(ag[yy].rev[i - 1]) + '</span>' : '<span class="muted">—</span>') + '</td>';
+        tds += '<td class="num">' + (ok ? '<span title="' + esc(tx('{month}: revenue {revenue}, EBITDA {ebitda}', { month: cap(monL(i)) + ' ' + yy, revenue: eur(ag[yy].rev[i - 1]), ebitda: eur(ag[yy].ebitda[i - 1]) })) + '">' + keur(ag[yy].rev[i - 1]) + '</span>' : '<span class="muted">—</span>') + '</td>';
       }
       return '<tr><td>' + yy + '</td>' + tds + '</tr>';
     }).join('');
     for (var i = 1; i <= 12; i++) cells += '<th class="num" scope="col">' + mon(i) + '</th>';
-    return '<section class="card" style="margin-top:14px"><div class="card-h"><div><span class="label">In the app now · revenue per month</span><h2>Months with actuals</h2></div></div><div class="tw"><table class="t compact"><thead><tr><th scope="col">Year</th>' + cells + '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      '<p class="hint" style="padding:0 20px 16px">A dash means no actuals yet. ' + (db.demo ? 'Demo months are added automatically when they close; your own imports turn that off.' : '') + '</p></section>';
+    return '<section class="card" style="margin-top:14px"><div class="card-h"><div><span class="label">' + th('In the app now · revenue per month') + '</span><h2>' + th('Months with actuals') + '</h2></div></div><div class="tw"><table class="t compact"><thead><tr><th scope="col">' + th('Year') + '</th>' + cells + '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="hint" style="padding:0 20px 16px">' + th('A dash means no actuals yet.') + ' ' + (db.demo ? th('Demo months are added automatically when they close; your own imports turn that off.') : '') + '</p></section>';
   }
   function readImport(text, name) {
     imp = { name: name, text: text, period: null, cols: null, modes: {}, map: {}, sign: null };
@@ -1233,7 +1303,7 @@
     imp.p.unknown.forEach(function (u) {
       var mp = imp.map[u.code] || {};
       if (mp.line === '__skip' || !E.LINE[mp.line]) return;
-      out.push({ code: u.code, name: (mp.name || '').trim() || 'Account ' + u.code, line: mp.line, kind: E.LINE[mp.line].type });
+      out.push({ code: u.code, name: (mp.name || '').trim() || tx('Account {code}', { code: u.code }), line: mp.line, kind: E.LINE[mp.line].type });
     });
     return out;
   }
@@ -1241,68 +1311,73 @@
   var ROLE = [['account', 'Account'], ['name', 'Account name'], ['date', 'Date'], ['period', 'Month'], ['debit', 'Debit'], ['credit', 'Credit'], ['sd', 'Balance, debit'], ['sk', 'Balance, credit'], ['amount', 'Amount'], ['saldo', 'Balance'], ['desc', 'Description']];
   function importPreview() {
     var p = imp.p, m = model(), y = m.y, preset = E.PRESETS.filter(function (x) { return x.id === p.preset; })[0];
-    var fmt = p.format === 'tb' ? 'Trial balance (bruto bilanca)' : p.format === 'gl' ? 'General ledger (glavna knjiga)' : 'Month, account, amount';
-    var h = '<section class="card" id="impPrev" tabindex="-1"><div class="card-h"><div><span class="label">Step 2 · ' + esc(imp.name) + '</span><h2>Check before importing</h2></div><button type="button" class="btn sm ghost" data-act="impcancel">' + ic('x') + 'Start over</button></div>';
-    h += '<div class="stats"><span><b>' + esc(fmt) + '</b>' + (preset && p.format !== 'simple' ? ' · columns like ' + esc(preset.name) : '') + '</span><span><b>' + plural(p.rows.length, 'row', 'rows') + '</b> read</span><span><b>' + plural(p.months.length, 'month', 'months') + '</b></span><span>' + ({ ';': 'semicolon', ',': 'comma', '\t': 'tab' })[p.delimiter] + ' separated</span><span>decimal ' + (p.decimal === ',' ? 'comma' : 'point') + '</span>' + (p.format === 'simple' ? (p.header ? '<span>with a header row</span>' : '<span>no header row: read as month, account, amount</span>') : '') + '</div><div class="card-b" style="padding-top:14px">';
+    var fmt = tx(p.format === 'tb' ? 'Trial balance (bruto bilanca)' : p.format === 'gl' ? 'General ledger (glavna knjiga)' : 'Month, account, amount');
+    var h = '<section class="card" id="impPrev" tabindex="-1"><div class="card-h"><div><span class="label">' + th('Step 2') + ' · ' + esc(imp.name) + '</span><h2>' + th('Check before importing') + '</h2></div><button type="button" class="btn sm ghost" data-act="impcancel">' + ic('x') + th('Start over') + '</button></div>';
+    h += '<div class="stats"><span><b>' + esc(fmt) + '</b>' + (preset && p.format !== 'simple' ? ' · ' + th('columns like {program}', { program: esc(preset.name) }) : '') + '</span><span>' + th('{rows} read', { rows: '<b>' + plural(p.rows.length, 'row', 'rows') + '</b>' }) + '</span><span><b>' + plural(p.months.length, 'month', 'months') + '</b></span><span>' + th({ ';': 'semicolon separated', ',': 'comma separated', '\t': 'tab separated' }[p.delimiter]) + '</span><span>' + th(p.decimal === ',' ? 'decimal comma' : 'decimal point') + '</span>' + (p.format === 'simple' ? (p.header ? '<span>' + th('with a header row') + '</span>' : '<span>' + th('no header row: read as month, account, amount') + '</span>') : '') + '</div><div class="card-b" style="padding-top:14px">';
     if (p.format !== 'simple' && p.cols) {
-      var used = ROLE.filter(function (r) { return p.cols[r[0]] >= 0; }).map(function (r) { return esc(r[1]) + ': <b>' + esc(p.heads[p.cols[r[0]]] || '') + '</b>'; });
-      var colSel = function (role, label) { return '<div class="field"><label for="ic-' + role + '">' + esc(label) + '</label><select class="in" id="ic-' + role + '" data-ch="impcol" data-v="' + role + '"><option value="-1">—</option>' + p.heads.map(function (hd, i) { return '<option value="' + i + '"' + (p.cols[role] === i ? ' selected' : '') + '>' + esc(hd || 'Column ' + (i + 1)) + '</option>'; }).join('') + '</select></div>'; };
-      h += '<details class="tbl cols-d"><summary>Columns read: ' + used.join(' · ') + '</summary><div class="cols-g">' + ROLE.filter(function (r) { return ['account', 'name', 'date', 'debit', 'credit', 'amount'].indexOf(r[0]) >= 0; }).map(function (r) { return colSel(r[0], r[1]); }).join('') + '</div><p class="hint">Debit − credit is the amount. Pick another column when the program named one differently.</p></details>';
+      var used = ROLE.filter(function (r) { return p.cols[r[0]] >= 0; }).map(function (r) { return th(r[1]) + ': <b>' + esc(p.heads[p.cols[r[0]]] || '') + '</b>'; });
+      var colSel = function (role, label) { return '<div class="field"><label for="ic-' + role + '">' + th(label) + '</label><select class="in" id="ic-' + role + '" data-ch="impcol" data-v="' + role + '"><option value="-1">—</option>' + p.heads.map(function (hd, i) { return '<option value="' + i + '"' + (p.cols[role] === i ? ' selected' : '') + '>' + esc(hd || tx('Column {n}', { n: i + 1 })) + '</option>'; }).join('') + '</select></div>'; };
+      h += '<details class="tbl cols-d"><summary>' + th('Columns read:') + ' ' + used.join(' · ') + '</summary><div class="cols-g">' + ROLE.filter(function (r) { return ['account', 'name', 'date', 'debit', 'credit', 'amount'].indexOf(r[0]) >= 0; }).map(function (r) { return colSel(r[0], r[1]); }).join('') + '</div><p class="hint">' + th('Debit − credit is the amount. Pick another column when the program named one differently.') + '</p></details>';
     }
     if (p.format === 'tb') {
       var per = imp.period || { y: y, m: 1, cumulative: false }, mo = '';
-      [y - 1, y].forEach(function (yy) { for (var i = 1; i <= 12; i++) mo += '<option value="' + yy + '-' + i + '"' + (per.y === yy && per.m === i ? ' selected' : '') + '>' + esc(monL(i) + ' ' + yy) + (db.loaded[yy] && db.loaded[yy][i - 1] ? ' · has actuals' : '') + '</option>'; });
-      h += '<fieldset class="grp"><legend>Which month this trial balance is for</legend><div class="row2"><div class="field"><label for="impPer">Month</label><select class="in" id="impPer" data-ch="impper">' + mo + '</select>' + (imp.periodFromFile ? '<span class="hint">Read from the period line in the file.</span>' : '<span class="hint">A trial balance has no dates: choose its month.</span>') + '</div>' +
-        '<div class="field"><span class="lab">The amounts are</span><div class="radio-row"><label><input type="radio" name="impCum" value="0"' + (per.cumulative ? '' : ' checked') + ' data-ch="impcum"> That month’s turnover</label><label><input type="radio" name="impCum" value="1"' + (per.cumulative ? ' checked' : '') + ' data-ch="impcum"> Year to date through that month</label></div></div></div>';
-      var miss = impMissing();
-      if (miss.length) h += '<div class="err" role="alert">Year to date through ' + esc(monL(per.m)) + ' needs the earlier months to subtract, but ' + esc(miss.map(monL).join(', ')) + (miss.length === 1 ? ' has' : ' have') + ' no actuals yet. Import those first, or a file with only ' + esc(monL(per.m)) + '’s turnover.</div>';
-      else if (impNewInYtd().length) h += '<div class="err" role="alert">' + plural(impNewInYtd().length, 'account is', 'accounts are') + ' new (' + esc(impNewInYtd().slice(0, 4).map(function (u) { return u.code; }).join(', ')) + (impNewInYtd().length > 4 ? ', …' : '') + '), so there is nothing to subtract for ' + (impNewInYtd().length === 1 ? 'it' : 'them') + ' and the whole year to date would land in ' + esc(monL(per.m)) + '. Import ' + esc(monL(per.m)) + '’s turnover only, a general ledger, or the earlier months on these accounts first — or skip ' + (impNewInYtd().length === 1 ? 'it' : 'them') + ' below.</div>';
-      else if (per.cumulative && per.m > 1) h += '<p class="hint">' + esc(range(1, per.m - 1)) + ' as already imported will be subtracted, so ' + esc(monL(per.m)) + ' gets its own turnover.</p>';
+      [y - 1, y].forEach(function (yy) { for (var i = 1; i <= 12; i++) mo += '<option value="' + yy + '-' + i + '"' + (per.y === yy && per.m === i ? ' selected' : '') + '>' + esc(cap(monL(i)) + ' ' + yy) + (db.loaded[yy] && db.loaded[yy][i - 1] ? ' · ' + th('has actuals') : '') + '</option>'; });
+      h += '<fieldset class="grp"><legend>' + th('Which month this trial balance is for') + '</legend><div class="row2"><div class="field"><label for="impPer">' + th('Month') + '</label><select class="in" id="impPer" data-ch="impper">' + mo + '</select>' + (imp.periodFromFile ? '<span class="hint">' + th('Read from the period line in the file.') + '</span>' : '<span class="hint">' + th('A trial balance has no dates: choose its month.') + '</span>') + '</div>' +
+        '<div class="field"><span class="lab">' + th('The amounts are') + '</span><div class="radio-row"><label><input type="radio" name="impCum" value="0"' + (per.cumulative ? '' : ' checked') + ' data-ch="impcum"> ' + th('That month’s turnover') + '</label><label><input type="radio" name="impCum" value="1"' + (per.cumulative ? ' checked' : '') + ' data-ch="impcum"> ' + th('Year to date through that month') + '</label></div></div></div>';
+      var miss = impMissing(), nw = impNewInYtd();
+      if (miss.length) h += '<div class="err" role="alert">' + th('Year to date through {through} needs the earlier months to subtract, but these have no actuals yet: {list}. Import those first, or a file with only the turnover of {month}.', { through: esc(monG(per.m)), month: esc(monL(per.m)), list: esc(miss.map(monL).join(', ')) }) + '</div>';
+      else if (nw.length) h += '<div class="err" role="alert">' + th(nw.length === 1 ? 'New account: {list}. There is nothing to subtract for it, so the whole year to date would land in {month}. Import the turnover of {month} only, a general ledger, or the earlier months on this account first — or skip it below.' : 'New accounts: {list}. There is nothing to subtract for them, so the whole year to date would land in {month}. Import the turnover of {month} only, a general ledger, or the earlier months on these accounts first — or skip them below.', { list: esc(nw.slice(0, 4).map(function (u) { return u.code; }).join(', ')) + (nw.length > 4 ? ', …' : ''), month: esc(monL(per.m)) }) + '</div>';
+      else if (per.cumulative && per.m > 1) h += '<p class="hint">' + th('{range} as already imported will be subtracted, so {month} gets its own turnover.', { range: esc(cap(range(1, per.m - 1))), month: esc(monL(per.m)) }) + '</p>';
       h += '</fieldset>';
     }
     if (p.errors.length) {
-      h += '<div class="err" role="alert"><b>' + plural(p.errors.length, 'row', 'rows') + ' could not be read, so nothing can be imported yet.</b> Fix them in the file and try again; either every row is imported or none.</div><ul class="imp-errs" style="margin-top:8px">' +
-        p.errors.slice(0, 40).map(function (e) { return '<li>' + (e.row ? 'Row ' + e.row + ': ' : '') + esc(e.msg) + '</li>'; }).join('') + (p.errors.length > 40 ? '<li>… and ' + (p.errors.length - 40) + ' more</li>' : '') + '</ul></div></section>';
+      h += '<div class="err" role="alert"><b>' + th('Rows that could not be read: {n}. Nothing can be imported yet.', { n: p.errors.length }) + '</b> ' + th('Fix them in the file and try again; either every row is imported or none.') + '</div><ul class="imp-errs" style="margin-top:8px">' +
+        p.errors.slice(0, 40).map(function (e) { return '<li>' + (e.row ? th('Row {n}:', { n: e.row }) + ' ' : '') + esc(lx(e.msg)) + '</li>'; }).join('') + (p.errors.length > 40 ? '<li>' + th('… and {n} more', { n: p.errors.length - 40 }) + '</li>' : '') + '</ul></div></section>';
       return h;
     }
     if (p.skipped.length || p.ignored) {
       var byR = {};
       p.skipped.forEach(function (x) { (byR[x.reason] = byR[x.reason] || []).push(x); });
-      var SHORT = { balance: 'on the balance sheet', other: 'outside the P&L', transfer: 'with cost transfers (group 49)', total: 'that are subtotals' };
-      h += '<details class="tbl skip-d"><summary>Left out: ' + Object.keys(byR).map(function (r) { return plural(byR[r].length, 'account', 'accounts') + ' ' + esc(SHORT[r]); }).concat(p.ignored ? [plural(p.ignored, 'row', 'rows') + ' without an account (titles, totals)'] : []).join(' · ') + '</summary>' +
-        (p.skipped.length ? '<div class="tw"><table class="t compact"><thead><tr><th>Account</th><th>Name</th><th class="num">Rows</th><th class="num">Debit − credit</th><th>Why</th></tr></thead><tbody>' + p.skipped.slice(0, 80).map(function (x) { return '<tr><td class="mono nw">' + esc(x.code) + '</td><td>' + esc(x.desc || '') + '</td><td class="num">' + x.rows + '</td><td class="num">' + num(x.cents) + '</td><td class="muted">' + esc(REASON[x.reason]) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '') +
-        (p.ignoredText.length ? '<p class="hint" style="padding:0 2px">Rows without an account, e.g. ' + esc(p.ignoredText.join(' | ')) + '</p>' : '') + '</details>';
+      var SHORT = { balance: 'Accounts on the balance sheet: {n}', other: 'Accounts outside the P&L: {n}', transfer: 'Accounts with cost transfers (group 49): {n}', total: 'Subtotal accounts: {n}' };
+      h += '<details class="tbl skip-d"><summary>' + th('Left out:') + ' ' + Object.keys(byR).map(function (r) { return th(SHORT[r], { n: byR[r].length }); }).concat(p.ignored ? [th('Rows without an account (titles, totals): {n}', { n: p.ignored })] : []).join(' · ') + '</summary>' +
+        (p.skipped.length ? '<div class="tw"><table class="t compact"><thead><tr><th>' + th('Account') + '</th><th>' + th('Name') + '</th><th class="num">' + th('Rows') + '</th><th class="num">' + th('Debit − credit') + '</th><th>' + th('Why') + '</th></tr></thead><tbody>' + p.skipped.slice(0, 80).map(function (x) { return '<tr><td class="mono nw">' + esc(x.code) + '</td><td>' + esc(x.desc || '') + '</td><td class="num">' + x.rows + '</td><td class="num">' + num(x.cents) + '</td><td class="muted">' + th(REASON[x.reason]) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '') +
+        (p.ignoredText.length ? '<p class="hint" style="padding:0 2px">' + th('Rows without an account, e.g. {rows}', { rows: esc(p.ignoredText.join(' | ')) }) + '</p>' : '') + '</details>';
     }
-    if (!p.rows.length) return h + '<p class="empty">No P&amp;L rows with amounts in this file.</p></div></section>';
-    h += '<fieldset class="grp"><legend>Signs in this file</legend><div class="radio-row"><label><input type="radio" name="impSign" value="pl"' + (imp.sign === 'pl' ? ' checked' : '') + ' data-ch="impsign"> Income and costs both positive (P&amp;L view)</label><label><input type="radio" name="impSign" value="ledger"' + (imp.sign === 'ledger' ? ' checked' : '') + ' data-ch="impsign"> Debit +, credit − (ledger view: income comes in negative)</label></div>' +
-      (p.format !== 'simple' ? '<p class="hint">Read as debit − credit from the ' + (p.format === 'tb' ? 'turnover' : 'posting') + ' columns, so the ledger view is right.</p>' : p.signGuess === 'ledger' ? '<p class="hint">Income accounts are negative in this file, so it looks like a ledger export.</p>' : '') + '</fieldset>';
+    if (!p.rows.length) return h + '<p class="empty">' + th('No P&L rows with amounts in this file.') + '</p></div></section>';
+    h += '<fieldset class="grp"><legend>' + th('Signs in this file') + '</legend><div class="radio-row"><label><input type="radio" name="impSign" value="pl"' + (imp.sign === 'pl' ? ' checked' : '') + ' data-ch="impsign"> ' + th('Income and costs both positive (P&L view)') + '</label><label><input type="radio" name="impSign" value="ledger"' + (imp.sign === 'ledger' ? ' checked' : '') + ' data-ch="impsign"> ' + th('Debit +, credit − (ledger view: income comes in negative)') + '</label></div>' +
+      (p.format !== 'simple' ? '<p class="hint">' + th(p.format === 'tb' ? 'Read as debit − credit from the turnover columns, so the ledger view is right.' : 'Read as debit − credit from the posting columns, so the ledger view is right.') + '</p>' : p.signGuess === 'ledger' ? '<p class="hint">' + th('Income accounts are negative in this file, so it looks like a ledger export.') + '</p>' : '') + '</fieldset>';
     var accounts = db.accounts.concat(newAccounts()), acc = {}; accounts.forEach(function (a) { acc[a.code] = a; });
     var rowsAll = impRows(accounts);
-    h += '<h3 class="mgroup">Months in the file</h3><div class="tw"><table class="t compact"><thead><tr><th>Month</th><th class="num">Rows</th><th class="num">Revenue</th><th class="num">EBITDA</th><th>In the app now</th><th>What to do</th></tr></thead><tbody>' +
+    h += '<h3 class="mgroup">' + th('Months in the file') + '</h3><div class="tw"><table class="t compact"><thead><tr><th>' + th('Month') + '</th><th class="num">' + th('Rows') + '</th><th class="num">' + th('Revenue') + '</th><th class="num">EBITDA</th><th>' + th('In the app now') + '</th><th>' + th('What to do') + '</th></tr></thead><tbody>' +
       p.months.map(function (mo) {
         var rows = rowsAll.filter(function (r) { return r.y === mo.y && r.m === mo.m && acc[r.code]; }), tmp = {};
         rows.forEach(function (r) { var v = imp.sign === 'ledger' && acc[r.code].kind === 'income' ? -r.cents : r.cents; (tmp[r.code] = tmp[r.code] || E.zeros())[mo.m - 1] += v; });
         var rr = E.rowsOf(E.aggregate(tmp, accounts).lines), have = db.loaded[mo.y] && db.loaded[mo.y][mo.m - 1];
         var nowR = have ? E.rowsOf(E.aggregate(db.actuals[mo.y] || {}, db.accounts).lines) : null;
-        return '<tr><td class="nw">' + esc(monL(mo.m) + ' ' + mo.y) + '</td><td class="num">' + mo.rows + '</td><td class="num">' + num(rr.rev[mo.m - 1]) + '</td><td class="num">' + num(rr.ebitda[mo.m - 1]) + '</td><td>' + (have ? 'Yes · revenue ' + keur(nowR.rev[mo.m - 1]) : '<span class="muted">No</span>') + '</td>' +
-          '<td><label class="sr" for="im-' + mo.key + '">What to do with ' + esc(monL(mo.m) + ' ' + mo.y) + '</label><select class="select" id="im-' + mo.key + '" data-ch="impmode" data-v="' + mo.key + '"><option value="replace"' + (imp.modes[mo.key] !== 'add' ? ' selected' : '') + '>Replace the month</option><option value="add"' + (imp.modes[mo.key] === 'add' ? ' selected' : '') + '>Add to it</option></select></td></tr>';
-      }).join('') + '</tbody></table></div><p class="hint">Revenue and EBITDA here count the accounts mapped to a line, with the signs chosen above.</p>';
+        return '<tr><td class="nw">' + esc(cap(monL(mo.m)) + ' ' + mo.y) + '</td><td class="num">' + mo.rows + '</td><td class="num">' + num(rr.rev[mo.m - 1]) + '</td><td class="num">' + num(rr.ebitda[mo.m - 1]) + '</td><td>' + (have ? th('Yes · revenue {amount}', { amount: keur(nowR.rev[mo.m - 1]) }) : '<span class="muted">' + th('No') + '</span>') + '</td>' +
+          '<td><label class="sr" for="im-' + mo.key + '">' + th('What to do with {month}', { month: esc(monL(mo.m) + ' ' + mo.y) }) + '</label><select class="select" id="im-' + mo.key + '" data-ch="impmode" data-v="' + mo.key + '"><option value="replace"' + (imp.modes[mo.key] !== 'add' ? ' selected' : '') + '>' + th('Replace the month') + '</option><option value="add"' + (imp.modes[mo.key] === 'add' ? ' selected' : '') + '>' + th('Add to it') + '</option></select></td></tr>';
+      }).join('') + '</tbody></table></div><p class="hint">' + th('Revenue and EBITDA here count the accounts mapped to a line, with the signs chosen above.') + '</p>';
     if (p.unknown.length) {
-      var opts = function (sel) { return '<option value="">Choose a line…</option>' + E.SECTIONS.map(function (s) { return '<optgroup label="' + esc(s.name) + '">' + E.LINES.filter(function (l) { return l.section === s.id; }).map(function (l) { return '<option value="' + l.id + '"' + (sel === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '<option value="__skip"' + (sel === '__skip' ? ' selected' : '') + '>Skip these rows</option>'; };
+      var opts = function (sel) { return '<option value="">' + th('Choose a line…') + '</option>' + lineOptions(sel) + '<option value="__skip"' + (sel === '__skip' ? ' selected' : '') + '>' + th('Skip these rows') + '</option>'; };
       var sug = p.unknown.filter(function (u) { return imp.map[u.code] && imp.map[u.code].suggested; }).length, none = p.unknown.length - sug;
-      h += '<h3 class="mgroup">' + plural(p.unknown.length, 'account is', 'accounts are') + ' new to the app: map ' + (p.unknown.length === 1 ? 'it' : 'each') + ' to a P&amp;L line</h3>' +
-        '<div class="notice warn"><p>' + (sug ? plural(sug, 'line is', 'lines are') + ' suggested from the chart of accounts (kontni okvir) or your nearest account: check ' + (sug === 1 ? 'it' : 'them') + ' before importing' + (none ? '. ' : '.') : '') + (none ? plural(none, 'account has', 'accounts have') + ' no suggestion: choose a line or skip ' + (none === 1 ? 'it' : 'them') + '.' : '') + ' Accounts left unmapped would be missing from every total.</p></div>' +
-        '<div class="tw"><table class="t compact"><thead><tr><th>Account</th><th class="num">Rows</th><th class="num">Amount</th><th>Name</th><th>P&amp;L line</th></tr></thead><tbody>' +
+      h += '<h3 class="mgroup">' + th(p.unknown.length === 1 ? 'An account new to the app: map it to a P&L line' : 'Accounts new to the app ({n}): map each to a P&L line', { n: p.unknown.length }) + '</h3>' +
+        '<div class="notice warn"><p>' + (sug ? th(sug === 1 ? 'One line is suggested from the chart of accounts (kontni okvir) or your nearest account: check it before importing.' : 'Lines suggested from the chart of accounts (kontni okvir) or your nearest account: {n}. Check them before importing.', { n: sug }) + (none ? ' ' : '') : '') + (none ? th(none === 1 ? 'One account has no suggestion: choose a line or skip it.' : 'Accounts with no suggestion: {n}. Choose a line or skip them.', { n: none }) : '') + ' ' + th('Accounts left unmapped would be missing from every total.') + '</p></div>' +
+        '<div class="tw"><table class="t compact"><thead><tr><th>' + th('Account') + '</th><th class="num">' + th('Rows') + '</th><th class="num">' + th('Amount') + '</th><th>' + th('Name') + '</th><th>' + th('P&L line') + '</th></tr></thead><tbody>' +
         p.unknown.map(function (u) {
           var mp = imp.map[u.code] || { line: '', name: '' };
-          return '<tr><td class="mono nw">' + esc(u.code) + '</td><td class="num">' + u.rows + '</td><td class="num">' + num(u.cents) + '</td><td><label class="sr" for="un-' + esc(u.code) + '">Name of account ' + esc(u.code) + '</label><input class="in" style="min-height:38px;min-width:180px" id="un-' + esc(u.code) + '" data-ch="impname" data-v="' + esc(u.code) + '" maxlength="80" value="' + esc(mp.name) + '" placeholder="Account ' + esc(u.code) + '"></td>' +
-            '<td class="nw"><label class="sr" for="ul-' + esc(u.code) + '">P&amp;L line for account ' + esc(u.code) + '</label><select class="select" id="ul-' + esc(u.code) + '" data-ch="impline" data-v="' + esc(u.code) + '"' + (mp.line ? '' : ' aria-invalid="true"') + '>' + opts(mp.line) + '</select>' + (mp.suggested ? ' <span class="tag sug" title="Suggested from the chart of accounts: check it">suggested</span>' : '') + '</td></tr>';
+          return '<tr><td class="mono nw">' + esc(u.code) + '</td><td class="num">' + u.rows + '</td><td class="num">' + num(u.cents) + '</td><td><label class="sr" for="un-' + esc(u.code) + '">' + th('Name of account {code}', { code: esc(u.code) }) + '</label><input class="in" style="min-height:38px;min-width:180px" id="un-' + esc(u.code) + '" data-ch="impname" data-v="' + esc(u.code) + '" maxlength="80" value="' + esc(mp.name) + '" placeholder="' + th('Account {code}', { code: esc(u.code) }) + '"></td>' +
+            '<td class="nw"><label class="sr" for="ul-' + esc(u.code) + '">' + th('P&L line for account {code}', { code: esc(u.code) }) + '</label><select class="select" id="ul-' + esc(u.code) + '" data-ch="impline" data-v="' + esc(u.code) + '"' + (mp.line ? '' : ' aria-invalid="true"') + '>' + opts(mp.line) + '</select>' + (mp.suggested ? ' <span class="tag sug" title="' + th('Suggested from the chart of accounts: check it') + '">' + th('suggested') + '</span>' : '') + '</td></tr>';
         }).join('') + '</tbody></table></div>';
     }
     var missing = p.unknown.filter(function (u) { return !(imp.map[u.code] && imp.map[u.code].line); }).length, gap = impMissing().length + impNewInYtd().length;
-    h += '<div class="toolbar" style="margin:16px 0 0"><button type="button" class="btn pri" data-act="doimport"' + (missing || gap || !p.rows.length ? ' disabled' : '') + '>' + ic('up') + 'Import ' + plural(p.rows.length, 'row', 'rows') + '</button>' +
-      (missing ? '<span class="hint">Map or skip ' + plural(missing, 'account', 'accounts') + ' first.</span>' : gap ? '<span class="hint">See the note on the month above.</span>' : '<span class="hint">You can undo nothing here, but you can always import the month again.</span>') + '</div></div></section>';
+    h += '<div class="toolbar" style="margin:16px 0 0"><button type="button" class="btn pri" data-act="doimport"' + (missing || gap || !p.rows.length ? ' disabled' : '') + '>' + ic('up') + th('Import {rows}', { rows: plural(p.rows.length, 'row', 'rows') }) + '</button>' +
+      (missing ? '<span class="hint">' + th('Map or skip these accounts first: {n}.', { n: missing }) + '</span>' : gap ? '<span class="hint">' + th('See the note on the month above.') + '</span>' : '<span class="hint">' + th('You can undo nothing here, but you can always import the month again.') + '</span>') + '</div></div></section>';
     return h;
+  }
+  /** The import template: the header in the screen language (the import reads it in every language) and four rows. */
+  function tmplRows(y) {
+    var k = y + '-' + E.pad(Math.max(1, model().closed));
+    return [[tx('month'), tx('account'), tx('amount'), tx('description')], [k, '7620', '512340,12', tx('Sales of goods — Slovenia, heating')], [k, '7020', '368912,40', tx('Cost of goods sold — heating')], [k, '4700', '88410,55', tx('Gross salaries')], [k, '4130', '26400,00', tx('Warehouse rent')]];
   }
   function doImport() {
     if (!imp || imp.p.errors.length || impMissing().length || impNewInYtd().length) return;
@@ -1311,7 +1386,8 @@
     var accounts = db.accounts.concat(newAccs);
     var res = E.applyImport(db.actuals, impRows(accounts), accounts, { modes: imp.modes, sign: imp.sign, skip: skip });
     var months = res.months.map(function (k) { return monL(+k.slice(5, 7)) + ' ' + k.slice(0, 4); });
-    commit('Imported ' + plural(res.rows, 'row', 'rows') + ' of actuals for ' + months.join(', ') + (newAccs.length ? ', ' + plural(newAccs.length, 'new account', 'new accounts') : ''), function () {
+    var enMonths = res.months.map(function (k) { return E.MONTHS_LONG[+k.slice(5, 7) - 1] + ' ' + k.slice(0, 4); });
+    commit('Imported ' + res.rows + (res.rows === 1 ? ' row' : ' rows') + ' of actuals for ' + enMonths.join(', ') + (newAccs.length ? ', ' + newAccs.length + (newAccs.length === 1 ? ' new account' : ' new accounts') : ''), function () {
       db.accounts = accounts; db.actuals = res.actuals; db.demo = false;
       res.months.forEach(function (k) { var yy = +k.slice(0, 4), mm = +k.slice(5, 7); if (!db.loaded[yy]) db.loaded[yy] = E.zeros().map(function () { return false; }); db.loaded[yy][mm - 1] = true; });
     }, { noRender: true });
@@ -1319,7 +1395,7 @@
     lastImport = cy.length ? { y: db.year, month: Math.max.apply(null, cy) } : null;
     imp = null;
     render();
-    toast('Imported ' + plural(res.rows, 'row', 'rows') + ' for ' + months.join(', '));
+    toast(tx('Imported {rows} for {months}', { rows: plural(res.rows, 'row', 'rows'), months: months.join(', ') }));
   }
 
   // ── page: board pack ─────────────────────────────────────────────────────
@@ -1340,18 +1416,12 @@
       closed: 'Zaključeno do', prepared: 'Pripravljeno', vs: 'glede na plan', pp: 'o. t.',
       kRev: 'Prihodki', kGm: 'Bruto marža', kEb: 'EBITDA', kFy: 'EBITDA, celo leto', sYtd: 'od začetka leta', sFy: 'ocena',
       pl: 'Izkaz poslovnega izida', bridge: 'EBITDA od plana do realizacije, od začetka leta', bStart: 'Planirana EBITDA', bEnd: 'Dosežena EBITDA', other: 'Druge postavke',
-      top: 'Največja odstopanja od plana od začetka leta', none: 'Pojasnila še ni.', through: 'pojasnilo do konca meseca', open: 'odprto',
+      top: 'Največji odmiki od plana od začetka leta', none: 'Pojasnila še ni.', through: 'pojasnilo do konca meseca', open: 'odprto',
       basis: 'Ocena = realizacija za {closed} in {version} za {open}.', notes: 'Zneski so v evrih. Razlika = realizacija − plan; pri stroških je negativna razlika ugodna. Indeks = realizacija / plan × 100.',
       page: 'Stran {n} od 2', months: ['januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust', 'september', 'oktober', 'november', 'december'], dash: '–', dateDot: '',
       budgetName: 'Plan {y}', forecastName: 'Napoved {y}', origIn: { en: '(v angleščini)', hr: '(v hrvaščini)' },
       monthly: 'Po mesecih, v tisoč €', mShort: ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'avg', 'sep', 'okt', 'nov', 'dec'], rAct: 'Prihodki, realizacija / ocena', rBud: 'Prihodki, plan', eAct: 'EBITDA, realizacija / ocena', eBud: 'EBITDA, plan', openNote: 'Sivo: odprti meseci (ocena).', year: 'Leto',
-      lines: {
-        sales_si: 'Prodaja — Slovenija', sales_hr: 'Prodaja — Hrvaška', sales_eu: 'Prodaja — druge države EU', other_inc: 'Drugi poslovni prihodki', rev: 'Prihodki skupaj',
-        cogs: 'Nabavna vrednost prodanega blaga', freight: 'Prevozni in logistični stroški', cos: 'Stroški prodanega skupaj', gm: 'Bruto marža', gm_pct: 'Bruto marža v %',
-        personnel: 'Stroški dela', rent: 'Najemnine in stroški prostorov', vehicles: 'Vozila in dostavni vozni park', marketing: 'Trženje', it: 'Informatika in programska oprema',
-        prof: 'Strokovne storitve', travel: 'Potni stroški', insurance: 'Zavarovanja', other_cost: 'Drugi stroški poslovanja', opex: 'Stroški poslovanja skupaj',
-        ebitda: 'EBITDA', ebitda_pct: 'EBITDA v % prihodkov', da: 'Amortizacija', ebit: 'EBIT', fin: 'Finančni izid (obresti)', pbt: 'Dobiček pred davki'
-      }
+      lines: I18N.LINE_NAMES.sl // the same names as on the screens (i18n.js)
     },
     hr: {
       name: 'Hrvatski', title: 'Izvješće o poslovanju', ytd: 'Od početka godine', fy: 'Cijela godina', actual: 'Ostvarenje', budget: 'Plan', outlook: 'Procjena', diff: 'Razlika', rel: 'Indeks', index: true,
@@ -1363,13 +1433,7 @@
       page: 'Stranica {n} od 2', months: ['siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj', 'srpanj', 'kolovoz', 'rujan', 'listopad', 'studeni', 'prosinac'], dash: ' – ', dateDot: '.',
       budgetName: 'Plan {y}', forecastName: 'Prognoza {y}', origIn: { en: '(na engleskom)', sl: '(na slovenskom)' },
       monthly: 'Po mjesecima, u tisućama €', mShort: ['sij', 'velj', 'ožu', 'tra', 'svi', 'lip', 'srp', 'kol', 'ruj', 'lis', 'stu', 'pro'], rAct: 'Prihodi, ostvarenje / procjena', rBud: 'Prihodi, plan', eAct: 'EBITDA, ostvarenje / procjena', eBud: 'EBITDA, plan', openNote: 'Sivo: otvoreni mjeseci (procjena).', year: 'Godina',
-      lines: {
-        sales_si: 'Prodaja — Slovenija', sales_hr: 'Prodaja — Hrvatska', sales_eu: 'Prodaja — ostale zemlje EU', other_inc: 'Ostali poslovni prihodi', rev: 'Ukupni prihodi',
-        cogs: 'Nabavna vrijednost prodane robe', freight: 'Troškovi prijevoza i logistike', cos: 'Troškovi prodane robe ukupno', gm: 'Bruto marža', gm_pct: 'Bruto marža u %',
-        personnel: 'Troškovi osoblja', rent: 'Najamnine i troškovi prostora', vehicles: 'Vozila i dostavni vozni park', marketing: 'Marketing', it: 'Informatika i softver',
-        prof: 'Stručne usluge', travel: 'Putni troškovi', insurance: 'Osiguranje', other_cost: 'Ostali troškovi poslovanja', opex: 'Operativni troškovi ukupno',
-        ebitda: 'EBITDA', ebitda_pct: 'EBITDA u % prihoda', da: 'Amortizacija', ebit: 'EBIT', fin: 'Financijski rezultat (kamate)', pbt: 'Dobit prije oporezivanja'
-      }
+      lines: I18N.LINE_NAMES.hr
     }
   };
   function packName(L, id) { return L.lines[id] || (id === 'gm_pct' ? 'Gross margin %' : id === 'ebitda_pct' ? 'EBITDA %' : E.nameOf(id)); }
@@ -1379,15 +1443,15 @@
     return base + rest;
   }
   function packRange(L, from, to) { var y = model().y; return (from === to ? L.months[from - 1] : L.months[from - 1] + L.dash + L.months[to - 1]) + ' ' + y + L.dateDot; }
-  function packDate(L, s) { return dt(s) + L.dateDot; }
+  function packDate(L, s) { return dt0(s) + L.dateDot; }
   function pagePrint() {
-    var m = model(), c = m.closed, lang = PACK[uPk.lang] ? uPk.lang : 'en', L = PACK[lang];
+    var m = model(), c = m.closed, lang = packLang(), L = PACK[lang];
     var miss = c ? packTop(m).filter(function (t) { return t.cm && !E.commentText(t.cm, lang).inLang; }) : [];
-    var h = '<div class="pack-bar no-print"><div class="seg" role="group" aria-label="Language of the report">' + Object.keys(PACK).map(function (k) { return '<button type="button" data-act="packlang" data-v="' + k + '" aria-pressed="' + (k === lang) + '" lang="' + k + '">' + esc(PACK[k].name) + '</button>'; }).join('') + '</div>' +
-      '<button type="button" class="btn pri" data-act="print">' + ic('print') + 'Print or save as PDF</button><span class="hint">Two A4 pages. Comments print in the pack’s language when they have a text in it, otherwise as they were written.</span></div>';
-    if (miss.length) h += '<div class="notice warn no-print"><p>' + plural(miss.length, 'comment prints', 'comments print') + ' as written, not in ' + esc({ en: 'English', sl: 'Slovenian', hr: 'Croatian' }[lang]) + ': ' + miss.map(function (t) { return '<a href="#/line/' + t.l.id + '">' + esc(E.nameOf(t.l.id)) + '</a>'; }).join(', ') + '. Open the line and add the text under “Board pack text in Slovenian and Croatian”.</p></div>';
-    if (!c) return head('Board pack', 'Nothing to report yet', 'The board pack needs at least one closed month.', '') + h;
-    return '<h1 class="sr" tabindex="-1">Board pack</h1>' + h + '<div class="pack-wrap" lang="' + lang + '">' + packPage1(L, m) + packPage2(L, m) + '</div>';
+    var h = '<div class="pack-bar no-print"><div class="seg" role="group" aria-label="' + th('Language of the report') + '">' + Object.keys(PACK).map(function (k) { return '<button type="button" data-act="packlang" data-v="' + k + '" aria-pressed="' + (k === lang) + '" lang="' + k + '">' + esc(PACK[k].name) + '</button>'; }).join('') + '</div>' +
+      '<button type="button" class="btn pri" data-act="print">' + ic('print') + th('Print or save as PDF') + '</button><span class="hint">' + th(lang === LANG ? 'In the language of the screens. Two A4 pages. Comments print in the pack’s language when they have a text in it, otherwise as they were written.' : 'Two A4 pages. Comments print in the pack’s language when they have a text in it, otherwise as they were written.') + '</span></div>';
+    if (miss.length) h += '<div class="notice warn no-print"><p>' + th({ en: 'Comments that print as written, not in English: {list}. Open the line and add the text under “Board pack text in other languages”.', sl: 'Comments that print as written, not in Slovenian: {list}. Open the line and add the text under “Board pack text in other languages”.', hr: 'Comments that print as written, not in Croatian: {list}. Open the line and add the text under “Board pack text in other languages”.' }[lang], { list: miss.map(function (t) { return '<a href="#/line/' + t.l.id + '">' + esc(lnm(t.l.id)) + '</a>'; }).join(', ') }) + '</p></div>';
+    if (!c) return head(th('Board pack'), tx('Nothing to report yet'), th('The board pack needs at least one closed month.'), '') + h;
+    return '<h1 class="sr" tabindex="-1">' + th('Board pack') + '</h1>' + h + '<div class="pack-wrap" lang="' + lang + '">' + packPage1(L, m) + packPage2(L, m) + '</div>';
   }
   function packCells(L, a, b, type) {
     var v = E.variance(a, b, type), idx = b > 0 && a >= 0 ? a / b * 100 : null;
@@ -1483,75 +1547,75 @@
   function pctIn(x) { return String(Math.round(x * 100) / 100).replace('.', ','); }
   function pageHeadcount() {
     var m = model(), y = m.y, hc = db.headcount, cost = hcCost(), v = hcTarget(), fr = frozenOf(v);
-    var h = head('Personnel · ' + y + ' · amounts in €', 'Headcount plan', 'Who you plan to employ, from when and at what gross pay. Its cost — gross pay, employer contributions, allowances, holiday allowance and other staff costs — can fill the Personnel line of a budget or forecast.',
-      '<button type="button" class="btn" data-act="hccsv">' + ic('dl') + 'Export CSV</button><a class="btn" href="#/line/personnel">' + ic('pl') + 'Personnel line</a>');
+    var h = head(th('Personnel · {year} · amounts in €', { year: y }), tx('Headcount plan'), th('Who you plan to employ, from when and at what gross pay. Its cost — gross pay, employer contributions, allowances, holiday allowance and other staff costs — can fill the Personnel line of a budget or forecast.'),
+      '<button type="button" class="btn" data-act="hccsv">' + ic('dl') + th('Export CSV') + '</button><a class="btn" href="#/line/personnel">' + ic('pl') + th('Personnel line') + '</a>');
     function mopt(sel, emptyLabel) {
       var o = '<option value=""' + (sel ? '' : ' selected') + '>' + esc(emptyLabel) + '</option>', inYear = false;
-      for (var i = 1; i <= 12; i++) { var k = y + '-' + E.pad(i); if (k === sel) inYear = true; o += '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + esc(monL(i)) + '</option>'; }
+      for (var i = 1; i <= 12; i++) { var k = y + '-' + E.pad(i); if (k === sel) inYear = true; o += '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + esc(cap(monL(i))) + '</option>'; }
       if (sel && !inYear) o += '<option value="' + esc(sel) + '" selected>' + esc(sel) + '</option>';
       return o;
     }
     var rows = hc.rows.map(function (r, i) {
       var x = cost.rows[i], id = esc(r.id);
-      return '<div class="hc-row" role="row"><div class="hc-f hc-role" role="cell"><label for="hr-' + id + '">Role</label><input class="in" id="hr-' + id + '" maxlength="80" value="' + esc(r.role) + '" data-hc="role" data-v="' + id + '"></div>' +
-        '<div class="hc-f" role="cell"><label for="hk-' + id + '">Country</label><select class="in" id="hk-' + id + '" data-hc="country" data-v="' + id + '"><option value="SI"' + (r.country === 'SI' ? ' selected' : '') + '>SI</option><option value="HR"' + (r.country === 'HR' ? ' selected' : '') + '>HR</option></select></div>' +
-        '<div class="hc-f" role="cell"><label for="hf-' + id + '">FTE</label><input class="in num" id="hf-' + id + '" inputmode="decimal" value="' + esc(pctIn(r.fte)) + '" data-hc="fte" data-v="' + id + '"></div>' +
-        '<div class="hc-f" role="cell"><label for="hg-' + id + '">Gross a month</label><input class="in num" id="hg-' + id + '" inputmode="decimal" value="' + esc(inputNice(r.gross)) + '" data-hc="gross" data-v="' + id + '"></div>' +
-        '<div class="hc-f" role="cell"><label for="ha-' + id + '">Allowances</label><input class="in num" id="ha-' + id + '" inputmode="decimal" value="' + esc(inputNice(r.allow)) + '" data-hc="allow" data-v="' + id + '" title="Meal and commuting allowances a month at 1 FTE, no contributions"></div>' +
-        '<div class="hc-f" role="cell"><label for="hs-' + id + '">From</label><select class="in" id="hs-' + id + '" data-hc="from" data-v="' + id + '">' + mopt(r.from, 'Earlier') + '</select></div>' +
-        '<div class="hc-f" role="cell"><label for="he-' + id + '">Until</label><select class="in" id="he-' + id + '" data-hc="to" data-v="' + id + '">' + mopt(r.to, 'Ongoing') + '</select></div>' +
-        '<div class="hc-f hc-cost" role="cell"><span class="lab">Cost ' + y + '</span><b>' + num(x.year) + '</b></div>' +
-        '<div class="hc-f hc-del" role="cell"><button type="button" class="btn icon sm ghost" data-act="hcdel" data-v="' + id + '" aria-label="Remove ' + esc(r.role || 'this row') + '">' + ic('trash') + '</button></div></div>';
+      return '<div class="hc-row" role="row"><div class="hc-f hc-role" role="cell"><label for="hr-' + id + '">' + th('Role') + '</label><input class="in" id="hr-' + id + '" maxlength="80" value="' + esc(r.role) + '" data-hc="role" data-v="' + id + '"></div>' +
+        '<div class="hc-f" role="cell"><label for="hk-' + id + '">' + th('Country') + '</label><select class="in" id="hk-' + id + '" data-hc="country" data-v="' + id + '"><option value="SI"' + (r.country === 'SI' ? ' selected' : '') + '>SI</option><option value="HR"' + (r.country === 'HR' ? ' selected' : '') + '>HR</option></select></div>' +
+        '<div class="hc-f" role="cell"><label for="hf-' + id + '">' + th('FTE') + '</label><input class="in num" id="hf-' + id + '" inputmode="decimal" value="' + esc(pctIn(r.fte)) + '" data-hc="fte" data-v="' + id + '"></div>' +
+        '<div class="hc-f" role="cell"><label for="hg-' + id + '">' + th('Gross a month') + '</label><input class="in num" id="hg-' + id + '" inputmode="decimal" value="' + esc(inputNice(r.gross)) + '" data-hc="gross" data-v="' + id + '"></div>' +
+        '<div class="hc-f" role="cell"><label for="ha-' + id + '">' + th('Allowances') + '</label><input class="in num" id="ha-' + id + '" inputmode="decimal" value="' + esc(inputNice(r.allow)) + '" data-hc="allow" data-v="' + id + '" title="' + th('Meal and commuting allowances a month at 1 FTE, no contributions') + '"></div>' +
+        '<div class="hc-f" role="cell"><label for="hs-' + id + '">' + th('From') + '</label><select class="in" id="hs-' + id + '" data-hc="from" data-v="' + id + '">' + mopt(r.from, tx('Earlier')) + '</select></div>' +
+        '<div class="hc-f" role="cell"><label for="he-' + id + '">' + th('Until') + '</label><select class="in" id="he-' + id + '" data-hc="to" data-v="' + id + '">' + mopt(r.to, tx('Ongoing')) + '</select></div>' +
+        '<div class="hc-f hc-cost" role="cell"><span class="lab">' + th('Cost {year}', { year: y }) + '</span><b>' + num(x.year) + '</b></div>' +
+        '<div class="hc-f hc-del" role="cell"><button type="button" class="btn icon sm ghost" data-act="hcdel" data-v="' + id + '" aria-label="' + th('Remove {role}', { role: esc(r.role || tx('this row')) }) + '">' + ic('trash') + '</button></div></div>';
     }).join('');
     var fteNow = cost.fte[Math.max(0, Math.min(11, m.closed))], fteEnd = cost.fte[11];
-    h += '<div class="kpis">' + kpi('Cost of the plan, ' + y, keur(E.total(cost.total)), plural(hc.rows.length, 'row', 'rows') + ' · ' + nf1.format(fteEnd) + ' FTE in December', '', '', 'Gross pay ' + keur(E.total(cost.gross))) +
-      kpi('Employer contributions', keur(E.total(cost.contrib)), 'SI ' + pctIn(hc.rates.SI) + NB + '% · HR ' + pctIn(hc.rates.HR) + NB + '%', '', '', 'on gross pay') +
-      kpi('FTE now', nf1.format(fteNow), monL(Math.max(1, Math.min(12, m.closed + 1))) + ' ' + y, '', '', '') +
-      kpi('Personnel in ' + v.name, keur(E.total(v.values.personnel)), skeur(E.total(cost.total) - E.total(v.values.personnel)) + ' plan vs ' + (v.kind === 'budget' ? 'budget' : 'forecast'), '', '', '') + '</div>';
-    h += '<section class="card"><div class="card-h"><div><span class="label">People · one row per role or person</span><h2>Who, from when, at what pay</h2></div><button type="button" class="btn sm" data-act="hcadd">' + ic('plus') + 'Add a row</button></div>' +
-      '<div class="hc-table" role="table" aria-label="Headcount plan"><div class="hc-row hc-head" role="row" aria-hidden="true"><div>Role</div><div>Country</div><div class="num">FTE</div><div class="num">Gross a month</div><div class="num" title="Meal and commuting allowances a month at 1 FTE">Allow.</div><div>From</div><div>Until</div><div class="num">Cost ' + y + '</div><div></div></div>' +
-      (rows || '<p class="empty" style="padding:16px 20px">No one in the plan yet. Add a row per role (e.g. “Warehouse operatives”, FTE 12) or per person.</p>') + '</div>' +
-      '<p class="hint" style="padding:10px 20px 16px">Gross pay and allowances are per month at 1 FTE; FTE 0,5 is half time and 12 is twelve people. The cost counts every month from “From” to “Until”.</p></section>';
-    var mo = ''; for (var i = 1; i <= 12; i++) mo += '<option value="' + i + '"' + (hc.holidayMonth === i ? ' selected' : '') + '>' + esc(monL(i)) + '</option>';
-    var asm = '<section class="card pad" style="margin-top:14px"><span class="label">Assumptions</span><form id="hcForm" class="stack" style="margin-top:12px" novalidate>' +
-      '<div class="row2"><div class="field"><label for="hcSI">Employer contributions, Slovenia (%)</label><input class="in" id="hcSI" inputmode="decimal" value="' + esc(pctIn(hc.rates.SI)) + '"><span class="hint">16,10 % (pension 8,85, health 6,56, injury 0,53, parental 0,10, unemployment 0,06) + 1 % long-term care from 1. 7. 2025 (ZDOsk-1).</span></div>' +
-      '<div class="field"><label for="hcHR">Employer contributions, Croatia (%)</label><input class="in" id="hcHR" inputmode="decimal" value="' + esc(pctIn(hc.rates.HR)) + '"><span class="hint">16,5 % health insurance (Zakon o doprinosima); pension comes out of the gross.</span></div></div>' +
-      '<div class="row2"><div class="field"><label for="hcHol">Holiday allowance (regres) per FTE (€)</label><input class="in" id="hcHol" inputmode="decimal" value="' + esc(inputNice(hc.holiday)) + '"><span class="hint">No contributions in Slovenia up to the average monthly wage. At least the minimum wage, paid by 1 July (ZDR-1, Art. 131).</span></div>' +
-      '<div class="field"><label for="hcHolM">Paid in</label><select class="in" id="hcHolM">' + mo + '</select><span class="hint">To everyone in the plan that month.</span></div></div>' +
-      '<div class="field"><label for="hcOther">Other staff costs a year (€)</label><input class="in" id="hcOther" inputmode="decimal" value="' + esc(inputNice(hc.other)) + '"><span class="hint">Bonuses, training, team events: spread evenly over the months.</span></div>' +
-      '<div class="err" id="hcErr" role="alert" hidden></div><div><button type="submit" class="btn pri">Save assumptions</button></div></form><p class="hint" style="margin-top:12px">Rates are defaults to check each year; this is a plan, not a payroll.</p></section>';
+    h += '<div class="kpis">' + kpi(tx('Cost of the plan, {year}', { year: y }), keur(E.total(cost.total)), plural(hc.rows.length, 'row', 'rows') + ' · ' + th('{fte} FTE in December', { fte: nf1.format(fteEnd) }), '', '', th('Gross pay {amount}', { amount: keur(E.total(cost.gross)) })) +
+      kpi(tx('Employer contributions'), keur(E.total(cost.contrib)), 'SI ' + pctIn(hc.rates.SI) + NB + '% · HR ' + pctIn(hc.rates.HR) + NB + '%', '', '', th('on gross pay')) +
+      kpi(tx('FTE now'), nf1.format(fteNow), esc(cap(monL(Math.max(1, Math.min(12, m.closed + 1))))) + ' ' + y, '', '', '') +
+      kpi(tx('Personnel in {version}', { version: vname(v) }), keur(E.total(v.values.personnel)), th(v.kind === 'budget' ? '{amount} plan vs budget' : '{amount} plan vs forecast', { amount: skeur(E.total(cost.total) - E.total(v.values.personnel)) }), '', '', '') + '</div>';
+    h += '<section class="card"><div class="card-h"><div><span class="label">' + th('People · one row per role or person') + '</span><h2>' + th('Who, from when, at what pay') + '</h2></div><button type="button" class="btn sm" data-act="hcadd">' + ic('plus') + th('Add a row') + '</button></div>' +
+      '<div class="hc-table" role="table" aria-label="' + th('Headcount plan') + '"><div class="hc-row hc-head" role="row" aria-hidden="true"><div>' + th('Role') + '</div><div>' + th('Country') + '</div><div class="num">' + th('FTE') + '</div><div class="num">' + th('Gross a month') + '</div><div class="num" title="' + th('Meal and commuting allowances a month at 1 FTE') + '">' + th('Allow.') + '</div><div>' + th('From') + '</div><div>' + th('Until') + '</div><div class="num">' + th('Cost {year}', { year: y }) + '</div><div></div></div>' +
+      (rows || '<p class="empty" style="padding:16px 20px">' + th('No one in the plan yet. Add a row per role (e.g. “Warehouse operatives”, FTE 12) or per person.') + '</p>') + '</div>' +
+      '<p class="hint" style="padding:10px 20px 16px">' + th('Gross pay and allowances are per month at 1 FTE; FTE 0,5 is half time and 12 is twelve people. The cost counts every month from “From” to “Until”.') + '</p></section>';
+    var mo = ''; for (var i = 1; i <= 12; i++) mo += '<option value="' + i + '"' + (hc.holidayMonth === i ? ' selected' : '') + '>' + esc(cap(monL(i))) + '</option>';
+    var asm = '<section class="card pad" style="margin-top:14px"><span class="label">' + th('Assumptions') + '</span><form id="hcForm" class="stack" style="margin-top:12px" novalidate>' +
+      '<div class="row2"><div class="field"><label for="hcSI">' + th('Employer contributions, Slovenia (%)') + '</label><input class="in" id="hcSI" inputmode="decimal" value="' + esc(pctIn(hc.rates.SI)) + '"><span class="hint">' + th('16,10 % (pension 8,85, health 6,56, injury 0,53, parental 0,10, unemployment 0,06) + 1 % long-term care from 1. 7. 2025 (ZDOsk-1).') + '</span></div>' +
+      '<div class="field"><label for="hcHR">' + th('Employer contributions, Croatia (%)') + '</label><input class="in" id="hcHR" inputmode="decimal" value="' + esc(pctIn(hc.rates.HR)) + '"><span class="hint">' + th('16,5 % health insurance (Zakon o doprinosima); pension comes out of the gross.') + '</span></div></div>' +
+      '<div class="row2"><div class="field"><label for="hcHol">' + th('Holiday allowance (regres) per FTE (€)') + '</label><input class="in" id="hcHol" inputmode="decimal" value="' + esc(inputNice(hc.holiday)) + '"><span class="hint">' + th('No contributions in Slovenia up to the average monthly wage. At least the minimum wage, paid by 1 July (ZDR-1, Art. 131).') + '</span></div>' +
+      '<div class="field"><label for="hcHolM">' + th('Paid in') + '</label><select class="in" id="hcHolM">' + mo + '</select><span class="hint">' + th('To everyone in the plan that month.') + '</span></div></div>' +
+      '<div class="field"><label for="hcOther">' + th('Other staff costs a year (€)') + '</label><input class="in" id="hcOther" inputmode="decimal" value="' + esc(inputNice(hc.other)) + '"><span class="hint">' + th('Bonuses, training, team events: spread evenly over the months.') + '</span></div>' +
+      '<div class="err" id="hcErr" role="alert" hidden></div><div><button type="submit" class="btn pri">' + th('Save assumptions') + '</button></div></form><p class="hint" style="margin-top:12px">' + th('Rates are defaults to check each year; this is a plan, not a payroll.') + '</p></section>';
     // by month against the chosen version
     var vs = db.versions.slice().sort(function (a, b) { return a.kind === b.kind ? (a.createdOn < b.createdOn ? -1 : 1) : a.kind === 'budget' ? -1 : 1; });
     var trs = '', vt = v.values.personnel;
     for (i = 0; i < 12; i++) {
       var dd = cost.total[i] - vt[i], fz = i < fr;
-      trs += '<tr' + (fz ? ' class="muted-row"' : '') + '><td class="nw"><span class="hc-x">' + esc(monL(i + 1)) + '</span><span class="hc-s">' + esc(mon(i + 1)) + '</span>' + (fz ? ' <span class="tag hc-x" title="This version holds actuals for the month">actual</span>' : '') + '</td><td class="num">' + nf1.format(cost.fte[i]) + '</td><td class="num hc-x">' + num(cost.gross[i]) + '</td><td class="num hc-x">' + num(cost.contrib[i]) + '</td><td class="num hc-x">' + num(cost.allow[i] + cost.holiday[i]) + '</td><td class="num hc-x">' + num(cost.other[i]) + '</td><td class="num"><b>' + num(cost.total[i]) + '</b></td><td class="num">' + num(vt[i]) + '</td><td class="num ' + (dd ? favCls(dd < 0) : '') + '">' + sgn(dd) + '</td></tr>';
+      trs += '<tr' + (fz ? ' class="muted-row"' : '') + '><td class="nw"><span class="hc-x">' + esc(cap(monL(i + 1))) + '</span><span class="hc-s">' + esc(mon(i + 1)) + '</span>' + (fz ? ' <span class="tag hc-x" title="' + th('This version holds actuals for the month') + '">' + th('actual') + '</span>' : '') + '</td><td class="num">' + nf1.format(cost.fte[i]) + '</td><td class="num hc-x">' + num(cost.gross[i]) + '</td><td class="num hc-x">' + num(cost.contrib[i]) + '</td><td class="num hc-x">' + num(cost.allow[i] + cost.holiday[i]) + '</td><td class="num hc-x">' + num(cost.other[i]) + '</td><td class="num"><b>' + num(cost.total[i]) + '</b></td><td class="num">' + num(vt[i]) + '</td><td class="num ' + (dd ? favCls(dd < 0) : '') + '">' + sgn(dd) + '</td></tr>';
     }
     var tt = E.total(cost.total) - E.total(vt);
     var can = !v.locked && fr < 12;
-    h += '<section class="card" style="margin-top:14px"><div class="card-h"><div><span class="label">By month · against ' + esc(v.name) + '</span><h2>Plan cost and the Personnel line</h2></div>' +
-      '<div><label class="sr" for="hcVer">Compare with</label><select class="select" id="hcVer" data-ch="hcver">' + vs.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === v.id ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('') + '</select></div></div>' +
-      '<div class="tw"><table class="t compact hc-month"><thead><tr><th>Month</th><th class="num">FTE</th><th class="num hc-x">Gross</th><th class="num hc-x">Contrib.</th><th class="num hc-x">Allow. + holiday</th><th class="num hc-x">Other</th><th class="num">Plan</th><th class="num">' + esc(v.kind === 'budget' ? 'Budget' : 'Forecast') + '</th><th class="num">Δ</th></tr></thead><tbody>' + trs + '</tbody>' +
-      '<tfoot><tr><td>Year</td><td></td><td class="num hc-x">' + num(E.total(cost.gross)) + '</td><td class="num hc-x">' + num(E.total(cost.contrib)) + '</td><td class="num hc-x">' + num(E.total(cost.allow) + E.total(cost.holiday)) + '</td><td class="num hc-x">' + num(E.total(cost.other)) + '</td><td class="num">' + num(E.total(cost.total)) + '</td><td class="num">' + num(E.total(vt)) + '</td><td class="num ' + (tt ? favCls(tt < 0) : '') + '">' + sgn(tt) + '</td></tr></tfoot></table></div>' +
-      '<div class="toolbar" style="padding:12px 20px 18px"><button type="button" class="btn pri" data-act="hcapply"' + (can && hc.rows.length ? '' : ' disabled') + '>' + ic('check') + 'Use as Personnel in ' + esc(v.name) + '</button><span class="hint">' + (v.locked ? esc(v.name) + ' is approved and locked: choose a forecast, or unlock it on Budget &amp; forecast.' : fr >= 12 ? 'Every month of this forecast holds actuals.' : 'Fills ' + esc(range(fr + 1, 12)) + (fr ? ' (earlier months hold actuals)' : '') + '. Undo on Budget &amp; forecast puts the old numbers back.') + '</span></div></section>' + asm;
+    h += '<section class="card" style="margin-top:14px"><div class="card-h"><div><span class="label">' + th('By month · against {version}', { version: esc(vname(v)) }) + '</span><h2>' + th('Plan cost and the Personnel line') + '</h2></div>' +
+      '<div><label class="sr" for="hcVer">' + th('Compare with') + '</label><select class="select" id="hcVer" data-ch="hcver">' + vs.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === v.id ? ' selected' : '') + '>' + esc(vname(x)) + '</option>'; }).join('') + '</select></div></div>' +
+      '<div class="tw"><table class="t compact hc-month"><thead><tr><th>' + th('Month') + '</th><th class="num">' + th('FTE') + '</th><th class="num hc-x">' + th('Gross') + '</th><th class="num hc-x">' + th('Contrib.') + '</th><th class="num hc-x">' + th('Allow. + holiday') + '</th><th class="num hc-x">' + th('Other') + '</th><th class="num">' + th('Plan') + '</th><th class="num">' + th(v.kind === 'budget' ? 'Budget' : 'Forecast') + '</th><th class="num">Δ</th></tr></thead><tbody>' + trs + '</tbody>' +
+      '<tfoot><tr><td>' + th('Year') + '</td><td></td><td class="num hc-x">' + num(E.total(cost.gross)) + '</td><td class="num hc-x">' + num(E.total(cost.contrib)) + '</td><td class="num hc-x">' + num(E.total(cost.allow) + E.total(cost.holiday)) + '</td><td class="num hc-x">' + num(E.total(cost.other)) + '</td><td class="num">' + num(E.total(cost.total)) + '</td><td class="num">' + num(E.total(vt)) + '</td><td class="num ' + (tt ? favCls(tt < 0) : '') + '">' + sgn(tt) + '</td></tr></tfoot></table></div>' +
+      '<div class="toolbar" style="padding:12px 20px 18px"><button type="button" class="btn pri" data-act="hcapply"' + (can && hc.rows.length ? '' : ' disabled') + '>' + ic('check') + th('Use as Personnel in {version}', { version: esc(vname(v)) }) + '</button><span class="hint">' + (v.locked ? th('{version} is approved and locked: choose a forecast, or unlock it on Budget & forecast.', { version: esc(vname(v)) }) : fr >= 12 ? th('Every month of this forecast holds actuals.') : th(fr ? 'Fills {range} (earlier months hold actuals). Undo on Budget & forecast puts the old numbers back.' : 'Fills {range}. Undo on Budget & forecast puts the old numbers back.', { range: esc(range(fr + 1, 12)) })) + '</span></div></section>' + asm;
     return h;
   }
   function hcApply() {
     var v = hcTarget(), fr = frozenOf(v), cost = hcCost();
     if (v.locked) return toast(lockedMsg());
     var before = v.values.personnel.slice(), after = before.slice(0, fr).concat(cost.total.slice(fr));
-    if (same(before, after)) return toast('Personnel in ' + v.name + ' already matches the plan');
-    confirmBox('Use the headcount plan for Personnel?', 'Personnel in <b>' + esc(v.name) + '</b> for ' + esc(range(fr + 1, 12)) + ' becomes the plan’s cost: ' + eur(E.sumRange(cost.total, fr + 1, 12)) + ' instead of ' + eur(E.sumRange(before, fr + 1, 12)) + '.', 'Use the plan', function () {
-      pushUndo(v, 'Personnel from the headcount plan', [{ id: 'personnel', before: before, after: after }]);
+    if (same(before, after)) return toast(tx('Personnel in {version} already matches the plan', { version: vname(v) }));
+    confirmBox(tx('Use the headcount plan for Personnel?'), th('Personnel in {version} for {range} becomes the plan’s cost: {plan} instead of {now}.', { version: '<b>' + esc(vname(v)) + '</b>', range: esc(range(fr + 1, 12)), plan: eur(E.sumRange(cost.total, fr + 1, 12)), now: eur(E.sumRange(before, fr + 1, 12)) }), tx('Use the plan'), function () {
+      pushUndo(v, tx('Personnel from the headcount plan'), [{ id: 'personnel', before: before, after: after }]);
       commit(v.name + ': Personnel filled in from the headcount plan', function () { v.values.personnel = after; });
-      toast('Personnel in ' + v.name + ': ' + eur(E.total(after)) + ' for the year');
+      toast(tx('Personnel in {version}: {amount} for the year', { version: vname(v), amount: eur(E.total(after)) }));
     });
   }
   function hcCsv() {
-    var cost = hcCost(), y = db.year, rows = [['role', 'country', 'fte', 'gross a month', 'allowances a month', 'from', 'until'].concat(E.MONTHS.map(function (x) { return x + ' ' + y; })).concat(['year'])];
+    var cost = hcCost(), y = db.year, rows = [['role', 'country', 'fte', 'gross a month', 'allowances a month', 'from', 'until'].map(function (x) { return tx(x); }).concat(I.months.map(function (x) { return x + ' ' + y; })).concat([tx('year')])];
     db.headcount.rows.forEach(function (r, i) { rows.push([r.role, r.country, String(r.fte).replace('.', ','), E.centsText(r.gross), E.centsText(r.allow), r.from, r.to].concat(cost.rows[i].total.map(function (c) { return E.centsText(c); })).concat([E.centsText(cost.rows[i].year)])); });
     [['gross', 'Gross pay'], ['contrib', 'Employer contributions'], ['allow', 'Allowances'], ['holiday', 'Holiday allowance'], ['other', 'Other staff costs'], ['total', 'Total']].forEach(function (k) {
-      rows.push([k[1], '', '', '', '', '', ''].concat(cost[k[0]].map(function (c) { return E.centsText(c); })).concat([E.centsText(E.total(cost[k[0]]))]));
+      rows.push([tx(k[1]), '', '', '', '', '', ''].concat(cost[k[0]].map(function (c) { return E.centsText(c); })).concat([E.centsText(E.total(cost[k[0]]))]));
     });
     download('headcount-' + y + '.csv', E.toCsv(rows, ';'));
   }
@@ -1560,43 +1624,50 @@
   function pageSettings() {
     var m = model(), s = db.settings, y = m.y;
     var synced = !!(sync && window.StratumSync && StratumSync.user());
-    var h = head('Settings', 'Company, closing and accounts', 'Thresholds and the closing rule are defaults to check against your own close calendar and materiality. ' + (synced ? 'Saved in this browser and in your private cloud copy.' : 'Everything is saved in this browser only.'), '');
+    var h = head(th('Settings'), tx('Company, closing and accounts'), th('Thresholds and the closing rule are defaults to check against your own close calendar and materiality.') + ' ' + th(synced ? 'Saved in this browser and in your private cloud copy.' : 'Everything is saved in this browser only.'), '');
+    // the screen language: this browser only
+    h += '<section class="card pad" style="margin:0 0 14px"><div class="lang-set"><div><span class="label">' + th('This browser') + '</span><h2>' + th('Screen language') + '</h2></div><div class="seg" role="group" aria-label="' + th('Screen language') + '">' + [['en', 'English'], ['sl', 'Slovenščina'], ['hr', 'Hrvatski']].map(function (o) { return '<button type="button" data-act="uilang" data-v="' + o[0] + '" lang="' + o[0] + '" aria-pressed="' + (LANG === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</div></div><p class="hint" style="margin-top:8px">' + th('The language of the screens. The board pack follows it unless you choose another language there; each comment keeps the language it was written in.') + '</p></section>';
     h += '<div id="syncPanel" class="sync-panel" style="margin:0 0 14px"></div>';
-    var closeOpts = '<option value="auto"' + (s.closed === 'auto' ? ' selected' : '') + '>Automatic: ' + s.grace + ' days after month end (now ' + (E.capByLoaded(m.auto, db.loaded[y]) ? 'through ' + monL(E.capByLoaded(m.auto, db.loaded[y])) : 'none') + ')</option><option value="0"' + (s.closed === 0 ? ' selected' : '') + '>No month closed</option>';
-    for (var i = 1; i <= 12; i++) closeOpts += '<option value="' + i + '"' + (s.closed === i ? ' selected' : '') + '>Through ' + monL(i) + ' ' + y + (db.loaded[y][i - 1] ? '' : ' (no actuals yet)') + '</option>';
-    h += '<div class="grid2"><section class="card pad"><span class="label">Company and close</span><form id="setForm" class="stack" style="margin-top:12px" novalidate>' +
-      '<div class="field"><label for="sName">Company name</label><input class="in" id="sName" maxlength="80" value="' + esc(db.company.name) + '"></div>' +
-      '<div class="row2"><div class="field"><label for="sWhat">What it does</label><input class="in" id="sWhat" maxlength="120" value="' + esc(db.company.what || '') + '"></div><div class="field"><label for="sCity">City</label><input class="in" id="sCity" maxlength="60" value="' + esc(db.company.city || '') + '"></div></div>' +
-      '<div class="field"><label for="sClosed">Closed through</label><select class="in" id="sClosed">' + closeOpts + '</select><span class="hint">Closed months count as actual everywhere; open months use the budget or forecast.</span></div>' +
-      '<div class="row2"><div class="field"><label for="sGrace">Days after month end before it closes</label><input class="in" id="sGrace" type="number" min="0" max="60" step="1" value="' + s.grace + '"></div><div class="field"><label for="sAuthor">Your name on new comments</label><input class="in" id="sAuthor" maxlength="60" value="' + esc(s.author) + '"></div></div>' +
-      '<fieldset class="grp"><legend>Needs an explanation when the variance is at least</legend><div class="row3"><div class="field"><label for="sPct">Percent of budget</label><input class="in" id="sPct" inputmode="decimal" value="' + String(s.pct).replace('.', ',') + '"></div><div class="field"><label for="sMonth">€ in a month</label><input class="in" id="sMonth" inputmode="decimal" value="' + nf0.format(s.monthAbs) + '"></div><div class="field"><label for="sYtd">€ year to date</label><input class="in" id="sYtd" inputmode="decimal" value="' + nf0.format(s.ytdAbs) + '"></div></div><span class="hint">Both the percentage and the amount must be reached. Against a zero budget only the amount counts.</span>' +
-      '<div class="field" style="margin-top:12px"><label for="sAlways">Always needs an explanation above (€)</label><input class="in" id="sAlways" inputmode="decimal" value="' + (s.alwaysAbs ? nf0.format(s.alwaysAbs) : '') + '" placeholder="Off" style="max-width:200px"><span class="hint">Any variance of at least this amount, in a month or year to date, needs a comment whatever its percentage, so the biggest ones are always explained. Empty or 0 turns it off.</span></div></fieldset>' +
-      '<div class="field"><span class="lab">Full-year outlook uses</span><div class="radio-row"><label><input type="radio" name="sBasis" value="forecast"' + (s.basis === 'forecast' ? ' checked' : '') + '> The newest forecast' + (m.fc ? ' (' + esc(m.fc.name) + ')' : ' (none yet: the budget is used)') + '</label><label><input type="radio" name="sBasis" value="budget"' + (s.basis === 'budget' ? ' checked' : '') + '> The budget</label></div></div>' +
-      '<div class="err" id="setErr" role="alert" hidden></div><div><button type="submit" class="btn pri">Save</button></div></form></section>';
-    h += '<section class="card pad"><span class="label">Data</span><h2>About this data</h2><p class="sub">' + esc(db.company.name) + ' and every person, account and amount here is fictional demo data. Import your own actuals on the Import page, map your accounts below and type your budget to try it with real numbers. Nothing leaves this browser unless you sign in to sync.</p>' +
-      '<div class="toolbar" style="margin-top:14px"><button type="button" class="btn" data-act="tmpl">' + ic('file') + 'CSV template</button><button type="button" class="btn" data-act="actcsv">' + ic('dl') + 'Current actuals</button><button type="button" class="btn danger" data-act="reset">Reset demo data</button></div>' +
-      '<h3 class="label" style="margin:18px 0 6px">Activity</h3><ul class="log">' + db.log.slice(0, 12).map(function (l) { return '<li><small>' + dt(l.at) + '</small>' + esc(l.text) + '</li>'; }).join('') + '</ul></section></div>';
+    var autoNow = E.capByLoaded(m.auto, db.loaded[y]);
+    var closeOpts = '<option value="auto"' + (s.closed === 'auto' ? ' selected' : '') + '>' + th('Automatic: {days} after month end (now {now})', { days: plural(s.grace, 'day', 'days'), now: autoNow ? th('through {month}', { month: esc(monG(autoNow)) }) : th('none') }) + '</option><option value="0"' + (s.closed === 0 ? ' selected' : '') + '>' + th('No month closed') + '</option>';
+    for (var i = 1; i <= 12; i++) closeOpts += '<option value="' + i + '"' + (s.closed === i ? ' selected' : '') + '>' + th('Through {month}', { month: esc(monG(i)) + ' ' + y }) + (db.loaded[y][i - 1] ? '' : ' ' + th('(no actuals yet)')) + '</option>';
+    h += '<div class="grid2"><section class="card pad"><span class="label">' + th('Company and close') + '</span><form id="setForm" class="stack" style="margin-top:12px" novalidate>' +
+      '<div class="field"><label for="sName">' + th('Company name') + '</label><input class="in" id="sName" maxlength="80" value="' + esc(db.company.name) + '"></div>' +
+      '<div class="row2"><div class="field"><label for="sWhat">' + th('What it does') + '</label><input class="in" id="sWhat" maxlength="120" value="' + esc(db.company.what || '') + '"></div><div class="field"><label for="sCity">' + th('City') + '</label><input class="in" id="sCity" maxlength="60" value="' + esc(db.company.city || '') + '"></div></div>' +
+      '<div class="field"><label for="sClosed">' + th('Closed through') + '</label><select class="in" id="sClosed">' + closeOpts + '</select><span class="hint">' + th('Closed months count as actual everywhere; open months use the budget or forecast.') + '</span></div>' +
+      '<div class="row2"><div class="field"><label for="sGrace">' + th('Days after month end before it closes') + '</label><input class="in" id="sGrace" type="number" min="0" max="60" step="1" value="' + s.grace + '"></div><div class="field"><label for="sAuthor">' + th('Your name on new comments') + '</label><input class="in" id="sAuthor" maxlength="60" value="' + esc(s.author) + '"></div></div>' +
+      '<fieldset class="grp"><legend>' + th('Needs an explanation when the variance is at least') + '</legend><div class="row3"><div class="field"><label for="sPct">' + th('Percent of budget') + '</label><input class="in" id="sPct" inputmode="decimal" value="' + String(s.pct).replace('.', ',') + '"></div><div class="field"><label for="sMonth">' + th('€ in a month') + '</label><input class="in" id="sMonth" inputmode="decimal" value="' + nf0.format(s.monthAbs) + '"></div><div class="field"><label for="sYtd">' + th('€ year to date') + '</label><input class="in" id="sYtd" inputmode="decimal" value="' + nf0.format(s.ytdAbs) + '"></div></div><span class="hint">' + th('Both the percentage and the amount must be reached. Against a zero budget only the amount counts.') + '</span>' +
+      '<div class="field" style="margin-top:12px"><label for="sAlways">' + th('Always needs an explanation above (€)') + '</label><input class="in" id="sAlways" inputmode="decimal" value="' + (s.alwaysAbs ? nf0.format(s.alwaysAbs) : '') + '" placeholder="' + th('Off') + '" style="max-width:200px"><span class="hint">' + th('Any variance of at least this amount, in a month or year to date, needs a comment whatever its percentage, so the biggest ones are always explained. Empty or 0 turns it off.') + '</span></div></fieldset>' +
+      '<div class="field"><span class="lab">' + th('Full-year outlook uses') + '</span><div class="radio-row"><label><input type="radio" name="sBasis" value="forecast"' + (s.basis === 'forecast' ? ' checked' : '') + '> ' + th('The newest forecast') + ' ' + (m.fc ? '(' + esc(vname(m.fc)) + ')' : th('(none yet: the budget is used)')) + '</label><label><input type="radio" name="sBasis" value="budget"' + (s.basis === 'budget' ? ' checked' : '') + '> ' + th('The budget') + '</label></div></div>' +
+      '<div class="err" id="setErr" role="alert" hidden></div><div><button type="submit" class="btn pri">' + th('Save') + '</button></div></form></section>';
+    h += '<section class="card pad"><span class="label">' + th('Data') + '</span><h2>' + th('About this data') + '</h2><p class="sub">' + th('{company} and every person, account and amount here is fictional demo data. Import your own actuals on the Import page, map your accounts below and type your budget to try it with real numbers. Nothing leaves this browser unless you sign in to sync.', { company: esc(db.company.name) }) + '</p>' +
+      '<div class="toolbar" style="margin-top:14px"><button type="button" class="btn" data-act="tmpl">' + ic('file') + th('CSV template') + '</button><button type="button" class="btn" data-act="actcsv">' + ic('dl') + th('Current actuals') + '</button><button type="button" class="btn danger" data-act="reset">' + th('Reset demo data') + '</button></div>' +
+      '<h3 class="label" style="margin:18px 0 6px">' + th('Activity') + '</h3><ul class="log">' + db.log.slice(0, 12).map(function (l) { return '<li><small>' + dt(l.at) + '</small>' + esc(lx(l.text)) + '</li>'; }).join('') + '</ul></section></div>';
     h += accountsEditor();
     return h;
   }
+  /** the P&L lines as option groups by section, in the screen language */
+  function lineOptions(sel) {
+    return E.SECTIONS.map(function (s) { return '<optgroup label="' + esc(tx(s.name)) + '">' + E.LINES.filter(function (l) { return l.section === s.id; }).map(function (l) { return '<option value="' + l.id + '"' + (sel === l.id ? ' selected' : '') + '>' + esc(lnm(l.id)) + '</option>'; }).join('') + '</optgroup>'; }).join('');
+  }
   function lineSelect(id, sel, attrs) {
-    return '<select class="in" id="' + id + '" ' + (attrs || '') + '>' + (sel ? '' : '<option value="">Not mapped</option>') + E.SECTIONS.map(function (s) { return '<optgroup label="' + esc(s.name) + '">' + E.LINES.filter(function (l) { return l.section === s.id; }).map(function (l) { return '<option value="' + l.id + '"' + (sel === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select>';
+    return '<select class="in" id="' + id + '" ' + (attrs || '') + '>' + (sel ? '' : '<option value="">' + th('Not mapped') + '</option>') + lineOptions(sel) + '</select>';
   }
   function accountsEditor() {
     var m = model(), y = m.y, q = (uSt.q || '').toLowerCase();
     var list = db.accounts.filter(function (a) { return (!uSt.line || a.line === uSt.line) && (!q || (a.code + ' ' + a.name).toLowerCase().indexOf(q) >= 0); }).sort(function (a, b) { return a.code < b.code ? -1 : 1; });
     var rows = list.map(function (a) {
       var id = keyId(a.code), ytd = (db.actuals[y] || {})[a.code], has = [y - 1, y].some(function (yy) { var arr = (db.actuals[yy] || {})[a.code]; return arr && arr.some(function (x) { return x; }); });
-      return '<tr><td class="code">' + esc(a.code) + '</td><td class="nm"><label class="sr" for="an-' + id + '">Name of ' + esc(a.code) + '</label><input class="in" id="an-' + id + '" maxlength="80" value="' + esc(a.name) + '" data-ch="accname" data-v="' + esc(a.code) + '"></td>' +
-        '<td class="kd"><label class="sr" for="ak-' + id + '">Kind of ' + esc(a.code) + '</label><select class="in" id="ak-' + id + '" data-ch="acckind" data-v="' + esc(a.code) + '"><option value="income"' + (a.kind === 'income' ? ' selected' : '') + '>Income</option><option value="cost"' + (a.kind === 'cost' ? ' selected' : '') + '>Cost</option></select></td>' +
-        '<td class="ln"><label class="sr" for="al-' + id + '">P&amp;L line of ' + esc(a.code) + '</label>' + lineSelect('al-' + id, a.line, 'data-ch="accline" data-v="' + esc(a.code) + '"') + '</td>' +
+      return '<tr><td class="code">' + esc(a.code) + '</td><td class="nm"><label class="sr" for="an-' + id + '">' + th('Name of {code}', { code: esc(a.code) }) + '</label><input class="in" id="an-' + id + '" maxlength="80" value="' + esc(a.name) + '" data-ch="accname" data-v="' + esc(a.code) + '"></td>' +
+        '<td class="kd"><label class="sr" for="ak-' + id + '">' + th('Kind of {code}', { code: esc(a.code) }) + '</label><select class="in" id="ak-' + id + '" data-ch="acckind" data-v="' + esc(a.code) + '"><option value="income"' + (a.kind === 'income' ? ' selected' : '') + '>' + th('Income') + '</option><option value="cost"' + (a.kind === 'cost' ? ' selected' : '') + '>' + th('Cost') + '</option></select></td>' +
+        '<td class="ln"><label class="sr" for="al-' + id + '">' + th('P&L line of {code}', { code: esc(a.code) }) + '</label>' + lineSelect('al-' + id, a.line, 'data-ch="accline" data-v="' + esc(a.code) + '"') + '</td>' +
         '<td class="num">' + (ytd ? num(E.accountSign(a) * E.sumRange(ytd, 1, m.closed)) : '<span class="muted">—</span>') + '</td>' +
-        '<td>' + (has ? '' : '<button type="button" class="btn icon sm ghost" data-act="accdel" data-v="' + esc(a.code) + '" aria-label="Delete account ' + esc(a.code) + '">' + ic('trash') + '</button>') + '</td></tr>';
+        '<td>' + (has ? '' : '<button type="button" class="btn icon sm ghost" data-act="accdel" data-v="' + esc(a.code) + '" aria-label="' + th('Delete account {code}', { code: esc(a.code) }) + '">' + ic('trash') + '</button>') + '</td></tr>';
     }).join('');
-    return '<section class="card"><div class="card-h"><div><span class="label">' + (db.chart === 'si-2016' ? 'Slovenian chart of accounts (kontni okvir za gospodarske družbe)' : 'Chart of accounts') + '</span><h2>Accounts and the P&amp;L line each one feeds</h2><p class="sub">' + plural(db.accounts.length, 'account', 'accounts') + '. Class 4 holds costs by nature; in class 7, groups 70–75 are expenses (702 cost of goods sold, 742 interest) and 76–78 income. A cost account in an income line (interest expense in the financial result) counts against it. Changes apply at once to every report.</p></div></div>' +
-      '<div class="toolbar" style="padding:0 20px"><label class="sr" for="accQ">Search accounts</label><input class="search" type="search" id="accQ" placeholder="Search code or name" value="' + esc(uSt.q) + '"><label class="sr" for="accLine">Line</label><select class="select" id="accLine" data-ch="accfilter"><option value="">All lines</option>' + E.LINES.map(function (l) { return '<option value="' + l.id + '"' + (uSt.line === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>'; }).join('') + '</select></div>' +
-      '<div class="tw"><table class="t acc-t"><thead><tr><th>Code</th><th>Name</th><th>Kind</th><th>P&amp;L line</th><th class="num">' + y + ' YTD</th><th><span class="sr">Delete</span></th></tr></thead><tbody>' + (rows || '<tr><td colspan="6" class="empty">No accounts match.</td></tr>') + '</tbody></table></div>' +
-      '<form id="accAdd" class="cf" style="margin:14px 20px 20px" novalidate><div class="row"><label class="sr" for="aaCode">New account code</label><input class="in" id="aaCode" maxlength="20" placeholder="Code, e.g. 4180" style="max-width:150px"><label class="sr" for="aaName">Name</label><input class="in grow" id="aaName" maxlength="80" placeholder="Name"><label class="sr" for="aaLine">P&amp;L line</label>' + lineSelect('aaLine', 'other_cost', 'style="max-width:260px"') + '<button type="submit" class="btn sm pri">' + ic('plus') + 'Add account</button></div><span class="hint">The kind follows the line; change it in the table if the account works the other way.</span></form></section>';
+    return '<section class="card"><div class="card-h"><div><span class="label">' + th(db.chart === 'si-2016' ? 'Slovenian chart of accounts (kontni okvir za gospodarske družbe)' : 'Chart of accounts') + '</span><h2>' + th('Accounts and the P&L line each one feeds') + '</h2><p class="sub">' + plural(db.accounts.length, 'account', 'accounts') + '. ' + th('Class 4 holds costs by nature; in class 7, groups 70–75 are expenses (702 cost of goods sold, 742 interest) and 76–78 income. A cost account in an income line (interest expense in the financial result) counts against it. Changes apply at once to every report.') + '</p></div></div>' +
+      '<div class="toolbar" style="padding:0 20px"><label class="sr" for="accQ">' + th('Search accounts') + '</label><input class="search" type="search" id="accQ" placeholder="' + th('Search code or name') + '" value="' + esc(uSt.q) + '"><label class="sr" for="accLine">' + th('Line') + '</label><select class="select" id="accLine" data-ch="accfilter"><option value="">' + th('All lines') + '</option>' + E.LINES.map(function (l) { return '<option value="' + l.id + '"' + (uSt.line === l.id ? ' selected' : '') + '>' + esc(lnm(l.id)) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="tw"><table class="t acc-t"><thead><tr><th>' + th('Code') + '</th><th>' + th('Name') + '</th><th>' + th('Kind') + '</th><th>' + th('P&L line') + '</th><th class="num">' + y + ' ' + th('YTD') + '</th><th><span class="sr">' + th('Delete') + '</span></th></tr></thead><tbody>' + (rows || '<tr><td colspan="6" class="empty">' + th('No accounts match.') + '</td></tr>') + '</tbody></table></div>' +
+      '<form id="accAdd" class="cf" style="margin:14px 20px 20px" novalidate><div class="row"><label class="sr" for="aaCode">' + th('New account code') + '</label><input class="in" id="aaCode" maxlength="20" placeholder="' + th('Code, e.g. 4180') + '" style="max-width:150px"><label class="sr" for="aaName">' + th('Name') + '</label><input class="in grow" id="aaName" maxlength="80" placeholder="' + th('Name') + '"><label class="sr" for="aaLine">' + th('P&L line') + '</label>' + lineSelect('aaLine', 'other_cost', 'style="max-width:260px"') + '<button type="submit" class="btn sm pri">' + ic('plus') + th('Add account') + '</button></div><span class="hint">' + th('The kind follows the line; change it in the table if the account works the other way.') + '</span></form></section>';
   }
 
   // ── render ───────────────────────────────────────────────────────────────
@@ -1634,22 +1705,22 @@
     if (r.name === 'budget') refreshGrid();
     if (r.name === 'budget') { var cell = cellAt(Math.min(uBud.ri || 0, GRID.length - 1), Math.max(1, Math.min(13, uBud.m || 1))) || cellAt(0, 1); if (cell) cell.setAttribute('tabindex', '0'); }
     lastKey = key;
-    document.title = (r.name === 'line' && (E.LINE[r.arg] || E.SUB[r.arg]) ? E.nameOf(r.arg) : TITLES[r.name]) + ' — Budget vs actual — Business Apps';
+    document.title = (r.name === 'line' && (E.LINE[r.arg] || E.SUB[r.arg]) ? lnm(r.arg) : tx(TITLES[r.name])) + ' — ' + tx('Budget vs actual') + ' — Business Apps';
   }
   window.addEventListener('hashchange', function () { closeLayer(); $('side').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded', 'false'); render(); });
 
   // ── actions ──────────────────────────────────────────────────────────────
   function readFile(file) {
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) return toast('That file is over 5 MB.');
+    if (file.size > 5 * 1024 * 1024) return toast(tx('That file is over 5 MB.'));
     if (/\.xlsx$/i.test(file.name) && window.BudgetXlsx) {
-      file.arrayBuffer().then(function (buf) { return BudgetXlsx.toText(buf); }).then(function (t) { readImport(t, file.name); }, function (err) { toast(err && err.message ? err.message : 'The Excel file could not be read. Save it as CSV and try again.'); });
+      file.arrayBuffer().then(function (buf) { return BudgetXlsx.toText(buf); }).then(function (t) { readImport(t, file.name); }, function (err) { toast(err && err.message ? lx(err.message) : tx('The Excel file could not be read. Save it as CSV and try again.')); });
       return;
     }
-    if (/\.xls$/i.test(file.name)) return toast('Old Excel files (.xls) cannot be read: save it as .xlsx or CSV.');
+    if (/\.xls$/i.test(file.name)) return toast(tx('Old Excel files (.xls) cannot be read: save it as .xlsx or CSV.'));
     var rd = new FileReader();
     rd.onload = function () { readImport(String(rd.result || ''), file.name); };
-    rd.onerror = function () { toast('The file could not be read.'); };
+    rd.onerror = function () { toast(tx('The file could not be read.')); };
     rd.readAsText(file);
   }
   var ACT = {
@@ -1671,18 +1742,18 @@
     newfc: function () { newForecast(); },
     unlock: function () {
       var v = curVersion();
-      confirmBox('Unlock ' + v.name + '?', 'It was approved on ' + dt(v.approvedOn) + '. Every report compares against it, so a change shows up everywhere. Approve and lock it again when you are done.', 'Unlock', function () {
+      confirmBox(tx('Unlock {version}?', { version: vname(v) }), th('It was approved on {date}. Every report compares against it, so a change shows up everywhere. Approve and lock it again when you are done.', { date: dt(v.approvedOn) }), tx('Unlock'), function () {
         commit('Unlocked ' + v.name, function () { v.locked = false; v.unlockedOn = TODAY; });
       });
     },
-    approve: function () { var v = curVersion(); commit('Approved and locked ' + v.name, function () { v.locked = true; v.approvedOn = TODAY; }); toast(v.name + ' approved and locked'); },
+    approve: function () { var v = curVersion(); commit('Approved and locked ' + v.name, function () { v.locked = true; v.approvedOn = TODAY; }); toast(tx('{version} approved and locked', { version: vname(v) })); },
     delfc: function () {
       var v = curVersion();
       if (v.kind !== 'forecast') return;
-      confirmBox('Delete ' + v.name + '?', 'The forecast and its numbers are removed. Comparisons and the outlook fall back to the newest remaining forecast, or the budget. This cannot be undone.', 'Delete', function () {
+      confirmBox(tx('Delete {version}?', { version: vname(v) }), th('The forecast and its numbers are removed. Comparisons and the outlook fall back to the newest remaining forecast, or the budget. This cannot be undone.'), tx('Delete'), function () {
         commit('Deleted ' + v.name, function () { db.versions = db.versions.filter(function (x) { return x.id !== v.id; }); });
         undoStack = undoStack.filter(function (u) { return u.vid !== v.id; });
-        uBud.vid = 'budget'; saveUi(); render(); toast(v.name + ' deleted');
+        uBud.vid = 'budget'; saveUi(); render(); toast(tx('{version} deleted', { version: vname(v) }));
       }, true);
     },
     phprev: function () { var ids = E.LINES.map(function (l) { return l.id; }), i = ids.indexOf(uBud.line); if (i > 0) { uBud.line = ids[i - 1]; saveUi(); render(); } },
@@ -1692,14 +1763,15 @@
     creuse: function (v, el) { var from = db.comments.filter(function (c) { return c.id === el.getAttribute('data-from'); })[0], t = $('ct-' + keyId(v)); if (from && t) { t.value = from.text; t.focus(); } },
     cdel: function (v) {
       var cm = model().cIdx[v]; if (!cm) return;
-      confirmBox('Delete this comment?', esc(E.nameOf(cm.line)) + ', ' + esc(cm.scope === 'ytd' ? 'year to date through ' + monL(cm.month) : monL(cm.month)) + ': “' + esc(cm.text.slice(0, 120)) + (cm.text.length > 120 ? '…' : '') + '”', 'Delete', function () {
+      confirmBox(tx('Delete this comment?'), esc(lnm(cm.line)) + ', ' + esc(cm.scope === 'ytd' ? tx('year to date through {month}', { month: monG(cm.month) }) : monL(cm.month)) + ': ' + th('“{text}”', { text: esc(cm.text.slice(0, 120)) + (cm.text.length > 120 ? '…' : '') }), tx('Delete'), function () {
         delete editingC[v];
         commit('Deleted a comment on ' + E.nameOf(cm.line), function () { db.comments = db.comments.filter(function (x) { return x !== cm; }); });
-        toast('Comment deleted');
+        toast(tx('Comment deleted'));
       }, true);
     },
     cmf: function (v) { uCm.f = v; saveUi(); render(); },
-    packlang: function (v) { uPk.lang = v; saveUi(); render(); },
+    // choosing the screen language again makes the pack follow the screens
+    packlang: function (v) { if (!PACK[v]) return; uPk.picked = v !== LANG; uPk.lang = uPk.picked ? v : ''; saveUi(); render(); },
     pick: function () { $('csvPick').value = ''; $('csvPick').click(); },
     hcadd: function () {
       var nr = { id: 'h' + Date.now().toString(36), role: '', country: 'SI', fte: 1, gross: 200000, allow: 18000, from: db.year + '-' + E.pad(Math.min(12, model().closed + 1)), to: '' };
@@ -1708,30 +1780,32 @@
     },
     hcdel: function (v) {
       var r = db.headcount.rows.filter(function (x) { return x.id === v; })[0]; if (!r) return;
-      confirmBox('Remove ' + esc(r.role || 'this row') + '?', 'The row leaves the headcount plan. Budgets and forecasts keep their numbers until you use the plan again.', 'Remove', function () {
+      confirmBox(tx('Remove {role}?', { role: r.role || tx('this row') }), th('The row leaves the headcount plan. Budgets and forecasts keep their numbers until you use the plan again.'), tx('Remove'), function () {
         commit('Removed ' + (r.role || 'a row') + ' from the headcount plan', function () { db.headcount.rows = db.headcount.rows.filter(function (x) { return x !== r; }); });
       }, true);
     },
     hcapply: function () { hcApply(); },
     hccsv: function () { hcCsv(); },
-    pasteimp: function () { var t = $('impPaste'); if (!t || !t.value.trim()) return toast('Paste some rows first.'); readImport(t.value, 'Pasted rows'); },
+    pasteimp: function () { var t = $('impPaste'); if (!t || !t.value.trim()) return toast(tx('Paste some rows first.')); readImport(t.value, tx('Pasted rows')); },
     impcancel: function () { imp = null; render(); },
     doimport: function () { doImport(); },
-    closenow: function (v) { var n = +v; commit('Closed through ' + monL(n) + ' by hand', function () { db.settings.closed = n; }); lastImport = null; render(); toast('Closed through ' + monL(n)); },
-    tmpl: function () {
-      var y = db.year, m = Math.max(1, model().closed), k = y + '-' + E.pad(m);
-      download('actuals-template.csv', E.toCsv([['month', 'account', 'amount', 'description'], [k, '7620', '512340,12', 'Sales of goods — Slovenia, heating'], [k, '7020', '368912,40', 'Cost of goods sold — heating'], [k, '4700', '88410,55', 'Gross salaries'], [k, '4130', '26400,00', 'Warehouse rent']], ';'));
+    closenow: function (v) { var n = +v; commit('Closed through ' + E.MONTHS_LONG[n - 1] + ' by hand', function () { db.settings.closed = n; }); lastImport = null; render(); toast(tx('Closed through {month}', { month: monG(n) })); },
+    tmpl: function () { download('actuals-template.csv', E.toCsv(tmplRows(db.year), ';')); },
+    actcsv: function () {
+      var y = db.year, rows = E.actualsRows(db.actuals, db.accounts, [y - 1, y]);
+      rows[0] = tmplRows(y)[0]; // the header in the screen language (the import reads mesec/konto/znesek and mjesec/konto/iznos too)
+      download('actuals-' + (y - 1) + '-' + y + '.csv', E.toCsv(rows, ';'));
     },
-    actcsv: function () { var y = db.year; download('actuals-' + (y - 1) + '-' + y + '.csv', E.toCsv(E.actualsRows(db.actuals, db.accounts, [y - 1, y]), ';')); },
+    uilang: function (v) { setLang(v); },
     accdel: function (v) {
       var a = db.accounts.filter(function (x) { return x.code === v; })[0]; if (!a) return;
-      confirmBox('Delete account ' + a.code + '?', esc(a.name) + ' has no actuals, so nothing else changes.', 'Delete', function () { commit('Deleted account ' + a.code, function () { db.accounts = db.accounts.filter(function (x) { return x !== a; }); Object.keys(db.actuals).forEach(function (yy) { delete db.actuals[yy][a.code]; }); }); }, true);
+      confirmBox(tx('Delete account {code}?', { code: a.code }), th('{name} has no actuals, so nothing else changes.', { name: esc(a.name) }), tx('Delete'), function () { commit('Deleted account ' + a.code, function () { db.accounts = db.accounts.filter(function (x) { return x !== a; }); Object.keys(db.actuals).forEach(function (yy) { delete db.actuals[yy][a.code]; }); }); }, true);
     },
     reset: function () {
-      confirmBox('Reset demo data?', 'This replaces everything in this app, including your imports, budget changes and comments, with fresh demo data for today. It cannot be undone.', 'Reset', function () {
+      confirmBox(tx('Reset demo data?'), th('This replaces everything in this app, including your imports, budget changes and comments, with fresh demo data for today. It cannot be undone.'), tx('Reset'), function () {
         db = X.generate(TODAY); ensureSchema(); invalidate(); undoStack = []; imp = null; lastImport = null; editingC = {};
         idbOK = true; byPerson = false; saveTimer = 1; flush();
-        render(); toast('Demo data reset');
+        render(); toast(tx('Demo data reset'));
       }, true);
     }
   };
@@ -1765,7 +1839,7 @@
     if (t.classList && t.classList.contains('chart')) hideTip(t);
     if (editing && t === editing.input) {
       var val = E.parseInput(t.value);
-      if (isNaN(val)) { var ed = editing; editing = null; ed.td.textContent = cellText(ed.td, E.rowsOf(curVersion().values)); toast('Not saved: that was not a number.'); return; }
+      if (isNaN(val)) { var ed = editing; editing = null; ed.td.textContent = cellText(ed.td, E.rowsOf(curVersion().values)); toast(tx('Not saved: that was not a number.')); return; }
       var ed2 = editing; editing = null;
       if (val !== ed2.orig) applyCell(ed2.id, ed2.m, val);
       ed2.td.textContent = cellText(ed2.td, E.rowsOf(curVersion().values));
@@ -1831,7 +1905,7 @@
     if (c == null) return;
     e.preventDefault();
     e.clipboardData.setData('text/plain', inputText(c));
-    toast('Copied ' + eur2(c));
+    toast(tx('Copied {amount}', { amount: eur2(c) }));
   });
   document.addEventListener('submit', function (e) {
     var f = e.target;
@@ -1839,53 +1913,53 @@
     if (f.classList && f.classList.contains('cf') && f.getAttribute('data-k')) {
       e.preventDefault();
       var key = f.getAttribute('data-k'), parts = key.split('|'), line = parts[0], month = +parts[1], scope = parts[2];
-      var text = f.elements.text.value.trim(), status = f.elements.status.value, author = f.elements.author.value.trim(), lang = PACK_LANGS[f.elements.lang.value] ? f.elements.lang.value : 'en', texts = {};
+      var text = f.elements.text.value.trim(), status = f.elements.status.value, author = f.elements.author.value.trim(), lang = PACK_LANGS[f.elements.lang.value] ? f.elements.lang.value : LANG, texts = {};
       Object.keys(PACK_LANGS).forEach(function (k) { var el = f.elements['t_' + k], v = el ? el.value.trim() : ''; if (v && k !== lang) texts[k] = v; });
-      if (!text) { f.elements.text.setAttribute('aria-invalid', 'true'); f.elements.text.focus(); return toast('Write what happened first.'); }
+      if (!text) { f.elements.text.setAttribute('aria-invalid', 'true'); f.elements.text.focus(); return toast(tx('Write what happened first.')); }
       var cm = model().cIdx[key];
       delete editingC[key];
-      commit((cm ? 'Edited' : 'Added') + ' a comment on ' + E.nameOf(line) + ', ' + (scope === 'ytd' ? 'year to date' : monL(month)), function () {
+      commit((cm ? 'Edited' : 'Added') + ' a comment on ' + E.nameOf(line) + ', ' + (scope === 'ytd' ? 'year to date' : E.MONTHS_LONG[month - 1]), function () {
         if (cm) { cm.text = text; cm.status = status; cm.author = author; cm.lang = lang; cm.texts = texts; cm.edited = TODAY; }
         else db.comments.push({ id: 'c' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), line: line, month: month, scope: scope, status: status, text: text, lang: lang, texts: texts, author: author, at: TODAY });
         if (author && !db.settings.author) db.settings.author = author;
       });
-      toast('Comment saved');
+      toast(tx('Comment saved'));
       return;
     }
     if (f.id === 'setForm') {
       e.preventDefault();
       var err = $('setErr'), name = $('sName').value.trim(), pct = pnum($('sPct').value), mAbs = E.parseInput($('sMonth').value), yAbs = E.parseInput($('sYtd').value), grace = Math.round(+$('sGrace').value), aAbs = E.parseInput($('sAlways').value);
       var closed = $('sClosed').value, basis = (document.querySelector('input[name=sBasis]:checked') || {}).value || 'forecast', bad = '';
-      if (!name) bad = 'Enter a company name.';
-      else if (!(pct > 0 && pct <= 1000)) bad = 'The percentage threshold must be above 0.';
-      else if (isNaN(mAbs) || mAbs < 0 || isNaN(yAbs) || yAbs < 0 || isNaN(aAbs) || aAbs < 0) bad = 'The amount thresholds must be zero or more.';
-      else if (!(grace >= 0 && grace <= 60)) bad = 'Days after month end: 0 to 60.';
+      if (!name) bad = tx('Enter a company name.');
+      else if (!(pct > 0 && pct <= 1000)) bad = tx('The percentage threshold must be above 0.');
+      else if (isNaN(mAbs) || mAbs < 0 || isNaN(yAbs) || yAbs < 0 || isNaN(aAbs) || aAbs < 0) bad = tx('The amount thresholds must be zero or more.');
+      else if (!(grace >= 0 && grace <= 60)) bad = tx('Days after month end: 0 to 60.');
       if (bad) { err.hidden = false; err.textContent = bad; return; }
       commit('Settings updated', function () {
         db.company.name = name; db.company.what = $('sWhat').value.trim(); db.company.city = $('sCity').value.trim();
         var s = db.settings; s.pct = pct; s.monthAbs = Math.round(mAbs / 100); s.ytdAbs = Math.round(yAbs / 100); s.alwaysAbs = Math.round(aAbs / 100); s.grace = grace;
         s.closed = closed === 'auto' ? 'auto' : +closed; s.basis = basis; s.author = $('sAuthor').value.trim();
       });
-      toast('Saved');
+      toast(tx('Saved'));
       return;
     }
     if (f.id === 'hcForm') {
       e.preventDefault();
       var rSI = pnum($('hcSI').value), rHR = pnum($('hcHR').value), hol = E.parseInput($('hcHol').value), oth = E.parseInput($('hcOther').value), hm = +$('hcHolM').value, he = $('hcErr');
-      var bad2 = !(rSI >= 0 && rSI <= 100 && rHR >= 0 && rHR <= 100) ? 'Contribution rates are percentages from 0 to 100.' : isNaN(hol) || hol < 0 || isNaN(oth) || oth < 0 ? 'Amounts must be zero or more.' : '';
+      var bad2 = !(rSI >= 0 && rSI <= 100 && rHR >= 0 && rHR <= 100) ? tx('Contribution rates are percentages from 0 to 100.') : isNaN(hol) || hol < 0 || isNaN(oth) || oth < 0 ? tx('Amounts must be zero or more.') : '';
       if (bad2) { he.hidden = false; he.textContent = bad2; return; }
       commit('Headcount plan assumptions updated', function () { var hc = db.headcount; hc.rates = { SI: rSI, HR: rHR }; hc.holiday = hol; hc.holidayMonth = hm >= 1 && hm <= 12 ? hm : 6; hc.other = oth; });
-      toast('Saved');
+      toast(tx('Saved'));
       return;
     }
     if (f.id === 'accAdd') {
       e.preventDefault();
       var code = $('aaCode').value.trim(), nm = $('aaName').value.trim(), ln = $('aaLine').value;
-      if (!code || /[\s;,]/.test(code)) return toast('Type an account code without spaces.');
-      if (db.accounts.some(function (a) { return a.code === code; })) return toast('Account ' + code + ' already exists.');
-      if (!E.LINE[ln]) return toast('Choose a P&L line.');
-      commit('Added account ' + code, function () { db.accounts.push({ code: code, name: nm || 'Account ' + code, line: ln, kind: E.LINE[ln].type }); });
-      toast('Account ' + code + ' added');
+      if (!code || /[\s;,]/.test(code)) return toast(tx('Type an account code without spaces.'));
+      if (db.accounts.some(function (a) { return a.code === code; })) return toast(tx('Account {code} already exists.', { code: code }));
+      if (!E.LINE[ln]) return toast(tx('Choose a P&L line.'));
+      commit('Added account ' + code, function () { db.accounts.push({ code: code, name: nm || tx('Account {code}', { code: code }), line: ln, kind: E.LINE[ln].type }); });
+      toast(tx('Account {code} added', { code: code }));
     }
   });
   /** One field of a headcount row changed: check it, save it, and keep the focus where it was. */
@@ -1894,13 +1968,13 @@
     if (!r) return;
     if (f === 'role') val = t.value.trim();
     else if (f === 'country') val = t.value === 'HR' ? 'HR' : 'SI';
-    else if (f === 'fte') { val = pnum(t.value); if (!(val >= 0 && val <= 999)) { t.setAttribute('aria-invalid', 'true'); return toast('FTE is a number like 1, 0,5 or 12.'); } }
-    else if (f === 'gross' || f === 'allow') { val = E.parseInput(t.value); if (isNaN(val) || val < 0) { t.setAttribute('aria-invalid', 'true'); return toast('Type an amount in euros, for example 2.150 or 2150,50.'); } }
+    else if (f === 'fte') { val = pnum(t.value); if (!(val >= 0 && val <= 999)) { t.setAttribute('aria-invalid', 'true'); return toast(tx('FTE is a number like 1, 0,5 or 12.')); } }
+    else if (f === 'gross' || f === 'allow') { val = E.parseInput(t.value); if (isNaN(val) || val < 0) { t.setAttribute('aria-invalid', 'true'); return toast(tx('Type an amount in euros, for example 2.150 or 2150,50.')); } }
     else if (f === 'from' || f === 'to') { val = t.value; if (val && !/^\d{4}-\d{2}$/.test(val)) return; }
     else return;
     t.removeAttribute('aria-invalid');
-    if (f === 'to' && val && r.from && val < r.from) { t.value = r.to; return toast('“Until” cannot be before “From”.'); }
-    if (f === 'from' && val && r.to && r.to < val) { t.value = r.from; return toast('“From” cannot be after “Until”.'); }
+    if (f === 'to' && val && r.from && val < r.from) { t.value = r.to; return toast(tx('“Until” cannot be before “From”.')); }
+    if (f === 'from' && val && r.to && r.to < val) { t.value = r.from; return toast(tx('“From” cannot be after “Until”.')); }
     if (r[f] === val) return;
     // render after the focus has moved on (Tab), so it stays on the next field
     commit(f === 'role' ? '' : 'Headcount plan: ' + (r.role || 'a row') + ' changed', function () { r[f] = val; }, { noRender: true });
@@ -1920,6 +1994,7 @@
   document.addEventListener('change', function (e) {
     var t = e.target, ch = t.getAttribute && t.getAttribute('data-ch'), v = t.getAttribute && t.getAttribute('data-v');
     if (t.id === 'csvPick' && t.files && t.files[0]) { readFile(t.files[0]); return; }
+    if (t.id === 'uiLang') { setLang(t.value); return; }
     if (t.hasAttribute && t.hasAttribute('data-pm')) { phoneCommit(t); return; }
     if (t.hasAttribute && t.hasAttribute('data-hc')) { hcField(t); return; }
     if (!ch) return;
@@ -1943,7 +2018,7 @@
       commit(ch === 'accline' ? 'Account ' + a.code + ' now feeds ' + E.nameOf(val) : ch === 'acckind' ? 'Account ' + a.code + ' is now ' + (val === 'income' ? 'an income' : 'a cost') + ' account' : '', function () {
         if (ch === 'accname') a.name = val || a.name; else if (ch === 'acckind') a.kind = val; else a.line = val;
       });
-      toast('Saved');
+      toast(tx('Saved'));
     }
   });
   document.addEventListener('dragover', function (e) { var z = e.target.closest && e.target.closest('#dropZone'); if (z) { e.preventDefault(); z.classList.add('over'); } });
@@ -1973,6 +2048,7 @@
   });
 
   // ── boot ─────────────────────────────────────────────────────────────────
+  shellText();
   var fresh = false;
   kvGet().then(function (v) {
     // demo data nobody touched, made before the Slovenian chart: start it again (headcount, translated comments)
@@ -1985,11 +2061,11 @@
     db = v; ensureSchema();
     if (X.extend(db, TODAY)) save(); // demo months that closed since the data was made; not a change by the person
     render();
-    if (fresh) setTimeout(function () { toast('Demo data generated: ' + db.company.name + ', ' + db.year); }, 300);
+    if (fresh) setTimeout(function () { toast(tx('Demo data generated: {company}, {year}', { company: db.company.name, year: db.year })); }, 300);
     if (window.StratumSync) {
       try {
         sync = StratumSync.attach({
-          app: 'budget', label: 'Budget vs actual', getSnapshot: function () { return Promise.resolve(db); }, applySnapshot: applyCloud,
+          app: 'budget', label: tx('Budget vs actual'), getSnapshot: function () { return Promise.resolve(db); }, applySnapshot: applyCloud,
           isEmpty: function () { return Promise.resolve(!!(db && db.demo && !db.edited)); }
         });
         if (parseRoute().name === 'settings' && $('syncPanel')) syncPanelOff = sync.mountPanel($('syncPanel'));

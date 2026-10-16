@@ -35,12 +35,34 @@
 .ws-add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,150px) auto;gap:10px;align-items:end;margin-top:14px}
 .ws-act .what small{overflow-wrap:anywhere}
 .ws-ro-note{margin-bottom:16px}
+/* members: invitation state and actions; owners' cards (Cloudflare Access steps, danger zone); the invitation dialog */
+.ws-mst{white-space:nowrap}
+.ws-mst small{display:block;margin-top:3px;font-size:11.5px;color:var(--ink3)}
+.ws-mst .badge.good{background:var(--good-bg);color:var(--good)}
+.ws-mact{white-space:nowrap}
+.ws-mact .btn{margin:2px 0}
+.ws-owner{margin-top:0}
+.ws-steps{margin:10px 0 12px;padding-left:20px;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+.ws-steps li{margin:2px 0;overflow-wrap:anywhere}
+.ws-access p,.ws-danger p{margin:0 0 10px;font-size:14px;color:var(--ink2)}
+.ws-danger{border-color:var(--bad-bg)}
+.ws-danger h2{color:var(--bad)}
+.ws-inv-text{width:100%;min-height:200px;font:13px/1.45 var(--mono);white-space:pre-wrap;resize:vertical}
+.ws-inv-btns{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.ws-inv-btns .btn{min-height:44px}
+.ws-inv-access{margin-top:8px;border-top:1px solid var(--hair);padding-top:10px}
+.ws-inv-access summary{cursor:pointer;font-weight:500;min-height:32px;display:flex;align-items:center;list-style:none}
+.ws-inv-access summary::-webkit-details-marker{display:none}
+.ws-inv-access summary::before{content:"";flex:none;width:6px;height:6px;margin:0 12px 0 2px;border-right:1.6px solid var(--ink3);border-bottom:1.6px solid var(--ink3);transform:rotate(-45deg);transition:transform .15s}
+.ws-inv-access[open] summary::before{transform:rotate(45deg)}
 @media (max-width:640px){
   .ws-add{grid-template-columns:minmax(0,1fr)}
   .ws-members .hide-s,.ws-members thead{display:none}
   .ws-members tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 0;border-bottom:1px solid var(--hair)}
   .ws-members td{padding:0!important;border:0!important}
   .ws-members td.name{grid-column:1/-1}
+  .ws-mact{grid-column:1/-1;white-space:normal}
+  .ws-inv-btns .btn{flex:1 1 100%;justify-content:center}
 }
 /* viewers: the controls that change data are not offered (the app and the Worker refuse such changes anyway) */
 .ws-ro [data-act="out"],.ws-ro [data-act="log"],.ws-ro [data-act="promise"],.ws-ro [data-act="plannew"],.ws-ro [data-act="hold"],

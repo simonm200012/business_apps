@@ -2184,6 +2184,7 @@
   /** what the workspace code needs from the app */
   var wsHooks = {
     tx: tx, esc: esc, toast: toast, modal: modal, confirm: confirmBox, ic: ic, head: head, eb: eb, dt: dt, X: X, E: E,
+    download: download, copy: copyText, lang: function () { return LANG; },
     today: function () { return TODAY; }, getDb: function () { return db; }, valid: valid, render: function () { render(); },
     /** not now: a dialog is open, a save is pending or the person is typing in a field */
     busy: function () {

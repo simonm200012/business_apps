@@ -84,5 +84,24 @@
     });
     return '﻿' + [head.join(';')].concat(rows).join('\r\n') + '\r\n';
   }
-  return { STATUS: STATUS, STATUS_NAME: STATUS_NAME, clean: clean, cleanList: cleanList, open: open, due: due, addDays: addDays, sort: sort, needs: needs, slDate: slDate, csv: csv };
+  var PRODUCT = { datacheck: 'Data health check', collections: 'Collections', cashflow: 'Cash forecast', budget: 'Budget vs actual', einvoice: 'E-invoices', custom: 'Custom app', other: 'Other' };
+  /** A lead from a public-site contact message (GET /api/leads; same mapping as toAtlasLead in public/worker.js), due for
+   *  follow-up on the day it came in, so it shows under "Due today" and in "Needs you today". null when unusable. */
+  function fromWebsite(rec) {
+    if (!rec || typeof rec !== 'object' || !rec.id) return null;
+    var at = str(rec.receivedAt, 40), day = DATE.test(at.slice(0, 10)) ? at.slice(0, 10) : '';
+    var contact = [str(rec.name, 100), str(rec.email, 254), str(rec.phone, 40)].filter(Boolean).join(' · ');
+    var head = 'Website enquiry' + (rec.product ? ' · ' + (PRODUCT[rec.product] || str(rec.product, 30)) : '') + (rec.lang ? ' · ' + str(rec.lang, 5).toUpperCase() : '') + (day ? ' · ' + slDate(day) : '');
+    return clean({ id: 'w' + String(rec.id).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 38), company: str(rec.company, 120) || str(rec.name, 120), contact: contact,
+      channel: 'website', status: 'new', next: day, notes: head + '\n' + (typeof rec.message === 'string' ? rec.message : ''), created: at, updated: at }, at);
+  }
+  /** Adds the website messages that aren't in the list yet (by id) → how many were added. A lead deleted here stays deleted:
+   *  only messages after the last imported key are fetched again. */
+  function addWebsite(list, records) {
+    var have = {}, n = 0;
+    list.forEach(function (l) { have[l.id] = 1; });
+    (Array.isArray(records) ? records : []).forEach(function (r) { var l = fromWebsite(r); if (l && !have[l.id]) { have[l.id] = 1; list.push(l); n++; } });
+    return n;
+  }
+  return { STATUS: STATUS, STATUS_NAME: STATUS_NAME, clean: clean, fromWebsite: fromWebsite, addWebsite: addWebsite, cleanList: cleanList, open: open, due: due, addDays: addDays, sort: sort, needs: needs, slDate: slDate, csv: csv };
 });

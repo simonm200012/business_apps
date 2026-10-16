@@ -12,7 +12,11 @@
   },
   // Private bucket for the apps' cloud copies (one folder per signed-in person), EU jurisdiction (data stays in the EU).
   // Moved from "business-apps-sync" (no jurisdiction) on 16 Oct 2026; that bucket is kept as a backup for now.
-  "r2_buckets": [{ "binding": "SYNC", "bucket_name": "business-apps-sync-eu", "jurisdiction": "eu" }],
+  "r2_buckets": [
+    { "binding": "SYNC", "bucket_name": "business-apps-sync-eu", "jurisdiction": "eu" },
+    // Messages from the public site's contact form (public/worker.js writes them); read here by GET /api/leads, owner only.
+    { "binding": "LEADS", "bucket_name": "clearfigure-leads", "jurisdiction": "eu" }
+  ],
   "vars": {
     // Cloudflare Access application for business-apps.simonm2000.workers.dev (policy "business-apps owner").
     "ACCESS_TEAM_DOMAIN": "twilight-forest-055c.cloudflareaccess.com",

@@ -90,8 +90,37 @@ Several people of one customer company work in the same Collections data, with r
   30 s. New page **Team** (`#/team`): members (owners manage), Activity, sync status. Viewers get a read-only screen.
   The timeline shows "Recorded by <e-mail>".
 - **Access:** members must also be allowed by the Cloudflare Access policy of the site (an e-mail or domain rule).
+  The Team page shows owners the steps (Zero Trust → Access → Applications → business-apps → Policies → edit the
+  policy → Include → Emails → add the e-mail → Save) and a button to https://one.dash.cloudflare.com/.
+- **Invitations (16 Oct 2026):** no mail service (none on the free plan without a domain), so the owner's browser makes
+  the invitation: after "Add" and from "Send invitation" on each member row, a dialog with the text in SL/HR/EN (who
+  invites, workspace, role and what it allows, the link `<origin>/collections/?ws=<id>`, sign-in with e-mail + one-time
+  code), "E-mail invitation (.eml)" (outbox.js `buildEml`, `X-Unsent: 1`, no From, so Outlook opens a new message),
+  "Open in my mail app" (mailto:) and "Copy invitation text". Each of them calls `POST /api/ws/:id/invite { email }`
+  (owner): the Worker sets `invitedAt`/`invitedBy` on that member (a `ws.invite` activity entry, at most one per 10 min).
+  `joinedAt` is set by the Worker on the member's first request to that workspace (`ws.join` entry). The members table
+  shows "Joined <date>" / "Invited <date>" / "Not invited yet".
+- **Links:** `?ws=<id>` in the Collections URL (taken out of the address bar at once) switches a member to that
+  workspace (the seed dialog for an owner of one not set up yet); anyone else, and for an id that does not exist, gets
+  the same "You don't have access to this workspace" dialog.
+- **Deleting (16 Oct 2026):** Team page → Danger zone → "Delete workspace…" (owners), confirmed by typing the name.
+  `DELETE /api/ws/:id { name }` (owner; editors, viewers and others get the plain 404). The Worker first marks
+  `meta.deleting` (from then on members get **410** `{ deleted, deletedBy, deletedAt }` on every endpoint, others 404),
+  cleans the members' `wsu/` lists, then copies every object to `ws-deleted/<id>-<yyyymmddThhmmssZ>/` and deletes the
+  original, at most 40 R2 calls per request (202 `{ done: false }` → the browser repeats; a retry resumes), meta.json
+  last, plus a tombstone `ws-deleted/<id>.json` (name, members, who/when) so members keep getting 410. A deletion that
+  stopped half way (tab closed) is finished by the owner's device the next time it opens the workspace (410 with
+  `unfinished`). The deleting device then clears that workspace's IndexedDB data and queue and goes back to Personal
+  copy; other members' devices do the same on their next poll, first offering "Download my copy as JSON" if they had
+  unsent changes. **Deleted workspaces are kept 30 days**, then removed by an R2 lifecycle rule — **not set up yet**;
+  Simon runs once:
+  `npx wrangler r2 bucket lifecycle add business-apps-sync-eu ws-deleted-30-days ws-deleted/ --expire-days 30 -J eu`
+  (check with `npx wrangler r2 bucket lifecycle list business-apps-sync-eu -J eu`). No Restore button: within the 30
+  days, copy `ws-deleted/<id>-<time>/…` back to `ws/<id>/…` (meta.json without `deleting`), re-add the id to each
+  member's `wsu/` file and delete the tombstone.
 - **Local test:** `wrangler dev` with `DEV_BYPASS=1`: on localhost the cookie `stratum_dev_as=<e-mail>` acts as that
-  person in `/api/ws` (never on any other host). Tests: `node tools/tests/collections-workspaces.test.js`.
+  person in `/api/ws` (never on any other host). Tests: `node tools/tests/collections-workspaces.test.js` and
+  `node tools/tests/collections-workspaces-admin.test.js` (invitations, joinedAt, links, deleting).
 
 ## Rename to Clearfigure (14 Oct 2026)
 

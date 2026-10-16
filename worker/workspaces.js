@@ -5,8 +5,14 @@
 //
 //   GET   /api/ws                        { me, canCreate, workspaces: [{ id, name, app, role, members, ready }] }
 //   POST  /api/ws                        { name, app: 'collections' } → the new workspace (only OWNER_EMAIL)
-//   GET   /api/ws/:id                    { id, name, app, role, members: [{ email, role, addedBy, addedAt }], ready, head, snap }
+//   GET   /api/ws/:id                    { id, name, app, role, siteOwner, members: [{ email, role, addedBy, addedAt, invitedAt,
+//                                        invitedBy, joinedAt }], ready, head, snap }
 //   PATCH /api/ws/:id                    { name }                                   (owner)
+//   DELETE /api/ws/:id                   { name } (the workspace's name, typed by the owner) → 202 { done: false, moved } while
+//                                        objects are still being moved (call again: it resumes), 200 { done: true, deletedAt }
+//                                        (owner; anyone else gets the same 404 as for a workspace that does not exist)
+//   POST  /api/ws/:id/invite             { email } → the workspace; records that an owner sent that member an invitation
+//                                        (invitedAt, invitedBy). The text itself is made in the browser (ws-sync.js).
 //   POST  /api/ws/:id/members            { email, role: 'owner'|'editor'|'viewer'|'remove' }  add, change, remove (owner;
 //                                        anyone may remove themselves); the last owner can never be removed or demoted
 //   GET   /api/ws/:id/ops?since=N        { ops: [{ seq, id, by, at, type, p }], head, more }  (members)
@@ -24,6 +30,21 @@
 //   ws/<id>/<app>/seed.json              the first state (the owner's choice at creation), kept for good
 //   ws/<id>/<app>/snap.json              the newest compacted state; customMetadata { seq, by, at }
 //   wsu/<sha256 of the e-mail>.json      { ids } the workspaces an e-mail was added to (a hint: meta.json decides)
+//   ws-deleted/<id>-<time>/…             a deleted workspace: everything that was under ws/<id>/, same relative paths
+//   ws-deleted/<id>.json                 its tombstone { id, name, deletedAt, deletedBy, to, members: [e-mails], done }, so
+//                                        members get 410 "deleted" (and switch back) while others still get 404
+//
+// Joining: the first request a member makes to a workspace sets their joinedAt (once; a ws.join entry in the activity).
+// Invitations are not sent by the server (there is no mail service): the owner's browser makes an .eml / mailto / text,
+// and POST …/invite records invitedAt.
+//
+// Deleting (owner only) never leaves a half-deleted workspace usable: meta.json first gets `deleting`, from then on every
+// request answers 410 to members (404 to everyone else); then the members' wsu/ lists are cleaned, every object is copied
+// to ws-deleted/<id>-<time>/ and the original deleted, a few at a time (MOVE_BUDGET R2 calls per request, so it stays far
+// inside the Free plan's subrequest limits; the browser repeats the DELETE until done), and meta.json moves last.
+// Deleted workspaces are KEPT 30 DAYS, then removed for good by an R2 lifecycle rule on the prefix ws-deleted/ (see
+// HANDOFF.md, "Team workspaces"; the rule counts from when the copies were written, i.e. the deletion). No restore
+// button: within the 30 days the site owner can copy a ws-deleted/<id>-<time>/ folder back to ws/<id>/ by hand.
 //
 // Membership events (created, member added/changed/removed, renamed, snapshot saved) are ops of type ws.* in the same
 // log, so the activity list shows who did what in one order. Ops and batches have size limits; ids are checked.
@@ -40,6 +61,8 @@ const OP_TYPES = ['rec.put', 'rec.del', 'sub.add', 'sub.del', 'doc.put', 'set.ad
 const CHUNK = 100, KEEP_IDS = 3000, MAX_PULL = 500, MAX_MEMBERS = 50;
 const MAX_OP = 32 * 1024, MAX_BATCH_OPS = 200, MAX_BATCH = 512 * 1024, MAX_STATE = 60 * 1024 * 1024;
 const SNAP_EVERY = 50; // a new compacted state only after at least this many ops
+const MOVE_BUDGET = 40; // R2 calls one DELETE request may spend moving a workspace (it resumes on the next request)
+const INVITE_QUIET_MS = 10 * 60e3; // a second "invited" within this time updates invitedAt without a new activity entry
 const NO_STORE = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' };
 
 const json = (body, status = 200, extra) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...NO_STORE, ...(extra || {}) } });
@@ -48,7 +71,7 @@ const hex = (buf) => Array.from(new Uint8Array(buf), (b) => b.toString(16).padSt
 const pad = (k) => String(k).padStart(9, '0');
 const keys = (id, app) => {
   const b = 'ws/' + id + '/';
-  return { meta: b + 'meta.json', log: b + app + '/log.json', chunk: (k) => b + app + '/ops/' + pad(k) + '.json', seed: b + app + '/seed.json', snap: b + app + '/snap.json' };
+  return { prefix: b, tomb: 'ws-deleted/' + id + '.json', meta: b + 'meta.json', log: b + app + '/log.json', chunk: (k) => b + app + '/ops/' + pad(k) + '.json', seed: b + app + '/seed.json', snap: b + app + '/snap.json' };
 };
 async function userKey(email) {
   return 'wsu/' + hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('stratum-ws:' + email))).slice(0, 40) + '.json';
@@ -84,8 +107,11 @@ const roleOf = (meta, email) => { const m = meta && Array.isArray(meta.members) 
 const owners = (meta) => meta.members.filter((m) => m.role === 'owner').length;
 function publicMeta(meta, role, log) {
   return { id: meta.id, name: meta.name, app: meta.app, role, ready: !!meta.ready, createdAt: meta.createdAt,
-    members: meta.members.map((m) => ({ email: m.email, role: m.role, addedBy: m.addedBy, addedAt: m.addedAt })), ...(log || {}) };
+    members: meta.members.map((m) => ({ email: m.email, role: m.role, addedBy: m.addedBy, addedAt: m.addedAt,
+      invitedAt: m.invitedAt || null, invitedBy: m.invitedBy || null, joinedAt: m.joinedAt || null })), ...(log || {}) };
 }
+/** a deleted (or being deleted) workspace: members are told so (410), so their devices switch back; nobody else learns it existed */
+const deletedFor = (d, extra) => json({ error: 'This workspace was deleted.', deleted: true, deletedAt: d.deletedAt || d.at || null, deletedBy: d.deletedBy || d.by || null, ...(extra || {}) }, 410);
 function randomId() {
   const b = crypto.getRandomValues(new Uint8Array(10));
   return 'w-' + Array.from(b, (x) => (x % 36).toString(36)).join('');
@@ -97,7 +123,7 @@ export async function workspaces(request, env, url) {
   if (who instanceof Response) return who;
   const me = who.email, method = request.method;
   if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Stratum-Apps') !== '1' && request.headers.get('X-Tokovi-Apps') !== '1' /* 16 Oct 2026 build; drop after 2026-12-31 */) return json({ error: 'Missing X-Stratum-Apps header.' }, 400);
-  const m = url.pathname.match(/^\/api\/ws(?:\/([^/]+)(?:\/(members|ops|snapshot|activity))?)?\/?$/);
+  const m = url.pathname.match(/^\/api\/ws(?:\/([^/]+)(?:\/(members|invite|ops|snapshot|activity))?)?\/?$/);
   if (!m) return notFound();
   const id = m[1], sub = m[2];
   if (!id) {
@@ -107,17 +133,35 @@ export async function workspaces(request, env, url) {
   }
   if (!WSID.test(id)) return notFound();
   const metaKey = keys(id, 'x').meta;
-  const { obj: metaObj, val: meta } = await readJson(env, metaKey);
+  let { obj: metaObj, val: meta } = await readJson(env, metaKey);
   const role = roleOf(meta, me);
-  if (!meta || !role) return notFound(); // a workspace you are not in looks exactly like one that does not exist
+  if (!meta) { // gone: a member of a deleted workspace is told (410); anyone else gets the plain 404
+    const { val: tomb } = await readJson(env, keys(id, 'x').tomb);
+    return tomb && Array.isArray(tomb.members) && tomb.members.includes(me) ? deletedFor(tomb) : notFound();
+  }
+  if (!role) return notFound(); // a workspace you are not in looks exactly like one that does not exist
   const K = keys(id, meta.app);
+  if (meta.deleting) {
+    if (method === 'DELETE' && role === 'owner') return remove(request, env, K, metaKey, metaObj, meta, me);
+    // an owner whose deletion stopped half way (tab closed) is told so: their device finishes it (DELETE again)
+    return deletedFor(meta.deleting, role === 'owner' ? { unfinished: true, name: meta.name } : null);
+  }
   const canWrite = role === 'owner' || role === 'editor';
+  const mine = meta.members.find((x) => x.email === me);
+  if (!mine.joinedAt) { // the first time this member's sign-in reaches this workspace
+    const joined = await markJoined(env, K, metaKey, metaObj, meta, me);
+    if (joined) { metaObj = joined.obj; meta = joined.meta; }
+  }
 
   if (!sub) {
     if (method === 'GET') {
       const [head, snap] = await Promise.all([env.SYNC.head(K.log), env.SYNC.head(K.snap)]);
       const h = logMeta(head);
-      return json(publicMeta(meta, role, { head: h.head, snap: snap ? { seq: +snap.customMetadata.seq || 0, at: snap.customMetadata.at || null, size: snap.size } : null }));
+      return json({ ...publicMeta(meta, role, { head: h.head, snap: snap ? { seq: +snap.customMetadata.seq || 0, at: snap.customMetadata.at || null, size: snap.size } : null }), siteOwner: me === normEmail(env.OWNER_EMAIL) });
+    }
+    if (method === 'DELETE') {
+      if (role !== 'owner') return notFound(); // editors and viewers: the same answer as for a workspace that does not exist
+      return remove(request, env, K, metaKey, metaObj, meta, me);
     }
     if (method === 'PATCH') {
       if (role !== 'owner') return json({ error: 'Only an owner of this workspace can rename it.' }, 403);
@@ -134,6 +178,11 @@ export async function workspaces(request, env, url) {
   if (sub === 'members') {
     if (method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
     return members(request, env, K, metaKey, metaObj, meta, me, role);
+  }
+  if (sub === 'invite') {
+    if (method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
+    if (role !== 'owner') return json({ error: 'Only an owner of this workspace can invite people.' }, 403);
+    return invited(request, env, K, metaKey, metaObj, meta, me);
   }
   if (sub === 'ops') {
     if (method === 'GET') return pull(env, K, url);
@@ -178,7 +227,7 @@ async function listMine(env, me) {
   for (const id of ids) {
     const { val: meta } = await readJson(env, keys(id, 'x').meta);
     const role = roleOf(meta, me);
-    if (role) out.push({ id, name: meta.name, app: meta.app, role, members: meta.members.length, ready: !!meta.ready });
+    if (role && !meta.deleting) out.push({ id, name: meta.name, app: meta.app, role, members: meta.members.length, ready: !!meta.ready });
   }
   return json({ me, canCreate: me === owner, workspaces: out });
 }
@@ -203,7 +252,7 @@ async function create(request, env, me) {
   for (let i = 0; i < 5 && !id; i++) { const c = randomId(); if (!(await env.SYNC.head(keys(c, app).meta))) id = c; }
   if (!id) return json({ error: 'Something went wrong on the server. Try again.' }, 500);
   const K = keys(id, app), at = new Date().toISOString();
-  const meta = { v: 1, id, name, app, createdAt: at, createdBy: me, ready: false, members: [{ email: me, role: 'owner', addedBy: me, addedAt: at }] };
+  const meta = { v: 1, id, name, app, createdAt: at, createdBy: me, ready: false, members: [{ email: me, role: 'owner', addedBy: me, addedAt: at, joinedAt: at }] };
   const first = { seq: 1, id: 'ws-create-' + id.slice(2), by: me, at, type: 'ws.create', p: { name } };
   await env.SYNC.put(K.log, JSON.stringify({ v: 1, first: 1, head: 1, ops: [first], ids: [first.id] }), { httpMetadata: { contentType: 'application/json' }, customMetadata: { head: '1', first: '1' } });
   await env.SYNC.put(K.meta, JSON.stringify(meta), { httpMetadata: { contentType: 'application/json' } });
@@ -246,6 +295,95 @@ async function members(request, env, K, metaKey, metaObj, meta, me, role) {
     if (!cur || roleOf(cur, me) !== role) return json({ error: 'The workspace was changed at the same time. Reload and try again.' }, 409);
   }
   return json({ error: 'The workspace was changed at the same time. Try again.' }, 409);
+}
+
+// ── joining and invitations ───────────────────────────────────────────────────────────────────────────────────────
+const JSON_TYPE = { contentType: 'application/json' };
+/** the member's first request to this workspace: joinedAt, once (a lost race just tries again on the next request) */
+async function markJoined(env, K, metaKey, metaObj, meta, me) {
+  const at = new Date().toISOString();
+  const next = { ...meta, members: meta.members.map((x) => (x.email === me ? { ...x, joinedAt: at } : x)) };
+  const put = await env.SYNC.put(metaKey, JSON.stringify(next), { onlyIf: { etagMatches: metaObj.etag }, httpMetadata: JSON_TYPE });
+  if (put === null) return null;
+  try { await append(env, K, [{ type: 'ws.join', p: { email: me } }], me); } catch { /* no log: joinedAt alone is enough */ }
+  return { obj: put, meta: next };
+}
+/** an owner sent (downloaded, opened or copied) an invitation for a member: invitedAt, invitedBy */
+async function invited(request, env, K, metaKey, metaObj, meta, me) {
+  const body = await smallJson(request, 4096);
+  const email = normEmail(body && body.email);
+  if (!validEmail(email)) return json({ error: 'Enter a valid e-mail address.' }, 400);
+  let cur = meta, curObj = metaObj;
+  for (let i = 0; i < 5; i++) {
+    const at = cur.members.findIndex((x) => x.email === email);
+    if (at < 0) return json({ error: 'That person is not a member of this workspace.' }, 404);
+    const now = new Date(), prev = cur.members[at].invitedAt;
+    const quiet = !!prev && now - new Date(prev) < INVITE_QUIET_MS; // the .eml and then "Copy": one entry in the activity
+    const list = cur.members.slice();
+    list[at] = { ...list[at], invitedAt: now.toISOString(), invitedBy: me };
+    const next = { ...cur, members: list };
+    if (await env.SYNC.put(metaKey, JSON.stringify(next), { onlyIf: { etagMatches: curObj.etag }, httpMetadata: JSON_TYPE }) !== null) {
+      if (!quiet) await append(env, K, [{ type: 'ws.invite', p: { email } }], me);
+      return json(publicMeta(next, 'owner'));
+    }
+    const again = await readJson(env, metaKey);
+    cur = again.val; curObj = again.obj;
+    if (!cur || cur.deleting || roleOf(cur, me) !== 'owner') return json({ error: 'The workspace was changed at the same time. Reload and try again.' }, 409);
+  }
+  return json({ error: 'The workspace was changed at the same time. Try again.' }, 409);
+}
+
+// ── deleting a workspace (owner) ──────────────────────────────────────────────────────────────────────────────────
+// Kept 30 days under ws-deleted/<id>-<time>/ (R2 lifecycle rule on ws-deleted/, see HANDOFF.md), then gone for good.
+// Each request spends at most MOVE_BUDGET R2 calls; 202 { done: false } means "call again", and a retry after a
+// failure simply carries on (copies are overwritten, deletes of missing keys are harmless).
+async function remove(request, env, K, metaKey, metaObj, meta, me) {
+  const body = await smallJson(request, 4096);
+  if (cleanName(body && body.name) !== meta.name) return json({ error: 'Type the name of the workspace exactly to confirm.' }, 400);
+  let budget = MOVE_BUDGET, moved = 0, d = meta.deleting;
+  if (!d) { // 1. from now on every request answers 410 to members: nobody works on in a half-deleted workspace
+    const at = new Date().toISOString();
+    d = { at, by: me, to: 'ws-deleted/' + meta.id + '-' + at.replace(/[-:]/g, '').replace(/\.\d+/, '') + '/', unindexed: 0 };
+    const next = { ...meta, deleting: d };
+    const put = await env.SYNC.put(metaKey, JSON.stringify(next), { onlyIf: { etagMatches: metaObj.etag }, httpMetadata: JSON_TYPE });
+    if (put === null) return json({ error: 'The workspace was changed at the same time. Try again.' }, 409);
+    metaObj = put; meta = next; budget--;
+  }
+  // 2. the members' lists of workspaces (each about two R2 calls); progress is kept in meta.deleting.unindexed
+  let k = d.unindexed || 0;
+  const from = k;
+  while (k < meta.members.length && budget > 4) { await indexUser(env, meta.members[k].email, meta.id, false); k++; budget -= 2; }
+  if (k !== from) {
+    const next = { ...meta, deleting: { ...d, unindexed: k } };
+    const put = await env.SYNC.put(metaKey, JSON.stringify(next), { onlyIf: { etagMatches: metaObj.etag }, httpMetadata: JSON_TYPE });
+    budget--;
+    if (put !== null) { metaObj = put; meta = next; d = next.deleting; }
+  }
+  if (k < meta.members.length) return json({ done: false, moved }, 202);
+  // 3. every object: copy to ws-deleted/<id>-<time>/, then delete the original (meta.json stays until the end)
+  let cursor;
+  for (;;) {
+    if (budget < 5) return json({ done: false, moved }, 202);
+    const page = await env.SYNC.list({ prefix: K.prefix, limit: 50, cursor }); budget--;
+    const objs = page.objects.filter((o) => o.key !== metaKey);
+    const take = objs.slice(0, Math.max(0, Math.floor((budget - 4) / 2)));
+    const gone = [];
+    for (const o of take) {
+      const src = await env.SYNC.get(o.key); budget--;
+      if (src) { await env.SYNC.put(d.to + o.key.slice(K.prefix.length), await src.arrayBuffer(), { httpMetadata: src.httpMetadata, customMetadata: src.customMetadata }); budget--; }
+      gone.push(o.key);
+    }
+    if (gone.length) { await env.SYNC.delete(gone); budget--; moved += gone.length; }
+    if (take.length < objs.length) return json({ done: false, moved }, 202);
+    if (!page.truncated) break;
+    cursor = page.cursor;
+  }
+  // 4. the tombstone (members get 410 from now on, for the 30 days), the members list with it, and meta.json last
+  const tomb = { id: meta.id, name: meta.name, app: meta.app, deletedAt: d.at, deletedBy: d.by, to: d.to, members: meta.members.map((x) => x.email), done: true };
+  await env.SYNC.put(K.tomb, JSON.stringify(tomb), { httpMetadata: JSON_TYPE });
+  await env.SYNC.put(d.to + 'meta.json', JSON.stringify(meta), { httpMetadata: JSON_TYPE });
+  await env.SYNC.delete(metaKey);
+  return json({ done: true, moved, deletedAt: d.at, deletedBy: d.by });
 }
 
 // ── the operation log ─────────────────────────────────────────────────────────────────────────────────────────────
