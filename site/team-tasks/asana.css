@@ -1,0 +1,253 @@
+/* Team Tasks gets the Asana look (TT2), replacing the Linear one: clean white pages, a charcoal sidebar, coral
+   accents, a big plain title, underlined view tabs, sections with a chevron, tasks as rows with round check
+   circles and coloured project and label tags (the colour comes in as --pc on .tagc chips). Instrument Sans.
+   Loaded after style.css. Light is the main theme; dark is Asana's own dark mode. */
+
+:root{
+  --ground:#FFFFFF;--surface:#FFFFFF;--sunken:#F9F8F8;--fill:#F1F0EF;--line:#E0DEDD;--hair:#EDEAE9;
+  --ink:#1E1F21;--ink2:#6D6E6F;--ink3:#8B8A89;--inv:#1E1F21;--inv-ink:#FFFFFF;--inv-ink3:#A2A0A2;
+  --dash:#CFCBCB;--track:#EDEAE9;--shadow:0 1px 2px rgba(30,31,33,.06);
+  --pop-shadow:0 0 0 1px rgba(30,31,33,.06),0 12px 32px -8px rgba(30,31,33,.22);
+  --good:#2E7D5B;--good-bg:#E3F3EA;--bad:#C9372C;--bad-dot:#E8384F;--bad-bg:#FDECEC;
+  --accent:#F06A6A;--accent-ink:#C23B3B;--accent-tint:#FDE8E8;--focus:#4573D2;--danger:#D1394A;
+  --hover:#F9F8F8;--sel:#EDF1FC;--on-dot:#FFFFFF;
+  --st-backlog:#A2A0A2;--st-todo:#8B8A89;--st-progress:#E8A33D;--st-review:#4573D2;--st-done:#5DA283;--st-canceled:#A2A0A2;
+  --pr:#8B8A89;--urgent:#E8384F;--warn:#E8A33D;--active:#EDEAE9;
+  --coral:#F06A6A;--coral-hover:#E85A5A;--coral-ink:#FFFFFF;--check:#5DA283;
+  --side:#2E2E30;--side-ink:#F5F4F3;--side-ink2:#C3C1C1;--side-ink3:#A2A0A2;--side-hover:rgba(255,255,255,.07);--side-on:rgba(255,255,255,.15);--side-line:rgba(255,255,255,.1);
+  --sans:'Instrument Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Instrument Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html[data-stratum-mode="dark"]{
+  --ground:#1E1F21;--surface:#252628;--sunken:#2A2B2D;--fill:#323336;--line:#424244;--hair:#353638;
+  --ink:#F5F4F3;--ink2:#A2A0A2;--ink3:#8B8A89;--inv:#F5F4F3;--inv-ink:#1E1F21;--inv-ink3:#6D6E6F;
+  --dash:#565557;--track:#3A3B3D;--shadow:0 1px 2px rgba(0,0,0,.3);
+  --pop-shadow:0 0 0 1px rgba(255,255,255,.08),0 16px 40px -10px rgba(0,0,0,.7);
+  --good:#7CC4A0;--good-bg:#1E3A2E;--bad:#FF8A80;--bad-dot:#F26B6B;--bad-bg:#3D2324;
+  --accent:#F06A6A;--accent-ink:#FF9F9F;--accent-tint:#40292A;--focus:#6B93E6;--danger:#F26B6B;
+  --hover:#2A2B2D;--sel:#283553;--on-dot:#1E1F21;
+  --st-backlog:#6D6E6F;--st-todo:#A2A0A2;--st-progress:#F1BD6C;--st-review:#6B93E6;--st-done:#5DA283;--st-canceled:#6D6E6F;
+  --pr:#A2A0A2;--urgent:#F26B6B;--warn:#F1BD6C;--active:#3A3B3D;
+  --side:#2E2E30;--side-ink:#F5F4F3;--side-ink2:#C3C1C1;--side-ink3:#A2A0A2;
+}
+
+body{font:400 14.5px/1.5 var(--sans);letter-spacing:0}
+::selection{background:#DCE6FA}
+kbd{font:500 11px/1 var(--sans);border-radius:4px}
+.mono-l,.nav-label,.prop-l,.table-head,.opt-sec,.slabel,.flabel,.sec-l,.pop-form h4,.keys h4{font:600 12.5px/1.4 var(--sans);letter-spacing:0;text-transform:none;color:var(--ink2)}
+.mono-s,.ident,.gcount,.when,.subcount,.ibx-time,.side-meta,.modal-head,.composer-foot .mono-s,.demo-note,.legend,.chart text{font-family:var(--sans)}
+
+/* ── Sidebar: Asana's charcoal ────────────────────────────────────────────── */
+.side{background:var(--side);color:var(--side-ink);padding:18px 12px 18px 12px;gap:10px}
+.brand{padding:2px 8px 4px}
+.brand-tile{width:34px;height:34px;border-radius:10px;background:var(--coral);color:#fff}
+.brand-text b{font-weight:600;font-size:15.5px;color:var(--side-ink)}
+.brand-text small{font:400 12px/1.4 var(--sans);color:var(--side-ink3)}
+.me-card{background:transparent;border:1px solid var(--side-line);box-shadow:none;border-radius:10px;padding:9px 10px;color:var(--side-ink)}
+.me-card:hover{border-color:rgba(255,255,255,.22);background:var(--side-hover)}
+.me-card svg{color:var(--side-ink3)}
+.me-text b{font-weight:600;font-size:14px}
+.me-text small{font:400 12px/1.4 var(--sans);color:var(--side-ink3)}
+.nav{gap:1px;margin-top:4px}
+.nav-item{min-height:36px;padding:0 10px;border-radius:8px;color:var(--side-ink2);font-size:14px;font-weight:500}
+.nav-item:hover{background:var(--side-hover);color:var(--side-ink)}
+.nav-item.on{background:var(--side-on);color:var(--side-ink);box-shadow:none}
+.nav-item svg,.nav-item.on svg{color:inherit}
+.nav-item .count{font:400 12.5px/1 var(--sans);color:var(--side-ink3)}
+.nav-item .badge{background:var(--coral);color:#fff;font:600 11.5px/22px var(--sans)}
+.nav-item .tag{font:500 11.5px/1 var(--sans);background:rgba(255,255,255,.1);color:var(--side-ink2)}
+.nav-item .caret{color:var(--side-ink3)}
+.nav-label{color:var(--side-ink3);margin:14px 10px 2px;font-size:12.5px}
+.nav-sub{padding-left:14px}
+.nav-sub .nav-item{min-height:32px;font-size:13.5px}
+.team-ico{border-radius:6px}
+.demo-note{color:var(--side-ink3);font-size:12px;margin:0 10px}
+.side-foot{border-top:1px solid var(--side-line);padding-top:12px}
+
+/* ── Top line and page head ───────────────────────────────────────────────── */
+.page{padding:18px 40px 96px 36px}
+.topline{margin-bottom:26px}
+.searchbar{height:38px;width:min(520px,100%);border:1px solid transparent;background:var(--fill);color:var(--ink2);font-size:14px}
+.searchbar:hover{border-color:var(--line);background:var(--fill)}
+.searchbar kbd{background:var(--surface);color:var(--ink2)}
+.btn{height:36px;padding:0 14px;border-radius:8px;border-color:var(--line);font-size:14px;font-weight:500}
+.btn:hover{background:var(--hover);border-color:var(--dash)}
+.btn.primary{height:38px;padding:0 16px 0 12px;border-radius:8px;background:var(--coral);border-color:var(--coral);color:var(--coral-ink);font-size:14px;font-weight:600}
+.btn.primary:hover{background:var(--coral-hover);border-color:var(--coral-hover);opacity:1}
+.btn.primary svg{color:var(--coral-ink)}
+.btn.primary kbd{background:rgba(255,255,255,.25);color:#fff}
+.btn.sm{height:30px;border-radius:7px}
+.btn.primary.sm{height:32px}
+.btn.ghost:hover{background:var(--hover)}
+.round{border-color:var(--line)}
+.eyebrow{font:400 13px/1.4 var(--sans);color:var(--ink2);margin-bottom:8px}
+.eyebrow a{text-decoration:none;color:var(--ink2)}
+.eyebrow a:hover{color:var(--ink);text-decoration:underline}
+.title{font-size:clamp(28px,2.6vw,34px);font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.title .stop{display:none}
+.sub{margin:8px 0 0;font:400 13.5px/1.55 var(--sans);color:var(--ink2)}
+
+/* ── Toolbar: underlined view tabs, quiet buttons ─────────────────────────── */
+.toolbar{margin:20px 0 4px;gap:8px;border-bottom:1px solid var(--hair);padding-bottom:8px}
+.toolbar>nav.seg{background:none;padding:0;gap:22px;border-radius:0;align-self:stretch;margin-bottom:-9px}
+.toolbar>nav.seg .seg-i{height:42px;padding:0;border-radius:0;border-bottom:2px solid transparent;color:var(--ink2);font-size:14.5px;font-weight:500;box-shadow:none;background:none}
+.toolbar>nav.seg .seg-i:hover{color:var(--ink)}
+.toolbar>nav.seg .seg-i.on{color:var(--ink);font-weight:600;border-bottom-color:var(--ink);background:none;box-shadow:none}
+.toolbar .btn{border-color:transparent;background:none;color:var(--ink2)}
+.toolbar .btn:hover{background:var(--hover);color:var(--ink);border-color:transparent}
+.search-in{height:34px;border-radius:8px;border-color:var(--line);width:220px}
+.seg{border-radius:8px;background:var(--fill)}
+.seg-i{border-radius:6px;height:32px;font-size:14px}
+.seg-i.on{box-shadow:0 1px 2px rgba(30,31,33,.12)}
+.seg.icons .seg-i{width:34px}
+.chips-row{margin:10px 0 6px}
+.fchip{height:30px;border-radius:8px}
+.chip{border-radius:5px;height:22px;padding:0 7px;font-size:12px;font-weight:500}
+.chip.overdue{background:transparent;color:var(--bad);padding:0 2px}
+.chip.soon{background:transparent;color:#C2620E;padding:0 2px}
+html[data-stratum-mode="dark"] .chip.soon{color:#F1BD6C}
+/* coloured tags: a tinted pill with a little square in the project or label colour */
+.chip.tagc{background:color-mix(in srgb,var(--pc) 13%,var(--surface));color:color-mix(in srgb,var(--pc) 72%,var(--ink))}
+html[data-stratum-mode="dark"] .chip.tagc{background:color-mix(in srgb,var(--pc) 24%,var(--surface));color:color-mix(in srgb,var(--pc) 45%,#FFFFFF)}
+.chip.tagc .dot,.chip.tagc .proj-ico{display:none}
+.chip.tagc::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--pc);flex:none}
+.pill{border-radius:8px;height:34px}
+
+/* ── List: sections and task rows ─────────────────────────────────────────── */
+.groups{gap:6px}
+.gcard{background:none;border:0;border-radius:0;box-shadow:none}
+.ghead,.gcard.collapsed .ghead{position:sticky;top:0;height:46px;padding:0 6px 0 0;border:0;border-radius:0;background:var(--ground);gap:6px}
+.ghead .gt{width:28px;height:28px;border-radius:6px;color:var(--ink)}
+.ghead>.st-ico{display:none}
+.gname{font-size:15.5px;font-weight:600}
+.gcount{font-size:13.5px;color:var(--ink2);margin-left:2px}
+.rows{border-top:1px solid var(--hair)}
+.rows .row:last-child{border-radius:0;border-bottom:1px solid var(--hair)}
+.row{display:grid;grid-template-columns:24px minmax(0,1fr) auto auto auto auto;grid-template-areas:"ck title sub meta prio id";column-gap:10px;align-items:center;min-height:44px;padding:0 12px 0 26px;border-top:1px solid var(--hair);background:var(--ground)}
+.rows .row:first-child{border-top:0}
+.row:hover,.row.focus{background:var(--hover)}
+.row.sel{background:var(--sel)}
+.row.kfocus{box-shadow:inset 3px 0 0 var(--coral)}
+.row-check{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:18px}
+.row-check input{width:14px;height:14px}
+.row>.pbtn[data-pick="status"]{grid-area:ck}
+.row>.row-title{grid-area:title;font-size:14.5px;font-weight:400}
+.row>.subcount{grid-area:sub}
+.row>.row-meta{grid-area:meta;gap:6px}
+.row>.pbtn[data-pick="priority"]{grid-area:prio}
+.row>.ident{grid-area:id;width:auto;min-width:58px;text-align:right;font-size:12.5px;color:var(--ink3)}
+.row-title:hover>span:first-child{text-decoration:none}
+.row-title:hover{color:var(--ink)}
+.row-meta .when{font-size:12.5px;color:var(--ink3)}
+.subcount{font-size:12.5px}
+/* the round check circle (it opens the status menu); its colour shows the status, done is a green filled circle */
+.pbtn[data-pick="status"]{--ck:var(--st-todo);position:relative;width:24px;height:24px;border-radius:50%}
+.pbtn[data-pick="status"]>svg{display:none}
+.pbtn[data-pick="status"]::before,.pbtn[data-pick="status"]::after{content:"";grid-area:1/1;width:18px;height:18px;border-radius:50%}
+.pbtn[data-pick="status"]::before{box-shadow:inset 0 0 0 1.5px var(--ck);background:var(--ck-bg,transparent)}
+.pbtn[data-pick="status"]::after{background:var(--ck-mark,var(--ck));-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5.4 9.3l2.4 2.4 4.8-5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5.4 9.3l2.4 2.4 4.8-5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+.pbtn[data-pick="status"][aria-label="Status: Backlog"]::before{box-shadow:none;border:1.5px dashed var(--ck)}
+.pbtn[data-pick="status"][aria-label="Status: Backlog"]{--ck:var(--st-backlog)}
+.pbtn[data-pick="status"][aria-label="Status: In Progress"]{--ck:var(--st-progress)}
+.pbtn[data-pick="status"][aria-label="Status: In Review"]{--ck:var(--st-review)}
+.pbtn[data-pick="status"][aria-label="Status: Done"]{--ck:var(--check);--ck-bg:var(--check);--ck-mark:#FFFFFF}
+.pbtn[data-pick="status"][aria-label="Status: Canceled"]{--ck:var(--st-canceled);--ck-bg:var(--st-canceled);--ck-mark:#FFFFFF}
+.pbtn[data-pick="status"]:hover{background:none}
+.pbtn[data-pick="status"]:hover::before{box-shadow:inset 0 0 0 1.5px var(--check);background:color-mix(in srgb,var(--check) 14%,transparent)}
+.pbtn[data-pick="status"]:hover::after{background:var(--check)}
+.pbtn[data-pick="status"][aria-label="Status: Done"]:hover::before{background:var(--check)}
+.pbtn[data-pick="status"][aria-label="Status: Done"]:hover::after{background:#FFFFFF}
+.pbtn{border-radius:6px}
+.av{font-weight:600}
+.empty{border-radius:10px;border-color:var(--line)}
+
+/* ── Board ───────────────────────────────────────────────────────────────── */
+.col{background:var(--sunken);border-radius:12px;padding:6px}
+html[data-stratum-mode="dark"] .col{background:#232426}
+.col-head .gname{font-size:15px}
+.card{border-radius:10px;border-color:var(--hair);box-shadow:0 1px 2px rgba(30,31,33,.06);padding:12px}
+.card:hover,.card.focus{border-color:var(--dash);box-shadow:0 2px 8px -2px rgba(30,31,33,.14)}
+.card.kfocus{border-color:var(--coral);box-shadow:0 0 0 2px var(--accent-tint)}
+.card.sel{background:var(--sel);border-color:var(--focus)}
+.card-title{font-weight:400;font-size:14.5px}
+.card-title .pbtn[data-pick="status"]{width:24px;height:24px;margin:-2px 0 -2px -4px}
+.col-add{border-radius:8px;font-weight:400;color:var(--ink2)}
+.col-body.drop{outline-color:var(--coral);background:var(--accent-tint)}
+.board-wrap{margin-top:16px}
+
+/* ── Issue page ──────────────────────────────────────────────────────────── */
+textarea.issue-title{font-size:clamp(26px,2.6vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.2}
+textarea.issue-desc{font-size:15px}
+.parent-link{border-radius:8px}
+.side-card,.subs,.cmt,.composer,.table-card,.phead-card,.cyc-card,.scard,.ibx-list,.ibx-pane{border-radius:10px;border-color:var(--hair);box-shadow:none}
+.subs .row:first-child{border-radius:10px 10px 0 0}
+.prop-v{border-radius:8px;font-weight:400}
+.prop-l{font-size:12.5px;color:var(--ink2)}
+.cmt-body{font-size:14.5px}
+.composer:focus-within{border-color:var(--focus)}
+.bar i{background:var(--check)}
+.ring circle:last-child{stroke:var(--check)}
+
+/* ── Inbox, projects, cycles, settings ───────────────────────────────────── */
+.ibx-item.on{background:var(--sel)}
+.udot{background:var(--coral)}
+.ptile,.ctile{border-radius:10px}
+.ctile.on{background:var(--coral);color:#fff}
+.tagpill{font:500 12px/1 var(--sans);letter-spacing:0;text-transform:none;border-radius:5px}
+.tagpill.cur{background:var(--accent-tint);color:var(--accent-ink)}
+.kpi{border-radius:10px;background:var(--sunken)}
+.kpi b{font-weight:600;letter-spacing:-.02em}
+.kpi.inv{background:var(--coral);color:#fff}
+.kpi.inv .mono-l{color:rgba(255,255,255,.85)}
+.chart .done{stroke:var(--check)}
+.chart .donefill{fill:var(--check)}
+.l-done{background:var(--check)}
+.tin{border-radius:8px}
+.toggle:checked{background:var(--check)}
+.opt .chk{color:var(--coral)}
+.pop-form .props button.on{background:var(--ink);border-color:var(--ink);color:var(--ground)}
+
+/* ── Layers ──────────────────────────────────────────────────────────────── */
+.pop,.palette,.modal,.dialog{border-radius:12px;border-color:var(--hair)}
+.opt{border-radius:6px}
+.opt.on{background:var(--hover)}
+.modal-body input.ctitle{font-weight:600;font-size:24px;letter-spacing:-.015em}
+.dialog h2{font-weight:600;letter-spacing:-.015em}
+.bulk{background:#2E2E30;color:#F5F4F3;border-radius:12px}
+.bulk .bb{color:#F5F4F3;border-radius:8px}
+.toast{background:#2E2E30;color:#F5F4F3;border-radius:10px}
+html[data-stratum-mode="dark"] .toast,html[data-stratum-mode="dark"] .bulk{background:#F5F4F3;color:#1E1F21}
+html[data-stratum-mode="dark"] .bulk .bb{color:#1E1F21}
+.toast .btn{border-radius:7px;color:inherit}
+
+/* ── Wide screens: Asana's single-line task rows; narrow: two-line rows and a coral round add button ── */
+@media (max-width:1200px){
+  .row-meta .chip.proj{display:inline-flex}
+}
+@media (max-width:900px){
+  .side{background:var(--side)}
+  .page{padding:14px 16px 120px}
+  .topline{margin-bottom:18px}
+  .searchbar{width:40px;height:40px;border-radius:50%}
+  .title{font-size:30px}
+  .toolbar{margin-top:16px;padding-bottom:10px}
+  .toolbar>nav.seg:first-child{order:-2;width:100%;overflow-x:auto;margin-bottom:6px;border-bottom:1px solid var(--hair);gap:22px;scrollbar-width:none}
+  .toolbar>nav.seg .seg-i{height:40px;margin-bottom:-1px}
+  .toolbar{border-bottom:0}
+  .row{grid-template-columns:24px minmax(0,1fr) auto auto;grid-template-areas:"ck title sub prio" ". meta meta id";row-gap:6px;align-items:start;padding:10px 12px 10px 12px;min-height:0}
+  .row>.pbtn[data-pick="status"]{margin-top:-2px}
+  .row>.row-title{white-space:normal;display:block;line-height:1.35}
+  .row>.row-title>span{overflow:visible}
+  .row>.row-title .ptitle{display:block;max-width:none;font-size:13px}
+  .row>.row-meta{flex-wrap:wrap;justify-content:flex-start;min-width:0}
+  .row.row>.row-meta .chip:not(.overdue){display:inline-flex}
+  .row>.row-meta .when{display:none}
+  .row>.row-meta .av-btn{margin-left:auto}
+  .row>.pbtn[data-pick="priority"]{align-self:start;margin-top:-3px}
+  .row>.ident{align-self:center}
+  .row>.ident{min-width:0}
+  .topline .btn.primary{position:fixed;z-index:30;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));width:56px;height:56px;padding:0;border-radius:50%;box-shadow:0 8px 18px -6px rgba(240,106,106,.8)}
+  .topline .btn.primary span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .topline .btn.primary svg{width:24px;height:24px}
+  .toasts{bottom:150px}
+}

@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-home="1" data-pos="br"></script>
+<script>/* home page style: Microsoft 365 unless ?look= or the Style menu chose another (remembered per device) */(function(){var L=["m365","appstore","raycast","arc","odoo","classic"],q=null,v=null;try{q=new URLSearchParams(location.search).get("look");if(L.indexOf(q)>=0){v=q;localStorage.setItem("stratum-home-look",q);}else v=localStorage.getItem("stratum-home-look");}catch(e){}document.documentElement.setAttribute("data-look",L.indexOf(v)>=0?v:"m365");})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Business Apps home, in the design language of Microsoft 365 (Fluent 2): a light grey shell with an icon rail, white
+   cards with soft shadows, Microsoft blue for actions and selection. Segoe UI where installed, Noto Sans otherwise. */
+:root{--bg:#F5F5F5;--bgHover:#EBEBEB;--main:#FAFAFA;--mainHover:#F0F0F0;--card:#FFFFFF;--pbg:#FFFFFF;--hover:#F5F5F5;--press:#E0E0E0;--sel:#EBEBEB;--chip:#F0F0F0;--chipH:#E6E6E6;
+--ink:#242424;--ink2:#424242;--ink3:#616161;--ink4:#707070;--line:#E0E0E0;--line2:#D1D1D1;--line3:#F0F0F0;
+--brand:#0F6CBD;--brandH:#115EA3;--brandP:#0F548C;--brandFg:#0F6CBD;--tint:#EBF3FC;--tint2:#CFE4FA;--tintLine:#B4D6FA;--tintFg:#115EA3;--onBrand2:#CFE4FA;
+--okFg:#0E700E;--okBg:#F1FAF1;--okLine:#9FD89F;--warnFg:#BC4B09;--warnBg:#FFF9F5;--warnLine:#FDCFB4;--warnBar:#F7630C;--badFg:#B10E1C;--badBg:#FDF3F4;--badLine:#EEACB2;--badBar:#D13438;--infoBar:#0F6CBD;
+--input:#FFFFFF;--inputLine:#D1D1D1;--inputBottom:#616161;--focus:#000000;--scrim:rgba(0,0,0,.4);--iconShade:rgba(0,0,0,.14);
+--sh2:0 0 2px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.14);--sh4:0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.14);--sh8:0 0 2px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.14);
+--sh16:0 0 2px rgba(0,0,0,.12),0 8px 16px rgba(0,0,0,.14);--sh28:0 0 8px rgba(0,0,0,.12),0 14px 28px rgba(0,0,0,.14);--sh64:0 0 8px rgba(0,0,0,.12),0 32px 64px rgba(0,0,0,.14);
+--sans:'Segoe UI Variable Text','Segoe UI','Noto Sans',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141414;--bgHover:#262626;--main:#1F1F1F;--mainHover:#2B2B2B;--card:#292929;--pbg:#1F1F1F;--hover:#333333;--press:#3D3D3D;--sel:#383838;--chip:#2E2E2E;--chipH:#3D3D3D;
+--ink:#FFFFFF;--ink2:#D6D6D6;--ink3:#ADADAD;--ink4:#999999;--line:#3D3D3D;--line2:#525252;--line3:#333333;
+--brand:#115EA3;--brandH:#0F6CBD;--brandP:#0C3B5E;--brandFg:#479EF5;--tint:#082338;--tint2:#0E4775;--tintLine:#0F548C;--tintFg:#62ABF5;--onBrand2:#CFE4FA;
+--okFg:#54B054;--okBg:#052505;--okLine:#107C10;--warnFg:#FAA06B;--warnBg:#411200;--warnLine:#8A3707;--warnBar:#F98845;--badFg:#DC626D;--badBg:#3B0509;--badLine:#6E0811;--badBar:#DC626D;--infoBar:#479EF5;
+--input:#292929;--inputLine:#525252;--inputBottom:#ADADAD;--focus:#FFFFFF;--scrim:rgba(0,0,0,.6);--iconShade:rgba(0,0,0,.5);
+--sh2:0 0 2px rgba(0,0,0,.24),0 1px 2px rgba(0,0,0,.28);--sh4:0 0 2px rgba(0,0,0,.24),0 2px 4px rgba(0,0,0,.28);--sh8:0 0 2px rgba(0,0,0,.24),0 4px 8px rgba(0,0,0,.28);
+--sh16:0 0 2px rgba(0,0,0,.24),0 8px 16px rgba(0,0,0,.28);--sh28:0 0 8px rgba(0,0,0,.24),0 14px 28px rgba(0,0,0,.28);--sh64:0 0 8px rgba(0,0,0,.24),0 32px 64px rgba(0,0,0,.28);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141414;--bgHover:#262626;--main:#1F1F1F;--mainHover:#2B2B2B;--card:#292929;--pbg:#1F1F1F;--hover:#333333;--press:#3D3D3D;--sel:#383838;--chip:#2E2E2E;--chipH:#3D3D3D;
+--ink:#FFFFFF;--ink2:#D6D6D6;--ink3:#ADADAD;--ink4:#999999;--line:#3D3D3D;--line2:#525252;--line3:#333333;
+--brand:#115EA3;--brandH:#0F6CBD;--brandP:#0C3B5E;--brandFg:#479EF5;--tint:#082338;--tint2:#0E4775;--tintLine:#0F548C;--tintFg:#62ABF5;--onBrand2:#CFE4FA;
+--okFg:#54B054;--okBg:#052505;--okLine:#107C10;--warnFg:#FAA06B;--warnBg:#411200;--warnLine:#8A3707;--warnBar:#F98845;--badFg:#DC626D;--badBg:#3B0509;--badLine:#6E0811;--badBar:#DC626D;--infoBar:#479EF5;
+--input:#292929;--inputLine:#525252;--inputBottom:#ADADAD;--focus:#FFFFFF;--scrim:rgba(0,0,0,.6);--iconShade:rgba(0,0,0,.5);
+--sh2:0 0 2px rgba(0,0,0,.24),0 1px 2px rgba(0,0,0,.28);--sh4:0 0 2px rgba(0,0,0,.24),0 2px 4px rgba(0,0,0,.28);--sh8:0 0 2px rgba(0,0,0,.24),0 4px 8px rgba(0,0,0,.28);
+--sh16:0 0 2px rgba(0,0,0,.24),0 8px 16px rgba(0,0,0,.28);--sh28:0 0 8px rgba(0,0,0,.24),0 14px 28px rgba(0,0,0,.28);--sh64:0 0 8px rgba(0,0,0,.24),0 32px 64px rgba(0,0,0,.28);color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 14px/20px var(--sans);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.i{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 12px;border-radius:4px;background:var(--brand);color:#fff;text-decoration:none;font-weight:600}
+.skip:focus{top:8px}
+/* the theme switch of the shared shell sits in the top bar's right end */
+stratum-shell{top:4px!important;bottom:auto!important;right:12px!important;left:auto!important}
+html.cmdk-open stratum-shell{display:none!important}
+
+/* top bar */
+.tb{position:sticky;top:0;z-index:30;height:48px;background:var(--bg);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px) minmax(0,1fr);align-items:center;gap:16px;padding:0 112px 0 4px}
+.tb-l{display:flex;align-items:center;gap:2px;min-width:0}
+.waf{width:44px;height:40px;border:0;border-radius:4px;background:transparent;display:grid;grid-template-columns:repeat(3,4px);gap:3.5px;place-content:center;cursor:pointer;color:var(--ink2);flex:none}
+.waf i{width:4px;height:4px;border-radius:1px;background:currentColor}
+.waf:hover{background:var(--bgHover)}
+.brand{display:inline-flex;align-items:center;gap:10px;padding:0 8px;font-size:16px;line-height:22px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;min-width:0}
+.brand img{display:none;width:30px;height:30px;flex:none;filter:drop-shadow(0 1px 1.5px var(--iconShade))}
+.find{position:relative;width:100%}
+.find .i{position:absolute;left:10px;top:8px;color:var(--ink3)}
+.find input{width:100%;height:32px;border-radius:4px;border:1px solid var(--inputLine);border-bottom-color:var(--inputBottom);background:var(--input);color:var(--ink);font:400 14px var(--sans);padding:0 72px 0 36px;-webkit-appearance:none;appearance:none}
+.find input::placeholder{color:var(--ink4)}
+.find input:hover{border-color:var(--line2);border-bottom-color:var(--ink2)}
+.find input:focus{outline:none;border-bottom-color:var(--brandFg);box-shadow:inset 0 -1px 0 var(--brandFg)}
+.find input::-webkit-search-cancel-button{display:none}
+.find .k{position:absolute;right:4px;top:4px;height:24px;padding:0 7px;border:1px solid var(--line2);border-radius:4px;background:transparent;color:var(--ink3);font:500 11.5px/22px var(--sans);cursor:pointer;white-space:nowrap}
+.find .k:hover{background:var(--hover);color:var(--ink)}
+.find .clr{position:absolute;right:2px;top:2px;width:28px;height:28px;border:0;border-radius:4px;background:transparent;color:var(--ink3);display:grid;place-items:center;cursor:pointer}
+.find .clr:hover{background:var(--hover);color:var(--ink)}
+.tb-r{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
+.fbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border-radius:4px;border:1px solid var(--line2);background:var(--card);color:var(--ink);font:600 14px/1 var(--sans);text-decoration:none;white-space:nowrap;cursor:pointer;min-width:0}
+.fbtn:hover{background:var(--hover);border-color:var(--ink4)}
+.fbtn:active{background:var(--press)}
+.fbtn.pri{background:var(--brand);border-color:transparent;color:#fff}
+.fbtn.pri:hover{background:var(--brandH)}
+.fbtn.pri:active{background:var(--brandP)}
+.fbtn.sub{border-color:transparent;background:transparent;color:var(--ink2);font-weight:500}
+.fbtn.sub:hover{background:var(--mainHover);color:var(--ink)}
+.ib{position:relative;width:32px;height:32px;border:0;border-radius:4px;background:transparent;color:var(--ink2);display:grid;place-items:center;cursor:pointer;flex:none}
+.ib:hover{background:var(--bgHover);color:var(--ink)}
+.ib b{position:absolute;top:0;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--brand);color:#fff;font:600 10px/16px var(--sans);text-align:center;box-shadow:0 0 0 2px var(--bg)}
+/* install: Chrome and Edge get their own install dialog; Safari and the rest get the steps in a small panel */
+.inst{position:relative}
+.inst-pop{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(360px,calc(100vw - 32px));padding:20px 20px 18px;border-radius:8px;background:var(--card);color:var(--ink);box-shadow:var(--sh28);text-align:left}
+.inst-pop:focus{outline:none}
+.inst-pop h2{margin:0 36px 8px 0;font-size:16px;line-height:22px;font-weight:600}
+.inst-pop p{margin:0;color:var(--ink2);font-size:14px}
+.inst-pop ol{margin:10px 0 0;padding-left:20px;display:grid;gap:6px;font-size:14px;color:var(--ink2)}
+.inst-pop b{color:var(--ink);font-weight:600}
+.inst-pop kbd{font:500 12px var(--sans);border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;padding:0 5px;white-space:nowrap;color:var(--ink)}
+.inst-pop .note{margin-top:12px;font-size:13px;color:var(--ink3)}
+.inst-pop .x{position:absolute;top:10px;right:10px;width:32px;height:32px;border:0;border-radius:4px;background:transparent;color:var(--ink3);display:grid;place-items:center;cursor:pointer}
+.inst-pop .x:hover{background:var(--hover);color:var(--ink)}
+
+/* icon rail */
+.rail{position:fixed;left:0;top:48px;bottom:0;width:68px;z-index:20;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 12px}
+.rail a,.rail button{position:relative;width:60px;height:56px;border:0;border-radius:6px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:400 11px/14px var(--sans);color:var(--ink2);text-decoration:none;cursor:pointer}
+.rail a:hover,.rail button:hover{background:var(--bgHover);color:var(--ink)}
+.rail .on{color:var(--brandFg);font-weight:600;background:var(--card);box-shadow:var(--sh2)}
+.rail .on:hover{background:var(--card);color:var(--brandFg)}
+.rail .on::before{content:"";position:absolute;left:-4px;top:18px;width:3px;height:20px;border-radius:2px;background:var(--brandFg)}
+.rail .on .i,.bn .on .i{fill:var(--tint2)}
+.rail .low{margin-top:auto}
+
+/* main panel */
+.main{display:block;margin-left:68px;min-height:calc(100vh - 48px);background:var(--main);border-radius:8px 0 0 0;box-shadow:inset 1px 1px 0 var(--line)}
+.mi{max-width:1280px;margin:0 auto;padding:24px 32px 48px}
+.psearch{display:none}
+.hello{display:flex;align-items:flex-end;gap:16px;margin:0 0 14px}
+.hello h1{margin:0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.01em}
+.hello p{margin:2px 0 0;color:var(--ink3);font-size:13px}
+.sh{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;min-height:32px;margin:0 0 8px}
+.sh h2{margin:0;font-size:16px;line-height:22px;font-weight:600}
+.sh .sub{color:var(--ink3);font-size:13px;min-width:0}
+.sh .sub .i{display:inline-block;vertical-align:-3px;color:var(--brandFg)}
+.sh .end{margin-left:auto;display:flex;gap:4px;align-items:center}
+
+/* pinned apps (or recent and new ones), under the greeting */
+.pins{margin:0 0 22px}
+.pins .sh h2{font-size:14px;line-height:20px}
+.prow{list-style:none;margin:0 -6px;padding:2px 0;display:flex;flex-wrap:wrap;gap:2px;border-radius:8px}
+.pt{position:relative;width:84px;flex:none}
+.pl{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px 6px;border-radius:6px;color:var(--ink2);font-size:12px;line-height:16px;text-decoration:none}
+.pl:hover{background:var(--mainHover);color:var(--ink)}
+.pl img{width:40px;height:40px;display:block;filter:drop-shadow(0 1px 1.5px var(--iconShade))}
+.pl span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt.all .ring{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--card);display:grid;place-items:center;color:var(--brandFg)}
+.pt[draggable="true"] .pl{cursor:grab}
+.pt.dragging{opacity:.35}
+.pt.drop-before::before,.pt.drop-after::after{content:"";position:absolute;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--brandFg)}
+.pt.drop-before::before{left:-2px}.pt.drop-after::after{right:-2px}
+.pins.drop-ok .prow{outline:1px dashed var(--brandFg);outline-offset:2px}
+.pe{display:flex;justify-content:center;gap:2px;margin-top:2px}
+.pe button{width:26px;height:26px;border:1px solid var(--line2);border-radius:4px;background:var(--card);color:var(--ink2);display:grid;place-items:center;cursor:pointer;padding:0}
+.pe button:hover:not(:disabled){background:var(--hover);color:var(--ink)}
+.pe button:disabled{opacity:.35;cursor:default}
+.editing .pt[data-app] .pl{background:var(--card);box-shadow:var(--sh2);cursor:default}
+
+/* needs you today */
+.needs{margin:0 0 24px}
+.nlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:12px}
+.need{position:relative;min-width:0;padding:12px 12px 8px 16px;border-radius:8px;background:var(--card);box-shadow:var(--sh4);overflow:hidden}
+.need::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--infoBar)}
+.need[data-tone="warn"]::before{background:var(--warnBar)}
+.need[data-tone="bad"]::before{background:var(--badBar)}
+.need header{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.need header img{width:24px;height:24px;flex:none;filter:drop-shadow(0 .5px 1px var(--iconShade))}
+.need header b{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.need header a{color:inherit;text-decoration:none}
+.need header a:hover{text-decoration:underline}
+.need time{flex:none;color:var(--ink3);font-size:12px}
+.need ul{list-style:none;margin:0;padding:0}
+.need li a{display:flex;align-items:center;gap:10px;min-height:36px;margin:0 -6px;padding:4px 6px;border-radius:4px;color:var(--ink);font-size:13.5px;line-height:18px;text-decoration:none}
+.need li a:hover{background:var(--hover)}
+.need li a .tx{flex:1;min-width:0}
+.need li a .i{color:var(--ink3)}
+.cnt{flex:none;min-width:30px;height:20px;padding:0 7px;border-radius:10px;background:var(--tint);color:var(--tintFg);font:600 12px/20px var(--sans);text-align:center;font-variant-numeric:tabular-nums}
+.cnt.warn{background:var(--warnBg);color:var(--warnFg)}
+.cnt.bad{background:var(--badBg);color:var(--badFg)}
+.cnt.dot{min-width:0;width:8px;height:8px;padding:0;border-radius:50%;margin:0 11px;background:var(--infoBar)}
+.cnt.dot.warn{background:var(--warnBar)}.cnt.dot.bad{background:var(--badBar)}
+.nempty{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:8px;background:var(--card);box-shadow:var(--sh2);color:var(--ink3);font-size:13.5px}
+.nempty .i{color:var(--brandFg)}
+
+/* quick access: a table with tabs */
+.qa{margin:0 0 32px;border-radius:8px;background:var(--card);box-shadow:var(--sh4);overflow:hidden}
+.qtabs{display:flex;align-items:center;gap:2px;height:44px;padding:0 8px;border-bottom:1px solid var(--line3)}
+.qtabs .tlist{display:flex;align-items:center;gap:2px;height:100%;min-width:0}
+.qtabs [role="tab"]{position:relative;height:44px;padding:0 10px;border:0;background:transparent;color:var(--ink2);font:400 14px var(--sans);cursor:pointer;white-space:nowrap;flex:none}
+.qtabs [role="tab"]:hover{color:var(--ink)}
+.qtabs [role="tab"] span{display:inline-flex;flex-direction:column}
+.qtabs [role="tab"] span::after{content:attr(data-t);height:0;visibility:hidden;overflow:hidden;font-weight:600}
+.qtabs [role="tab"][aria-selected="true"]{color:var(--ink);font-weight:600}
+.qtabs [role="tab"][aria-selected="true"]::after{content:"";position:absolute;left:10px;right:10px;bottom:0;height:3px;border-radius:2px;background:var(--brandFg)}
+.qtabs [role="tab"]:focus-visible{outline-offset:-4px}
+.qsel{margin-left:auto;position:relative;display:flex;align-items:center;color:var(--ink2);font-size:13px;flex:none}
+.qsel .i{position:absolute;pointer-events:none;color:var(--ink3)}
+.qsel .i:first-child{left:6px}.qsel .i:last-child{right:6px}
+.qsel select{appearance:none;-webkit-appearance:none;height:32px;padding:0 26px 0 28px;border:0;border-radius:4px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.qsel select:hover{background:var(--hover)}
+.qsel select option{background:var(--card);color:var(--ink)}
+.qt{width:100%;border-collapse:collapse;font-size:13.5px}
+.qt th{height:34px;padding:0 12px;border-bottom:1px solid var(--line);color:var(--ink3);font-size:12px;font-weight:600;text-align:left;white-space:nowrap}
+.qt td{height:42px;padding:0 12px;border-bottom:1px solid var(--line3);color:var(--ink2);white-space:nowrap}
+.qt tbody tr:last-child td{border-bottom:0}
+.qt tbody tr[data-app]{cursor:pointer}
+.qt tbody tr[data-app]:hover td{background:var(--hover)}
+.qt .c-nm{width:36%}.qt .c-pin{width:52px;padding:0 8px;text-align:right}
+.ql{display:inline-flex;align-items:center;gap:10px;max-width:100%;color:var(--ink);text-decoration:none;vertical-align:middle}
+.ql img{width:24px;height:24px;flex:none;filter:drop-shadow(0 .5px 1px var(--iconShade))}
+.ql .qx{min-width:0;display:flex;flex-direction:column}
+.ql .qn{display:flex;align-items:center;gap:8px;min-width:0}
+.ql .nm{overflow:hidden;text-overflow:ellipsis}
+.qt tbody tr:hover .nm{text-decoration:underline}
+.ql .meta{display:none}
+.qt .none td{height:auto;padding:28px 16px;text-align:center;color:var(--ink3);white-space:normal;cursor:default}
+.qfoot{padding:4px 8px;border-top:1px solid var(--line3)}
+.lnk{height:32px;padding:0 8px;border:0;border-radius:4px;background:transparent;color:var(--brandFg);font:600 13.5px var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:4px;text-decoration:none}
+.lnk:hover{background:var(--hover);text-decoration:underline}
+
+/* pills and the pin button */
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;border:1px solid var(--line2);background:var(--card);color:var(--ink2);font:600 11px/1 var(--sans);white-space:nowrap;flex:none}
+.pill.new{background:var(--tint);border-color:var(--tintLine);color:var(--tintFg)}
+.pill.kind{background:var(--chip);border-color:transparent;color:var(--ink3);font-weight:500}
+.pill.yours{background:var(--okBg);border-color:var(--okLine);color:var(--okFg)}
+.pin{position:relative;z-index:1;flex:none;width:32px;height:32px;margin:-6px -6px 0 0;padding:0;border:0;border-radius:4px;background:transparent;color:var(--ink3);display:grid;place-items:center;cursor:pointer}
+.pin:hover{background:var(--hover);color:var(--ink)}
+.pin[aria-pressed="true"]{color:var(--brandFg)}
+.pin[aria-pressed="true"] .i{fill:currentColor}
+.qt .pin{margin:0;display:inline-grid;vertical-align:middle}
+.qt tbody tr:hover .pin:hover{background:var(--press)}
+
+/* all apps, by group */
+.ah{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:0 0 4px}
+.ah h2{margin:0;font-size:16px;line-height:22px;font-weight:600}
+.ah .n{color:var(--ink3);font-size:13px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0}
+.chips::-webkit-scrollbar{display:none}
+.ah .chips{flex:1 1 auto}
+.mi .chips-top,.mi .qh{display:none}
+.chips button{flex:none;height:32px;padding:0 12px;border:0;border-radius:16px;background:var(--chip);color:var(--ink);font:400 13.5px var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chips button span{color:var(--ink3);font-size:12px}
+.chips button:hover{background:var(--chipH)}
+.chips button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:600}
+.chips button[aria-pressed="true"] span{color:var(--onBrand2);font-weight:400}
+.view{display:inline-flex;flex:none;border:1px solid var(--line2);border-radius:4px;background:var(--card);overflow:hidden;margin-left:auto}
+.view button{width:34px;height:30px;border:0;background:transparent;color:var(--ink2);display:grid;place-items:center;cursor:pointer}
+.view button+button{border-left:1px solid var(--line2)}
+.view button:hover{background:var(--hover)}
+.view button[aria-pressed="true"]{background:var(--tint);color:var(--brandFg)}
+.status{margin:6px 0 0;color:var(--ink3);font-size:13px;min-height:20px}
+.group{margin:14px 0 0;scroll-margin-top:64px}
+.ghead{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:0 0 10px}
+.ghead h2{margin:0;font-size:15px;line-height:20px;font-weight:600}
+.gcount{color:var(--ink3);font-size:12px}
+.ghead p{margin:0;color:var(--ink3);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:12px}
+.card{position:relative;display:flex;flex-direction:column;gap:10px;min-width:0;padding:16px;border-radius:8px;background:var(--card);box-shadow:var(--sh4);transition:box-shadow .12s}
+.card:hover{box-shadow:var(--sh8)}
+.card .top{display:flex;align-items:flex-start;gap:12px;min-width:0}
+.card .ai{display:block;width:44px;height:44px;flex:none;filter:drop-shadow(0 1px 1.5px var(--iconShade))}
+.ttl{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding-top:1px}
+.card h3{margin:0;font-size:15px;line-height:20px;font-weight:600;min-width:0}
+.card h3 a{color:var(--ink);text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0;border-radius:8px}
+.card:hover h3 a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.card h3 a:focus-visible{outline:none}
+.card h3 a:focus-visible::after{outline:2px solid var(--focus);outline-offset:2px}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.card p{margin:0;color:var(--ink2);font-size:13.5px;line-height:20px}
+.screens{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.screens a{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:4px;background:var(--chip);color:var(--ink2);font-size:12.5px;text-decoration:none;white-space:nowrap}
+.screens a:hover{background:var(--tint);color:var(--tintFg)}
+[data-hide]{display:none!important}
+/* list view: one row per app */
+.list .grid{display:block;border-radius:8px;background:var(--card);box-shadow:var(--sh4);overflow:hidden}
+.list .card{display:grid;grid-template-columns:32px minmax(0,1fr) 40px;grid-template-areas:"ic t pin" "ic d pin";column-gap:12px;row-gap:0;align-items:center;padding:8px 8px 8px 14px;border-radius:0;box-shadow:none;border-bottom:1px solid var(--line3);background:transparent}
+.list .card:last-child{border-bottom:0}
+.list .card:hover{box-shadow:none;background:var(--hover)}
+.list .card .top{display:contents}
+.list .card .ai{grid-area:ic;width:32px;height:32px}
+.list .ttl{grid-area:t;flex-direction:row;align-items:center;gap:8px;padding:0}
+.list .card h3{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
+.list .card h3 a::after{border-radius:0}
+.list .card p{grid-area:d;font-size:12.5px;line-height:18px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .screens{display:none}
+.list .card .pin{grid-area:pin;margin:0}
+.empty{margin:24px 0;padding:32px 16px;border:1px dashed var(--line2);border-radius:8px;text-align:center;color:var(--ink3)}
+body.searching .home-only{display:none!important}
+
+/* footer */
+.foot{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;color:var(--ink3);font-size:13px}
+.foot .fb{display:inline-flex;align-items:center;gap:8px;color:var(--ink);font-weight:600;text-decoration:none}
+.foot .fb img{width:22px;height:22px}
+.foot p{margin:0;flex:1 1 360px;min-width:0}
+.foot nav{display:flex;flex-wrap:wrap;gap:4px 16px}
+.foot a{color:var(--brandFg);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+
+/* group menu (rail and bottom bar) */
+.menu{position:fixed;z-index:50;width:260px;padding:4px;border-radius:8px;background:var(--card);box-shadow:var(--sh16)}
+.menu .mh{padding:8px 10px 4px;color:var(--ink3);font-size:12px;font-weight:600}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;height:36px;padding:0 10px;border:0;border-radius:4px;background:transparent;color:var(--ink);font:400 14px var(--sans);text-align:left;cursor:pointer}
+.menu button:hover,.menu button:focus-visible{background:var(--hover);outline:none}
+.menu button:focus-visible{box-shadow:inset 0 0 0 2px var(--focus)}
+.menu button .i{color:var(--ink2)}
+.menu button span{margin-left:auto;color:var(--ink3);font-size:12px}
+.menu button[aria-checked="true"]{font-weight:600;color:var(--brandFg)}
+.menu button[aria-checked="true"] .i{color:var(--brandFg)}
+
+/* command bar */
+.cmdk{position:fixed;inset:0;z-index:60;display:flex;justify-content:center;align-items:flex-start;padding:12vh 16px 16px}
+.cmdk-back{position:absolute;inset:0;background:var(--scrim)}
+.cmdk-box{position:relative;width:min(640px,100%);max-height:min(580px,78vh);display:flex;flex-direction:column;border-radius:8px;background:var(--card);box-shadow:var(--sh64);overflow:hidden;animation:cx-in .12s ease-out}
+@keyframes cx-in{from{opacity:0;transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.cmdk-box{animation:none}}
+.cx-in{display:flex;align-items:center;gap:10px;height:52px;padding:0 10px 0 16px;border-bottom:1px solid var(--line);flex:none}
+.cx-in .i{color:var(--ink3)}
+.cx-in input{flex:1;min-width:0;height:100%;border:0;background:transparent;color:var(--ink);font:400 16px var(--sans);outline:none;-webkit-appearance:none;appearance:none}
+.cx-in input::placeholder{color:var(--ink4)}
+.cx-in input::-webkit-search-cancel-button{display:none}
+.cx-esc{height:24px;padding:0 7px;border:1px solid var(--line2);border-radius:4px;background:transparent;color:var(--ink3);font:500 11.5px/22px var(--sans);cursor:pointer}
+.cx-esc:hover{background:var(--hover);color:var(--ink)}
+.cx-cancel{display:none;height:36px;padding:0 6px;border:0;background:transparent;color:var(--brandFg);font:600 15px var(--sans);cursor:pointer}
+.cx-list{flex:1;overflow-y:auto;padding:4px 6px 8px;overscroll-behavior:contain}
+.cx-h{padding:10px 10px 4px;color:var(--ink3);font-size:12px;font-weight:600}
+.cx-o{position:relative;display:flex;align-items:center;gap:12px;min-height:46px;padding:6px 10px;border-radius:4px;cursor:pointer}
+.cx-o.on{background:var(--sel)}
+.cx-o.on::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:2px;background:var(--brandFg)}
+.cx-ic{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:6px}
+.cx-ic img{width:28px;height:28px;filter:drop-shadow(0 .5px 1px var(--iconShade))}
+.cx-ic.sym{background:var(--chip);color:var(--ink2)}
+.cx-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.cx-tt{color:var(--ink);font-size:14px;line-height:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-t small{color:var(--ink3);font-size:12px;line-height:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-tt mark{background:transparent;color:var(--brandFg);font-weight:700}
+.cx-r{flex:none;display:flex;align-items:center;gap:8px;color:var(--ink3);font-size:12px}
+.cx-r .i{color:var(--brandFg)}
+.cx-r .star{fill:currentColor}
+.cx-r kbd,.cx-foot kbd{min-width:22px;height:20px;padding:0 5px;border:1px solid var(--line2);border-bottom-width:2px;border-radius:4px;color:var(--ink2);font:500 11px/17px var(--sans);text-align:center}
+.cx-o .ent{visibility:hidden}
+.cx-o.on .ent{visibility:visible}
+.cx-none{padding:32px 16px;text-align:center;color:var(--ink3)}
+.cx-foot{display:flex;flex-wrap:wrap;gap:6px 16px;padding:8px 16px;border-top:1px solid var(--line);color:var(--ink3);font-size:12px;flex:none}
+.cx-foot span{display:inline-flex;align-items:center;gap:5px}
+
+/* bottom bar (phone) */
+.bn{display:none}
+
+@media (max-width:1100px){.tb{grid-template-columns:auto minmax(0,1fr) auto}}
+@media (max-width:900px){.tb-r .fbtn.sc{display:none}}
+@media (max-width:700px){
+  html{scroll-padding-top:72px}
+  body{background:var(--pbg)}
+  stratum-shell{top:calc(8px + env(safe-area-inset-top,0px))!important;right:12px!important}
+  .tb{display:flex;height:auto;min-height:calc(56px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 64px 0 16px;gap:8px;background:var(--pbg)}
+  .waf,.tb .find,.tb-r .fbtn,.tb .inst-btn{display:none}
+  .brand{padding:0;font-size:18px;line-height:24px;gap:10px}
+  .brand img{display:block}
+  .tb-l{flex:1}
+  .rail{display:none}
+  .main{margin-left:0;min-height:0;border-radius:0;box-shadow:none;background:var(--pbg)}
+  .mi{padding:2px 0 calc(92px + env(safe-area-inset-bottom,0px))}
+  .psearch{display:flex;align-items:center;gap:8px;width:calc(100% - 32px);height:40px;margin:0 16px;padding:0 12px;border:0;border-radius:8px;background:var(--chip);color:var(--ink4);font:400 15px var(--sans);cursor:pointer;text-align:left}
+  .psearch .i{color:var(--ink3)}
+  .mi .chips-top{display:flex;margin:12px 0 0;padding:0 16px}
+  .hello{display:none}
+  .sh{padding:0 16px;margin-bottom:6px}
+  .pins{margin:18px 0 0}
+  .prow{flex-wrap:nowrap;overflow-x:auto;margin:0;padding:2px 10px 4px;scrollbar-width:none;border-radius:0}
+  .prow::-webkit-scrollbar{display:none}
+  .pt{width:76px}
+  .pins.editing .pt{width:104px}
+  .pe button{width:32px;height:32px}
+  .pl{font-size:11.5px}
+  .needs{margin:18px 0 0}
+  .nlist{display:flex;overflow-x:auto;gap:10px;padding:2px 16px 10px;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none}
+  .nlist::-webkit-scrollbar{display:none}
+  .need{flex:none;width:min(300px,84vw);scroll-snap-align:start}
+  .nempty{margin:0 16px}
+  .qa{margin:14px 0 0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+  .mi .qh{display:flex}
+  .qtabs{height:40px;margin:0 0 2px;padding:0 6px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
+  .qtabs::-webkit-scrollbar{display:none}
+  .qtabs [role="tab"]{height:40px;font-size:14px}
+  .qsel{display:none}
+  .qt thead{display:none}
+  .qt,.qt tbody{display:block}
+  .qt tr{display:flex;align-items:center;min-height:60px;padding:0 4px 0 16px}
+  .qt td{display:none;height:auto;padding:0;border:0}
+  .qt td.c-nm{display:block;flex:1;min-width:0;width:auto;align-self:stretch;display:flex;align-items:center;border-bottom:1px solid var(--line)}
+  .qt tbody tr:last-child td.c-nm{border-bottom:0}
+  .qt td.c-pin{display:block;width:44px;padding:0}
+  .qt tbody tr[data-app]:hover td{background:transparent}
+  .ql{gap:12px;width:100%;padding:8px 0}
+  .ql img{width:38px;height:38px}
+  .ql .nm{font-size:15px;line-height:20px;font-weight:600;white-space:nowrap}
+  .ql .meta{display:block;color:var(--ink3);font-size:12.5px;line-height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qt .none td{display:block;padding:20px 16px}
+  .qfoot{border-top:0;padding:0 8px}
+  .appsec{margin-top:22px}
+  .ah{padding:0 16px}
+  .ah .chips{display:none}
+  .status{padding:0 16px;min-height:0}
+  .status:empty{display:none}
+  .groups-wrap{padding:0 16px}
+  .group{margin-top:16px}
+  .ghead{margin-bottom:8px}
+  .ghead p{display:none}
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .card{align-items:center;gap:0;min-height:90px;padding:12px 4px 8px;text-align:center}
+  .card .top{flex-direction:column;align-items:center;gap:7px;width:100%}
+  .card .ai{width:36px;height:36px}
+  .ttl{align-items:center;width:100%;padding:0}
+  .card h3{font-size:11.5px;line-height:14px;font-weight:400;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+  .card:hover h3 a{text-decoration:none}
+  .card .tags,.card p,.card .screens{display:none}
+  .card .pin{position:absolute;top:0;right:0;width:30px;height:30px;margin:0}
+  .card .pin .i{width:14px;height:14px}
+  .card .pin:not([aria-pressed="true"]){color:var(--ink4)}
+  .list .grid{display:block}
+  .list .card{grid-template-columns:36px minmax(0,1fr) 36px;min-height:0;padding:10px 4px 10px 12px;text-align:left}
+  .list .card .ai{width:36px;height:36px}
+  .list .ttl{align-items:center}
+  .list .card h3{display:block;font-size:14.5px;line-height:20px;font-weight:600}
+  .list .card .tags{display:none}
+  .list .card p{display:block}
+  .list .card .pin{position:relative;width:36px;height:36px}
+  .list .card .pin .i{width:18px;height:18px}
+  .foot{margin:40px 16px 0;padding-top:16px}
+  .menu{left:8px!important;right:8px;top:auto!important;bottom:calc(70px + env(safe-area-inset-bottom,0px));width:auto;border-radius:12px;padding:6px;box-shadow:var(--sh28),0 0 0 100vmax var(--scrim)}
+  .menu button{height:44px;font-size:15px}
+  .inst-pop{position:fixed;left:12px;right:12px;top:auto;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:auto;border-radius:12px;box-shadow:var(--sh28),0 0 0 100vmax var(--scrim)}
+  .bn{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;height:calc(58px + env(safe-area-inset-bottom,0px));padding:4px 8px env(safe-area-inset-bottom,0px);background:var(--bg);border-top:1px solid var(--line)}
+  .bn a,.bn button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:6px;background:transparent;color:var(--ink3);font:400 11px/14px var(--sans);text-decoration:none;cursor:pointer;min-width:0}
+  .bn .on{color:var(--brandFg);font-weight:600}
+  .cmdk{padding:0}
+  .cmdk-box{width:100%;height:100%;max-height:none;border-radius:0;padding-top:env(safe-area-inset-top,0px);animation:none}
+  .cx-in{height:56px;padding:0 8px 0 16px}
+  .cx-esc,.cx-foot,.cx-o .ent{display:none}
+  .cx-cancel{display:block}
+  .cx-o{min-height:52px}
+}
+@media (max-width:360px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media print{.tb,.rail,.bn,.pins,.needs,.qa,.view,.chips{display:none!important}.main{margin:0;box-shadow:none}}
+/* Style switch (top bar): the home page's other looks live in home-looks/<name>.css (+ .js), scoped to html[data-look] */
+.look{position:relative;flex:none}
+.look-btn{width:auto;padding:0 8px;gap:6px;display:inline-flex;align-items:center;font:inherit;font-size:13px}
+.look-btn .look-lbl{white-space:nowrap}
+.look-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:60;min-width:250px;padding:6px;border-radius:8px;background:var(--card);border:1px solid var(--line, rgba(0,0,0,.08));box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.look-menu h3{margin:4px 8px 6px;font-size:12px;font-weight:600;color:var(--ink2)}
+.look-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:0;border-radius:4px;background:transparent;color:var(--ink);font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.look-menu button:hover,.look-menu button:focus-visible{background:var(--hover, rgba(0,0,0,.05));outline:none}
+.look-menu button[aria-checked="true"]{font-weight:600}
+.look-menu button[aria-checked="true"]::after{content:"✓";margin-left:auto;color:#0F6CBD}
+.look-menu small{display:block;font-size:12px;font-weight:400;color:var(--ink2)}
+.look-menu .sw{flex:none;width:28px;height:20px;border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.sw-m365{background:linear-gradient(90deg,#F5F5F5 0 55%,#0F6CBD 55%)}
+.sw-appstore{background:linear-gradient(135deg,#FF5E7E,#7B61FF 60%,#FFFFFF 60%)}
+.sw-raycast{background:repeating-linear-gradient(135deg,#1A1A1A 0 5px,#FF6363 5px 7px)}
+.sw-arc{background:linear-gradient(135deg,#C9B8FF,#FFC9A8)}
+.sw-odoo{background:linear-gradient(135deg,#714B67 0 50%,#F3EEF2 50%)}
+.sw-classic{background:linear-gradient(90deg,#F7F7F4 0 55%,#26251E 55%)}
+@media (max-width:900px){.look-btn .look-lbl{display:none}.look-btn{width:32px;padding:0;justify-content:center}}
+</style>
+<!-- Only the active style's files load (written here so they block the first paint like a normal stylesheet and the
+     page never flashes in the wrong style); the others load when they are chosen, see HomeLook below. -->
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<link rel="stylesheet" href="home-looks/'+l+'.css?v=2" data-look-css="'+l+'">');})();</script>
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<a class="skip" href="#apps">Skip to all apps</a>
+<header class="tb" id="tb">
+  <div class="tb-l">
+    <button class="waf" type="button" data-nav="apps" aria-label="All apps" title="All apps"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></button>
+    <a class="brand" href="/" aria-label="Business Apps, home"><img src="/icons/apps/launcher.png" alt="" width="30" height="30"><span>Business Apps</span></a>
+  </div>
+  <div class="find" role="search">
+    <svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 11a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0M16 16l4.5 4.5"/></svg>
+    <label class="sr" for="q">Search apps, screens and groups</label>
+    <input id="q" type="search" placeholder="Search apps, screens and groups" autocomplete="off" spellcheck="false" enterkeyhint="go">
+    <button class="k" type="button" id="qK" title="Open the command bar">⌘K</button>
+    <button class="clr" type="button" id="qClear" aria-label="Clear search" hidden><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>
+  </div>
+  <div class="tb-r">
+    <button class="ib" type="button" id="bell" aria-label="Needs you today" title="Needs you today"><svg class="i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15zM10 20.5h4"/></svg><b id="bellN" hidden></b></button>
+    <div class="look" id="look"><button class="ib look-btn" type="button" id="lookBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="lookMenu" title="Style"><svg class="i" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.7-.8 1.7-1.6 0-1.2-1-1.4-1-2.5 0-.9.7-1.6 1.6-1.6h2.1a4.1 4.1 0 0 0 4.1-4.1C20.5 6.6 16.7 3.5 12 3.5zM7.5 12.5h.01M9 8.5h.01M13.5 7.5h.01M16.8 10.5h.01"/></svg><span class="look-lbl">Style</span></button><div class="look-menu" id="lookMenu" role="menu" aria-label="Home page style" hidden><h3>Home page style</h3><button type="button" role="menuitemradio" aria-checked="false" data-look="m365"><i class="sw sw-m365" aria-hidden="true"></i><span>Microsoft 365<small>Default</small></span></button><button type="button" role="menuitemradio" aria-checked="false" data-look="appstore"><i class="sw sw-appstore" aria-hidden="true"></i><span>App Store<small>Story cards and Open pills</small></span></button><button type="button" role="menuitemradio" aria-checked="false" data-look="raycast"><i class="sw sw-raycast" aria-hidden="true"></i><span>Raycast<small>Dark command window</small></span></button><button type="button" role="menuitemradio" aria-checked="false" data-look="arc"><i class="sw sw-arc" aria-hidden="true"></i><span>Arc<small>Gradient spaces</small></span></button><button type="button" role="menuitemradio" aria-checked="false" data-look="odoo"><i class="sw sw-odoo" aria-hidden="true"></i><span>Odoo<small>A grid of app icons</small></span></button><button type="button" role="menuitemradio" aria-checked="false" data-look="classic"><i class="sw sw-classic" aria-hidden="true"></i><span>Classic<small>The earlier cursor.com look</small></span></button></div></div>
+    <a class="fbtn sc" href="showcase/" data-app="showcase">Showcase</a>
+    <div class="inst" id="inst" hidden><button class="fbtn pri inst-btn" id="instBtn" type="button" aria-expanded="false" aria-controls="instPop"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg><span id="instLbl">Install app</span></button><div class="inst-pop" id="instPop" role="dialog" aria-labelledby="instH" tabindex="-1" hidden><button class="x" type="button" id="instX" aria-label="Close"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button><h2 id="instH">Add Business Apps to your Mac</h2><div id="instBody"></div></div></div>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Sections">
+  <a href="#top" data-nav="home" class="on" aria-current="true"><svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4 10.5l8-6.5 8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>Home</a>
+  <a href="#apps" data-nav="apps"><svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>Apps</a>
+  <button type="button" data-nav="groups" aria-haspopup="menu" aria-expanded="false"><svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M3.5 7V18.5h17V8.5h-8.5l-2-2.5H3.5z"/></svg>Groups</button>
+  <a href="#quick" data-nav="new"><svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9L12 18.5l-1.9-5.6L4.5 11l5.6-1.9zM18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>New</a>
+  <button type="button" class="low" data-install hidden aria-expanded="false" aria-controls="instPop"><svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>Install</button>
+</nav>
+
+<main class="main" id="main">
+<div class="mi">
+  <button class="psearch" type="button" id="pSearch" aria-haspopup="dialog"><svg class="i" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4.5 11a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0M16 16l4.5 4.5"/></svg>Search apps and screens</button>
+  <div class="chips chips-top" id="chipsTop" role="group" aria-label="Show a group"></div>
+
+  <section class="hello home-only" id="top" aria-labelledby="hi">
+    <div><h1 id="hi">Welcome</h1><p id="today"></p></div>
+  </section>
+
+  <section class="pins home-only" id="pins" aria-labelledby="pinsH">
+    <div class="sh"><h2 id="pinsH">Pinned</h2><span class="sub" id="pinsHint"></span><span class="end"><button class="fbtn sub" type="button" id="pinEdit" aria-pressed="false" hidden><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 19.5l3.8-1 10.4-10.4a1.9 1.9 0 0 0-2.7-2.7L5.6 15.8zM14.3 6.7l3 3"/></svg><span>Edit</span></button></span></div>
+    <ul class="prow" id="pinRow" aria-describedby="pinsHint"></ul>
+  </section>
+
+  <section class="needs home-only" id="needs" aria-labelledby="needsH">
+    <div class="sh"><h2 id="needsH">Needs you today</h2><span class="sub" id="needsSub"></span><span class="end"><button class="lnk" type="button" id="needsMore" hidden></button></span></div>
+    <div id="needsBody"></div>
+  </section>
+
+  <section class="qa home-only" id="quick" aria-labelledby="quickH">
+    <div class="sh qh"><h2 id="quickH">Quick access</h2></div>
+    <div class="qtabs">
+      <div role="tablist" aria-labelledby="quickH" id="qaTabs" class="tlist">
+        <button type="button" role="tab" id="tab-recent" data-tab="recent" aria-controls="qaPanel"><span data-t="Recently opened">Recently opened</span></button>
+        <button type="button" role="tab" id="tab-pinned" data-tab="pinned" aria-controls="qaPanel"><span data-t="Pinned">Pinned</span></button>
+        <button type="button" role="tab" id="tab-new" data-tab="new" aria-controls="qaPanel"><span data-t="New">New</span></button>
+        <button type="button" role="tab" id="tab-yours" data-tab="yours" aria-controls="qaPanel"><span data-t="Your data">Your data</span></button>
+      </div>
+      <label class="qsel"><svg class="i" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 5.5h16l-6.2 7.2v5.6l-3.6 1.7v-7.3z"/></svg><span class="sr">Group</span><select id="qaGroup"></select><svg class="i" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true" focusable="false"><path d="M7 10l5 5 5-5"/></svg></label>
+    </div>
+    <div role="tabpanel" id="qaPanel">
+      <table class="qt">
+        <thead><tr><th class="c-nm" scope="col">Name</th><th scope="col">Group</th><th scope="col">Type</th><th scope="col">Data</th><th scope="col">Opened</th><th class="c-pin" scope="col"><span class="sr">Pin</span></th></tr></thead>
+        <tbody id="qaBody"></tbody>
+      </table>
+      <div class="qfoot" id="qaFoot" hidden><button class="lnk" type="button" id="qaMore"></button></div>
+    </div>
+  </section>
+
+  <section class="appsec" id="apps" aria-labelledby="appsH">
+    <div class="ah"><h2 id="appsH">All apps</h2><span class="n" id="appsN">33 apps</span><div class="chips" id="chips" role="group" aria-label="Show a group"></div>
+      <div class="view" role="group" aria-label="Show apps as"><button type="button" data-view="cards" aria-pressed="true" aria-label="Cards" title="Cards"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg></button><button type="button" data-view="list" aria-pressed="false" aria-label="List" title="List"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></button></div></div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <div class="groups-wrap" id="groupsWrap">
+  <section class="group" id="g-finance" data-group="finance" aria-labelledby="h-finance">
+    <header class="ghead"><h2 id="h-finance">Finance</h2><span class="gcount">7 apps</span><p>Invoicing, cash, collections and budgets</p></header>
+    <div class="grid">
+    <article class="card" data-app="billing">
+      <div class="top"><img class="ai" src="/icons/apps/billing.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="billing/">Billing</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
+      <p>Issue invoices and credit notes, run monthly retainer billing and track payments. Gap-free numbering, the data FURS requires, UPN QR, VAT ledger and RP-O exports, and a tamper-evident log. Saved in your browser and your private cloud copy.</p>
+    </article>
+    <article class="card" data-app="invoices">
+      <div class="top"><img class="ai" src="/icons/apps/invoices.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="invoices/">Invoices</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
+      <p>Drop PDF invoices and the vendor, dates, VAT and totals are read for you. Costs by month, category and vendor, what's unpaid, and exports for your accountant. Saved in your browser and your private cloud copy.</p>
+    </article>
+    <article class="card" data-app="cashflow">
+      <div class="top"><img class="ai" src="/icons/apps/cashflow.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="cashflow/">Cash forecast</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
+      <p>A 13-week cash forecast built from open invoices, bills, payroll, taxes and pipeline deals, dated by how each customer really pays. It warns before cash drops below your minimum, shows what would close the gap, and compares scenarios. Import your own invoices as CSV.</p>
+      <nav class="screens" aria-label="Cash forecast screens"><a href="cashflow/#/">Overview</a><a href="cashflow/#/weeks">Week by week</a><a href="cashflow/#/receivables">Receivables</a><a href="cashflow/#/scenarios">Scenarios</a></nav>
+    </article>
+    <article class="card" data-app="collections" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/collections.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="collections/">Collections</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Who owes you, who to call today, and the reminder letter ready to print, with statutory late-payment interest worked out. Promises to pay, payment plans and what reminders really bring in. Demo data.</p>
+      <nav class="screens" aria-label="Collections screens"><a href="collections/#/">Today</a><a href="collections/#/customers">Customers</a><a href="collections/#/reminders">Reminders</a><a href="collections/#/reports">Reports</a></nav>
+    </article>
+    <article class="card" data-app="budget" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/budget.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="budget/">Budget vs actual</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>The year's budget next to what really happened, month by month: the variances that need an explanation, an EBITDA bridge, a full-year outlook and a board pack to print. Demo data.</p>
+      <nav class="screens" aria-label="Budget vs actual screens"><a href="budget/#/">Overview</a><a href="budget/#/pl">P&amp;L</a><a href="budget/#/budget">Budget</a><a href="budget/#/print">Board pack</a></nav>
+    </article>
+    <article class="card" data-app="recon">
+      <div class="top"><img class="ai" src="/icons/apps/recon.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="recon/">Payment reconciliation</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Match every provider payment, refund and payout to shop orders and the bank, work the exceptions and close the month with an export for accounting. Demo data, in an old and a new design.</p>
+    </article>
+    <article class="card" data-app="contracts">
+      <div class="top"><img class="ai" src="/icons/apps/contracts.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="contracts/">Contracts &amp; renewals</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>One register of every lease, supplier, software and service contract, with notice deadlines, renewals, price increases and annual spend, so no deadline is missed. Demo data.</p>
+    </article>
+    </div>
+  </section>
+  <section class="group" id="g-sales" data-group="sales" aria-labelledby="h-sales">
+    <header class="ghead"><h2 id="h-sales">Sales &amp; marketing</h2><span class="gcount">5 apps</span><p>Customers, campaigns and content</p></header>
+    <div class="grid">
+    <article class="card" data-app="crm">
+      <div class="top"><img class="ai" src="/icons/apps/crm.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="crm/">CRM</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Companies, contacts, a deal pipeline board and activities for the B2B team, with forecast and win rates. Demo data; your changes follow you between devices.</p>
+    </article>
+    <article class="card" data-app="mail">
+      <div class="top"><img class="ai" src="/icons/apps/mail.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="mail/">Tokovi Mail</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Email and SMS marketing: profiles, segments, campaigns with a drag-and-drop email editor, automated flows, sign-up forms and revenue reports. Demo data; nothing is ever sent.</p>
+    </article>
+    <article class="card" data-app="marketing">
+      <div class="top"><img class="ai" src="/icons/apps/marketing.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="marketing/">Marketing calendar</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Plan every campaign, promotion and post per market in one calendar and see right next to it what each one spent and earned. Demo data; nothing is ever posted or sent.</p>
+    </article>
+    <article class="card" data-app="refill">
+      <div class="top"><img class="ai" src="/icons/apps/refill.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="refill/">Refill &amp; win-back</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Contact-lens customers running out soon per market, how many can be e-mailed, what the model suggests and whether reminders work. Demo data, totals only.</p>
+    </article>
+    <article class="card" data-app="postbench">
+      <div class="top"><img class="ai" src="/icons/apps/postbench.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="postbench/">Postbench</a></h3><div class="tags"><span class="pill kind">Tool</span></div></div></div>
+      <p>Posts and banners for every platform, with safe zones, a month planner and export.</p>
+    </article>
+    </div>
+  </section>
+  <section class="group" id="g-operations" data-group="operations" aria-labelledby="h-operations">
+    <header class="ghead"><h2 id="h-operations">Operations</h2><span class="gcount">7 apps</span><p>Stock, stores, deliveries and field service</p></header>
+    <div class="grid">
+    <article class="card" data-app="erp">
+      <div class="top"><img class="ai" src="/icons/apps/erp.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="erp/">ERP</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Products and stock per location, purchasing, sales orders, invoices and payments for an optical retailer. Demo data; your changes follow you between devices.</p>
+    </article>
+    <article class="card" data-app="service" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/service.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="service/">Service jobs</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>A technician's day on the phone: checklist, photos, parts and the customer's signature. For the office, a dispatch board, maintenance that is due, signed service reports and an invoice-ready list. Demo data.</p>
+      <nav class="screens" aria-label="Service jobs screens"><a href="service/#/today">Technician</a><a href="service/#/board">Dispatch</a><a href="service/#/maintenance">Maintenance</a><a href="service/#/invoicing">Invoicing</a></nav>
+    </article>
+    <article class="card" data-app="stores">
+      <div class="top"><img class="ai" src="/icons/apps/stores.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="stores/">Store daily board</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>The morning screen for every optics store: yesterday's sales, month-to-date vs target, cash check, today's staff, pickups to call, complaints, reviews and tasks from head office. Demo data.</p>
+    </article>
+    <article class="card" data-app="parcels">
+      <div class="top"><img class="ai" src="/icons/apps/parcels.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="parcels/">Parcels &amp; COD</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Track every parcel across GLS, DPD, the national posts, BOX NOW and Poste Italiane, work the stuck ones, and check that cash on delivery reached the bank. Demo data; nothing is sent to carriers.</p>
+    </article>
+    <article class="card" data-app="branch-manager">
+      <div class="top"><img class="ai" src="/icons/apps/branch-manager.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="branch-manager/Login.dc.html">Branch Manager App</a></h3><div class="tags"><span class="pill kind">Prototype</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Bookings, branches and managers side by side, with lifetime and monthly statistics, plus a booking calendar per branch (sample data).</p>
+      <nav class="screens" aria-label="Branch Manager screens"><a href="branch-manager/Main.dc.html">App</a><a href="branch-manager/Bookings.html">Bookings</a><a href="branch-manager/Overview-by-month.dc.html">By month</a><a href="branch-manager/Compare.dc.html">Compare</a><a href="branch-manager/Branch-detail.dc.html">Branch detail</a><a href="branch-manager/Permission-type.dc.html">Permissions</a><a href="branch-manager/New-branch.dc.html">New branch</a><a href="branch-manager/Invite-manager.dc.html">Invite manager</a><a href="branch-manager/Export.dc.html">Export</a><a href="branch-manager/Dark-mode.dc.html">Dark mode</a></nav>
+    </article>
+    <article class="card" data-app="desk">
+      <div class="top"><img class="ai" src="/icons/apps/desk.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="desk/">Desk</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
+      <p>Turn Outlook e-mails into tasks, attach booking links and confirmation PDFs, and see what's done and what's left. Saved in your browser and your private cloud copy.</p>
+    </article>
+    <article class="card" data-app="pisarna-dms">
+      <div class="top"><img class="ai" src="/icons/apps/pisarna-dms.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="pisarna-dms/">Pisarna DMS Demo</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Document management demo with fictional data. Sign in as a demo user with the password <span class="mono">demo</span>; changes stay in your browser.</p>
+    </article>
+    </div>
+  </section>
+  <section class="group" id="g-people" data-group="people" aria-labelledby="h-people">
+    <header class="ghead"><h2 id="h-people">People &amp; IT</h2><span class="gcount">5 apps</span><p>Time off, onboarding, tasks and internal systems</p></header>
+    <div class="grid">
+    <article class="card" data-app="leave" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/leave.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="leave/">Time &amp; leave</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Leave requests and approvals, a team calendar with Slovenian and Croatian holidays, everyone's remaining days, clocking in on the phone and the monthly working-time record. Demo data.</p>
+      <nav class="screens" aria-label="Time &amp; leave screens"><a href="leave/#/">My leave</a><a href="leave/#/calendar">Calendar</a><a href="leave/#/time">My time</a><a href="leave/#/requests">Requests</a></nav>
+    </article>
+    <article class="card" data-app="team-tasks">
+      <div class="top"><img class="ai" src="/icons/apps/team-tasks.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="team-tasks/">Team Tasks</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Linear-style issue tracking: lists and boards grouped by status, cycles, projects, an inbox, a ⌘K command menu and keyboard shortcuts. Demo data; saved in your browser and your private cloud copy.</p>
+      <nav class="screens" aria-label="Team Tasks screens"><a href="team-tasks/#/my-issues/assigned">My issues</a><a href="team-tasks/#/inbox">Inbox</a><a href="team-tasks/#/team/WEB/issues/all?layout=board">Board</a><a href="team-tasks/#/team/WEB/cycle/current">Cycle</a><a href="team-tasks/#/projects">Projects</a></nav>
+    </article>
+    <article class="card" data-app="onboarding">
+      <div class="top"><img class="ai" src="/icons/apps/onboarding.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="onboarding/">Joiners &amp; leavers</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Checklists for new hires, moves and leavers: accounts, licences, attendance cards, keys and equipment, with overdue tasks by team and nothing forgotten on the last day. Demo data.</p>
+    </article>
+    <article class="card" data-app="hub-usage">
+      <div class="top"><img class="ai" src="/icons/apps/hub-usage.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="hub-usage/">Portal usage &amp; speed</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Who uses which apps on an internal apps portal, how fast and reliable they are, which apps could be retired and what the cloud costs. Demo data.</p>
+    </article>
+    <article class="card" data-app="n8n">
+      <div class="top"><img class="ai" src="/icons/apps/n8n.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="n8n/">n8n Runs</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Every n8n workflow and pipeline: health, scheduled runs per day, missed and failed runs, and when each workflow was last deployed. Demo data; the live version reads the run tracker.</p>
+    </article>
+    </div>
+  </section>
+  <section class="group" id="g-insights" data-group="insights" aria-labelledby="h-insights">
+    <header class="ghead"><h2 id="h-insights">Insights</h2><span class="gcount">6 apps</span><p>Dashboards and data quality</p></header>
+    <div class="grid">
+    <article class="card" data-app="analytics">
+      <div class="top"><img class="ai" src="/icons/apps/analytics.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="analytics/">Analytics</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Sales, stores, e-commerce funnel, marketing ROAS, customer cohorts and products, with filters and comparisons. Generated demo data.</p>
+    </article>
+    <article class="card" data-app="datacheck" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/datacheck.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="datacheck/">Data health check</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">Tool</span><span class="pill data yours" title="Your own files, read in this browser and never uploaded">Your data</span></div></div></div>
+      <p>Drop a customer, supplier or product list and see what is broken: invalid VAT numbers and IBANs, duplicates, missing fields. Fix it in one click and download a clean file and a report. Files never leave your browser.</p>
+    </article>
+    <article class="card" data-app="ads">
+      <div class="top"><img class="ai" src="/icons/apps/ads.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="ads/">Ads &amp; Return</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Google Ads and Meta spend against GA4 revenue and store bookings: return per market, every campaign, cost per booking per optics, budget pacing and wasted spend. Demo data; the live version reads the ad accounts.</p>
+    </article>
+    <article class="card" data-app="margin">
+      <div class="top"><img class="ai" src="/icons/apps/margin.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="margin/">Margin guard</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Which discount codes, price lists, brands and shops lose margin, and yesterday's negative-margin sales. Demo data; the live version reads sales and cost data.</p>
+    </article>
+    <article class="card" data-app="webshop">
+      <div class="top"><img class="ai" src="/icons/apps/webshop.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="webshop/">Webshop conversion health</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>Where shoppers drop off on the five webshops, by shop, device, category and landing page, and which tracking looks broken. Demo data; the live version reads GA4.</p>
+    </article>
+    <article class="card" data-app="cs-quality">
+      <div class="top"><img class="ai" src="/icons/apps/cs-quality.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="cs-quality/">Customer service quality</a></h3><div class="tags"><span class="pill kind">Monitor</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>NPS, first-answer times, SLA, calls and how much the AI chatbot handles, by market and queue. Demo data.</p>
+    </article>
+    </div>
+  </section>
+  <section class="group" id="g-studio" data-group="studio" aria-labelledby="h-studio">
+    <header class="ghead"><h2 id="h-studio">Studio</h2><span class="gcount">3 apps</span><p>The showcase site and tools for winning new work</p></header>
+    <div class="grid">
+    <article class="card" data-app="showcase">
+      <div class="top"><img class="ai" src="/icons/apps/showcase.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="showcase/">Tokovi</a></h3><div class="tags"><span class="pill kind">Site</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
+      <p>The company showcase: data warehousing, Power BI, analytics tools, predictions, automation and business apps, with live product mock-ups and links to the demos. Illustrative data.</p>
+    </article>
+    <article class="card" data-app="client-atlas">
+      <div class="top"><img class="ai" src="/icons/apps/client-atlas.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="client-atlas/">ERP &amp; BI Client Atlas</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
+      <p>Where to find paying clients for ERP, CRM, Power BI and data work, from Slovenia out to Europe. Your pipeline progress is saved in your private cloud copy.</p>
+    </article>
+    <article class="card" data-app="design-compare">
+      <div class="top"><img class="ai" src="/icons/apps/design-compare.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="design-compare/">Design Comparison</a></h3><div class="tags"><span class="pill kind">Decision</span></div></div></div>
+      <p>Pick your look: the real styles of these apps and the six home page styles, in light and dark. Clients vote for their favourites and send you the result as a link.</p>
+    </article>
+    </div>
+  </section>
+      <p class="empty" id="empty" hidden></p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <a class="fb" href="/"><img src="/icons/apps/launcher.png" alt="" width="22" height="22">Business Apps</a>
+    <p>Made by <a href="showcase/" data-app="showcase">Tokovi</a>. Demo apps use made-up companies and people; your own data is saved in this browser and your private cloud copy.</p>
+    <nav aria-label="Groups"><a href="#g-finance" data-jump>Finance</a><a href="#g-sales" data-jump>Sales &amp; marketing</a><a href="#g-operations" data-jump>Operations</a><a href="#g-people" data-jump>People &amp; IT</a><a href="#g-insights" data-jump>Insights</a><a href="#g-studio" data-jump>Studio</a><a href="showcase/" data-app="showcase">Showcase</a></nav>
+    <span>© Tokovi · Private site</span>
+  </footer>
+</div>
+</main>
+
+<nav class="bn" aria-label="Sections">
+  <a href="#top" data-nav="home" class="on" aria-current="true"><svg class="i" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 10.5l8-6.5 8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>Home</a>
+  <a href="#apps" data-nav="apps"><svg class="i" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>Apps</a>
+  <button type="button" data-nav="groups" aria-haspopup="menu" aria-expanded="false"><svg class="i" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M3.5 7V18.5h17V8.5h-8.5l-2-2.5H3.5z"/></svg>Groups</button>
+  <button type="button" data-install hidden aria-expanded="false" aria-controls="instPop" id="bnInstall"><svg class="i" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></svg>Install</button>
+</nav>
+
+<div class="menu" id="gmenu" role="menu" aria-label="Groups" hidden></div>
+
+<div class="cmdk" id="cmdk" hidden>
+  <div class="cmdk-back" data-cx-close></div>
+  <div class="cmdk-box" role="dialog" aria-modal="true" aria-label="Command bar">
+    <div class="cx-in"><svg class="i" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M4.5 11a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0M16 16l4.5 4.5"/></svg><input id="cxQ" type="search" role="combobox" aria-expanded="true" aria-controls="cxList" aria-autocomplete="list" aria-label="Search apps, screens, groups and actions" placeholder="Search apps, screens, groups and actions" autocomplete="off" spellcheck="false" enterkeyhint="go"><button class="cx-esc" type="button" data-cx-close aria-label="Close">esc</button><button class="cx-cancel" type="button" data-cx-close>Cancel</button></div>
+    <div class="cx-list" id="cxList" role="listbox" aria-label="Results"></div>
+    <div class="cx-foot" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd id="cxAlt">⌥</kbd><kbd>↵</kbd> pin or unpin</span><span><kbd>esc</kbd> close</span></div>
+  </div>
+</div>
+<p class="sr" id="live" aria-live="polite"></p>
+
+<script>
+// Home page: pinned apps, "Needs you today", Quick access, search, group chips, cards/list view, the ⌘K command bar and
+// Install. Works without this script too (every app is a plain link in the page).
+// localStorage: "stratum-apps-home" { group, view, tab, v }, "stratum-apps-recent" [ids, newest first],
+// "stratum-apps-opened" { id: ISO time }, "stratum-apps-pins" [ids in order], "stratum-needs" (written by the apps
+// through StratumShell.needs, read here).
+(function () {
+  'use strict';
+  var KEY = 'stratum-apps-home', RKEY = 'stratum-apps-recent', OKEY = 'stratum-apps-opened', PKEY = 'stratum-apps-pins', NKEY = 'stratum-needs';
+  var $ = function (id) { return document.getElementById(id); };
+  var root = document.documentElement;
+  function get(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? d : v; } catch (e) { return d; } }
+  function put(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function fold(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function reEsc(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function wordRe(w) { return new RegExp('(^|[^a-z0-9])' + reEsc(w)); }
+  var phone = window.matchMedia ? matchMedia('(max-width: 700px)') : { matches: false };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+  var ICONS = {"search":"M4.5 11a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0M16 16l4.5 4.5","star":"M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z","clock":"M3.5 12a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0M12 7.5V12l3 2","sparkle":"M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9L12 18.5l-1.9-5.6L4.5 11l5.6-1.9zM18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z","finance":"M3.5 12a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0M14.8 8.9a3.6 3.6 0 1 0 0 6.2M7.8 11h5M7.8 13.2h5","sales":"M4 10v4h3l7 4.5v-13L7 10zM17.5 9.2a4 4 0 0 1 0 5.6","operations":"M12 3.5l7.5 4v9l-7.5 4-7.5-4v-9zM4.5 7.5l7.5 4 7.5-4M12 11.5v9","people":"M8.4 8.3a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0 -7.2 0M5 20c.8-3.9 3.6-5.6 7-5.6s6.2 1.7 7 5.6","insights":"M4.5 20h15M7 16.5v-4M11 16.5V8M15 16.5v-6M19 16.5V5","studio":"M4.5 19.5l3.8-1 10.4-10.4a1.9 1.9 0 0 0-2.7-2.7L5.6 15.8zM14.3 6.7l3 3","install":"M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14","home":"M4 10.5l8-6.5 8 6.5V20h-5.5v-5.5h-5V20H4z","apps":"M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z","folder":"M3.5 7V18.5h17V8.5h-8.5l-2-2.5H3.5z","bell":"M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15zM10 20.5h4","filter":"M4 5.5h16l-6.2 7.2v5.6l-3.6 1.7v-7.3z","chevd":"M7 10l5 5 5-5","chevr":"M9.5 6l6 6-6 6","chevl":"M14.5 6l-6 6 6 6","x":"M6.5 6.5l11 11M17.5 6.5l-11 11","arrow":"M5 12h14M13 6l6 6-6 6","enter":"M19 6v6a3 3 0 0 1-3 3H6M9.5 11.5L6 15l3.5 3.5","list":"M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01","check":"M5 12.5l4.5 4.5L19 7.5","pencil":"M4.5 19.5l3.8-1 10.4-10.4a1.9 1.9 0 0 0-2.7-2.7L5.6 15.8zM14.3 6.7l3 3","monitor":"M3.5 5h17v11h-17zM8.5 20h7M12 16v4","open":"M13.5 5.5h5v5M18.5 5.5l-7.5 7.5M16.5 13.5v5h-11v-11h5"};
+  function svg(n, s, cls) { return '<svg class="i' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" width="' + (s || 16) + '" height="' + (s || 16) + '" aria-hidden="true" focusable="false"><path d="' + ICONS[n] + '"/></svg>'; }
+  function say(t) { var l = $('live'); l.textContent = ''; setTimeout(function () { l.textContent = t; }, 30); }
+  function scrollToEl(el) { if (el) el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
+  if (!isMac) { $('qK').textContent = 'Ctrl K'; $('cxAlt').textContent = 'Alt'; }
+
+  // the apps, read from the cards in the page
+  var groups = [], apps = [], byId = {};
+  [].forEach.call(document.querySelectorAll('.group'), function (sec) {
+    var g = { id: sec.getAttribute('data-group'), name: sec.querySelector('h2').textContent.trim(), desc: (sec.querySelector('.ghead p') || {}).textContent || '', el: sec, apps: [] };
+    groups.push(g);
+    [].forEach.call(sec.querySelectorAll('.card'), function (c) {
+      var kind = c.querySelector('.pill.kind'), data = c.querySelector('.pill.data');
+      var a = { id: c.getAttribute('data-app'), el: c, group: g, name: c.querySelector('h3').textContent.trim(), href: c.querySelector('.open').getAttribute('href'),
+        icon: c.querySelector('img.ai').getAttribute('src'), desc: c.querySelector('p').textContent.trim(), isNew: c.hasAttribute('data-new'),
+        kind: kind ? kind.textContent.trim() : '', data: data ? (data.classList.contains('yours') ? 'yours' : 'demo') : '',
+        screens: [].map.call(c.querySelectorAll('.screens a'), function (s) { return { name: s.textContent.trim(), href: s.getAttribute('href') }; }) };
+      a.text = fold(c.textContent + ' ' + g.name);
+      g.apps.push(a); apps.push(a); byId[a.id] = a;
+    });
+  });
+  function groupById(id) { for (var i = 0; i < groups.length; i++) if (groups[i].id === id) return groups[i]; return null; }
+  // Slovenian (and a few Croatian) words people search with, per app: they work in the search box and in ⌘K
+  var KW = {
+    billing: 'račun računi izdani računi izdaj račun fakturiranje faktura dobropis predračun ddv kir rp-o upn plačila naročnine',
+    invoices: 'prejeti računi prejeti račun stroški strošek dobavitelji dobavitelj dobropis ulazni računi troškovi',
+    cashflow: 'denarni tok likvidnost napoved gotovina blagajna novčani tok',
+    collections: 'terjatve dolžniki dolžnik opomin opomini izterjava zamudne obresti neplačani računi potraživanja dužnici opomena',
+    budget: 'proračun plan načrt odmiki izkaz poslovnega izida poročilo za upravo',
+    recon: 'usklajevanje plačil banka bančni izpisek poravnava',
+    contracts: 'pogodbe pogodba odpoved najem obnova ugovori ugovor',
+    crm: 'stranke kupci priložnosti priložnost ponudbe prodaja kontakti ponude prilike',
+    mail: 'e-pošta novice kampanje sms',
+    marketing: 'koledar kampanje oglaševanje',
+    erp: 'naročilo naročila prodajno naročilo naročilnica nabava zaloga zaloge skladišče izdelki ponudba predračun blagajna narudžba skladište zalihe',
+    service: 'servis serviser delovni nalog servisni nalog teren vzdrževanje',
+    stores: 'trgovine prodajalne poslovalnice dnevni promet',
+    parcels: 'paketi paket pošiljke odkupnina dostava pouzeće',
+    desk: 'naloge opravila rok roki',
+    'pisarna-dms': 'dokumenti arhiv pisarna',
+    leave: 'dopust dopusti odsotnost bolniška bolniški stalež prihod odhod evidenca delovnega časa ure prazniki godišnji odmor bolovanje',
+    'team-tasks': 'naloge projekti zadaci',
+    onboarding: 'zaposlitev novi sodelavci odhod zaposleni prijava odjava',
+    datacheck: 'čiščenje podatkov preverjanje podatkov davčna številka ddv številka iban oib',
+    analytics: 'analitika poročila prodaja',
+    margin: 'marža marže popusti cene',
+    'client-atlas': 'potencialne stranke leadi prodaja klienti',
+    'design-compare': 'videz slog izgled dizajn'
+  };
+  apps.forEach(function (a) { a.kw = KW[a.id] || ''; if (a.kw) a.text += ' ' + fold(a.kw); });
+
+  // stored lists
+  function idList(k) { var l = get(k, []); return Array.isArray(l) ? l.filter(function (id, i) { return byId[id] && l.indexOf(id) === i; }) : []; }
+  function pins() { return idList(PKEY); }
+  function recents() { return idList(RKEY); }
+  function opened() { var o = get(OKEY, {}); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; }
+  function isPinned(id) { return pins().indexOf(id) >= 0; }
+  function remember(id) {
+    if (!byId[id]) return;
+    var l = get(RKEY, []); if (!Array.isArray(l)) l = [];
+    l = l.filter(function (x) { return x !== id; }); l.unshift(id); put(RKEY, l.slice(0, 12));
+    var o = opened(); o[id] = new Date().toISOString();
+    Object.keys(o).forEach(function (k) { if (!byId[k]) delete o[k]; });
+    put(OKEY, o);
+  }
+
+  var TABS = ['recent', 'pinned', 'new', 'yours'];
+  var pref = get(KEY, {}); if (!pref || typeof pref !== 'object') pref = {};
+  // v2: the view saved by the old home page (phones always saved "list") is not carried over
+  var state = { group: groupById(pref.group) ? pref.group : '', view: pref.v === 2 && pref.view === 'list' ? 'list' : 'cards',
+    tab: TABS.indexOf(pref.tab) >= 0 ? pref.tab : 'recent', q: '', edit: false, qaAll: false, needsAll: false };
+  if (state.tab === 'recent' && !recents().length && pins().length) state.tab = 'pinned';
+  function save() { put(KEY, { group: state.group, view: state.view, tab: state.tab, v: 2 }); }
+
+  // times: "Today, 09:12", "Yesterday", "Monday", "10 Oct"
+  function when(iso, mode) {
+    var d = new Date(iso); if (!iso || isNaN(d)) return '';
+    var now = new Date(), start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(), day = 864e5;
+    var hm = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    if (d.getTime() >= start) return mode === 'asof' ? 'as of ' + hm : mode === 'meta' ? hm : 'Today, ' + hm;
+    if (d.getTime() >= start - day) return mode === 'opened' ? 'Yesterday' : 'yesterday';
+    if (d.getTime() >= start - 6 * day) return d.toLocaleDateString('en-GB', { weekday: 'long' });
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+
+  // greeting
+  (function () {
+    var now = new Date(), h = now.getHours();
+    $('hi').textContent = h >= 5 && h < 12 ? 'Good morning' : h >= 12 && h < 18 ? 'Good afternoon' : 'Good evening';
+    $('today').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  })();
+
+  // pin buttons on every card
+  apps.forEach(function (a) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'pin'; b.setAttribute('data-pin', a.id); b.innerHTML = svg('star', 18);
+    a.el.querySelector('.top').appendChild(b);
+  });
+  function pinBtn(a) { return '<button type="button" class="pin" data-pin="' + a.id + '">' + svg('star', 18) + '</button>'; }
+  function syncPinButtons() {
+    var p = pins();
+    [].forEach.call(document.querySelectorAll('[data-pin]'), function (b) {
+      var a = byId[b.getAttribute('data-pin')]; if (!a) return;
+      var on = p.indexOf(a.id) >= 0;
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-label', 'Pin ' + a.name);
+      b.title = on ? 'Pinned to Home. Click to unpin' : 'Pin to Home';
+    });
+  }
+  function setPins(p) { put(PKEY, p); renderPins(); syncPinButtons(); renderQuick(); }
+  function togglePin(id) {
+    var a = byId[id]; if (!a) return;
+    var p = pins(), i = p.indexOf(id);
+    if (i < 0) p.push(id); else p.splice(i, 1);
+    setPins(p);
+    say(i < 0 ? a.name + ' pinned to Home' : a.name + ' unpinned');
+  }
+  // put the focus back on the same control after a list was drawn again
+  function refocus(box, sel, fallback) {
+    var el = box && box.querySelector(sel);
+    if (!el && fallback) el = box.querySelector(fallback);
+    if (el && !el.disabled) el.focus();
+  }
+
+  // pinned apps row (with nothing pinned: recently opened, then new apps)
+  function renderPins() {
+    var p = pins(), sug = !p.length, list = p;
+    if (sug) {
+      state.edit = false;
+      list = recents().concat(apps.filter(function (a) { return a.isNew; }).map(function (a) { return a.id; }))
+        .filter(function (id, i, l) { return l.indexOf(id) === i; }).slice(0, 8);
+    }
+    $('pinsH').textContent = sug ? 'Recent and new' : 'Pinned';
+    $('pinsHint').innerHTML = sug ? 'Pin your favourites: tap ' + svg('star', 15) + ' on any app' + (phone.matches ? '' : ', or drag it here') + '.'
+      : state.edit ? (phone.matches ? 'Use the arrows to reorder.' : 'Use the arrows or drag the icons to change the order.') : '';
+    var ed = $('pinEdit');
+    ed.hidden = sug;
+    ed.setAttribute('aria-pressed', state.edit ? 'true' : 'false');
+    ed.className = 'fbtn ' + (state.edit ? 'pri' : 'sub');
+    ed.innerHTML = state.edit ? svg('check', 16) + '<span>Done</span>' : svg('pencil', 16) + '<span>Edit</span>';
+    ed.setAttribute('aria-label', state.edit ? 'Done editing pinned apps' : 'Edit pinned apps');
+    $('pins').classList.toggle('editing', state.edit);
+    var n = list.length;
+    $('pinRow').innerHTML = list.map(function (id, i) {
+      var a = byId[id], e = esc(a.name);
+      return '<li class="pt" data-app="' + a.id + '"' + (sug ? '' : ' draggable="true"') + '>' +
+        '<a class="pl" href="' + esc(a.href) + '"' + (state.edit ? ' tabindex="-1" aria-disabled="true"' : '') + ' title="' + e + '"><img src="' + esc(a.icon) + '" alt="" width="40" height="40"><span>' + e + '</span></a>' +
+        (!sug && state.edit ? '<span class="pe"><button type="button" data-move="-1" data-id="' + a.id + '" aria-label="Move ' + e + ' left"' + (i === 0 ? ' disabled' : '') + '>' + svg('chevl', 14) + '</button>' +
+          '<button type="button" data-unpin="' + a.id + '" aria-label="Unpin ' + e + '">' + svg('x', 13) + '</button>' +
+          '<button type="button" data-move="1" data-id="' + a.id + '" aria-label="Move ' + e + ' right"' + (i === n - 1 ? ' disabled' : '') + '>' + svg('chevr', 14) + '</button></span>' : '') +
+        '</li>';
+    }).join('') + (state.edit ? '' : '<li class="pt all"><a class="pl" href="#apps" data-nav="apps"><span class="ring">' + svg('arrow', 16) + '</span><span>All ' + apps.length + ' apps</span></a></li>');
+  }
+  function movePin(id, dir) {
+    var p = pins(), i = p.indexOf(id), j = i + dir;
+    if (i < 0 || j < 0 || j >= p.length) return;
+    p.splice(i, 1); p.splice(j, 0, id); setPins(p);
+    refocus($('pinRow'), '[data-move="' + dir + '"][data-id="' + id + '"]', '[data-move="' + (-dir) + '"][data-id="' + id + '"]');
+    say(byId[id].name + ' moved to position ' + (j + 1) + ' of ' + p.length);
+  }
+  $('pinEdit').addEventListener('click', function () {
+    state.edit = !state.edit; renderPins();
+    if (state.edit) refocus($('pinRow'), '.pe button:not(:disabled)'); else $('pinEdit').focus();
+  });
+
+  // drag and drop: reorder the pinned row; drop any app (a card, a row) on it to pin it there
+  var drag = null;
+  document.addEventListener('dragstart', function (e) {
+    var host = e.target.closest && e.target.closest('[data-app]');
+    if (!host || !byId[host.getAttribute('data-app')] || state.edit) return;
+    drag = { id: host.getAttribute('data-app'), el: host.closest('#pinRow') ? host : null };
+    try { e.dataTransfer.setData('application/x-stratum-app', drag.id); e.dataTransfer.effectAllowed = 'copyMove'; } catch (x) {}
+    if (drag.el) setTimeout(function () { if (drag && drag.el) drag.el.classList.add('dragging'); }, 0);
+    else $('pins').classList.add('drop-ok');
+  });
+  document.addEventListener('dragend', function () {
+    drag = null; clearDrop();
+    [].forEach.call(document.querySelectorAll('.pt.dragging'), function (t) { t.classList.remove('dragging'); });
+    $('pins').classList.remove('drop-ok');
+  });
+  function clearDrop() { [].forEach.call(document.querySelectorAll('.drop-before,.drop-after'), function (t) { t.classList.remove('drop-before', 'drop-after'); }); }
+  function dropIndex(e) {
+    if (!pins().length) return { i: 0 };
+    var tiles = [].slice.call($('pinRow').querySelectorAll('.pt[data-app]')), best = null, bd = Infinity;
+    tiles.forEach(function (t, i) {
+      var r = t.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      var d = Math.pow(e.clientX - cx, 2) + 4 * Math.pow(e.clientY - cy, 2);
+      if (d < bd) { bd = d; best = { t: t, i: e.clientX > cx ? i + 1 : i, after: e.clientX > cx }; }
+    });
+    return best || { i: 0 };
+  }
+  $('pinRow').addEventListener('dragover', function (e) {
+    if (!drag) return;
+    e.preventDefault();
+    try { e.dataTransfer.dropEffect = drag.el ? 'move' : 'copy'; } catch (x) {}
+    var d = dropIndex(e); clearDrop();
+    if (d.t) d.t.classList.add(d.after ? 'drop-after' : 'drop-before');
+  });
+  $('pinRow').addEventListener('dragleave', function (e) { if (!$('pinRow').contains(e.relatedTarget)) clearDrop(); });
+  $('pinRow').addEventListener('drop', function (e) {
+    if (!drag) return;
+    e.preventDefault();
+    var id = drag.id, d = dropIndex(e), p = pins(), from = p.indexOf(id), at = d.i;
+    if (from >= 0) { p.splice(from, 1); if (from < at) at--; }
+    p.splice(Math.max(0, Math.min(at, p.length)), 0, id);
+    drag = null; clearDrop(); $('pins').classList.remove('drop-ok');
+    setPins(p);
+    say(byId[id].name + (from >= 0 ? ' moved to position ' : ' pinned at position ') + (p.indexOf(id) + 1) + ' of ' + p.length);
+  });
+
+  // needs you today (saved by the apps through StratumShell.needs)
+  function readNeeds() {
+    var all = get(NKEY, {}), now = Date.now(), cutoff = now - 7 * 864e5;
+    if (!all || typeof all !== 'object' || Array.isArray(all)) return [];
+    return Object.keys(all).map(function (k) {
+      var v = all[k] || {}, t = Date.parse(v.at);
+      var items = Array.isArray(v.items) ? v.items.filter(function (it) { return it && typeof it.text === 'string' && it.text.trim(); }).slice(0, 3) : [];
+      return { a: byId[k], at: v.at, t: t, items: items };
+    }).filter(function (x) { return x.a && x.items.length && x.t > cutoff && x.t < now + 3e5; })
+      .sort(function (x, y) { return y.t - x.t; });
+  }
+  var TONES = { bad: 3, warn: 2, info: 1 };
+  function tone(t) { return TONES[t] ? t : 'info'; }
+  function safeHref(h, a) { return typeof h === 'string' && /^\/(?!\/)/.test(h) ? h : a.href; }
+  function renderNeeds() {
+    var list = readNeeds(), max = phone.matches ? 12 : 6, shown = state.needsAll ? list : list.slice(0, max);
+    var nItems = list.reduce(function (n, x) { return n + x.items.length; }, 0);
+    $('needsSub').textContent = list.length ? (list.length === 1 ? 'From 1 app' : 'From ' + list.length + ' apps') + ', newest first' : '';
+    $('bellN').hidden = !list.length; $('bellN').textContent = list.length > 9 ? '9+' : String(list.length);
+    $('bell').setAttribute('aria-label', 'Needs you today' + (nItems ? ': ' + nItems + (nItems === 1 ? ' item' : ' items') : ''));
+    $('needsMore').hidden = list.length <= max;
+    $('needsMore').textContent = state.needsAll ? 'Show fewer' : 'Show all ' + list.length;
+    if (!list.length) {
+      $('needsBody').innerHTML = '<p class="nempty">' + svg('bell', 20) + '<span>Open an app once and what needs you shows up here.</span></p>';
+      return;
+    }
+    $('needsBody').innerHTML = '<ul class="nlist">' + shown.map(function (x) {
+      var a = x.a, worst = 'info';
+      x.items.forEach(function (it) { if (TONES[tone(it.tone)] > TONES[worst]) worst = tone(it.tone); });
+      return '<li class="need" data-app="' + a.id + '" data-tone="' + worst + '"><header><img src="' + esc(a.icon) + '" alt="" width="24" height="24"><b><a href="' + esc(a.href) + '">' + esc(a.name) + '</a></b><time datetime="' + esc(x.at) + '">' + esc(when(x.at, 'asof')) + '</time></header><ul>' +
+        x.items.map(function (it) {
+          var n = typeof it.count === 'number' && isFinite(it.count) ? it.count : null, tn = tone(it.tone);
+          return '<li><a href="' + esc(safeHref(it.href, a)) + '">' + (n === null ? '<span class="cnt dot ' + tn + '" aria-hidden="true"></span>' : '<span class="cnt ' + tn + '">' + esc(n.toLocaleString('en-GB')) + '</span>') +
+            '<span class="tx">' + esc(it.text.replace(/ %/g, '\u00a0%')) + '</span>' + svg('chevr', 16) + '</a></li>';
+        }).join('') + '</ul></li>';
+    }).join('') + '</ul>';
+  }
+  $('needsMore').addEventListener('click', function () { state.needsAll = !state.needsAll; renderNeeds(); });
+  $('bell').addEventListener('click', function () { if (state.q) clearSearch(); scrollToEl($('needs')); });
+
+  // quick access
+  function qaList(tab, anyGroup) {
+    var ids = tab === 'recent' ? recents() : tab === 'pinned' ? pins()
+      : apps.filter(function (a) { return tab === 'new' ? a.isNew : a.data === 'yours'; }).map(function (a) { return a.id; });
+    return ids.map(function (id) { return byId[id]; }).filter(function (a) { return anyGroup || !state.group || a.group.id === state.group; });
+  }
+  var EMPTY = { recent: 'Nothing opened yet. Apps you open from this page show up here.', pinned: 'Nothing pinned yet. Use the star on any app to pin it.', new: 'No new apps.', yours: 'No apps with your own data.' };
+  function renderQuick() {
+    [].forEach.call(document.querySelectorAll('#qaTabs [role="tab"]'), function (t) {
+      var on = t.getAttribute('data-tab') === state.tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1;
+      if (on) $('qaPanel').setAttribute('aria-labelledby', t.id);
+    });
+    var list = qaList(state.tab), op = opened(), max = phone.matches ? 5 : 8;
+    var rows = state.qaAll || list.length <= max + 1 ? list : list.slice(0, max);
+    $('qaBody').innerHTML = rows.length ? rows.map(function (a) {
+      var t = op[a.id], e = esc(a.name), gname = esc(a.group.name);
+      var meta = gname + (t ? ' · Opened ' + esc(when(t, 'meta')) : '');
+      return '<tr data-app="' + a.id + '"><td class="c-nm"><a class="ql" href="' + esc(a.href) + '"><img src="' + esc(a.icon) + '" alt="" width="24" height="24"><span class="qx"><span class="qn"><span class="nm">' + e + '</span>' + (a.isNew ? '<span class="pill new">New</span>' : '') + '</span><span class="meta">' + meta + '</span></span></a></td>' +
+        '<td>' + gname + '</td><td>' + esc(a.kind || '—') + '</td><td>' + (a.data === 'yours' ? '<span class="pill yours">Your data</span>' : a.data ? '<span class="pill">Demo data</span>' : '—') + '</td>' +
+        '<td>' + (t ? esc(when(t, 'opened')) : state.tab === 'recent' ? 'Earlier' : '—') + '</td><td class="c-pin">' + pinBtn(a) + '</td></tr>';
+    }).join('') : '<tr class="none"><td colspan="6">' + (state.group && qaList(state.tab, true).length ? 'Nothing from ' + esc(groupById(state.group).name) + ' here. Choose All groups to see the rest.' : EMPTY[state.tab]) + '</td></tr>';
+    $('qaFoot').hidden = list.length <= max + 1;
+    $('qaMore').textContent = state.qaAll ? 'Show fewer' : 'Show all ' + list.length;
+    syncPinButtons();
+  }
+  function setTab(t, focus) {
+    if (TABS.indexOf(t) < 0) return;
+    state.tab = t; state.qaAll = false; save(); renderQuick();
+    if (focus) $('tab-' + t).focus();
+  }
+  $('qaTabs').addEventListener('click', function (e) { var t = e.target.closest('[role="tab"]'); if (t) setTab(t.getAttribute('data-tab')); });
+  $('qaTabs').addEventListener('keydown', function (e) {
+    var i = TABS.indexOf(state.tab), j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TABS.length - 1 : null;
+    if (j === null) return;
+    e.preventDefault(); setTab(TABS[(j + TABS.length) % TABS.length], true);
+  });
+  $('qaMore').addEventListener('click', function () { state.qaAll = !state.qaAll; renderQuick(); });
+  $('qaBody').addEventListener('click', function (e) {
+    if (e.target.closest('a,button')) return;
+    var tr = e.target.closest('tr[data-app]'), a = tr && tr.querySelector('a.ql');
+    if (a) a.click();
+  });
+  $('qaGroup').innerHTML = '<option value="">All groups</option>' + groups.map(function (g) { return '<option value="' + g.id + '">' + esc(g.name) + '</option>'; }).join('');
+  $('qaGroup').addEventListener('change', function () { setGroup(this.value); });
+
+  // group chips (top of the page on a phone, above All apps on a computer)
+  var chipHtml = '<button type="button" data-g="">All <span>' + apps.length + '</span></button>' + groups.map(function (g) {
+    return '<button type="button" data-g="' + g.id + '">' + esc(g.name) + ' <span>' + g.apps.length + '</span></button>';
+  }).join('');
+  $('chips').innerHTML = chipHtml; $('chipsTop').innerHTML = chipHtml;
+  function onChip(e) {
+    var b = e.target.closest('button[data-g]'); if (!b) return;
+    setGroup(b.getAttribute('data-g'));
+    if (state.group && !phone.matches) { var g = $('g-' + state.group); if (g && g.getBoundingClientRect().top < 0) g.scrollIntoView({ block: 'start' }); }
+  }
+  $('chips').addEventListener('click', onChip); $('chipsTop').addEventListener('click', onChip);
+  function setGroup(g) { state.group = groupById(g) ? g : ''; state.qaAll = false; apply(); }
+
+  // search and filters
+  function apply() {
+    var q = fold(state.q.trim()), shown = 0;
+    // every word must start a word in the card (so "vat" finds "VAT ledger", not "private")
+    var res = (q ? q.split(/\s+/) : []).map(wordRe);
+    groups.forEach(function (g) {
+      var inGroup = !state.group || g.id === state.group, n = 0;
+      g.apps.forEach(function (a) {
+        var ok = inGroup && res.every(function (re) { return re.test(a.text); });
+        if (ok) { a.el.removeAttribute('data-hide'); n++; } else a.el.setAttribute('data-hide', '');
+      });
+      if (n) g.el.removeAttribute('data-hide'); else g.el.setAttribute('data-hide', '');
+      shown += n;
+    });
+    [].forEach.call(document.querySelectorAll('.chips button[data-g]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-g') === state.group)); });
+    [].forEach.call(document.querySelectorAll('.view button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === state.view)); });
+    $('qaGroup').value = state.group;
+    $('apps').classList.toggle('list', state.view === 'list');
+    $('qClear').hidden = !state.q; $('qK').hidden = !!state.q;
+    document.body.classList.toggle('searching', !!q);
+    $('appsH').textContent = q ? 'Search results' : 'All apps';
+    $('appsN').textContent = shown + (shown === 1 ? ' app' : ' apps');
+    var empty = $('empty');
+    empty.hidden = shown > 0;
+    if (!shown) empty.textContent = q ? 'No app matches “' + state.q.trim() + '”' + (state.group ? ' in this group. Try All.' : '.') : 'No apps here.';
+    $('status').textContent = q ? shown + (shown === 1 ? ' app matches' : ' apps match') + ' “' + state.q.trim() + '”' + (state.group ? ' in ' + groupById(state.group).name : '') : '';
+    renderQuick();
+    save();
+  }
+  function clearSearch() { $('q').value = ''; state.q = ''; apply(); }
+  $('q').addEventListener('input', function () { state.q = this.value; apply(); });
+  $('q').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && this.value) { e.preventDefault(); clearSearch(); }
+    if (e.key === 'Enter') { var first = document.querySelector('.card:not([data-hide]) .open'); if (first) first.click(); }
+  });
+  $('qClear').addEventListener('click', function () { clearSearch(); $('q').focus(); });
+  $('qK').addEventListener('click', function () { openCmd($('q').value); });
+  $('pSearch').addEventListener('click', function () { openCmd(''); });
+  document.querySelector('.view').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-view]'); if (b) { state.view = b.getAttribute('data-view'); apply(); }
+  });
+
+  // one click handler for pins, edit controls, section links and "recently opened"
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var pb = t.closest('[data-pin]');
+    if (pb) {
+      e.preventDefault();
+      var id = pb.getAttribute('data-pin'), box = pb.closest('#qaBody') ? $('qaBody') : null;
+      togglePin(id);
+      if (box) refocus(box, '[data-pin="' + id + '"]', '[data-pin]'); else pb.focus();
+      return;
+    }
+    if (state.edit && t.closest('#pinRow .pl')) { e.preventDefault(); return; }
+    var mv = t.closest('[data-move]'); if (mv) { movePin(mv.getAttribute('data-id'), +mv.getAttribute('data-move')); return; }
+    var un = t.closest('[data-unpin]');
+    if (un) {
+      var uid = un.getAttribute('data-unpin'), p = pins(), at = p.indexOf(uid);
+      togglePin(uid);
+      if (pins().length) refocus($('pinRow'), '.pt:nth-child(' + Math.min(at + 1, pins().length) + ') [data-unpin]');
+      else refocus($('pinRow'), 'a');
+      return;
+    }
+    var nav = t.closest('[data-nav]');
+    if (nav) {
+      var where = nav.getAttribute('data-nav');
+      if (where === 'groups') { e.preventDefault(); toggleMenu(nav); return; }
+      e.preventDefault();
+      if (state.q && where !== 'home') clearSearch();
+      if (where === 'home') { if (state.q) clearSearch(); window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); }
+      else if (where === 'apps') scrollToEl($('apps'));
+      else if (where === 'new') { setTab('new'); scrollToEl($('quick')); }
+      return;
+    }
+    if (t.closest('[data-jump]') && (state.group || state.q)) { state.group = ''; $('q').value = ''; state.q = ''; apply(); }
+    var a = t.closest('a[href]');
+    if (a && !e.defaultPrevented) { var host = a.closest('[data-app]'); if (host) remember(host.getAttribute('data-app')); }
+  });
+  // a middle click opens a new tab: that counts as opening the app too
+  document.addEventListener('auxclick', function (e) {
+    var a = e.button === 1 && e.target.closest('a[href]'), host = a && a.closest('[data-app]');
+    if (host) remember(host.getAttribute('data-app'));
+  });
+
+  // rail and bottom bar: Home or Apps, by where the page is
+  var navTick = 0;
+  function markNav() {
+    navTick = 0;
+    var inApps = !!state.q || $('apps').getBoundingClientRect().top < window.innerHeight * 0.45;
+    [].forEach.call(document.querySelectorAll('.rail [data-nav], .bn [data-nav]'), function (n) {
+      var k = n.getAttribute('data-nav'), on = (k === 'apps' && inApps) || (k === 'home' && !inApps);
+      n.classList.toggle('on', on);
+      if (n.tagName === 'A') { if (on) n.setAttribute('aria-current', 'true'); else n.removeAttribute('aria-current'); }
+    });
+  }
+  window.addEventListener('scroll', function () { if (!navTick) navTick = requestAnimationFrame(markNav); }, { passive: true });
+
+  // groups menu
+  var menu = $('gmenu'), menuFrom = null;
+  function toggleMenu(from) { if (!menu.hidden && menuFrom === from) closeMenu(true); else openMenu(from); }
+  function openMenu(from) {
+    menu.innerHTML = '<div class="mh" aria-hidden="true">Show a group</div><button type="button" role="menuitemradio" data-g="" aria-checked="' + (!state.group) + '">' + svg('apps', 18) + 'All apps<span>' + apps.length + '</span></button>' +
+      groups.map(function (g) {
+        return '<button type="button" role="menuitemradio" data-g="' + g.id + '" aria-checked="' + (state.group === g.id) + '">' + svg(ICONS[g.id] ? g.id : 'folder', 18) + esc(g.name) + '<span>' + g.apps.length + '</span></button>';
+      }).join('');
+    menu.hidden = false; menuFrom = from;
+    [].forEach.call(document.querySelectorAll('[data-nav="groups"]'), function (b) { b.setAttribute('aria-expanded', String(b === from)); });
+    if (!phone.matches) {
+      var r = from.getBoundingClientRect(), h = menu.offsetHeight;
+      menu.style.left = (r.right + 6) + 'px';
+      menu.style.top = Math.max(56, Math.min(r.top, window.innerHeight - h - 8)) + 'px';
+    } else { menu.style.left = ''; menu.style.top = ''; }
+    (menu.querySelector('[aria-checked="true"]') || menu.querySelector('button')).focus();
+  }
+  function closeMenu(restore) {
+    if (menu.hidden) return;
+    menu.hidden = true;
+    [].forEach.call(document.querySelectorAll('[data-nav="groups"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+    if (restore && menuFrom) menuFrom.focus();
+  }
+  menu.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-g]'); if (!b) return;
+    closeMenu(false);
+    if (state.q) clearSearch();
+    setGroup(b.getAttribute('data-g'));
+    scrollToEl($('apps'));
+    say(state.group ? 'Showing ' + groupById(state.group).name : 'Showing all apps');
+  });
+  menu.addEventListener('keydown', function (e) {
+    var items = [].slice.call(menu.querySelectorAll('button')), i = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); items[(i + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus(); }
+    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); items[e.key === 'Home' ? 0 : items.length - 1].focus(); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeMenu(true); }
+    else if (e.key === 'Tab') closeMenu(false);
+  });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target) && !e.target.closest('[data-nav="groups"]')) closeMenu(false); });
+
+  // Install as an app. The button shows only where installing works:
+  //   - Chrome, Edge, Samsung Internet, Opera (computer and Android): once the browser offers its own install dialog
+  //     (beforeinstallprompt), which it does only when the site can be installed and is not installed yet;
+  //   - Safari on the Mac (17 / macOS Sonoma or newer): File → Add to Dock, shown as steps;
+  //   - iPhone and iPad (any browser): Share → Add to Home Screen, shown as steps;
+  //   - Firefox on Android: menu → Install, shown as steps.
+  // Never in Firefox on a computer (it cannot install sites), in older Safari, or inside the installed app.
+  var install = (function () {
+    var api = { available: false, start: function () {}, where: 'computer' };
+    var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    if (standalone) return api;
+    var box = $('inst'), btn = $('instBtn'), pop = $('instPop'), body = $('instBody'), h = $('instH'), ua = navigator.userAgent;
+    var triggers = [btn].concat([].slice.call(document.querySelectorAll('[data-install]'))), from = btn;
+    var ios = /iPhone|iPod/.test(ua) || (/iPad|Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    var mac = !ios && /Macintosh/.test(ua);
+    var edge = /Edg\//.test(ua), chrome = !edge && /Chrome\/|Chromium\//.test(ua), firefox = /Firefox\/|FxiOS\//.test(ua);
+    var safari = !chrome && !edge && !firefox && /Safari\//.test(ua) && !/CriOS|EdgiOS/.test(ua);
+    var safariMajor = +((ua.match(/Version\/(\d+)/) || [])[1] || 0);
+    var deferred = null, shown = false;
+    var android = /Android/.test(ua);
+    var where = ios ? (/iPhone|iPod/.test(ua) ? 'iPhone' : 'iPad') : android ? 'phone' : mac ? 'Mac' : 'computer';
+    h.textContent = 'Add Business Apps to your ' + where;
+    var note = '<p class="note">It opens in its own window with its own icon. Sign in once inside it, the same way as here.</p>';
+    function steps() {
+      if (ios) return '<ol><li>Tap the Share button <kbd>⬆</kbd>' + (safari ? ' in Safari' : ' (in Chrome and Edge it is in the address bar)') + '.</li><li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol>' + note;
+      if (android && firefox) return '<ol><li>Open the browser menu <kbd>⋮</kbd>.</li><li>Choose <b>Install</b> (or <b>Add to Home screen</b>), then <b>Add</b>.</li></ol>' + note;
+      if (android) return '<ol><li>Open the browser menu <kbd>⋮</kbd>.</li><li>Choose <b>Add to Home screen</b> (or <b>Install app</b>), then <b>Install</b>.</li></ol>' + note;
+      if (safari) return '<ol><li>In the menu bar choose <kbd>File</kbd> → <b>Add to Dock…</b></li><li>Keep the name and click <b>Add</b>.</li></ol>' +
+        '<p class="note">Business Apps then sits in your Dock and in Launchpad.</p>' + note;
+      if (edge) return '<ol><li>Open the menu <kbd>···</kbd> → <b>Apps</b>.</li><li>Choose <b>Install Business Apps</b>.</li></ol>' + note;
+      return '<p>Click the install icon at the right end of the address bar, or open the menu <kbd>⋮</kbd> → <b>Cast, save and share</b> → <b>Install page as app…</b></p>' + note;
+    }
+    function open(v, by) {
+      pop.hidden = !v;
+      if (v) { from = by || btn; body.innerHTML = steps(); }
+      triggers.forEach(function (t) { t.setAttribute('aria-expanded', v && t === from ? 'true' : 'false'); });
+      if (v) pop.focus();
+    }
+    function show() { if (shown) return; shown = true; box.hidden = false; triggers.forEach(function (t) { t.hidden = false; }); api.available = true; }
+    function gone() { shown = false; box.hidden = true; triggers.forEach(function (t) { if (t !== btn) t.hidden = true; }); open(false); api.available = false; }
+    function start(by) {
+      by = by || btn;
+      if (!api.available) return;
+      if (deferred) {
+        var d = deferred; deferred = null;
+        d.prompt();
+        d.userChoice.then(function (c) { if (c && c.outcome === 'accepted') gone(); }, function () {});
+        return;
+      }
+      // the browser's dialog was already used once on this page (dismissed): show where its own Install item is
+      if (!pop.hidden && from === by) { open(false); return; }
+      open(true, by);
+    }
+    window.addEventListener('beforeinstallprompt', function (e) { if (firefox || safari) return; e.preventDefault(); deferred = e; show(); }); // (only Chromium browsers send it)
+    window.addEventListener('appinstalled', gone);
+    triggers.forEach(function (t) { t.addEventListener('click', function () { start(t); }); });
+    $('instX').addEventListener('click', function () { open(false); if (from) from.focus(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { open(false); if (from) from.focus(); } });
+    document.addEventListener('click', function (e) { if (!pop.hidden && !box.contains(e.target) && !e.target.closest('[data-install]')) open(false); });
+    // where installing takes a few manual steps, the button is there from the start
+    if (ios || (mac && safari && safariMajor >= 17) || (android && firefox)) show();
+    api.start = start; api.where = where;
+    return api;
+  })();
+
+  // ⌘K command bar: apps and their screens, groups and actions
+  var cx = { el: $('cmdk'), input: $('cxQ'), list: $('cxList'), items: [], active: -1, last: null, back: null };
+  function openCmd(pre) {
+    if (!cx.el.hidden) { cx.input.focus(); return; }
+    closeMenu(false);
+    cx.back = document.activeElement;
+    cx.el.hidden = false; root.classList.add('cmdk-open');
+    cx.input.value = pre || ''; cx.last = null;
+    renderCmd(false);
+    cx.input.focus();
+    if (pre) cx.input.select();
+  }
+  function closeCmd(restore) {
+    if (cx.el.hidden) return;
+    if (cx.el.contains(document.activeElement)) document.activeElement.blur();
+    cx.el.hidden = true; root.classList.remove('cmdk-open');
+    if (restore !== false && cx.back && cx.back.focus && document.contains(cx.back) && cx.back !== document.body) cx.back.focus();
+  }
+  function cxWords(q) { return fold(q).trim().split(/\s+/).filter(Boolean); }
+  // alias: other names for the item (Slovenian words), scored nearly like its title
+  function score(title, extra, ws, alias) {
+    var ft = fold(title), fe = fold(extra), fa = fold(alias || ''), s = 0;
+    for (var i = 0; i < ws.length; i++) {
+      var w = ws[i], re = wordRe(w);
+      if (ft.indexOf(w) === 0) s += 100;
+      else if (re.test(ft)) s += 60;
+      else if (re.test(fa)) s += 50;
+      else if (ft.indexOf(w) > 0) s += 25;
+      else if (re.test(fe)) s += 8;
+      else return 0;
+    }
+    return s - ft.length / 200;
+  }
+  // Quick actions: straight to the screen where the thing is done (routes checked in each app; where an app has no
+  // address for "new …", the action opens the screen with that button and says which one to press)
+  var TASKS = [
+    ['billing', 'New invoice', 'Billing › a new invoice', 'billing/#new', 'new invoice issue invoice credit note nov račun izdaj račun izdati račun račun faktura fakturiraj dobropis'],
+    ['billing', 'VAT ledger', 'Billing › KIR, the book of issued invoices', 'billing/#kir', 'vat ledger ddv kir knjiga izdanih računov'],
+    ['invoices', 'Add a supplier invoice', 'Invoices: drop the PDF on the page', 'invoices/', 'supplier invoice bill cost prejeti račun vnesi račun strošek ulazni račun'],
+    ['collections', 'Who owes us', 'Collections › Today: who to call', 'collections/#/', 'receivables overdue debtors terjatve dolžniki izterjava neplačani potraživanja'],
+    ['collections', 'Reminder letters', 'Collections › Reminders', 'collections/#/reminders', 'reminder dunning letter opomin opomini opomena'],
+    ['collections', 'Open invoices', 'Collections › Invoices', 'collections/#/invoices', 'open invoices unpaid odprti računi neplačani računi terjatve'],
+    ['cashflow', 'Cash in the coming weeks', 'Cash forecast › Week by week', 'cashflow/#/weeks', 'cash forecast liquidity denarni tok likvidnost'],
+    ['leave', 'Request leave', 'Time & leave › My leave, then Request leave', 'leave/#/', 'request leave holiday vacation time off dopust odsotnost godišnji odmor'],
+    ['leave', 'Clock in or out', 'Time & leave › My time', 'leave/#/time', 'clock in clock out prihod odhod ure'],
+    ['leave', 'Working-time record', 'Time & leave › Records', 'leave/#/records', 'timesheet working time record evidenca delovnega časa'],
+    ['erp', 'New sales order', 'ERP › Sales orders, then New sales order', 'erp/#/sales', 'sales order order naročilo prodajno naročilo narudžba'],
+    ['erp', 'New purchase order', 'ERP › Purchasing, then New PO', 'erp/#/purchasing', 'purchase order po naročilnica naročilo dobavitelju nabava'],
+    ['erp', 'New quote', 'ERP › Quotes, then New quote', 'erp/#/quotes', 'quote offer ponudba predračun ponuda'],
+    ['crm', 'New deal', 'CRM › Deals, then New deal', 'crm/#/deals', 'deal opportunity priložnost posel prilika'],
+    ['contracts', 'New contract', 'Contracts › Contracts, then New contract', 'contracts/#/contracts', 'contract pogodba ugovor'],
+    ['service', 'New service job', 'Service jobs › Jobs, then New job', 'service/#/jobs', 'service job work order delovni nalog servis'],
+    ['datacheck', 'Check a customer list', 'Data health check: drop a CSV or Excel file', 'datacheck/', 'check clean data vat id iban preveri podatke davčna številka'],
+    ['budget', 'Board pack', 'Budget vs actual › Board pack', 'budget/#/print', 'board pack report poročilo za upravo'],
+    ['client-atlas', 'Leads to follow up', 'ERP & BI Client Atlas › Leads', 'client-atlas/#leads', 'leads follow up prospects potencialne stranke']
+  ].filter(function (x) { return byId[x[0]]; }).map(function (x) {
+    var a = byId[x[0]];
+    return { type: 'task', app: a.id, title: x[1], sub: x[2], icon: a.icon, href: x[3], alias: x[4], extra: a.name + ' ' + a.group.name };
+  });
+  var TASK_HOME = ['New invoice', 'Request leave', 'Who owes us', 'New sales order'];
+  function hl(title, ws) {
+    var chars = Array.from(title), f = chars.map(function (c) { return fold(c).charAt(0) || c; }).join(''), mk = chars.map(function () { return false; });
+    ws.forEach(function (w) {
+      var m = wordRe(w).exec(f), at = m ? m.index + m[1].length : f.indexOf(w);
+      if (at >= 0) for (var k = at; k < at + w.length && k < mk.length; k++) mk[k] = true;
+    });
+    var out = '', open = false;
+    chars.forEach(function (c, i) {
+      if (mk[i] && !open) { out += '<mark>'; open = true; }
+      if (!mk[i] && open) { out += '</mark>'; open = false; }
+      out += esc(c);
+    });
+    return out + (open ? '</mark>' : '');
+  }
+  function appItem(a) { return { type: 'app', app: a.id, title: a.name, sub: a.group.name + ' · ' + (a.kind || 'App') + (a.data === 'yours' ? ' · Your data' : a.data ? ' · Demo data' : ''), icon: a.icon, href: a.href, alias: a.kw, extra: a.group.name + ' ' + a.kind + ' ' + a.desc }; }
+  function cxSections(q) {
+    var ws = cxWords(q), secs = [];
+    var acts = [];
+    if (install.available) acts.push({ type: 'act', act: 'install', title: 'Install app', sub: 'Add Business Apps to your ' + install.where, sym: 'install', extra: 'install add dock home screen desktop app' });
+    acts.push({ type: 'act', act: 'showcase', title: 'Open Showcase', sub: 'The Tokovi showcase site', sym: 'sparkle', extra: 'showcase stratum site company', href: 'showcase/' });
+    if (window.HomeLook) HomeLook.list.forEach(function (l) { if (l.id !== HomeLook.get()) acts.push({ type: 'act', act: 'look', look: l.id, title: 'Style: ' + l.name, sub: l.sub, sym: 'sparkle', extra: 'style look theme design skin ' + l.name.toLowerCase() }); });
+    acts.push({ type: 'act', act: 'pin', title: 'Pin the highlighted app', sub: '', sym: 'star', extra: 'pin unpin favourite favorite star home' });
+    if (!ws.length) {
+      var rec = recents().slice(0, 5), pn = pins().filter(function (id) { return rec.indexOf(id) < 0; }).slice(0, 6);
+      if (rec.length) secs.push({ name: 'Recent', items: rec.map(function (id) { return appItem(byId[id]); }) });
+      if (pn.length) secs.push({ name: 'Pinned', items: pn.map(function (id) { return appItem(byId[id]); }) });
+      if (!rec.length && !pn.length) secs.push({ name: 'New apps', items: apps.filter(function (a) { return a.isNew; }).map(appItem) });
+      secs.push({ name: 'Quick actions', items: TASKS.filter(function (x) { return TASK_HOME.indexOf(x.title) >= 0; }) });
+      secs.push({ name: 'Actions', items: acts });
+      secs.push({ name: 'Groups', items: groups.map(function (g) { return { type: 'group', group: g.id, title: g.name, sub: g.apps.length + ' apps · ' + g.desc, sym: ICONS[g.id] ? g.id : 'folder' }; }) });
+      return secs;
+    }
+    function top(list, n) {
+      return list.map(function (it) { it.s = score(it.title, it.extra || '', ws, it.alias); return it; }).filter(function (it) { return it.s > 0; })
+        .sort(function (a, b) { return b.s - a.s; }).slice(0, n);
+    }
+    var sApps = top(apps.map(appItem), 8);
+    var sScr = top([].concat.apply([], apps.map(function (a) { return a.screens.map(function (s) { return { type: 'screen', app: a.id, title: a.name + ' › ' + s.name, sub: 'Screen in ' + a.name + ' · ' + a.group.name, icon: a.icon, href: s.href, extra: a.group.name }; }); })), 8);
+    var sGrp = top(groups.map(function (g) { return { type: 'group', group: g.id, title: g.name, sub: g.apps.length + ' apps · ' + g.desc, sym: ICONS[g.id] ? g.id : 'folder', extra: g.desc + ' ' + g.apps.map(function (a) { return a.name; }).join(' ') }; }), 6);
+    var sAct = top(acts, 3), sTask = top(TASKS.slice(), 5);
+    [{ name: 'Apps', items: sApps }, { name: 'Quick actions', items: sTask }, { name: 'Screens', items: sScr }, { name: 'Groups', items: sGrp }, { name: 'Actions', items: sAct }]
+      .filter(function (s) { return s.items.length; })
+      .sort(function (a, b) { return b.items[0].s - a.items[0].s; })
+      .forEach(function (s) { secs.push(s); });
+    return secs;
+  }
+  function pinTitle() { var a = byId[cx.last]; return a ? (isPinned(a.id) ? 'Unpin ' + a.name + ' from Home' : 'Pin ' + a.name + ' to Home') : ''; }
+  function renderCmd(keep) {
+    var q = cx.input.value, ws = cxWords(q), secs = cxSections(q), h = '';
+    var flat = [].concat.apply([], secs.map(function (s) { return s.items; }));
+    if (!keep || !byId[cx.last]) {
+      cx.last = null;
+      for (var k = 0; k < flat.length; k++) if (flat[k].app) { cx.last = flat[k].app; break; }
+    }
+    cx.items = [];
+    secs.forEach(function (s, si) {
+      var its = s.items.filter(function (it) { return it.act !== 'pin' || cx.last; });
+      if (!its.length) return;
+      h += '<div role="group" aria-labelledby="cxh' + si + '"><div class="cx-h" id="cxh' + si + '" role="presentation">' + esc(s.name) + '</div>';
+      its.forEach(function (it) {
+        var i = cx.items.push(it) - 1, title = it.act === 'pin' ? pinTitle() : it.title;
+        var pinned = it.type === 'app' && isPinned(it.app);
+        h += '<div class="cx-o" role="option" id="cxo' + i + '" data-i="' + i + '" aria-selected="false">' +
+          (it.icon ? '<span class="cx-ic"><img src="' + esc(it.icon) + '" alt="" width="28" height="28"></span>' : '<span class="cx-ic sym">' + svg(it.sym, 16) + '</span>') +
+          '<span class="cx-t"><span class="cx-tt">' + (it.act === 'pin' ? esc(title) : hl(title, ws)) + '</span>' + (it.act === 'pin' ? '<small>' + (isMac ? '⌥' : 'Alt') + ' + Enter on any app</small>' : '<small>' + esc(it.sub) + '</small>') + '</span>' +
+          '<span class="cx-r">' + (pinned ? svg('star', 14, 'star') + '<span class="sr">Pinned</span>' : '') + '<kbd class="ent" aria-hidden="true">↵</kbd></span></div>';
+      });
+      h += '</div>';
+    });
+    if (!cx.items.length) h = '<div class="cx-none">Nothing matches “' + esc(q.trim()) + '”. Try an app, a screen such as “reminders”, or a group.</div>';
+    cx.list.innerHTML = h;
+    setActive(cx.items.length ? (keep ? Math.max(0, Math.min(cx.active, cx.items.length - 1)) : 0) : -1);
+  }
+  function setActive(i, scroll) {
+    var prev = cx.list.querySelector('.cx-o.on');
+    if (prev) { prev.classList.remove('on'); prev.setAttribute('aria-selected', 'false'); }
+    cx.active = i;
+    if (i < 0) { cx.input.removeAttribute('aria-activedescendant'); return; }
+    var el = $('cxo' + i);
+    el.classList.add('on'); el.setAttribute('aria-selected', 'true');
+    cx.input.setAttribute('aria-activedescendant', el.id);
+    if (scroll !== false) el.scrollIntoView({ block: 'nearest' });
+    var it = cx.items[i];
+    if (it.app && it.app !== cx.last) {
+      cx.last = it.app;
+      cx.items.forEach(function (p, j) { if (p.act === 'pin') { var t = $('cxo' + j).querySelector('.cx-tt'); if (t) t.textContent = pinTitle(); } });
+    }
+  }
+  function runItem(it, alt) {
+    if (!it) return;
+    if (alt || it.act === 'pin') {
+      var id = alt && it.app ? it.app : cx.last;
+      if (id) { togglePin(id); cx.last = id; renderCmd(true); }
+      return;
+    }
+    if (it.app) { remember(it.app); closeCmd(false); location.href = it.href; return; }
+    if (it.type === 'group') { closeCmd(false); if (state.q) clearSearch(); setGroup(it.group); scrollToEl($('apps')); say('Showing ' + groupById(it.group).name); return; }
+    if (it.act === 'install') { closeCmd(false); setTimeout(function () { install.start(phone.matches ? $('bnInstall') : $('instBtn')); }, 0); return; }
+    if (it.act === 'look') { closeCmd(false); if (window.HomeLook) HomeLook.set(it.look); return; }
+    if (it.act === 'showcase') { remember('showcase'); closeCmd(false); location.href = it.href; }
+  }
+  cx.input.addEventListener('input', function () { renderCmd(false); });
+  cx.input.addEventListener('keydown', function (e) {
+    var n = cx.items.length;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (n) setActive((cx.active + (e.key === 'ArrowDown' ? 1 : -1) + n) % n); }
+    else if ((e.key === 'PageDown' || e.key === 'PageUp') && n) { e.preventDefault(); setActive(Math.max(0, Math.min(n - 1, cx.active + (e.key === 'PageDown' ? 6 : -6)))); }
+    else if (e.key === 'Enter') { e.preventDefault(); runItem(cx.items[cx.active], e.altKey); }
+    else if (e.key === 'Escape') { e.preventDefault(); if (cx.input.value && phone.matches) { cx.input.value = ''; renderCmd(false); } else closeCmd(); }
+    else if (e.key === 'Tab') { e.preventDefault(); var b = cx.el.querySelector(phone.matches ? '.cx-cancel' : '.cx-esc'); if (b) b.focus(); }
+  });
+  cx.el.addEventListener('keydown', function (e) {
+    if (e.target === cx.input) return;
+    if (e.key === 'Tab') { e.preventDefault(); cx.input.focus(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeCmd(); }
+  });
+  cx.list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+  cx.list.addEventListener('mousemove', function (e) { var o = e.target.closest('.cx-o'); if (o && +o.getAttribute('data-i') !== cx.active) setActive(+o.getAttribute('data-i'), false); });
+  cx.list.addEventListener('click', function (e) { var o = e.target.closest('.cx-o'); if (o) runItem(cx.items[+o.getAttribute('data-i')], e.altKey); });
+  cx.el.addEventListener('click', function (e) { if (e.target.closest('[data-cx-close]')) closeCmd(); });
+  function isField(el) { return !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable); }
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && !e.shiftKey && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (cx.el.hidden) openCmd(document.activeElement === $('q') ? $('q').value : ''); else closeCmd();
+      return;
+    }
+    if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && cx.el.hidden && !isField(document.activeElement)) { e.preventDefault(); openCmd(''); }
+  });
+
+  // draw everything; again when the page comes back from the cache, the tab is shown again, or another tab changes a list
+  function renderAll() { renderPins(); renderNeeds(); syncPinButtons(); apply(); markNav(); }
+  window.addEventListener('pageshow', function (e) { if (e.persisted) renderAll(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { renderNeeds(); renderPins(); renderQuick(); } });
+  window.addEventListener('storage', function (e) { if (!e.key || [PKEY, RKEY, OKEY, NKEY].indexOf(e.key) >= 0) renderAll(); });
+  if (phone.addEventListener) phone.addEventListener('change', function () { renderPins(); renderNeeds(); renderQuick(); });
+  renderAll();
+})();
+</script>
+<script>
+/* Style switch: sets html[data-look], remembers it per device and tells each look's script (home-looks/*.js) through
+   the window event "home-look" { look, prev }, so a look can add or remove its own extra markup.
+   Only the active look's files are in the page; another look's CSS and JS load the first time it is chosen (or when the
+   pointer or focus rests on it in the Style menu), and the switch happens once both are in, so it never shows half a
+   look. A look that cannot load (offline) leaves the page as it is and says so. */
+(function () {
+  'use strict';
+  var KEY = 'stratum-home-look', VER = '2', root = document.documentElement;
+  var LIST = [{ id: 'm365', name: 'Microsoft 365', sub: 'Default' }, { id: 'appstore', name: 'App Store', sub: 'Story cards and Open pills' }, { id: 'raycast', name: 'Raycast', sub: 'Dark command window' }, { id: 'arc', name: 'Arc', sub: 'Gradient spaces' }, { id: 'odoo', name: 'Odoo', sub: 'A grid of app icons' }, { id: 'classic', name: 'Classic', sub: 'The earlier cursor.com look' }];
+  var btn = document.getElementById('lookBtn'), menu = document.getElementById('lookMenu'), q = document.getElementById('q');
+  var PH = q ? q.getAttribute('placeholder') : '', want = null;
+  function known(v) { return LIST.some(function (l) { return l.id === v; }); }
+  function get() { return root.getAttribute('data-look') || 'm365'; }
+  function sync() { [].forEach.call(menu.querySelectorAll('[data-look]'), function (b) { b.setAttribute('aria-checked', b.getAttribute('data-look') === get() ? 'true' : 'false'); }); }
+  // files of each look: m365 is the page itself; the active look was written into the page as it loaded
+  var loading = { m365: Promise.resolve() };
+  // (its CSS is in the head; its script is written in right after this one)
+  (function () { var a = get(); if (a !== 'm365' && document.querySelector('link[data-look-css="' + a + '"]')) loading[a] = Promise.resolve(); })();
+  function fetchFile(tag, v) {
+    return new Promise(function (ok, no) {
+      var el = document.createElement(tag);
+      if (tag === 'link') { el.rel = 'stylesheet'; el.href = 'home-looks/' + v + '.css?v=' + VER; el.setAttribute('data-look-css', v); }
+      else { el.src = 'home-looks/' + v + '.js?v=' + VER; el.async = false; el.setAttribute('data-look-js', v); }
+      el.onload = function () { ok(); };
+      el.onerror = function () { if (el.parentNode) el.parentNode.removeChild(el); no(new Error(v)); };
+      (tag === 'link' ? document.head : document.body).appendChild(el);
+    });
+  }
+  function load(v) {
+    if (!known(v)) return Promise.reject(new Error(v));
+    if (!loading[v]) loading[v] = Promise.all([fetchFile('link', v), fetchFile('script', v)]).catch(function (e) { delete loading[v]; throw e; });
+    return loading[v];
+  }
+  function apply(v) {
+    var prev = get(); if (prev === v) return;
+    root.setAttribute('data-look', v);
+    try { localStorage.setItem(KEY, v); } catch (e) {}
+    try { var u = new URL(location.href); if (u.searchParams.has('look')) { u.searchParams.set('look', v); history.replaceState(history.state, '', u); } } catch (e) {}
+    sync();
+    window.dispatchEvent(new CustomEvent('home-look', { detail: { look: v, prev: prev } }));
+    // the default look has no script of its own: make sure its search box says what the page says
+    if (v === 'm365' && q) q.setAttribute('placeholder', PH);
+  }
+  function set(v) {
+    if (!known(v)) return;
+    want = v;
+    if (v === get()) return;
+    btn.setAttribute('aria-busy', 'true');
+    load(v).then(function () {
+      if (want !== v) return; // another style was chosen meanwhile
+      btn.removeAttribute('aria-busy');
+      apply(v);
+    }, function () {
+      if (want !== v) return;
+      btn.removeAttribute('aria-busy'); want = get();
+      var l = document.getElementById('live');
+      if (l) { l.textContent = ''; setTimeout(function () { l.textContent = 'That style could not be loaded. Check the connection and try again.'; }, 30); }
+    });
+  }
+  function open(v) {
+    menu.hidden = !v; btn.setAttribute('aria-expanded', v ? 'true' : 'false');
+    if (v) { var c = menu.querySelector('[aria-checked="true"]') || menu.querySelector('[data-look]'); c.focus(); }
+  }
+  // warm up a look the pointer or the keyboard rests on, so choosing it switches at once
+  function warm(e) { var b = e.target.closest && e.target.closest('[data-look]'); if (b && b.getAttribute('data-look') !== get()) load(b.getAttribute('data-look')).catch(function () {}); }
+  menu.addEventListener('pointerover', warm);
+  menu.addEventListener('focusin', warm);
+  btn.addEventListener('click', function () { open(menu.hidden); });
+  menu.addEventListener('click', function (e) { var b = e.target.closest('[data-look]'); if (!b) return; set(b.getAttribute('data-look')); open(false); btn.focus(); });
+  menu.addEventListener('keydown', function (e) {
+    var all = [].slice.call(menu.querySelectorAll('[data-look]')), i = all.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); all[(i + (e.key === 'ArrowDown' ? 1 : all.length - 1)) % all.length].focus(); }
+    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); all[e.key === 'Home' ? 0 : all.length - 1].focus(); }
+    else if (e.key === 'Escape' || e.key === 'Tab') { open(false); if (e.key === 'Escape') btn.focus(); }
+  });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !e.target.closest('#look')) open(false); });
+  sync();
+  window.HomeLook = { get: get, set: set, load: load, list: LIST };
+})();
+</script>
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<script src="home-looks/'+l+'.js?v=2" data-look-js="'+l+'"><\/script>');})();</script>
+<script src="home-looks/sync.js?v=2"></script>
+</body>
+</html>

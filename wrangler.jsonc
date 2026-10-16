@@ -1,0 +1,23 @@
+{
+  "name": "business-apps",
+  // Only /api/* reaches the Worker (cloud sync, worker/index.js); every other request is a static file from site/.
+  "main": "worker/index.js",
+  "compatibility_date": "2026-01-01",
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // Private bucket for the apps' cloud copies (one folder per signed-in person), EU jurisdiction (data stays in the EU).
+  // Moved from "business-apps-sync" (no jurisdiction) on 16 Oct 2026; that bucket is kept as a backup for now.
+  "r2_buckets": [{ "binding": "SYNC", "bucket_name": "business-apps-sync-eu", "jurisdiction": "eu" }],
+  "vars": {
+    // Cloudflare Access application for business-apps.simonm2000.workers.dev (policy "business-apps owner").
+    "ACCESS_TEAM_DOMAIN": "twilight-forest-055c.cloudflareaccess.com",
+    "ACCESS_AUD": "d2118dbaa694438dd172f794b8a031cf5fda9c3dbf8fa5e3100232bbf979d5d3",
+    "OWNER_EMAIL": "simonm2000@outlook.com",
+    "OWNER_NAME": "Simon"
+  }
+}

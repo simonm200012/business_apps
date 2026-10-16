@@ -1,0 +1,462 @@
+/* Home page look "appstore": everything is scoped to :root[data-look="appstore"] (see home-looks/README.md).
+   The App Store's own home: white, a floating grey sidebar (computer), large bold titles, gradient story cards for the
+   new apps, rows with grey "Open" pills, segmented controls, Apple blue for actions, and on a phone a large title, a
+   "new apps" card, a glass tab bar and a round search button. Inter stands in for SF Pro. Dark is the App Store's dark. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap');
+
+/* ── tokens: the page's own names get Apple values, plus a few of the look's own (--as-*) ── */
+:root[data-look="appstore"]{
+  --bg:#FFFFFF;--bgHover:#EDEDF0;--main:#FFFFFF;--mainHover:#F2F2F7;--card:#FFFFFF;--pbg:#FFFFFF;--hover:#F2F2F7;--press:#E5E5EA;--sel:#E8E8ED;--chip:#EEEEF0;--chipH:#E3E3E8;
+  --ink:#1D1D1F;--ink2:#3A3A3C;--ink3:#6E6E73;--ink4:#8E8E93;--line:#E5E5EA;--line2:#D1D1D6;--line3:#EBEBF0;
+  --brand:#007AFF;--brandH:#0071EB;--brandP:#0062CC;--brandFg:#007AFF;--tint:#E6F1FF;--tint2:#CCE3FF;--tintLine:#A8CFFF;--tintFg:#0066D6;--onBrand2:rgba(255,255,255,.82);
+  --okFg:#1E7F37;--okBg:#E8F7ED;--okLine:#B5E6C3;--warnFg:#B35C00;--warnBg:#FFF2E0;--warnLine:#FFD7A3;--warnBar:#FF9500;--badFg:#D70015;--badBg:#FFEBEB;--badLine:#FFC2C2;--badBar:#FF3B30;--infoBar:#007AFF;
+  --input:#EEEEF0;--inputLine:transparent;--inputBottom:transparent;--focus:#007AFF;--scrim:rgba(0,0,0,.28);--iconShade:rgba(0,0,0,.16);
+  --sh2:0 0 0 .5px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.06);--sh4:0 0 0 .5px rgba(0,0,0,.06),0 4px 14px -4px rgba(0,0,0,.1);--sh8:0 0 0 .5px rgba(0,0,0,.06),0 8px 24px -6px rgba(0,0,0,.14);
+  --sh16:0 0 0 .5px rgba(0,0,0,.1),0 12px 36px rgba(0,0,0,.16);--sh28:0 0 0 .5px rgba(0,0,0,.1),0 18px 50px rgba(0,0,0,.2);--sh64:0 0 0 .5px rgba(0,0,0,.12),0 30px 90px rgba(0,0,0,.3);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',system-ui,sans-serif;
+  --as-sw:240px;--as-bg:#FFFFFF;--as-side:#F2F2F7;--as-sideLine:rgba(0,0,0,.07);--as-sideOn:rgba(0,0,0,.075);--as-sideHover:rgba(0,0,0,.04);
+  --as-fill:rgba(118,118,128,.12);--as-fillH:rgba(118,118,128,.2);--as-seg:#FFFFFF;--as-segSh:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);--as-blue:#007AFF;
+  --as-glass:rgba(255,255,255,.84);--as-glassSh:0 8px 30px rgba(0,0,0,.13),0 0 0 .5px rgba(0,0,0,.07),inset 0 1px 0 rgba(255,255,255,.9);
+  --as-menu:rgba(248,248,250,.96);--as-spot:rgba(250,250,252,.88);
+  --as-cardSh:0 0 0 .5px rgba(0,0,0,.06),0 6px 22px -8px rgba(0,0,0,.16);--as-cardShH:0 0 0 .5px rgba(0,0,0,.07),0 16px 36px -12px rgba(0,0,0,.24);
+  color-scheme:light;scroll-padding-top:64px;
+}
+:root[data-look="appstore"][data-stratum-mode="dark"]{
+  --bg:#1E1E1E;--bgHover:#2C2C2E;--main:#1E1E1E;--mainHover:#2C2C2E;--card:#2C2C2E;--pbg:#000000;--hover:#3A3A3C;--press:#48484A;--sel:#3A3A3C;--chip:#2C2C2E;--chipH:#3A3A3C;
+  --ink:#F5F5F7;--ink2:#D1D1D6;--ink3:#98989D;--ink4:#6E6E73;--line:#38383A;--line2:#48484A;--line3:#323234;
+  --brand:#0A84FF;--brandH:#2490FF;--brandP:#0070E0;--brandFg:#0A84FF;--tint:#0B2A4A;--tint2:#123E6B;--tintLine:#1B5591;--tintFg:#64B5FF;
+  --okFg:#30D158;--okBg:#0F2E19;--okLine:#1D5A2F;--warnFg:#FFB340;--warnBg:#38270B;--warnLine:#6B4A12;--warnBar:#FF9F0A;--badFg:#FF6961;--badBg:#3D1514;--badLine:#7A2622;--badBar:#FF453A;--infoBar:#0A84FF;
+  --input:#2C2C2E;--focus:#0A84FF;--scrim:rgba(0,0,0,.55);--iconShade:rgba(0,0,0,.5);
+  --sh2:0 0 0 .5px rgba(255,255,255,.08),0 1px 3px rgba(0,0,0,.4);--sh4:0 0 0 .5px rgba(255,255,255,.08),0 4px 14px -4px rgba(0,0,0,.5);--sh8:0 0 0 .5px rgba(255,255,255,.08),0 8px 24px -6px rgba(0,0,0,.6);
+  --sh16:0 0 0 .5px rgba(255,255,255,.1),0 12px 36px rgba(0,0,0,.55);--sh28:0 0 0 .5px rgba(255,255,255,.1),0 18px 50px rgba(0,0,0,.6);--sh64:0 0 0 .5px rgba(255,255,255,.12),0 30px 90px rgba(0,0,0,.7);
+  --as-bg:#1E1E1E;--as-side:#2A2A2C;--as-sideLine:rgba(255,255,255,.08);--as-sideOn:rgba(255,255,255,.1);--as-sideHover:rgba(255,255,255,.05);
+  --as-fill:rgba(118,118,128,.24);--as-fillH:rgba(118,118,128,.34);--as-seg:#636366;--as-segSh:0 1px 3px rgba(0,0,0,.4);--as-blue:#0A84FF;
+  --as-glass:rgba(44,44,46,.82);--as-glassSh:0 8px 30px rgba(0,0,0,.5),0 0 0 .5px rgba(255,255,255,.1),inset 0 1px 0 rgba(255,255,255,.08);
+  --as-menu:rgba(44,44,46,.96);--as-spot:rgba(36,36,38,.86);
+  --as-cardSh:0 0 0 .5px rgba(255,255,255,.07),0 6px 22px -8px rgba(0,0,0,.6);--as-cardShH:0 0 0 .5px rgba(255,255,255,.1),0 16px 36px -12px rgba(0,0,0,.75);
+  color-scheme:dark;
+}
+
+/* ── base ── */
+:root[data-look="appstore"] body{background:var(--as-bg);color:var(--ink);font:400 14px/20px var(--sans);font-optical-sizing:auto;letter-spacing:-.006em}
+:root[data-look="appstore"] .skip{border-radius:10px;background:var(--as-blue)}
+:root[data-look="appstore"] .rail,:root[data-look="appstore"] .hello,:root[data-look="appstore"] .psearch,:root[data-look="appstore"] .mi .chips-top{display:none!important}
+:root[data-look="appstore"] .main{margin-left:0;min-height:0;background:var(--as-bg);border-radius:0;box-shadow:none}
+:root[data-look="appstore"] .mi{display:flex;flex-direction:column;max-width:1180px;padding:0 44px 64px}
+/* App Store order: title and stories, Recently opened, what needs you, your pinned apps, then every app */
+:root[data-look="appstore"] .as-hero{order:1}
+:root[data-look="appstore"] .qa{order:2}
+:root[data-look="appstore"] .needs{order:3}
+:root[data-look="appstore"] .pins{order:4}
+:root[data-look="appstore"] .appsec{order:5}
+:root[data-look="appstore"] .foot{order:6}
+
+/* shelf headers: a hairline, then a large bold title */
+:root[data-look="appstore"] .sh{min-height:0;margin:0 0 12px;gap:4px 12px;align-items:baseline}
+:root[data-look="appstore"] .sh h2,:root[data-look="appstore"] .pins .sh h2,:root[data-look="appstore"] .ah h2{font:700 24px/30px var(--sans);letter-spacing:-.022em}
+:root[data-look="appstore"] .sh .sub{color:var(--ink3);font-size:13.5px}
+:root[data-look="appstore"] .sh .sub .i{color:var(--as-blue)}
+:root[data-look="appstore"] .lnk{height:30px;padding:0 4px;border-radius:8px;color:var(--as-blue);font:500 15px var(--sans)}
+:root[data-look="appstore"] .lnk:hover{background:transparent;text-decoration:none;opacity:.75}
+
+/* the "Open" pill: grey capsule, Apple blue bold text */
+:root[data-look="appstore"] .ql::after,:root[data-look="appstore"] .card .top::after{content:"Open";flex:none;display:inline-block;height:28px;padding:0 16px;border-radius:14px;background:var(--as-fill);color:var(--as-blue);font:700 13.5px/28px var(--sans);letter-spacing:-.01em;text-align:center;white-space:nowrap}
+
+/* small pills (tags) */
+:root[data-look="appstore"] .pill{height:20px;padding:0 7px;border:0;border-radius:6px;background:var(--as-fill);color:var(--ink3);font:600 11px/20px var(--sans);letter-spacing:0}
+:root[data-look="appstore"] .pill.new{background:var(--as-blue);color:#fff;text-transform:uppercase;font-size:10px;letter-spacing:.04em;border-radius:10px}
+:root[data-look="appstore"] .pill.kind{background:transparent;padding:0;color:var(--ink3);font-weight:500;font-size:12px}
+:root[data-look="appstore"] .pill.yours{background:var(--okBg);color:var(--okFg)}
+
+/* star (pin) buttons */
+:root[data-look="appstore"] .pin{border-radius:50%;color:var(--ink4)}
+:root[data-look="appstore"] .pin:hover{background:var(--as-fill);color:var(--ink)}
+:root[data-look="appstore"] .pin[aria-pressed="true"]{color:var(--as-blue)}
+
+/* ── top bar: on a computer a glass toolbar over the content; the search field sits in the sidebar ── */
+:root[data-look="appstore"] .tb{display:flex;justify-content:flex-end;align-items:center;gap:8px;height:52px;margin-left:calc(var(--as-sw) + 16px);padding:0 116px 0 24px;background:transparent}
+:root[data-look="appstore"] .tb::before{content:"";position:absolute;inset:0;background:var(--as-glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-bottom:.5px solid var(--line);opacity:0;transition:opacity .2s;pointer-events:none}
+:root[data-look="appstore"].as-scrolled .tb::before{opacity:1}
+:root[data-look="appstore"] .tb-l{display:none}
+:root[data-look="appstore"] .tb-r{position:relative;gap:6px}
+:root[data-look="appstore"] stratum-shell{top:8px!important}
+:root[data-look="appstore"] .ib{width:34px;height:34px;border-radius:50%;color:var(--as-blue)}
+:root[data-look="appstore"] .ib:hover{background:var(--as-fill);color:var(--as-blue)}
+:root[data-look="appstore"] .ib b{top:-1px;right:-3px;background:#FF3B30;box-shadow:0 0 0 2px var(--as-bg);font:700 10px/16px var(--sans)}
+:root[data-look="appstore"] .look-btn{width:auto;border-radius:17px;padding:0 12px 0 9px;font:600 13.5px var(--sans);color:var(--as-blue)}
+:root[data-look="appstore"] .fbtn{border-radius:999px;font-family:var(--sans)}
+:root[data-look="appstore"] .tb-r .fbtn.sc{height:30px;padding:0 14px;border:0;background:var(--as-fill);color:var(--as-blue);font:700 13.5px var(--sans)}
+:root[data-look="appstore"] .tb-r .fbtn.sc:hover{background:var(--as-fillH)}
+/* search field */
+:root[data-look="appstore"] .find .i{left:10px;top:9px;color:var(--ink3)}
+:root[data-look="appstore"] .find input{height:34px;border:0;border-radius:10px;background:var(--as-fill);padding:0 50px 0 32px;font:400 13.5px var(--sans);color:var(--ink);text-overflow:ellipsis}
+:root[data-look="appstore"] .find input:hover{border:0}
+:root[data-look="appstore"] .find input:focus{background:var(--card);box-shadow:0 0 0 3.5px rgba(0,122,255,.38)}
+:root[data-look="appstore"] .find .k{top:6px;right:6px;height:22px;padding:0 6px;border:0;border-radius:6px;background:var(--card);box-shadow:0 .5px 1.5px rgba(0,0,0,.18);color:var(--ink3);font:600 11px/22px var(--sans)}
+:root[data-look="appstore"] .find .clr{top:3px;right:3px;border-radius:50%}
+
+/* ── sidebar (computer) ── */
+:root[data-look="appstore"] .as-side{position:fixed;left:8px;top:8px;bottom:8px;z-index:20;width:var(--as-sw);display:flex;flex-direction:column;padding:12px 8px 10px;border-radius:16px;background:var(--as-side);box-shadow:0 0 0 .5px var(--as-sideLine),0 4px 18px rgba(0,0,0,.06);font-family:var(--sans)}
+:root[data-look="appstore"] .as-q{flex:none;height:34px;margin:0 4px 10px}
+:root[data-look="appstore"] .as-nav,:root[data-look="appstore"] .as-groups{display:flex;flex-direction:column;gap:1px}
+:root[data-look="appstore"] .as-groups{flex:0 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none}
+:root[data-look="appstore"] .as-nav a,:root[data-look="appstore"] .as-groups button{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:500 13.5px var(--sans);text-decoration:none;text-align:left;cursor:pointer;flex:none}
+:root[data-look="appstore"] .as-nav a .i,:root[data-look="appstore"] .as-groups .i{color:var(--as-blue)}
+:root[data-look="appstore"] .as-nav a span,:root[data-look="appstore"] .as-groups span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="appstore"] .as-nav i,:root[data-look="appstore"] .as-groups i{font-style:normal;color:var(--ink3);font-size:12.5px;font-weight:400}
+:root[data-look="appstore"] .as-nav b{min-width:20px;height:18px;padding:0 6px;border-radius:9px;background:var(--as-blue);color:#fff;font:700 11px/18px var(--sans);text-align:center}
+:root[data-look="appstore"] .as-nav a:hover,:root[data-look="appstore"] .as-groups button:hover{background:var(--as-sideHover)}
+:root[data-look="appstore"] .as-nav a.on,:root[data-look="appstore"] .as-groups button.on{background:var(--as-sideOn);font-weight:600}
+:root[data-look="appstore"] .as-groups button[aria-pressed="true"] i{color:var(--as-blue);font-weight:600}
+:root[data-look="appstore"] .as-sh{display:flex;align-items:center;justify-content:space-between;padding:14px 6px 4px 10px;color:var(--ink3);font:600 11.5px var(--sans)}
+:root[data-look="appstore"] .as-gm{width:26px;height:22px;border:0;border-radius:6px;background:transparent;color:var(--ink3);display:grid;place-items:center;cursor:pointer}
+:root[data-look="appstore"] .as-gm:hover,:root[data-look="appstore"] .as-gm[aria-expanded="true"]{background:var(--as-sideOn);color:var(--ink)}
+:root[data-look="appstore"] .as-foot{margin-top:auto;padding-top:8px;flex:none}
+:root[data-look="appstore"] .as-inst-slot{height:34px}
+:root[data-look="appstore"] body:has(#inst[hidden]) .as-inst-slot{display:none}
+:root[data-look="appstore"] .as-me{display:flex;align-items:center;gap:10px;height:52px;margin:0 2px;padding:8px 8px 0;border-top:1px solid var(--as-sideLine);color:var(--ink);text-decoration:none}
+:root[data-look="appstore"] .as-me img{width:30px;height:30px;flex:none;filter:drop-shadow(0 1px 1.5px var(--iconShade))}
+:root[data-look="appstore"] .as-me b{display:block;font:600 13px/16px var(--sans)}
+:root[data-look="appstore"] .as-me small{display:block;font:400 11.5px/15px var(--sans);color:var(--ink3)}
+:root[data-look="appstore"] .as-me:hover b{color:var(--as-blue)}
+
+/* ── title and story cards ── */
+:root[data-look="appstore"] .as-hd{display:flex;align-items:flex-end;gap:16px;margin:4px 0 16px}
+:root[data-look="appstore"] .as-hdt{flex:1;min-width:0}
+:root[data-look="appstore"] .as-date{margin:0 0 2px;color:var(--ink3);font:600 13px/18px var(--sans);letter-spacing:.02em;text-transform:uppercase}
+:root[data-look="appstore"] .as-hero h1{margin:0;font:800 36px/42px var(--sans);letter-spacing:-.03em}
+:root[data-look="appstore"] .as-tp{display:none}
+:root[data-look="appstore"] .as-arrows{display:flex;gap:8px;flex:none;padding-bottom:4px}
+:root[data-look="appstore"] .as-arrows button{width:32px;height:32px;border:0;border-radius:50%;background:var(--as-fill);color:var(--as-blue);display:grid;place-items:center;cursor:pointer}
+:root[data-look="appstore"] .as-arrows button:hover:not(:disabled){background:var(--as-fillH)}
+:root[data-look="appstore"] .as-arrows button:disabled{opacity:.35;cursor:default}
+:root[data-look="appstore"] .as-stories{list-style:none;margin:0 -44px 34px;padding:6px 44px 22px;display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 18px)/2);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 44px;scrollbar-width:none;overscroll-behavior-x:contain}
+:root[data-look="appstore"] .as-stories::-webkit-scrollbar{display:none}
+:root[data-look="appstore"] .as-stories li{scroll-snap-align:start;min-width:0}
+:root[data-look="appstore"] .as-story{position:relative;display:block;height:260px;padding:22px 24px;border-radius:20px;overflow:hidden;isolation:isolate;color:#fff;text-decoration:none;background:linear-gradient(145deg,var(--g1) 0%,var(--g2) 55%,var(--g3) 100%);box-shadow:0 14px 30px -16px var(--g3);transition:transform .25s ease,box-shadow .25s ease}
+:root[data-look="appstore"] .as-story::before{content:"";position:absolute;z-index:-1;width:360px;height:360px;border-radius:50%;right:-120px;top:-110px;background:radial-gradient(closest-side,rgba(255,255,255,.3),transparent)}
+:root[data-look="appstore"] .as-story:hover{transform:translateY(-2px);box-shadow:0 22px 40px -18px var(--g3)}
+:root[data-look="appstore"] .as-story:focus-visible{outline:3px solid var(--as-blue);outline-offset:3px}
+:root[data-look="appstore"] .as-ey{display:block;font:700 11.5px/16px var(--sans);letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+:root[data-look="appstore"] .as-st{display:block;max-width:58%;margin-top:6px;font:800 32px/1.06 var(--sans);letter-spacing:-.03em}
+:root[data-look="appstore"] .as-ss{display:block;max-width:52%;margin-top:8px;font:500 15px/1.35 var(--sans);opacity:.92}
+:root[data-look="appstore"] .as-big{position:absolute;right:32px;top:50%;width:136px;height:136px;transform:translateY(-58%) rotate(8deg);filter:drop-shadow(0 16px 22px rgba(0,0,0,.3));transition:transform .3s ease}
+:root[data-look="appstore"] .as-story:hover .as-big{transform:translateY(-60%) rotate(4deg) scale(1.04)}
+:root[data-look="appstore"] .as-fo{position:absolute;left:24px;bottom:20px;display:flex;align-items:center;gap:12px;font:500 13px var(--sans);opacity:.95}
+:root[data-look="appstore"] .as-open{height:30px;padding:0 18px;border-radius:15px;background:#fff;color:var(--gk);font:700 14px/30px var(--sans);letter-spacing:-.01em}
+:root[data-look="appstore"] .as-today{display:none}
+@media (prefers-reduced-motion:reduce){:root[data-look="appstore"] .as-story,:root[data-look="appstore"] .as-big{transition:none}}
+
+/* ── Quick access: "Pick up where you left off", a segmented control and two columns of rows with Open pills ── */
+:root[data-look="appstore"] .qa{margin:0 0 40px;padding-top:18px;border-top:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+:root[data-look="appstore"] .mi .qh{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0 0 12px}
+:root[data-look="appstore"] .qh::before{content:"Pick up where you left off";color:var(--ink3);font:600 12px/16px var(--sans);letter-spacing:.05em;text-transform:uppercase}
+:root[data-look="appstore"] .qa:has(#tab-pinned[aria-selected="true"]) .qh::before{content:"Your favourites"}
+:root[data-look="appstore"] .qa:has(#tab-new[aria-selected="true"]) .qh::before{content:"Just arrived"}
+:root[data-look="appstore"] .qa:has(#tab-yours[aria-selected="true"]) .qh::before{content:"Saved with your own data"}
+:root[data-look="appstore"] .qtabs{display:flex;flex-wrap:wrap;gap:10px;height:auto;margin:0 0 8px;padding:0;border:0}
+:root[data-look="appstore"] .qtabs .tlist{height:32px;padding:2px;gap:0;border-radius:9px;background:var(--as-fill)}
+:root[data-look="appstore"] .qtabs [role="tab"]{height:28px;padding:0 15px;border-radius:7px;color:var(--ink);font:500 13px var(--sans)}
+:root[data-look="appstore"] .qtabs [role="tab"]:hover{color:var(--ink);background:var(--as-fill)}
+:root[data-look="appstore"] .qtabs [role="tab"][aria-selected="true"]{background:var(--as-seg);box-shadow:var(--as-segSh);font-weight:600}
+:root[data-look="appstore"] .qtabs [role="tab"][aria-selected="true"]::after{display:none}
+:root[data-look="appstore"] .qtabs [role="tab"]:focus-visible{outline-offset:-2px}
+:root[data-look="appstore"] .qsel{color:var(--ink)}
+:root[data-look="appstore"] .qsel .i{color:var(--as-blue)}
+:root[data-look="appstore"] .qsel select{height:32px;padding:0 28px 0 28px;border-radius:9px;background:var(--as-fill);font:500 13px var(--sans)}
+:root[data-look="appstore"] .qsel select:hover{background:var(--as-fillH)}
+:root[data-look="appstore"] .qt{display:block;font-size:14px}
+:root[data-look="appstore"] .qt thead{display:none}
+:root[data-look="appstore"] .qt tbody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:36px}
+:root[data-look="appstore"] .qt tr{position:relative;display:flex;align-items:center;min-height:70px}
+:root[data-look="appstore"] .qt td{display:none;height:auto;padding:0;border:0}
+:root[data-look="appstore"] .qt td.c-nm{display:flex;flex:1;min-width:0;width:auto;align-self:stretch;align-items:center}
+:root[data-look="appstore"] .qt td.c-pin{display:flex;align-items:center;justify-content:flex-end;width:40px;padding:0}
+:root[data-look="appstore"] .qt tr[data-app]::after{content:"";position:absolute;left:66px;right:0;bottom:0;border-bottom:1px solid var(--line3)}
+:root[data-look="appstore"] .qt tbody tr:last-child::after,:root[data-look="appstore"] .qt tbody tr:nth-last-child(2):nth-child(odd)::after{display:none}
+:root[data-look="appstore"] .qt tbody tr[data-app]:hover td{background:transparent}
+:root[data-look="appstore"] .qt tbody tr:hover .nm{text-decoration:none}
+:root[data-look="appstore"] .qt tbody tr:hover .ql::after{background:var(--as-fillH)}
+:root[data-look="appstore"] .ql{display:flex;width:100%;gap:14px;padding:9px 0}
+:root[data-look="appstore"] .ql img{width:52px;height:52px}
+:root[data-look="appstore"] .ql .qx{flex:1;min-width:0}
+:root[data-look="appstore"] .ql .nm{font:600 15px/20px var(--sans);letter-spacing:-.012em;white-space:nowrap}
+:root[data-look="appstore"] .ql .meta{display:block;margin-top:1px;color:var(--ink3);font-size:13px;line-height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="appstore"] .qt .pin{width:34px;height:34px}
+:root[data-look="appstore"] .qt tbody tr:hover .pin:hover{background:var(--as-fill)}
+:root[data-look="appstore"] .qt tr.none{display:block;grid-column:1/-1;min-height:0}
+:root[data-look="appstore"] .qt .none td{display:block;padding:26px 16px;border-radius:14px;background:var(--as-fill);color:var(--ink3);text-align:center;white-space:normal}
+:root[data-look="appstore"] .qfoot{padding:6px 0 0;border:0}
+
+/* ── Needs you today ── */
+:root[data-look="appstore"] .needs{margin:0 0 40px;padding-top:18px;border-top:1px solid var(--line)}
+:root[data-look="appstore"] .nlist{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
+:root[data-look="appstore"] .need{padding:14px 16px 8px;border-radius:18px;background:var(--card);box-shadow:var(--as-cardSh)}
+:root[data-look="appstore"] .need::before{display:none}
+:root[data-look="appstore"] .need header{gap:10px;margin:0 0 6px}
+:root[data-look="appstore"] .need header img{width:34px;height:34px}
+:root[data-look="appstore"] .need header b{font:600 15px/20px var(--sans);letter-spacing:-.01em}
+:root[data-look="appstore"] .need time{color:var(--ink3);font-size:12.5px}
+:root[data-look="appstore"] .need li a{min-height:40px;border-radius:10px;font-size:14px}
+:root[data-look="appstore"] .need li a:hover{background:var(--hover)}
+:root[data-look="appstore"] .need li a .i{color:var(--ink4)}
+:root[data-look="appstore"] .cnt{height:22px;min-width:32px;border-radius:11px;font:700 12.5px/22px var(--sans)}
+:root[data-look="appstore"] .cnt.dot{min-width:0;width:9px;height:9px;margin:0 11px 0 12px;border-radius:50%}
+:root[data-look="appstore"] .nempty{padding:18px 18px;border-radius:16px;background:var(--as-fill);box-shadow:none;color:var(--ink3);font-size:14px}
+:root[data-look="appstore"] .nempty .i{color:var(--as-blue)}
+
+/* ── Pinned: a shelf of large icons ── */
+:root[data-look="appstore"] .pins{margin:0 0 40px;padding-top:18px;border-top:1px solid var(--line)}
+:root[data-look="appstore"] .pins .fbtn,:root[data-look="appstore"] .pins .fbtn.pri,:root[data-look="appstore"] .pins .fbtn.sub{height:30px;padding:0 4px;border:0;background:transparent;color:var(--as-blue);font:500 15px var(--sans)}
+:root[data-look="appstore"] .pins .fbtn.pri{font-weight:700}
+:root[data-look="appstore"] .pins .fbtn:hover{background:transparent;opacity:.75}
+:root[data-look="appstore"] .pins .fbtn .i{display:none}
+:root[data-look="appstore"] .prow{gap:6px;margin:0 -10px;padding:2px 0;border-radius:18px}
+:root[data-look="appstore"] .pt{width:100px}
+:root[data-look="appstore"] .pl{gap:8px;padding:10px 4px 8px;border-radius:16px;color:var(--ink);font:500 12.5px/16px var(--sans)}
+:root[data-look="appstore"] .pl:hover{background:var(--hover);color:var(--ink)}
+:root[data-look="appstore"] .pl img{width:64px;height:64px;filter:drop-shadow(0 2px 4px var(--iconShade))}
+:root[data-look="appstore"] .pt.all .ring{width:64px;height:64px;border:0;background:var(--as-fill);color:var(--as-blue)}
+:root[data-look="appstore"] .pt.drop-before::before,:root[data-look="appstore"] .pt.drop-after::after{background:var(--as-blue)}
+:root[data-look="appstore"] .pins.drop-ok .prow{outline:2px dashed var(--as-blue);outline-offset:4px}
+:root[data-look="appstore"] .editing .pt[data-app] .pl{background:transparent;box-shadow:none;animation:as-jiggle .28s ease-in-out infinite alternate}
+:root[data-look="appstore"] .editing .pt[data-app]:nth-child(even) .pl{animation-delay:-.14s}
+@keyframes as-jiggle{from{transform:rotate(-1.4deg)}to{transform:rotate(1.4deg)}}
+@media (prefers-reduced-motion:reduce){:root[data-look="appstore"] .editing .pt[data-app] .pl{animation:none}}
+:root[data-look="appstore"] .pe{gap:4px}
+:root[data-look="appstore"] .pe button{width:28px;height:28px;border:0;border-radius:50%;background:var(--as-fill);color:var(--ink)}
+:root[data-look="appstore"] .pe button:hover:not(:disabled){background:var(--as-fillH)}
+:root[data-look="appstore"] .pe button[data-unpin]{background:var(--badBar);color:#fff}
+:root[data-look="appstore"] .pe button[data-unpin]:hover{background:var(--badBar);opacity:.85}
+
+/* ── All apps ── */
+:root[data-look="appstore"] .appsec{padding-top:18px;border-top:1px solid var(--line)}
+:root[data-look="appstore"] body.searching .appsec{padding-top:4px;border-top:0}
+:root[data-look="appstore"] .ah{gap:10px 12px;margin:0 0 6px;align-items:baseline}
+:root[data-look="appstore"] .ah .n{color:var(--ink3);font-size:14px}
+:root[data-look="appstore"] .ah .chips{order:5;flex:1 1 100%;padding:2px 0}
+:root[data-look="appstore"] .chips{gap:8px}
+:root[data-look="appstore"] .chips button{height:32px;padding:0 14px;border-radius:16px;background:var(--as-fill);color:var(--ink);font:500 13.5px var(--sans)}
+:root[data-look="appstore"] .chips button span{color:var(--ink3);font-size:12.5px}
+:root[data-look="appstore"] .chips button:hover{background:var(--as-fillH)}
+:root[data-look="appstore"] .chips button[aria-pressed="true"]{background:var(--as-blue);color:#fff;font-weight:600}
+:root[data-look="appstore"] .chips button[aria-pressed="true"] span{color:rgba(255,255,255,.8)}
+:root[data-look="appstore"] .view{align-self:center;padding:2px;border:0;border-radius:9px;background:var(--as-fill)}
+:root[data-look="appstore"] .view button{width:38px;height:28px;border-radius:7px;color:var(--ink2)}
+:root[data-look="appstore"] .view button+button{border:0}
+:root[data-look="appstore"] .view button:hover{background:transparent;color:var(--ink)}
+:root[data-look="appstore"] .view button[aria-pressed="true"]{background:var(--as-seg);color:var(--ink);box-shadow:var(--as-segSh)}
+:root[data-look="appstore"] .status{color:var(--ink3);font-size:14px}
+:root[data-look="appstore"] .group{margin:26px 0 0}
+:root[data-look="appstore"] .ghead{gap:2px 10px;margin:0 0 14px}
+:root[data-look="appstore"] .ghead h2{font:700 20px/26px var(--sans);letter-spacing:-.02em}
+:root[data-look="appstore"] .gcount{color:var(--ink3);font-size:13px}
+:root[data-look="appstore"] .ghead p{flex-basis:100%;color:var(--ink3);font-size:13.5px}
+:root[data-look="appstore"] .empty{border:0;border-radius:16px;background:var(--as-fill);color:var(--ink3)}
+/* cards: App Store product cards with an Open pill */
+:root[data-look="appstore"] .grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:18px}
+:root[data-look="appstore"] .card{gap:12px;padding:16px 16px 16px;border-radius:20px;background:var(--card);box-shadow:var(--as-cardSh);transition:box-shadow .2s,transform .2s}
+:root[data-look="appstore"] .card:hover{box-shadow:var(--as-cardShH)}
+:root[data-look="appstore"] .card .top{align-items:center;gap:14px}
+:root[data-look="appstore"] .card .top::after{order:2}
+:root[data-look="appstore"] .card .ai{width:62px;height:62px;filter:drop-shadow(0 2px 4px var(--iconShade))}
+:root[data-look="appstore"] .ttl{gap:4px;padding:0}
+:root[data-look="appstore"] .card h3{font:600 16px/21px var(--sans);letter-spacing:-.015em}
+:root[data-look="appstore"] .card:hover h3 a{text-decoration:none}
+:root[data-look="appstore"] .card h3 a::after{border-radius:20px}
+:root[data-look="appstore"] .card:hover .top::after{background:var(--as-fillH)}
+:root[data-look="appstore"] .card .pin{order:3;margin:0 -8px 0 -4px}
+:root[data-look="appstore"] .tags{gap:6px;align-items:center}
+:root[data-look="appstore"] .card p{color:var(--ink3);font-size:13.5px;line-height:19px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+:root[data-look="appstore"] .screens{gap:6px}
+:root[data-look="appstore"] .screens a{height:26px;padding:0 11px;border-radius:13px;background:var(--as-fill);color:var(--as-blue);font:500 12.5px var(--sans)}
+:root[data-look="appstore"] .screens a:hover{background:var(--as-fillH);color:var(--as-blue)}
+/* list: two columns of App Store rows, hairlines between them */
+:root[data-look="appstore"] .list .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:36px;row-gap:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+:root[data-look="appstore"] .list .card{grid-template-columns:52px minmax(0,1fr) auto 34px;grid-template-areas:"ic t open pin" "ic d open pin";column-gap:14px;row-gap:1px;padding:10px 0;border:0;border-radius:0;background:transparent;box-shadow:none}
+:root[data-look="appstore"] .list .card::after{content:"";position:absolute;left:66px;right:0;bottom:0;border-bottom:1px solid var(--line3)}
+:root[data-look="appstore"] .list .card:hover{background:transparent;box-shadow:none}
+:root[data-look="appstore"] .list .card .ai{width:52px;height:52px}
+:root[data-look="appstore"] .list .card .top::after{grid-area:open}
+:root[data-look="appstore"] .list .card h3{font-size:15px}
+:root[data-look="appstore"] .list .ttl{align-self:end}
+:root[data-look="appstore"] .list .card p{align-self:start}
+:root[data-look="appstore"] .list .card p{grid-area:d;display:block;font-size:13px;line-height:18px;color:var(--ink3)}
+:root[data-look="appstore"] .list .card .tags .pill:not(.new){display:none}
+:root[data-look="appstore"] .list .card .pin{grid-area:pin;margin:0}
+
+/* footer */
+:root[data-look="appstore"] .foot{margin-top:56px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
+:root[data-look="appstore"] .foot a{color:var(--as-blue)}
+:root[data-look="appstore"] .foot .fb{color:var(--ink)}
+
+/* ── menus: macOS menus, translucent with a blue highlight ── */
+:root[data-look="appstore"] .menu,:root[data-look="appstore"] .look-menu{padding:5px;border:0;border-radius:12px;background:var(--as-menu);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);box-shadow:0 0 0 .5px rgba(0,0,0,.16),0 14px 40px rgba(0,0,0,.2)}
+:root[data-look="appstore"][data-stratum-mode="dark"] .menu,:root[data-look="appstore"][data-stratum-mode="dark"] .look-menu{box-shadow:0 0 0 .5px rgba(255,255,255,.14),0 14px 40px rgba(0,0,0,.55)}
+:root[data-look="appstore"] .menu .mh,:root[data-look="appstore"] .look-menu h3{color:var(--ink3);font:600 12px var(--sans)}
+:root[data-look="appstore"] .menu button,:root[data-look="appstore"] .look-menu button{border-radius:7px;font-family:var(--sans);font-size:13.5px;color:var(--ink)}
+:root[data-look="appstore"] .menu button{height:32px}
+:root[data-look="appstore"] .menu button .i{color:var(--as-blue)}
+:root[data-look="appstore"] .menu button[aria-checked="true"]{color:var(--ink);font-weight:600}
+:root[data-look="appstore"] .menu button[aria-checked="true"] .i{color:var(--as-blue)}
+:root[data-look="appstore"] .look-menu button[aria-checked="true"]::after{color:var(--as-blue)}
+:root[data-look="appstore"] .menu button:hover,:root[data-look="appstore"] .menu button:focus-visible,:root[data-look="appstore"] .look-menu button:hover,:root[data-look="appstore"] .look-menu button:focus-visible{background:var(--as-blue);color:#fff;box-shadow:none}
+:root[data-look="appstore"] .menu button:hover .i,:root[data-look="appstore"] .menu button:focus-visible .i,:root[data-look="appstore"] .menu button:hover span,:root[data-look="appstore"] .menu button:focus-visible span,
+:root[data-look="appstore"] .look-menu button:hover small,:root[data-look="appstore"] .look-menu button:focus-visible small,:root[data-look="appstore"] .look-menu button:hover::after,:root[data-look="appstore"] .look-menu button:focus-visible::after{color:#fff}
+
+/* ── Install: a sidebar item on a computer, its steps open above it ── */
+:root[data-look="appstore"] .inst-pop{padding:20px 20px 18px;border-radius:16px;background:var(--as-menu);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);box-shadow:var(--sh28);font-family:var(--sans)}
+:root[data-look="appstore"] .inst-pop h2{font:700 17px/22px var(--sans);letter-spacing:-.015em}
+:root[data-look="appstore"] .inst-pop kbd{border-radius:6px;font-family:var(--sans)}
+:root[data-look="appstore"] .inst-pop .x{width:28px;height:28px;top:12px;right:12px;border-radius:50%;background:var(--as-fill)}
+
+/* ── ⌘K: Spotlight ── */
+:root[data-look="appstore"] .cmdk-back{background:rgba(0,0,0,.16)}
+:root[data-look="appstore"][data-stratum-mode="dark"] .cmdk-back{background:rgba(0,0,0,.45)}
+:root[data-look="appstore"] .cmdk-box{width:min(680px,100%);border-radius:22px;background:var(--as-spot);-webkit-backdrop-filter:blur(40px) saturate(180%);backdrop-filter:blur(40px) saturate(180%);box-shadow:var(--sh64);font-family:var(--sans)}
+:root[data-look="appstore"] .cx-in{height:60px;padding:0 14px 0 20px;gap:12px;border-bottom:1px solid var(--line)}
+:root[data-look="appstore"] .cx-in .i{width:22px;height:22px;color:var(--ink3)}
+:root[data-look="appstore"] .cx-in input{font:400 21px var(--sans);letter-spacing:-.015em}
+:root[data-look="appstore"] .cx-esc{height:24px;border:0;border-radius:7px;background:var(--as-fill);font-family:var(--sans)}
+:root[data-look="appstore"] .cx-list{padding:6px 8px 10px}
+:root[data-look="appstore"] .cx-h{padding:12px 10px 4px;color:var(--ink3);font:600 12px var(--sans)}
+:root[data-look="appstore"] .cx-o{min-height:48px;border-radius:10px}
+:root[data-look="appstore"] .cx-o.on{background:var(--as-blue)}
+:root[data-look="appstore"] .cx-o.on::before{display:none}
+:root[data-look="appstore"] .cx-o.on .cx-tt,:root[data-look="appstore"] .cx-o.on .cx-t small,:root[data-look="appstore"] .cx-o.on .cx-r,:root[data-look="appstore"] .cx-o.on .cx-r .i,:root[data-look="appstore"] .cx-o.on .cx-tt mark{color:#fff}
+:root[data-look="appstore"] .cx-o.on kbd{color:#fff;border-color:rgba(255,255,255,.55)}
+:root[data-look="appstore"] .cx-tt{font-weight:500}
+:root[data-look="appstore"] .cx-tt mark{color:var(--as-blue)}
+:root[data-look="appstore"] .cx-ic{border-radius:8px}
+:root[data-look="appstore"] .cx-ic.sym{background:var(--as-fill);color:var(--as-blue)}
+:root[data-look="appstore"] .cx-o.on .cx-ic.sym{background:rgba(255,255,255,.22);color:#fff}
+:root[data-look="appstore"] .cx-r kbd,:root[data-look="appstore"] .cx-foot kbd{border-radius:6px;font-family:var(--sans)}
+:root[data-look="appstore"] .cx-foot{border-top:1px solid var(--line)}
+:root[data-look="appstore"] .as-fab{display:none}
+
+/* ── computer only: sidebar and fixed positions ── */
+@media (min-width:701px){
+  :root[data-look="appstore"] .main{margin-left:calc(var(--as-sw) + 16px)}
+  :root[data-look="appstore"] .find{position:fixed;left:20px;top:20px;width:calc(var(--as-sw) - 24px);z-index:1}
+  :root[data-look="appstore"] .inst{position:fixed;left:16px;bottom:70px;width:calc(var(--as-sw) - 16px);z-index:1}
+  :root[data-look="appstore"] .tb-r .inst-btn{width:100%;height:34px;justify-content:flex-start;gap:10px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:500 13.5px var(--sans)}
+  :root[data-look="appstore"] .tb-r .inst-btn .i{width:18px;height:18px;color:var(--as-blue)}
+  :root[data-look="appstore"] .tb-r .inst-btn:hover,:root[data-look="appstore"] .tb-r .inst-btn[aria-expanded="true"]{background:var(--as-sideHover)}
+  :root[data-look="appstore"] .inst-pop{top:auto;bottom:calc(100% + 8px);left:0;right:auto}
+}
+@media (min-width:701px) and (max-width:1100px){
+  :root[data-look="appstore"]{--as-sw:220px}
+  :root[data-look="appstore"] .mi{padding:0 28px 56px}
+  :root[data-look="appstore"] .as-stories{margin:0 -28px 30px;padding:6px 28px 22px;scroll-padding:0 28px;grid-auto-columns:calc(100% - 56px - 40px)}
+  :root[data-look="appstore"] .qt tbody,:root[data-look="appstore"] .list .grid{grid-template-columns:minmax(0,1fr)}
+  :root[data-look="appstore"] .qt tbody tr:nth-last-child(2):nth-child(odd)::after{display:block}
+  :root[data-look="appstore"] .as-big{width:108px;height:108px;right:22px}
+  :root[data-look="appstore"] .as-st{max-width:62%;font-size:28px}
+  :root[data-look="appstore"] .as-ss{max-width:56%}
+}
+
+/* ── phone ── */
+@media (max-width:700px){
+  :root[data-look="appstore"]{scroll-padding-top:16px}
+  :root[data-look="appstore"][data-stratum-mode="dark"]{--as-bg:#000000;--bg:#000000;--main:#000000;--card:#1C1C1E;--hover:#2C2C2E;--line:#2C2C2E;--line3:#2C2C2E;--as-glass:rgba(30,30,32,.84);--as-menu:rgba(36,36,38,.97);--as-spot:#000000}
+  :root[data-look="appstore"] body{background:var(--as-bg)}
+  :root[data-look="appstore"] .as-side{display:none}
+  :root[data-look="appstore"] .tb{position:relative;top:auto;margin:0;min-height:calc(54px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 66px 0 16px;background:transparent}
+  :root[data-look="appstore"] .tb::before{display:none}
+  :root[data-look="appstore"] .tb-r{gap:2px}
+  :root[data-look="appstore"] .look-btn{width:34px;padding:0;justify-content:center}
+  :root[data-look="appstore"] .mi{padding:0 0 calc(112px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="appstore"] .as-hd{margin:0;padding:0 20px}
+  :root[data-look="appstore"] .as-date{font-size:12.5px}
+  :root[data-look="appstore"] .as-hero h1{font-size:32px;line-height:38px}
+  :root[data-look="appstore"] .as-td,:root[data-look="appstore"] .as-arrows,:root[data-look="appstore"] .as-stories{display:none}
+  :root[data-look="appstore"] .as-tp{display:inline}
+  /* the new apps card */
+  :root[data-look="appstore"] .as-today{display:block;position:relative;margin:14px 16px 0;height:244px;border-radius:22px;overflow:hidden;isolation:isolate;color:#fff;background:linear-gradient(160deg,#211C55 0%,#4B37C9 48%,#A24BD8 100%);box-shadow:0 12px 28px -12px rgba(40,20,120,.55)}
+  :root[data-look="appstore"] .as-today::before{content:"";position:absolute;z-index:-1;width:340px;height:340px;border-radius:50%;right:-150px;top:-160px;background:radial-gradient(closest-side,rgba(255,255,255,.24),transparent)}
+  :root[data-look="appstore"] .as-today-a{position:absolute;inset:0;display:block;padding:18px 18px 0;color:#fff;text-decoration:none;border-radius:22px}
+  :root[data-look="appstore"] .as-today-a:focus-visible{outline:3px solid #fff;outline-offset:-5px}
+  :root[data-look="appstore"] .as-today .as-ey{font-size:11.5px}
+  :root[data-look="appstore"] .as-tt{display:block;margin-top:5px;font:800 26px/1.1 var(--sans);letter-spacing:-.025em}
+  :root[data-look="appstore"] .as-tx{display:block;max-width:320px;margin-top:7px;font:400 13.5px/1.38 var(--sans);opacity:.88}
+  :root[data-look="appstore"] .as-ti{position:absolute;left:18px;right:18px;bottom:16px;display:flex;justify-content:space-between;gap:8px;margin:0;padding:0;list-style:none}
+  :root[data-look="appstore"] .as-ti a{display:block;border-radius:14px}
+  :root[data-look="appstore"] .as-ti img{display:block;width:min(56px,15vw);height:min(56px,15vw);filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
+  /* Recently opened: a white card */
+  :root[data-look="appstore"] .qa{margin:16px 16px 0;padding:16px 16px 4px;border:0;border-radius:22px;background:var(--card);box-shadow:0 10px 30px -8px rgba(0,0,0,.16),0 0 0 .5px rgba(0,0,0,.05)}
+  :root[data-look="appstore"][data-stratum-mode="dark"] .qa{box-shadow:none}
+  :root[data-look="appstore"] .mi .qh{padding:0;margin:0 0 10px}
+  :root[data-look="appstore"] .qh::before{font-size:11.5px}
+  :root[data-look="appstore"] .qh h2{font-size:22px;line-height:28px}
+  :root[data-look="appstore"] .qtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;height:auto;margin:0 0 4px;border:0}
+  :root[data-look="appstore"] .qtabs .tlist{flex:1 0 auto}
+  :root[data-look="appstore"] .qtabs [role="tab"]{flex:1 0 auto;height:28px;padding:0 8px;font-size:12.5px}
+  :root[data-look="appstore"] .qt tbody{grid-template-columns:minmax(0,1fr)}
+  :root[data-look="appstore"] .qt tr{min-height:66px;padding:0}
+  :root[data-look="appstore"] .qt td.c-nm{border:0}
+  :root[data-look="appstore"] .qt td.c-pin{width:34px}
+  :root[data-look="appstore"] .qt tbody tr:nth-last-child(2):nth-child(odd)::after{display:block}
+  :root[data-look="appstore"] .qt tbody tr:last-child::after{display:none}
+  :root[data-look="appstore"] .ql{gap:12px;padding:8px 0}
+  :root[data-look="appstore"] .ql img{width:50px;height:50px}
+  :root[data-look="appstore"] .ql::after{height:28px;padding:0 14px}
+  :root[data-look="appstore"] .qt tr[data-app]::after{left:62px}
+  :root[data-look="appstore"] .qfoot{padding:0 0 8px}
+  /* sections */
+  :root[data-look="appstore"] .needs,:root[data-look="appstore"] .pins,:root[data-look="appstore"] .appsec{margin:30px 0 0;padding-top:0;border:0}
+  :root[data-look="appstore"] .sh{padding:0 20px;margin-bottom:10px}
+  :root[data-look="appstore"] .sh h2,:root[data-look="appstore"] .pins .sh h2,:root[data-look="appstore"] .ah h2{font-size:22px;line-height:28px}
+  :root[data-look="appstore"] .nlist{gap:12px;padding:2px 20px 14px;scroll-padding:0 20px}
+  :root[data-look="appstore"] .nempty{margin:0 20px}
+  :root[data-look="appstore"] .prow{margin:0;padding:0 12px 4px;gap:2px}
+  :root[data-look="appstore"] .pt{width:84px}
+  :root[data-look="appstore"] .pins.editing .pt{width:104px}
+  :root[data-look="appstore"] .pl{font-size:11.5px;line-height:14px}
+  :root[data-look="appstore"] .pl img,:root[data-look="appstore"] .pt.all .ring{width:60px;height:60px}
+  :root[data-look="appstore"] .ah{padding:0 20px}
+  :root[data-look="appstore"] .ah .chips{display:flex;margin:2px -20px 0;padding:2px 20px}
+  :root[data-look="appstore"] .status{padding:0 20px}
+  :root[data-look="appstore"] .groups-wrap{padding:0 20px}
+  :root[data-look="appstore"] .group{margin-top:22px}
+  :root[data-look="appstore"] .ghead{margin-bottom:10px}
+  :root[data-look="appstore"] .ghead h2{font-size:19px}
+  /* cards: the home-screen grid of large icons */
+  :root[data-look="appstore"] .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 6px}
+  :root[data-look="appstore"] .card{min-height:0;padding:2px 0 0;border-radius:16px;background:transparent;box-shadow:none}
+  :root[data-look="appstore"] .card:hover{box-shadow:none}
+  :root[data-look="appstore"] .card .top{gap:7px}
+  :root[data-look="appstore"] .card .top::after,:root[data-look="appstore"] .card .tags,:root[data-look="appstore"] .card p,:root[data-look="appstore"] .card .screens{display:none}
+  :root[data-look="appstore"] .card .ai{width:62px;height:62px}
+  :root[data-look="appstore"] .card h3{font:500 11.5px/14px var(--sans);letter-spacing:0;color:var(--ink)}
+  :root[data-look="appstore"] .card .pin{top:-6px;right:-4px;width:28px;height:28px;margin:0}
+  /* list: App Store rows */
+  :root[data-look="appstore"] .list .grid{display:block}
+  :root[data-look="appstore"] .list .card{grid-template-columns:50px minmax(0,1fr) auto 32px;column-gap:12px;padding:9px 0;text-align:left}
+  :root[data-look="appstore"] .list .card::after{left:62px}
+  :root[data-look="appstore"] .list .card .ai{width:50px;height:50px}
+  :root[data-look="appstore"] .list .card .top::after{display:block;padding:0 14px}
+  :root[data-look="appstore"] .list .card h3{font:600 15px/20px var(--sans)}
+  :root[data-look="appstore"] .list .card p{display:block}
+  :root[data-look="appstore"] .list .card .tags{display:flex}
+  :root[data-look="appstore"] .list .card .pin{position:relative;top:auto;right:auto;width:32px;height:32px}
+  :root[data-look="appstore"] .foot{margin:44px 20px 0}
+  /* glass tab bar and the round search button */
+  :root[data-look="appstore"] .bn{left:16px;right:92px;bottom:calc(14px + env(safe-area-inset-bottom,0px));height:62px;padding:4px;gap:0;border:0;border-radius:31px;background:var(--as-glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--as-glassSh)}
+  :root[data-look="appstore"] .bn a,:root[data-look="appstore"] .bn button{border-radius:27px;color:var(--ink);font:600 10.5px/13px var(--sans);gap:2px}
+  :root[data-look="appstore"] .bn .on{color:var(--as-blue);background:var(--as-fill)}
+  :root[data-look="appstore"] .bn .on .i{fill:none}
+  :root[data-look="appstore"] .as-fab{display:grid;place-items:center;position:fixed;z-index:30;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:62px;height:62px;padding:0;border:0;border-radius:50%;background:var(--as-glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--as-glassSh);color:var(--ink);cursor:pointer}
+  :root[data-look="appstore"].cmdk-open .as-fab{display:none}
+  :root[data-look="appstore"] .menu{bottom:calc(88px + env(safe-area-inset-bottom,0px));border-radius:22px;padding:6px;box-shadow:0 0 0 .5px rgba(0,0,0,.1),0 18px 50px rgba(0,0,0,.25),0 0 0 100vmax var(--scrim)}
+  :root[data-look="appstore"] .menu button{height:46px;border-radius:14px;font-size:16px}
+  :root[data-look="appstore"] .inst-pop{bottom:calc(88px + env(safe-area-inset-bottom,0px));border-radius:22px;box-shadow:var(--sh28),0 0 0 100vmax var(--scrim)}
+  /* search: a full screen with an iOS search field and Cancel */
+  :root[data-look="appstore"] .cmdk-box{width:100%;border-radius:0;background:var(--as-bg);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+  :root[data-look="appstore"] .cx-in{position:relative;height:60px;padding:0 8px 0 24px;border-bottom:0}
+  :root[data-look="appstore"] .cx-in::before{content:"";position:absolute;left:14px;right:84px;top:11px;bottom:11px;border-radius:12px;background:var(--as-fill)}
+  :root[data-look="appstore"] .cx-in > *{position:relative}
+  :root[data-look="appstore"] .cx-in .i{width:18px;height:18px}
+  :root[data-look="appstore"] .cx-in input{font-size:17px}
+  :root[data-look="appstore"] .cx-cancel{padding:0 10px;color:var(--as-blue);font:400 17px var(--sans)}
+  :root[data-look="appstore"] .cx-o{min-height:56px}
+}

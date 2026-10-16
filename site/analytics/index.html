@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Analytics — Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="shopify.css?v=3">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to dashboard</a>
+<div class="topbar" aria-hidden="true">
+  <span class="tb-logo"><svg viewBox="0 0 24 24"><path d="M5 19V11M10 19V5M15 19v-6M20 19V8"/></svg></span>
+  <b>Analytics</b>
+  <span class="tb-store"><i>S</i>Tokovi</span>
+</div>
+<div class="wrap">
+  <header class="head">
+    <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19V11M10 19V5M15 19v-6M20 19V8"/></svg></span>
+    <div class="htext">
+      <span class="eyebrow"><a href="/">Business Apps</a> · Retail analytics</span>
+      <h1>Analytics<span>.</span></h1>
+      <p class="lede">Sales, stores, e-commerce, customers and products across the Tokovi stores and e-shops in Slovenia and Croatia.</p>
+    </div>
+    <span class="pill demo" title="All figures are fictional and generated in your browser"><i></i>Demo data</span>
+  </header>
+
+  <nav class="nav" id="nav" aria-label="Dashboard pages"></nav>
+
+  <section class="filters" id="filters" aria-label="Filters">
+    <div class="fchips">
+    <div class="fgroup">
+      <label class="label" for="fRange">Date range</label>
+      <select id="fRange" class="select"></select>
+    </div>
+    <div class="fgroup fcustom" id="customWrap" hidden>
+      <span class="label" id="lCustom">Custom dates</span>
+      <div class="dates" role="group" aria-labelledby="lCustom">
+        <label class="sr" for="fFrom">From</label><input type="date" id="fFrom" class="date">
+        <span aria-hidden="true">–</span>
+        <label class="sr" for="fTo">To</label><input type="date" id="fTo" class="date">
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="label" for="fCmp">Compare to</label>
+      <select id="fCmp" class="select">
+        <option value="prev">Previous period</option>
+        <option value="yoy">Same period last year</option>
+      </select>
+    </div>
+    <div class="fgroup">
+      <span class="label" id="lCountry">Country</span>
+      <div class="seg" role="group" aria-labelledby="lCountry" id="fCountry">
+        <button type="button" data-co="all" aria-pressed="true">All</button>
+        <button type="button" data-co="SI" aria-pressed="false">SI</button>
+        <button type="button" data-co="HR" aria-pressed="false">HR</button>
+      </div>
+    </div>
+    <div class="fgroup">
+      <span class="label" id="lLocs">Stores &amp; e-shops</span>
+      <button type="button" id="fLocs" class="select selbtn" aria-haspopup="dialog" aria-labelledby="lLocs fLocs"><span>All locations</span></button>
+    </div>
+    <div class="fgroup">
+      <label class="label" for="fCh">Channel</label>
+      <select id="fCh" class="select"></select>
+    </div>
+    <div class="fgroup">
+      <label class="label" for="fCat">Category</label>
+      <select id="fCat" class="select"></select>
+    </div>
+    </div>
+    <div class="factions">
+      <button type="button" id="fViews" class="btn" aria-haspopup="dialog"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Saved views</button>
+      <button type="button" id="fExport" class="btn"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export CSV</button>
+      <button type="button" id="fPrint" class="btn ghost">Print</button>
+      <button type="button" id="fReset" class="btn ghost">Reset</button>
+    </div>
+  </section>
+
+  <p class="scope" id="scope" aria-live="polite"></p>
+
+  <main id="main" tabindex="-1"></main>
+  <footer class="foot" id="foot"></footer>
+</div>
+<div id="layer"></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="sr" id="live" aria-live="polite"></div>
+<p class="sr" id="chartHint">Interactive chart. Use the arrow keys to move between values, or use View as table.</p>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/_shared/stratum-bus.js"></script>
+<script src="data.js?v=3"></script>
+<script src="report.js?v=1"></script>
+<script src="app.js?v=4"></script>
+</body>
+</html>

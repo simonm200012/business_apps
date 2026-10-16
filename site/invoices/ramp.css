@@ -1,0 +1,251 @@
+/* Invoices · Ramp look (IV1). Loaded after the inline styles and phone.css: warm grey and white, one light typeface
+   (Inter Tight), a big spend figure over black monthly bars, and Ramp yellow only for actions and "to check".
+   Dark mode is the same language on warm black. */
+:root{
+  --bg:#F4F2F0;--card:#FFFFFF;--ink:#0C0A08;--ink2:#3B3A39;--ink3:#6D6C6B;--line:#E5E3DF;--chip:#F4F2F0;--field:#FFFFFF;
+  --accent:#0C0A08;--accent-soft:#F4F8C8;--bar:#1A1919;--bar-hover:#000000;--grid:#ECEAE6;--axis:#D6D3CE;
+  --ok-bg:#E5F1E8;--ok-fg:#1E6A3A;--warn-bg:#F5F1DC;--warn-fg:#5C4E05;--bad-bg:#FBE4DF;--bad-fg:#A52A14;
+  --overlay:rgba(12,10,8,.45);--shadow:none;--pop:0 1px 2px rgba(12,10,8,.06),0 18px 40px -16px rgba(12,10,8,.28);
+  --ry:#E4F222;--ry-hover:#D5E312;--ry-ink:#0C0A08;--wash:#EAE7E3;--row:#EFEEEC;--tab:rgba(255,255,255,.96);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F0E0D;--card:#1A1918;--ink:#F4F2F0;--ink2:#CFCCC7;--ink3:#9C9893;--line:#2D2B28;--chip:#242220;--field:#141312;
+  --accent:#F4F2F0;--accent-soft:#2D300C;--bar:#ECE9E5;--bar-hover:#FFFFFF;--grid:#262422;--axis:#3A3734;
+  --ok-bg:#15291C;--ok-fg:#86D3A0;--warn-bg:#2A2710;--warn-fg:#E9DD7A;--bad-bg:#371915;--bad-fg:#F5A595;
+  --overlay:rgba(0,0,0,.62);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.85);
+  --wash:#22201E;--row:#262422;--tab:rgba(26,25,24,.96);
+}}
+:root[data-theme="dark"]{
+  --bg:#0F0E0D;--card:#1A1918;--ink:#F4F2F0;--ink2:#CFCCC7;--ink3:#9C9893;--line:#2D2B28;--chip:#242220;--field:#141312;
+  --accent:#F4F2F0;--accent-soft:#2D300C;--bar:#ECE9E5;--bar-hover:#FFFFFF;--grid:#262422;--axis:#3A3734;
+  --ok-bg:#15291C;--ok-fg:#86D3A0;--warn-bg:#2A2710;--warn-fg:#E9DD7A;--bad-bg:#371915;--bad-fg:#F5A595;
+  --overlay:rgba(0,0,0,.62);--pop:0 1px 2px rgba(0,0,0,.5),0 18px 40px -16px rgba(0,0,0,.85);
+  --wash:#22201E;--row:#262422;--tab:rgba(26,25,24,.96);
+}
+
+/* one light typeface */
+body{font:400 15px/1.5 'Inter Tight',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:-.003em}
+.mono,.eyebrow,.vendor-btn .n,.step b,.rules li small,.src-hint .q,.due-badge{font-family:inherit}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+h1{font-size:clamp(30px,3.4vw,42px);font-weight:400;letter-spacing:-.03em}
+h1 span{display:none}
+.lede{font-size:14.5px;color:var(--ink3);max-width:560px}
+a{color:var(--ink);text-underline-offset:2px}
+::selection{background:var(--ry);color:var(--ry-ink)}
+:focus-visible{outline-color:var(--ink)}
+
+/* buttons: square-ish, yellow only for the action that matters */
+.btn{min-height:40px;padding:0 15px;border-radius:7px;border-color:var(--line);background:var(--card);font-weight:500;font-size:14px}
+.btn:hover{background:var(--chip)}
+.btn.primary{background:var(--ry);border-color:var(--ry);color:var(--ry-ink)}
+.btn.primary:hover{background:var(--ry-hover);border-color:var(--ry-hover);opacity:1}
+.btn.small{min-height:34px;padding:0 13px;font-size:13.5px}
+.btn.icon{width:40px;border-radius:10px}
+.btn.icon.small{width:34px}
+.btn.ghost{background:transparent;border-color:transparent}
+.due-badge{min-height:40px;border-radius:7px;background:var(--bad-bg);color:var(--bad-fg);font-weight:500;font-size:14px}
+.menu-list{border-radius:12px}
+.menu-list button{border-radius:8px}
+
+/* cards: white, hairline border, no shadow */
+.card{border-radius:16px;border:1px solid var(--line);box-shadow:none}
+.chart-card{padding:18px 20px}
+.chart-head h2,.table-head h2{font-size:16px;font-weight:400;letter-spacing:-.01em}
+.chart-head .note,.table-head .note{font-size:12.5px}
+
+/* filters: quiet pills */
+.field-inline,.search{min-height:36px;border-radius:7px;border-color:var(--line);font-size:13.5px}
+.field-inline select{font-weight:400}
+.field-inline:focus-within,.search:focus-within{outline:2px solid var(--ink);outline-offset:1px}
+.chip{background:var(--ry);color:var(--ry-ink);border-radius:7px;font-weight:500}
+
+/* notices: "to check" is a white card with the yellow action; reminders sit on the warm wash */
+.banner{border-radius:16px;padding:14px 16px 14px 18px;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.banner p{font-size:15px}
+.banner .btn{border-color:var(--line)}
+.banner .btn.primary{border-color:var(--ry)}
+.banner.info{background:var(--wash);border-color:transparent;color:var(--ink)}
+.banner.info .btn{background:var(--card)}
+#storage-error{background:var(--bad-bg);color:var(--bad-fg);border-color:transparent}
+
+/* hero: the spend figure, the months under it, then three wash tiles */
+#dash{display:contents}
+.wrap>.head{order:0}
+#dash>.filters{order:1}
+#dash>.kpis{order:2}
+.wrap>#review-banner{order:3}
+.wrap>#due-banner{order:4}
+.wrap>#onboard{order:5}
+#dash>.pay-card{order:6}
+#dash>.charts{order:7}
+#dash>.table-card{order:8}
+.wrap>.foot{order:9}
+#dash>section{margin-top:0!important}
+.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:10px}
+.kpi.hero,.kpis .month-card{grid-column:1/-1;background:transparent;border:0;border-radius:0;padding:0}
+.kpi.hero{gap:4px}
+.kpi.hero .label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.kpi.hero .value{font-size:clamp(42px,5.2vw,64px);font-weight:400;letter-spacing:-.045em;line-height:1.02}
+.kpi.hero .sub{font-size:13.5px;color:var(--ink3)}
+.kpi:not(.hero){background:var(--wash);border:0;border-radius:12px;padding:12px 14px;gap:2px}
+.kpi:not(.hero) .label{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.kpi:not(.hero) .value{font-size:22px;font-weight:400;letter-spacing:-.025em}
+.kpi .sub{font-size:12.5px}
+.month-card{gap:6px}
+.month-card .chart-head{display:none}
+.month-card .cols{height:150px;margin-left:44px}
+.month-card .col-labels{margin-left:44px;font-size:11.5px;padding-top:6px}
+.cols .gridline{border-top-color:var(--grid)}
+.cols .gridline.base{border-top-color:transparent}
+.cols .tick{font-size:11px;color:var(--ink3)}
+.col .bar{width:min(42px,74%);border-radius:5px;background:var(--bar)}
+.col.now .bar{background:var(--ry);box-shadow:inset 0 0 0 1.5px var(--ry-ink)}
+.col[aria-pressed="true"] .bar{background:var(--ry);box-shadow:inset 0 0 0 1.5px var(--ry-ink)}
+.col:hover .bar,.col:focus-visible .bar{background:var(--bar-hover)}
+.col.now:hover .bar,.col[aria-pressed="true"]:hover .bar{background:var(--ry-hover)}
+.col .cap{font-size:11.5px;font-weight:400;color:var(--ink2)}
+.col-labels .on{font-weight:500}
+
+/* horizontal bars: ink fills, the picked one on pale yellow */
+.hbar{border-radius:8px;min-height:38px}
+.hbar .fill{background:var(--bar);border-radius:3px}
+.hbar .track{height:8px}
+.hbar.on{background:var(--accent-soft)}
+.hbar .val{font-weight:400}
+.pay-grid h3{font-size:13px;font-weight:400;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+
+/* table: hairline rows, tags instead of loud pills */
+.table-head{padding:16px 20px 10px}
+thead th{font-size:12px;font-weight:400;color:var(--ink3);border-bottom-color:var(--row)}
+tbody td{border-bottom-color:var(--row);padding:11px 12px}
+tbody tr:hover td{background:var(--chip)}
+.vendor-btn .v{font-weight:400}
+.vendor-btn .n{font-size:12px}
+td.r strong{font-weight:400!important}
+.pill{border-radius:6px;padding:1px 7px;font-size:12px;font-weight:400;background:var(--chip);color:var(--ink2)}
+.pill.warn{background:var(--ry);color:var(--ry-ink)}
+.pill.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.pill.bad{background:var(--bad-bg);color:var(--bad-fg)}
+.pill.part{background:var(--wash);color:var(--ink)}
+.pill svg{width:12px;height:12px}
+tbody tr.sel td{background:var(--accent-soft)}
+.bulk{border-radius:12px;background:var(--accent-soft)}
+td.pick input,th.pick input,.check-row input{accent-color:var(--ink)}
+
+/* onboarding, dialogs, fields */
+.drop{border-radius:16px;border-color:var(--axis)}
+.drop .ico-lg{background:var(--ry);color:var(--ry-ink);border-radius:12px}
+.step b{color:var(--ink3)}
+#detail form,#settings form,#dup .dlg-shell,#acct .dlg-shell,#templates .dlg-shell,#payrun .dlg-shell,#bankimp .dlg-shell{border-radius:16px;box-shadow:var(--pop)}
+/* approval and pay run: quiet tags, the yellow stays on the action */
+.atag{border-radius:6px;font-weight:400}
+.atag.wait{background:var(--ry);color:var(--ry-ink)}
+.atag.sent{background:var(--wash);color:var(--ink)}
+.appr-box,.pr-list,.pr-hist,.bi-list{border-radius:12px}
+.pr-pick input{accent-color:var(--ink)}
+.xp{border-radius:4px}
+#demo-banner{background:var(--accent-soft);border-color:transparent}
+.d-head h2{font-weight:400;font-size:20px}
+.f label,.f .lbl{font-weight:400;color:var(--ink3)}
+.f input,.f select,.f textarea{border-radius:8px}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--ink)}
+.tag{background:var(--ry);color:var(--ry-ink);border-radius:6px;font-weight:500}
+.tag.tpl{background:var(--wash);color:var(--ink)}
+.alert.warn{background:var(--warn-bg)}
+.toast{border-radius:10px}
+#tooltip{border-radius:10px}
+#tooltip .tv{font-weight:400;font-size:18px}
+#pv-select[aria-pressed="true"],.qr-tabs .btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* phone tab bar (shown under 720px) */
+.ramp-tabs{display:none}
+
+@media (min-width:900px){
+  /* desktop: big number and months on the left, the three tiles stacked on the right */
+  .kpis{grid-template-columns:minmax(0,1fr) 300px;column-gap:28px;row-gap:10px}
+  .kpi.hero{grid-column:1;grid-row:1}
+  .kpis .month-card{grid-column:1;grid-row:2/span 3;align-self:end}
+  .kpis>div.kpi:nth-of-type(2){grid-column:2;grid-row:1}
+  .kpis>div.kpi:nth-of-type(3){grid-column:2;grid-row:2}
+  .kpis>div.kpi:nth-of-type(4){grid-column:2;grid-row:3}
+  .month-card .cols{height:190px}
+}
+
+@media (max-width:720px){
+  .wrap{padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(150px + env(safe-area-inset-bottom,0px));gap:14px}
+  /* header: title with the camera square and the yellow action; templates and reminders below */
+  .head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px 8px}
+  .titles{grid-column:1;grid-row:1;gap:0}
+  .titles .eyebrow,.titles .lede{display:none}
+  h1{font-size:30px}
+  .actions{display:contents}
+  #camera-btn{grid-column:2;grid-row:1;width:40px;padding:0;gap:0;font-size:0;border-radius:10px}
+  #add-btn{grid-column:3;grid-row:1;padding:0 14px}
+  #due-badge{grid-column:1;grid-row:2;justify-self:start;min-height:36px}
+  #pay-menu{grid-column:2;grid-row:2;justify-self:end}
+  #pay-menu>summary{min-height:36px;font-size:13.5px}
+  #templates-btn{grid-column:3;grid-row:2;justify-self:end;min-height:36px;font-size:13.5px}
+  #settings-btn,#export-menu>summary{display:none}
+  #export-menu{position:absolute}
+  /* filters: one row you swipe sideways */
+  .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -14px;padding:2px 14px 4px;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .filters>*{flex:none}
+  .filters .search{order:-1;flex:0 0 230px}
+  .field-inline select{max-width:150px}
+  /* hero */
+  .kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .kpi.hero .value{font-size:42px}
+  .month-card .cols{height:96px;margin-left:0}
+  .month-card .cols .tick,.month-card .cols .gridline{display:none}
+  .month-card .col-labels{margin-left:0;font-size:11px}
+  .col .bar{width:84%;border-radius:4px}
+  .col .cap{font-size:10.5px}
+  .kpis>div.kpi:nth-of-type(4){grid-column:1/-1}
+  .kpi:not(.hero) .value{font-size:20px}
+  .banner{gap:10px 12px}
+  .banner p{flex-basis:100%;font-size:14.5px}
+  .chart-card{padding:14px 15px}
+  .hbar{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr) 112px;gap:8px;padding:4px 4px}
+  /* the invoice table becomes a list; the header row becomes sort chips you swipe */
+  .table-head{padding:14px 15px 8px}
+  .table-card table{min-width:0}
+  .table-card table,.table-card tbody,.table-card thead{display:block}
+  .table-card thead tr{display:flex;gap:6px;overflow-x:auto;padding:0 15px 10px;scrollbar-width:none}
+  .table-card thead tr::-webkit-scrollbar{display:none}
+  .table-card thead th{position:static;flex:none;border:0;background:transparent}
+  .table-card thead th>span,.table-card thead th>button{min-height:32px;padding:0 11px;border:1px solid var(--line);border-radius:7px;font-size:12.5px;background:var(--card)}
+  .table-card thead th[aria-sort]>button{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .table-card thead th:last-child{display:none}
+  .table-card th.pick{width:auto;padding:0!important}
+  .table-card th.pick>span{padding:0 10px!important}
+  .table-card tbody tr{display:grid;grid-template-columns:30px auto minmax(0,1fr) auto;grid-template-areas:"pick ven ven tot" "pick cat date st";column-gap:6px;row-gap:3px;padding:10px 15px;border-top:1px solid var(--row);align-items:center}
+  .table-card tbody td{display:block;padding:0!important;border:0;min-width:0;background:transparent!important}
+  .table-card tbody tr:hover{background:var(--chip)}
+  .table-card tbody tr.sel{background:var(--accent-soft)}
+  .table-card td.pick{grid-area:pick;width:auto}
+  .table-card tbody td:nth-child(2){grid-area:date;font-size:12.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .table-card tbody td:nth-child(2)::before{content:"· "}
+  .table-card tbody td:nth-child(3){grid-area:ven}
+  .table-card tbody td:nth-child(4),.table-card tbody td:nth-child(5),.table-card tbody td:nth-child(7),.table-card tbody td:nth-child(8),.table-card tbody td:nth-child(10){display:none}
+  .table-card tbody td:nth-child(6){grid-area:cat;font-size:12.5px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .table-card tbody td:nth-child(9){grid-area:tot;font-size:15px}
+  .table-card tbody td:nth-child(11){grid-area:st;justify-self:end;text-align:right}
+  .table-card tbody td:nth-child(11) .foreign{display:none}
+  .vendor-btn{max-width:100%}
+  .vendor-btn .v{font-size:15px}
+  .vendor-btn .n{display:none}
+  /* tab bar; the shell's corner bar sits just above it */
+  .ramp-tabs{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));background:var(--tab);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+  body:has(#dash[hidden]) .ramp-tabs{display:none}
+  .ramp-tabs button{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:50px;border:0;background:transparent;color:var(--ink3);font:400 11px 'Inter Tight',system-ui,sans-serif;cursor:pointer}
+  .ramp-tabs svg{width:22px;height:22px;padding:2px;border-radius:7px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;box-sizing:content-box}
+  .ramp-tabs button[aria-current="page"]{color:var(--ink)}
+  .ramp-tabs button[aria-current="page"] svg{background:var(--ry);color:var(--ry-ink);box-shadow:0 0 0 4px var(--ry)}
+  stratum-shell{bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
+  #toasts{bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+  .menu-list{bottom:calc(122px + env(safe-area-inset-bottom,0px))!important;max-height:calc(100vh - 160px)!important}
+}
+
+/* approval step turned off in Settings */
+html.no-approval [data-appr]{display:none!important}

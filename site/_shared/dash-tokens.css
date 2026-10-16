@@ -1,0 +1,102 @@
+/* Business Apps — design tokens for the "New design" dashboard pages.
+ * Same token names the dashboard pages were written against; light by default,
+ * dark when the Tokovi shell resolves the theme to dark (html[data-stratum-mode="dark"]). */
+:root {
+  color-scheme: light;
+  --font-anthropic-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-anthropic-serif: 'Source Serif 4', ui-serif, Georgia, 'Times New Roman', serif;
+
+  --color-bg: #f7f6f3;
+  --color-panel: #ffffff;
+  --color-fg: #1f1e1c;
+  --color-fg-muted: #6b6963;
+  --color-border-line: rgba(31, 30, 28, 0.12);
+  --color-ok: #23784a;
+  --color-warn: #9a6400;
+  --color-bad: #b8322a;
+
+  --dash-c1: #3f6fd8;
+  --dash-c2: #d9822b;
+  --dash-c3: #2f9e8f;
+  --dash-c4: #b5487a;
+  --dash-c5: #7a5bc8;
+  --dash-c6: #8a9a2c;
+  --dash-c7: #c2563f;
+  --dash-c8: #5b7b94;
+
+  --cds-font-size-caption: 12px;
+  --cds-font-size-body: 14px;
+  --cds-font-size-heading: 15px;
+  --cds-font-size-title: 30px;
+  --cds-font-weight-medium: 550;
+  --cds-gap-xs: 4px;
+  --cds-gap-sm: 8px;
+  --cds-gap-md: 14px;
+  --cds-gap-lg: 22px;
+  --cds-gap-xl: 36px;
+  --cds-pad-xs: 4px;
+  --cds-pad-sm: 8px;
+  --cds-pad-md: 12px;
+  --cds-pad-lg: 18px;
+  --cds-pad-xl: 32px;
+  --cds-radius: 10px;
+  --cds-dur-slow: 320ms;
+  --cds-ease-out: cubic-bezier(.2, .7, .2, 1);
+
+  --cds-chart-grid: rgba(31, 30, 28, 0.08);
+  --cds-chart-axis: rgba(31, 30, 28, 0.35);
+  --cds-chart-reference: rgba(31, 30, 28, 0.5);
+  --cds-chart-muted: #b9b6ae;
+  --cds-chart-status-critical: #d2493f;
+  --cds-surface-popover: #ffffff;
+  --cds-border: rgba(31, 30, 28, 0.14);
+  --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, 0.12);
+  --cds-text-secondary: #6b6963;
+}
+html[data-stratum-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: #191918;
+  --color-panel: #222220;
+  --color-fg: #ecebe7;
+  --color-fg-muted: #a3a19b;
+  --color-border-line: rgba(236, 235, 231, 0.13);
+  --color-ok: #5cc28a;
+  --color-warn: #e2b04e;
+  --color-bad: #f0796f;
+
+  --dash-c1: #7aa2f7;
+  --dash-c2: #f0a35e;
+  --dash-c3: #4fc1b0;
+  --dash-c4: #e07fac;
+  --dash-c5: #a68cf0;
+  --dash-c6: #b7c75a;
+  --dash-c7: #ec8a73;
+  --dash-c8: #8fb0c8;
+
+  --cds-chart-grid: rgba(236, 235, 231, 0.09);
+  --cds-chart-axis: rgba(236, 235, 231, 0.35);
+  --cds-chart-reference: rgba(236, 235, 231, 0.5);
+  --cds-chart-muted: #5d5b56;
+  --cds-chart-status-critical: #f0796f;
+  --cds-surface-popover: #2b2b29;
+  --cds-border: rgba(236, 235, 231, 0.16);
+  --cds-shadow-popover: 0 6px 24px rgba(0, 0, 0, 0.45);
+  --cds-text-secondary: #a3a19b;
+}
+
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); }
+body { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-body); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+#dash-root { --dash-gutter: clamp(16px, 4vw, 44px); padding: 64px var(--dash-gutter) 96px; max-width: 1480px; margin-inline: auto; box-sizing: border-box; }
+#dash-root :is(b, strong) { font-weight: 600; }
+
+/* Loading placeholder, as on claude.ai dashboards. */
+.dash-skeleton { position: relative; color: transparent !important; }
+.dash-skeleton::after {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: min(7rem, 80%); height: 0.85em; border-radius: 6px; background: var(--cds-chart-grid);
+  animation: dash-pulse 1.4s ease-in-out infinite;
+}
+.dash-skeleton:empty:not(span):not(b):not(p)::after { inset: 0; transform: none; width: auto; height: auto; min-height: 120px; border-radius: var(--cds-radius); }
+[data-dash-source-state="empty"] { color: transparent; }
+@keyframes dash-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .dash-skeleton::after { animation: none; } }

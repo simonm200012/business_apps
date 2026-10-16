@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="tr"></script>
+<script src="./bm-data.js?v=1"></script>
+<script src="./bm-bookings.js?v=1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Online booking — Tokovi Optika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* The customers' page: book an appointment at one branch (service → time → contact). Same tokens as Bookings.html. */
+:root{--ground:#F7F6F3;--surface:#FFFFFF;--fill:#EFEDE8;--line:#E0DDD6;--hair:#ECEAE4;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--inv:#0C0C0D;--inv-ink:#FFFFFF;--accent:#5B3FE0;--accent-bg:#EEEAFD;--good:#24553A;--good-bg:#DCEBE0;--bad:#9A3412;--bad-bg:#F6E3D6;--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);--font:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,Menlo,monospace;color-scheme:light}
+html[data-stratum-mode="dark"]{--ground:#0C0C0D;--surface:#161618;--fill:#232327;--line:#2E2E33;--hair:#232327;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--inv:#F4F3EF;--inv-ink:#0C0C0D;--accent:#9B88F5;--accent-bg:#26213F;--good:#93CFA3;--good-bg:#1D3426;--bad:#F3A47E;--bad-bg:#3A2418;--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #7B66F0;outline-offset:2px}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 120px}
+.demo{display:flex;gap:8px;align-items:flex-start;margin:0 0 14px;padding:10px 14px;border-radius:14px;background:var(--fill);color:var(--ink2);font-size:12.5px;line-height:1.45}
+.demo b{color:var(--ink);font-weight:600}
+.brand{display:flex;gap:14px;align-items:center;margin:8px 0 6px;padding-right:130px}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--inv);color:var(--inv-ink);display:grid;place-items:center;font-weight:800;font-size:18px;letter-spacing:-.04em;flex:none}
+h1{margin:0;font-size:clamp(24px,5vw,32px);line-height:1.1;font-weight:800;letter-spacing:-.03em}
+.addr{margin:2px 0 0;color:var(--ink2);font-size:14px}
+.langs{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--fill);margin:10px 0 16px}
+.langs button{border:0;background:transparent;min-height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}
+.langs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(12,12,13,.12)}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:20px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.steps{display:flex;gap:6px;margin:0 0 14px;font-size:12.5px;font-weight:600;color:var(--ink3);flex-wrap:wrap}
+.steps span{display:inline-flex;align-items:center;gap:6px}
+.steps span i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--fill);font-style:normal;font-size:11px}
+.steps span.on{color:var(--ink)}
+.steps span.on i{background:var(--inv);color:var(--inv-ink)}
+.steps span.done i{background:var(--good-bg);color:var(--good)}
+h2{margin:0 0 12px;font-size:18px;font-weight:700;letter-spacing:-.02em}
+.svcs{display:grid;gap:8px}
+.svc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.svc:hover{border-color:var(--ink3)}
+.svc[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset;background:var(--accent-bg)}
+.svc b{font-weight:600;font-size:15px}
+.svc small{grid-column:1;color:var(--ink3);font-size:13px}
+.svc .price{grid-row:1/3;grid-column:2;font-weight:700;font-variant-numeric:tabular-nums}
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px 6px;scrollbar-width:thin}
+.day{flex:none;display:grid;justify-items:center;gap:1px;width:62px;padding:8px 0;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.day small{font-size:11.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.day b{font-size:18px;font-weight:700}
+.day span{font-size:11px;color:var(--ink3)}
+.day[aria-pressed="true"]{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
+.day[aria-pressed="true"] small,.day[aria-pressed="true"] span{color:var(--inv-ink);opacity:.8}
+.day:disabled{opacity:.42;cursor:not-allowed}
+.part{margin:10px 0 6px;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.slot{min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer}
+.slot:hover{border-color:var(--ink3)}
+.slot[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.none{padding:18px;border-radius:14px;background:var(--fill);color:var(--ink2);font-size:14px}
+.fields{display:grid;gap:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{display:grid;gap:5px}
+.f label{font-size:13px;font-weight:600}
+.in{width:100%;min-height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:15px}
+textarea.in{min-height:84px;padding:10px 14px;resize:vertical}
+.in[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad) inset}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
+.chk input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent);flex:none}
+.err{padding:10px 14px;border-radius:12px;background:var(--bad-bg);color:var(--bad);font-size:14px;margin-bottom:12px}
+.note{color:var(--ink3);font-size:12.5px;margin:0}
+.sum{display:grid;gap:6px;padding:14px 16px;border-radius:16px;background:var(--fill);font-size:14px;margin-bottom:14px}
+.sum div{display:flex;justify-content:space-between;gap:12px}
+.sum span{color:var(--ink2)}
+.sum b{font-weight:600;text-align:right}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:15px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn:hover{border-color:var(--ink3)}
+.btn.pri{background:var(--inv);border-color:var(--inv);color:var(--inv-ink)}
+.btn.pri:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink2)}
+.btn.danger{color:var(--bad);border-color:var(--bad-bg)}
+.btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:16px}
+.acts .grow{flex:1}
+.done{text-align:center;padding:26px 18px}
+.done .tick{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:var(--good-bg);color:var(--good)}
+.done .tick svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.done h2{font-size:22px}
+.code{font:600 20px var(--mono);letter-spacing:.12em;margin:6px 0 2px}
+.cancelled .tick{background:var(--bad-bg);color:var(--bad)}
+.branches{display:grid;gap:8px}
+.branch{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:inherit}
+.branch:hover{border-color:var(--ink3)}
+.branch small{display:block;color:var(--ink3);font-size:13px}
+.hours{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:13.5px;color:var(--ink2);margin-top:10px}
+.staff{display:block;text-align:center;margin-top:18px;font-size:13px;color:var(--ink3)}
+.staff a{color:inherit}
+@media (max-width:520px){
+  .wrap{padding-top:64px}
+  .brand{padding-right:0}
+  .row2{grid-template-columns:1fr}
+  .card{padding:16px 14px;border-radius:18px}
+  .acts .btn{flex:1 1 auto}
+}
+</style>
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<main class="wrap" id="app"></main>
+<script>
+(function () {
+  'use strict';
+  var K = window.BMBookings.create({ onSaveError: function () { alert(T('storage')); } });
+  var TODAY = K.TODAY;
+
+  var STR = {
+    sl: { demo: '<b>Demo stran za spletno naročanje.</b> Rezervacija se shrani le v tem brskalniku in se takoj pokaže v koledarju poslovalnice (Bookings). Nič se ne pošlje.',
+      choose: 'Izberite poslovalnico', svc: 'Storitev', time: 'Termin', you: 'Vaši podatki', min: 'min',
+      pickSvc: 'Katero storitev želite?', pickDay: 'Izberite dan in uro', morning: 'Dopoldne', afternoon: 'Popoldne', noSlots: 'Ta dan ni prostih terminov. Izberite drug dan.',
+      closed: 'zaprto', free: 'prosto', next: 'Naprej', back: 'Nazaj', first: 'Ime', last: 'Priimek', email: 'E-pošta', phone: 'Mobilni telefon', note: 'Opomba (neobvezno)',
+      notePh: 'Npr. nosim kontaktne leče', remSms: 'Pošljite mi opomnik po SMS dan pred terminom', remEmail: 'Pošljite mi potrditev in opomnik po e-pošti',
+      privacy: 'Vaše podatke uporabimo samo za ta termin in opomnik (demo: ostanejo v tem brskalniku).', confirm: 'Potrdi rezervacijo',
+      sumSvc: 'Storitev', sumWhen: 'Kdaj', sumWhere: 'Kje', sumPrice: 'Cena', at: 'ob', doneT: 'Termin je rezerviran', doneP: 'Potrditev prejmete na', code: 'Številka rezervacije',
+      ics: 'Dodaj v koledar', again: 'Rezerviraj še en termin', cancel: 'Prekliči termin', cancelQ: 'Res želite preklicati termin?', cancelledT: 'Termin je preklican',
+      cancelledP: 'Termin smo sprostili za druge stranke.', hoursT: 'Delovni čas', wk: 'pon–pet', sat: 'sob', sun: 'ned in prazniki', closedDay: 'zaprto',
+      staff: 'Za osebje: odpri koledar poslovalnice', storage: 'Rezervacije ni bilo mogoče shraniti (brskalnik blokira shranjevanje).',
+      e: { name: 'Vpišite ime in priimek.', email: 'E-poštni naslov ni pravilen.', phone: 'Vpišite telefonsko številko (vsaj 8 števk).', taken: 'Ta termin je medtem že zaseden. Izberite drugega.', service: 'Izberite storitev.', branch: 'Ni poslovalnice.' },
+      wd: ['pon', 'tor', 'sre', 'čet', 'pet', 'sob', 'ned'], wdl: ['ponedeljek', 'torek', 'sreda', 'četrtek', 'petek', 'sobota', 'nedelja'], notLive: 'Ta poslovalnica spletnega naročanja še nima.' },
+    hr: { demo: '<b>Demo stranica za online naručivanje.</b> Rezervacija se sprema samo u ovom pregledniku i odmah se vidi u kalendaru poslovnice (Bookings). Ništa se ne šalje.',
+      choose: 'Odaberite poslovnicu', svc: 'Usluga', time: 'Termin', you: 'Vaši podaci', min: 'min',
+      pickSvc: 'Koju uslugu želite?', pickDay: 'Odaberite dan i vrijeme', morning: 'Prijepodne', afternoon: 'Poslijepodne', noSlots: 'Taj dan nema slobodnih termina. Odaberite drugi dan.',
+      closed: 'zatvoreno', free: 'slobodno', next: 'Dalje', back: 'Natrag', first: 'Ime', last: 'Prezime', email: 'E-pošta', phone: 'Mobitel', note: 'Napomena (nije obavezno)',
+      notePh: 'Npr. nosim kontaktne leće', remSms: 'Pošaljite mi podsjetnik SMS-om dan prije termina', remEmail: 'Pošaljite mi potvrdu i podsjetnik e-poštom',
+      privacy: 'Vaše podatke koristimo samo za ovaj termin i podsjetnik (demo: ostaju u ovom pregledniku).', confirm: 'Potvrdi rezervaciju',
+      sumSvc: 'Usluga', sumWhen: 'Kada', sumWhere: 'Gdje', sumPrice: 'Cijena', at: 'u', doneT: 'Termin je rezerviran', doneP: 'Potvrdu ćete dobiti na', code: 'Broj rezervacije',
+      ics: 'Dodaj u kalendar', again: 'Rezerviraj još jedan termin', cancel: 'Otkaži termin', cancelQ: 'Želite li stvarno otkazati termin?', cancelledT: 'Termin je otkazan',
+      cancelledP: 'Termin je oslobođen za druge klijente.', hoursT: 'Radno vrijeme', wk: 'pon–pet', sat: 'sub', sun: 'ned i praznici', closedDay: 'zatvoreno',
+      staff: 'Za djelatnike: otvori kalendar poslovnice', storage: 'Rezervaciju nije bilo moguće spremiti (preglednik blokira spremanje).',
+      e: { name: 'Upišite ime i prezime.', email: 'Adresa e-pošte nije ispravna.', phone: 'Upišite broj telefona (barem 8 znamenki).', taken: 'Taj je termin u međuvremenu zauzet. Odaberite drugi.', service: 'Odaberite uslugu.', branch: 'Nema poslovnice.' },
+      wd: ['pon', 'uto', 'sri', 'čet', 'pet', 'sub', 'ned'], wdl: ['ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota', 'nedjelja'], notLive: 'Ova poslovnica još nema online naručivanje.' },
+    en: { demo: '<b>Demo online booking page.</b> The booking is saved in this browser only and shows up straight away in the branch calendar (Bookings). Nothing is sent.',
+      choose: 'Choose a branch', svc: 'Service', time: 'Time', you: 'Your details', min: 'min',
+      pickSvc: 'Which service would you like?', pickDay: 'Pick a day and time', morning: 'Morning', afternoon: 'Afternoon', noSlots: 'No free times on this day. Please pick another day.',
+      closed: 'closed', free: 'free', next: 'Continue', back: 'Back', first: 'First name', last: 'Last name', email: 'E-mail', phone: 'Mobile phone', note: 'Note (optional)',
+      notePh: 'e.g. I wear contact lenses', remSms: 'Send me an SMS reminder the day before', remEmail: 'Send me a confirmation and reminder by e-mail',
+      privacy: 'We use your details only for this appointment and its reminder (demo: they stay in this browser).', confirm: 'Confirm booking',
+      sumSvc: 'Service', sumWhen: 'When', sumWhere: 'Where', sumPrice: 'Price', at: 'at', doneT: 'You are booked', doneP: 'A confirmation goes to', code: 'Booking number',
+      ics: 'Add to calendar', again: 'Book another appointment', cancel: 'Cancel appointment', cancelQ: 'Do you really want to cancel the appointment?', cancelledT: 'Appointment cancelled',
+      cancelledP: 'The time is free again for other customers.', hoursT: 'Opening hours', wk: 'Mon–Fri', sat: 'Sat', sun: 'Sun and holidays', closedDay: 'closed',
+      staff: 'For staff: open the branch calendar', storage: 'The booking could not be saved (this browser blocks storage).',
+      e: { name: 'Enter your first and last name.', email: 'The e-mail address does not look right.', phone: 'Enter a phone number (at least 8 digits).', taken: 'That time has just been taken. Please pick another.', service: 'Pick a service.', branch: 'No branch.' },
+      wd: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], wdl: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], notLive: 'This branch does not take online bookings yet.' }
+  };
+  var q = new URLSearchParams(location.search);
+  var b = K.byBranch[q.get('branch')] || null;
+  var st = {
+    lang: STR[q.get('lang')] ? q.get('lang') : b ? K.langOf(b) : 'sl',
+    step: 1, svc: null, day: null, t: null, form: { first: '', last: '', email: '', phone: '', note: '', remSms: true, remEmail: true }, err: '', bad: '', booking: null
+  };
+  if (q.get('booking') && K.store.added[q.get('booking')]) { st.booking = K.store.added[q.get('booking')]; st.step = 4; }
+  function T(k) { return STR[st.lang][k]; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function eur(v) { return Number(v).toLocaleString('sl-SI', { style: 'currency', currency: 'EUR' }); }
+  function svcName(s) { return s[st.lang] || s.name; }
+  function when(s, t) { return STR[st.lang].wdl[K.dow(s)] + ', ' + K.siDate(s) + ' ' + T('at') + ' ' + K.hm(t); }
+  function url(extra) {
+    var u = new URL(location.href); u.search = '';
+    if (b) u.searchParams.set('branch', b.id);
+    u.searchParams.set('lang', st.lang);
+    Object.keys(extra || {}).forEach(function (k) { if (extra[k]) u.searchParams.set(k, extra[k]); });
+    return u;
+  }
+  var app = document.getElementById('app');
+
+  function langs() {
+    return '<div class="langs" role="group" aria-label="Jezik / Language">' + [['sl', 'SL'], ['hr', 'HR'], ['en', 'EN']].map(function (l) { return '<button type="button" data-lang="' + l[0] + '" aria-pressed="' + (st.lang === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</div>';
+  }
+  function head() {
+    if (!b) return '<div class="brand"><div class="logo">SO</div><div><h1>Tokovi Optika</h1><p class="addr">' + T('choose') + '</p></div></div>';
+    return '<div class="brand"><div class="logo">SO</div><div><h1>Tokovi Optika ' + esc(b.city) + '</h1><p class="addr">' + esc(b.address) + ' · ' + esc(b.phone) + '</p></div></div>';
+  }
+  function stepsBar() {
+    var names = [T('svc'), T('time'), T('you')];
+    return '<div class="steps" aria-hidden="true">' + names.map(function (n, i) { var k = i + 1; return '<span class="' + (st.step === k ? 'on' : st.step > k ? 'done' : '') + '"><i>' + (st.step > k ? '✓' : k) + '</i>' + n + '</span>'; }).join('<span>›</span>') + '</div>';
+  }
+  function hoursBox() {
+    return '<div class="hours"><b style="grid-column:1/-1;color:var(--ink);font-weight:600">' + T('hoursT') + '</b><span>' + T('wk') + '</span><span>08:00–19:00</span><span>' + T('sat') + '</span><span>08:00–13:00</span><span>' + T('sun') + '</span><span>' + T('closedDay') + '</span></div>';
+  }
+  function days() {
+    var out = [];
+    for (var i = 0; out.length < 21 && i < 60; i++) {
+      var s = K.addDays(TODAY, i), h = K.hours(b, s);
+      var n = h.closed ? 0 : K.onlineSlots(b.id, st.svc, s).length;
+      out.push({ s: s, closed: h.closed, n: n });
+    }
+    return out;
+  }
+
+  function render() {
+    document.documentElement.lang = st.lang;
+    document.title = (b ? 'Tokovi Optika ' + b.city : 'Tokovi Optika') + ' — ' + ({ sl: 'spletno naročanje', hr: 'online naručivanje', en: 'online booking' })[st.lang];
+    var html = '<p class="demo"><span>' + T('demo') + '</span></p>' + head() + langs();
+    if (!b) {
+      html += '<div class="card"><div class="branches">' + K.BRANCHES.map(function (x) {
+        return '<a class="branch" href="' + esc(url({}).pathname + '?branch=' + x.id + '&lang=' + (x.country === 'HR' ? 'hr' : 'sl')) + '"><span><b>Tokovi Optika ' + esc(x.city) + '</b><small>' + esc(x.address) + '</small></span><span aria-hidden="true">›</span></a>';
+      }).join('') + '</div></div>';
+      app.innerHTML = html; return;
+    }
+    if (!b.live) { app.innerHTML = html + '<div class="card"><p class="none">' + T('notLive') + '</p>' + hoursBox() + '</div>'; return; }
+    if (st.step === 4) return renderDone(html);
+    html += '<div class="card">' + stepsBar();
+    if (st.err) html += '<div class="err" role="alert">' + esc(st.err) + '</div>';
+    if (st.step === 1) {
+      html += '<h2>' + T('pickSvc') + '</h2><div class="svcs">' + K.SERVICES.map(function (s) {
+        return '<button type="button" class="svc" data-svc="' + s.id + '" aria-pressed="' + (st.svc === s.id) + '"><b>' + esc(svcName(s)) + '</b><small>' + s.dur + ' ' + T('min') + '</small><span class="price">' + eur(s.fee) + '</span></button>';
+      }).join('') + '</div>' + hoursBox();
+      html += '<div class="acts"><span class="grow"></span><button type="button" class="btn pri" data-next' + (st.svc ? '' : ' disabled') + '>' + T('next') + '</button></div>';
+    } else if (st.step === 2) {
+      var ds = days();
+      if (!st.day || !ds.some(function (d) { return d.s === st.day && d.n; })) { var f = ds.filter(function (d) { return d.n; })[0]; st.day = f ? f.s : TODAY; }
+      html += '<h2>' + T('pickDay') + '</h2><div class="days" id="days">' + ds.map(function (d) {
+        var p = K.parse(d.s);
+        return '<button type="button" class="day" data-day="' + d.s + '" aria-pressed="' + (st.day === d.s) + '"' + (d.n ? '' : ' disabled') + ' aria-label="' + esc(STR[st.lang].wdl[K.dow(d.s)] + ' ' + K.siDate(d.s) + ', ' + (d.closed ? T('closed') : d.n + ' ' + T('free'))) + '"><small>' + STR[st.lang].wd[K.dow(d.s)] + '</small><b>' + p.getDate() + '</b><span>' + (d.closed ? T('closed') : d.n ? d.n + ' ' + T('free') : '–') + '</span></button>';
+      }).join('') + '</div>';
+      var sl = K.onlineSlots(b.id, st.svc, st.day);
+      if (!sl.length) html += '<p class="none">' + T('noSlots') + '</p>';
+      else {
+        var am = sl.filter(function (x) { return x.t < 720; }), pm = sl.filter(function (x) { return x.t >= 720; });
+        [[T('morning'), am], [T('afternoon'), pm]].forEach(function (g) {
+          if (!g[1].length) return;
+          html += '<div class="part">' + g[0] + '</div><div class="slots">' + g[1].map(function (x) { return '<button type="button" class="slot" data-t="' + x.t + '" aria-pressed="' + (st.t === x.t) + '">' + K.hm(x.t) + '</button>'; }).join('') + '</div>';
+        });
+      }
+      html += '<div class="acts"><button type="button" class="btn ghost" data-back>' + T('back') + '</button><button type="button" class="btn pri" data-next' + (st.t != null ? '' : ' disabled') + '>' + T('next') + '</button></div>';
+    } else {
+      var s = K.SVC[st.svc], fm = st.form;
+      html += '<div class="sum"><div><span>' + T('sumSvc') + '</span><b>' + esc(svcName(s)) + ' · ' + s.dur + ' ' + T('min') + '</b></div><div><span>' + T('sumWhen') + '</span><b>' + esc(when(st.day, st.t)) + '</b></div><div><span>' + T('sumPrice') + '</span><b>' + eur(s.fee) + '</b></div></div>';
+      html += '<h2>' + T('you') + '</h2><form class="fields" id="form" novalidate><div class="row2">' +
+        field('first', T('first'), 'text', 'given-name') + field('last', T('last'), 'text', 'family-name') + '</div><div class="row2">' +
+        field('email', T('email'), 'email', 'email') + field('phone', T('phone'), 'tel', 'tel') + '</div>' +
+        '<div class="f"><label for="f-note">' + T('note') + '</label><textarea class="in" id="f-note" maxlength="1000" placeholder="' + esc(T('notePh')) + '">' + esc(fm.note) + '</textarea></div>' +
+        '<label class="chk"><input type="checkbox" id="f-remSms"' + (fm.remSms ? ' checked' : '') + '> ' + T('remSms') + '</label>' +
+        '<label class="chk"><input type="checkbox" id="f-remEmail"' + (fm.remEmail ? ' checked' : '') + '> ' + T('remEmail') + '</label>' +
+        '<p class="note">' + T('privacy') + '</p></form>';
+      html += '<div class="acts"><button type="button" class="btn ghost" data-back>' + T('back') + '</button><button type="button" class="btn pri" data-book>' + T('confirm') + '</button></div>';
+    }
+    html += '</div><p class="staff"><a href="Bookings.html?branch=' + b.id + (st.day ? '&date=' + st.day + '&view=day' : '') + '">' + T('staff') + '</a></p>';
+    var keep = document.activeElement && document.activeElement.id;
+    app.innerHTML = html;
+    if (keep && document.getElementById(keep)) document.getElementById(keep).focus();
+    var sel = app.querySelector('.day[aria-pressed="true"]'); if (sel) sel.scrollIntoView({ block: 'nearest', inline: 'center' });
+  }
+  function field(k, label, type, ac) {
+    return '<div class="f"><label for="f-' + k + '">' + label + '</label><input class="in" id="f-' + k + '" type="' + type + '" autocomplete="' + ac + '" value="' + esc(st.form[k]) + '"' + (st.bad === k || (st.bad === 'name' && (k === 'first' || k === 'last')) ? ' aria-invalid="true"' : '') + (type === 'tel' ? ' inputmode="tel"' : '') + '></div>';
+  }
+  function readForm() {
+    ['first', 'last', 'email', 'phone', 'note'].forEach(function (k) { var el = document.getElementById('f-' + k); if (el) st.form[k] = el.value; });
+    var a = document.getElementById('f-remSms'), c = document.getElementById('f-remEmail');
+    if (a) st.form.remSms = a.checked; if (c) st.form.remEmail = c.checked;
+  }
+  function renderDone(html) {
+    var x = st.booking, s = K.SVC[x.svc], cancelled = x.status === 'cancelled';
+    html += '<div class="card done' + (cancelled ? ' cancelled' : '') + '" role="status"><div class="tick">' + (cancelled ? '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>') + '</div>' +
+      '<h2>' + (cancelled ? T('cancelledT') : T('doneT')) + '</h2>' + (cancelled ? '<p class="note">' + T('cancelledP') + '</p>' : '<p class="note">' + T('doneP') + ' ' + esc(x.email) + '</p>') +
+      '<div class="code">' + esc(x.code) + '</div><p class="note">' + T('code') + '</p></div>' +
+      '<div class="card"><div class="sum" style="margin:0"><div><span>' + T('sumSvc') + '</span><b>' + esc(svcName(s)) + '</b></div><div><span>' + T('sumWhen') + '</span><b>' + esc(when(x.date, x.start)) + '</b></div><div><span>' + T('sumWhere') + '</span><b>Tokovi Optika ' + esc(b.city) + ', ' + esc(b.street) + '</b></div><div><span>' + T('sumPrice') + '</span><b>' + eur(s.fee) + '</b></div></div>' +
+      '<div class="acts">' + (cancelled ? '' : '<button type="button" class="btn" data-ics><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>' + T('ics') + '</button><button type="button" class="btn danger" data-cancel>' + T('cancel') + '</button>') +
+      '<span class="grow"></span><button type="button" class="btn pri" data-again>' + T('again') + '</button></div></div>' +
+      '<p class="staff"><a href="Bookings.html?branch=' + b.id + '&date=' + x.date + '&view=day">' + T('staff') + '</a></p>';
+    app.innerHTML = html;
+  }
+
+  app.addEventListener('click', function (e) {
+    var l = e.target.closest('[data-lang]');
+    if (l) { readForm(); st.lang = l.getAttribute('data-lang'); history.replaceState(null, '', url(st.booking ? { booking: st.booking.id } : {})); render(); return; }
+    if (!b) return;
+    var sv = e.target.closest('[data-svc]');
+    if (sv) { st.svc = sv.getAttribute('data-svc'); st.t = null; st.err = ''; st.step = 2; render(); window.scrollTo(0, 0); return; }
+    var d = e.target.closest('[data-day]');
+    if (d && !d.disabled) { st.day = d.getAttribute('data-day'); st.t = null; render(); return; }
+    var sl = e.target.closest('[data-t]');
+    if (sl) { st.t = +sl.getAttribute('data-t'); render(); return; }
+    if (e.target.closest('[data-back]')) { readForm(); st.err = ''; st.bad = ''; st.step--; render(); window.scrollTo(0, 0); return; }
+    if (e.target.closest('[data-next]')) { st.err = ''; st.step++; render(); window.scrollTo(0, 0); return; }
+    if (e.target.closest('[data-book]')) {
+      readForm();
+      try {
+        var x = K.selfBook({ branch: b.id, svc: st.svc, date: st.day, start: st.t, first: st.form.first, last: st.form.last, email: st.form.email, phone: st.form.phone, note: st.form.note, remindSms: st.form.remSms, remindEmail: st.form.remEmail, lang: st.lang });
+        st.booking = x; st.step = 4; st.err = ''; st.bad = '';
+        history.replaceState(null, '', url({ booking: x.id }));
+      } catch (er) {
+        var k = er.message; st.err = STR[st.lang].e[k] || k; st.bad = k;
+        if (k === 'taken') { st.step = 2; st.t = null; }
+      }
+      render(); window.scrollTo(0, 0); return;
+    }
+    if (e.target.closest('[data-ics]')) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([K.bookingIcs(st.booking, { lang: st.lang })], { type: 'text/calendar;charset=utf-8' }));
+      a.download = 'stratum-optika-' + st.booking.date + '.ics'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); return;
+    }
+    if (e.target.closest('[data-cancel]')) { if (confirm(T('cancelQ'))) { st.booking = K.cancelOnline(st.booking.id); render(); } return; }
+    if (e.target.closest('[data-again]')) { st.booking = null; st.step = 1; st.t = null; st.svc = null; history.replaceState(null, '', url({})); render(); window.scrollTo(0, 0); }
+  });
+  window.addEventListener('storage', function (e) { if (e.key === K.KEY) { K.reload(); if (st.step === 2) render(); } });
+  render();
+})();
+</script>
+</body>
+</html>

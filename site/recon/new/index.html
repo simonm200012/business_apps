@@ -1,0 +1,1259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Payment reconciliation (new design) — Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/_shared/dash-tokens.css?v=1">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>window.DASH_CONFIG = {
+ "app": "recon",
+ "datasets": {
+  "activity": "data/activity.json",
+  "bank": "data/bank.json",
+  "exceptions": "data/exceptions.json",
+  "matches": "data/matches.json",
+  "meta": "data/meta.json",
+  "orders_open": "data/orders_open.json",
+  "payouts": "data/payouts.json",
+  "suggestions": "data/suggestions.json",
+  "txns": "data/txns.json"
+ },
+ "params": {
+  "b_kind": "all",
+  "b_q": "",
+  "c_month": "",
+  "f_by": "provider",
+  "f_month": "all",
+  "f_prov": "all",
+  "m_conf": "all",
+  "m_kind": "all",
+  "m_prov": "all",
+  "m_q": "",
+  "p_acc": "all",
+  "p_month": "all",
+  "p_status": "all",
+  "p_tab": "batches",
+  "r_tab": "suggestions",
+  "s_kind": "all",
+  "s_prov": "all",
+  "s_q": "",
+  "w_prov": "all",
+  "w_q": "",
+  "w_type": "all",
+  "x_age": "all",
+  "x_dir": -1,
+  "x_owner": "all",
+  "x_q": "",
+  "x_sort": "age",
+  "x_status": "Active",
+  "x_type": "all"
+ }
+};</script>
+<script src="/_shared/dash-runtime.js?v=1"></script>
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<script src="/_shared/design-switch.js?v=2" data-app="recon" data-current="new" data-old="/recon/" data-new="/recon/new/"></script>
+<div id="dash-root">
+<style>
+.rc { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: flex; flex-direction: column; gap: var(--cds-gap-lg); padding-bottom: var(--cds-pad-xl); }
+.rc * { box-sizing: border-box; }
+.rc h1, .rc h2, .rc h3, .rc p { margin: 0; }
+.rc-eyebrow { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .06em; text-transform: uppercase; }
+.rc-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; margin-top: 2px; }
+.rc-takeaway { margin-top: var(--cds-gap-sm); max-width: 80ch; color: var(--color-fg-muted); line-height: 1.55; min-height: 1.55em; }
+.rc .rc-takeaway b, .rc .rc-kpi-sub b, .rc .rc-note b, .rc .rc-stats b, .rc .rc-check b, .rc .rc-seg b, .rc .rc-badge span { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); font-variant-numeric: tabular-nums; }
+.rc-bar { display: flex; flex-wrap: wrap; align-items: flex-end; border-bottom: 1px solid var(--color-border-line); }
+.rc-tabs { display: flex; gap: var(--cds-gap-xs); overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+.rc-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; }
+.rc-tab:hover { color: var(--color-fg); }
+.rc-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.rc-page { display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
+.rc-page[hidden] { display: none; }
+.rc-tools { display: flex; gap: var(--cds-gap-sm); align-items: flex-end; flex-wrap: wrap; }
+.rc-tools label { display: flex; flex-direction: column; gap: 2px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc-tools label.rc-check-l { flex-direction: row; align-items: center; gap: 6px; min-height: 2.1rem; font-size: var(--cds-font-size-body); color: var(--color-fg); }
+.rc select, .rc-search, .rc-btn { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); min-height: 2.1rem; }
+.rc-search { min-width: min(100%, 16rem); }
+.rc-btn { cursor: pointer; }
+.rc-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; flex-wrap: wrap; }
+.rc-seg button { appearance: none; border: 0; background: var(--color-panel); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-md); min-height: 2.1rem; cursor: pointer; }
+.rc-seg button + button { border-left: 1px solid var(--color-border-line); }
+.rc-seg button[aria-pressed="true"] { color: var(--color-fg); background: color-mix(in srgb, var(--color-fg) 7%, var(--color-panel)); font-weight: var(--cds-font-weight-medium); }
+.rc-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.rc-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; display: flex; flex-direction: column; gap: var(--cds-gap-sm); position: relative; }
+.rc-card h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.rc-head { display: flex; flex-direction: column; gap: 2px; }
+.rc-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+.rc-notice { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; border: 1px dashed var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); }
+.rc-plot { min-height: 240px; }
+.rc-kpis { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11.5rem), 1fr)); }
+.rc-kpi { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+.rc-kpi-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc-kpi-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; font-variant-numeric: tabular-nums; min-height: 1.1em; }
+.rc-kpi-value[data-dash-source-state="empty"] { color: transparent; }
+.rc-kpi-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; line-height: 1.45; }
+.rc .rc-neg { color: var(--color-bad); }
+.rc .rc-good { color: var(--color-ok); }
+.rc-stats { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc-scroll { overflow: auto; max-height: 70vh; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
+.rc-scroll.rc-free { max-height: none; }
+.rc table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.rc th, .rc td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--cds-chart-grid); white-space: nowrap; }
+.rc th { position: sticky; top: 0; z-index: 2; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); vertical-align: bottom; white-space: normal; border-bottom: 1px solid var(--color-border-line); line-height: 1.25; }
+.rc td { background: var(--color-panel); }
+.rc th.rc-l, .rc td.rc-l { text-align: left; }
+.rc th:first-child, .rc td:first-child { text-align: left; position: sticky; left: 0; z-index: 1; }
+.rc th:first-child { z-index: 3; }
+.rc tbody tr:hover td { background: color-mix(in srgb, var(--color-fg) 4%, var(--color-panel)); }
+.rc tr.rc-total td, .rc tfoot td { font-weight: var(--cds-font-weight-medium); border-top: 1px solid var(--color-border-line); background: color-mix(in srgb, var(--color-fg) 3%, var(--color-panel)); }
+.rc tr.rc-sub td:first-child { padding-left: 22px; color: var(--color-fg-muted); }
+.rc tr.rc-sel td { background: color-mix(in srgb, var(--color-fg) 8%, var(--color-panel)); }
+.rc tr[data-click] { cursor: pointer; }
+.rc td.rc-text { text-align: left; max-width: 24rem; overflow: hidden; text-overflow: ellipsis; color: var(--color-fg-muted); }
+.rc td.rc-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-align: left; }
+.rc caption { caption-side: bottom; text-align: left; padding: var(--cds-pad-md); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.rc .rc-sort { appearance: none; background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: inherit; }
+.rc .rc-sort:hover { color: var(--color-fg); }
+.rc th[aria-sort] .rc-sort::after { content: " ↓"; }
+.rc th[aria-sort="ascending"] .rc-sort::after { content: " ↑"; }
+.rc-badge { display: inline-block; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0 8px; color: var(--color-fg-muted); white-space: nowrap; }
+.rc-badge.rc-b-ok { color: var(--color-ok); }
+.rc-badge.rc-b-bad { color: var(--color-bad); }
+.rc-badge.rc-b-warn { color: var(--color-warn); }
+.rc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.rc-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.rc-list li { display: flex; justify-content: space-between; align-items: center; gap: var(--cds-gap-md); padding: 7px 0; border-bottom: 1px solid var(--cds-chart-grid); font-size: var(--cds-font-size-body); }
+.rc-list li small { display: block; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc .rc-list li > b { font-weight: var(--cds-font-weight-medium); font-variant-numeric: tabular-nums; }
+.rc-list .rc-l { flex: 1; min-width: 0; }
+.rc-track { position: relative; height: 6px; border-radius: 3px; background: var(--cds-chart-grid); overflow: hidden; margin-top: 4px; }
+.rc-track i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
+.rc-checks { list-style: none; padding: 0; margin: 0; }
+.rc-check { display: grid; grid-template-columns: auto 1fr; gap: 4px var(--cds-gap-md); padding: var(--cds-pad-md) 0; border-bottom: 1px solid var(--cds-chart-grid); }
+.rc-check:last-child { border-bottom: 0; }
+.rc-check > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rc-check strong { font-weight: var(--cds-font-weight-medium); }
+.rc-check p { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+.rc-mark { width: 1.6rem; height: 1.6rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); color: var(--color-fg-muted); }
+.rc-mark.rc-ok { color: var(--color-ok); border-color: var(--color-ok); }
+.rc-mark.rc-no { color: var(--color-bad); border-color: var(--color-bad); }
+.rc-sublist { display: flex; flex-wrap: wrap; gap: 6px; }
+.rc-minis { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+.rc-mini { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); display: flex; flex-direction: column; gap: 2px; }
+.rc-mini span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc .rc-mini b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-heading); font-variant-numeric: tabular-nums; }
+.rc-cardhead { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); align-items: flex-start; flex-wrap: wrap; }
+.rc-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rc-legend span { display: inline-flex; align-items: center; }
+.rc svg text { fill: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.rc-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); min-width: 10rem; max-width: 18rem; }
+.rc-tip[hidden] { display: none; }
+.rc-tip-title { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.rc-tip-row { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.rc-tip-row span { flex: 1; }
+.rc-tip-row i { width: 8px; height: 8px; border-radius: 2px; }
+.rc-fail { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: inherit; height: 100%; padding: var(--cds-pad-lg); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.rc-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+.rc [data-dash-source-state="refreshing"] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.rc details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+.rc summary { cursor: pointer; color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+.rc details ul { line-height: 1.6; padding-left: 1.2rem; }
+@media (max-width: 720px) { .rc .rc-hide-sm { display: none; } }
+@media (max-width: 1100px) { .rc .rc-hide-md { display: none; } }
+</style>
+<style>
+.rc .rc-age-hot { color: var(--color-bad); font-weight: var(--cds-font-weight-medium); }
+.rc-subtabs { display: flex; gap: var(--cds-gap-sm); flex-wrap: wrap; }
+</style>
+
+<div class="rc" data-page="overview">
+  <header id="top">
+    <div class="rc-eyebrow">Tokovi &amp; Tokovi Group · Finance · demo data as of <span id="asof" data-source="meta" data-field="as_of" data-row="0" data-fmt="day">—</span></div>
+    <h1 class="rc-title">Payment reconciliation</h1>
+    <p class="rc-takeaway dash-skeleton" id="takeaway"></p>
+    <p class="rc-note" id="demo-note">All figures are fictional sample data from the Business Apps Payment reconciliation demo; no real payments, customers or bank lines are shown.</p>
+  </header>
+
+  <div class="rc-bar">
+    <nav class="rc-tabs" role="tablist" aria-label="Pages">
+      <button class="rc-tab" role="tab" id="tab-overview" data-tab="overview" aria-controls="overview">Overview</button>
+      <button class="rc-tab" role="tab" id="tab-reconcile" data-tab="reconcile" aria-controls="reconcile">Reconcile</button>
+      <button class="rc-tab" role="tab" id="tab-exceptions" data-tab="exceptions" aria-controls="exceptions">Exceptions</button>
+      <button class="rc-tab" role="tab" id="tab-payouts" data-tab="payouts" aria-controls="payouts">Payouts</button>
+      <button class="rc-tab" role="tab" id="tab-fees" data-tab="fees" aria-controls="fees">Fees</button>
+      <button class="rc-tab" role="tab" id="tab-close" data-tab="close" aria-controls="close">Month close</button>
+      <button class="rc-tab" role="tab" id="tab-activity" data-tab="activity" aria-controls="activity">Activity</button>
+    </nav>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="rc-page" id="overview" role="tabpanel" aria-labelledby="tab-overview">
+    <div class="rc-kpis" id="ov-kpis">
+      <div class="rc-kpi"><span class="rc-kpi-label">Match rate · payments</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="rate" data-row="0" data-fmt="pct">—</span><span class="rc-kpi-sub"><b data-source="totals" data-field="matched" data-row="0" data-fmt="num">—</b> of <b data-source="totals" data-field="caps" data-row="0" data-fmt="num">—</b> · by value <b data-source="totals" data-field="rate_value" data-row="0" data-fmt="pct">—</b></span></div>
+      <div class="rc-kpi"><span class="rc-kpi-label">Unmatched payments</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="unmatched_value" data-row="0" data-fmt="eur0">—</span><span class="rc-kpi-sub"><b data-source="totals" data-field="unmatched" data-row="0" data-fmt="num">—</b> items incl. refunds, signed</span></div>
+      <div class="rc-kpi"><span class="rc-kpi-label">Suggestions to review</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="suggestions" data-row="0" data-fmt="num">—</span><span class="rc-kpi-sub">amount + date + customer</span></div>
+      <div class="rc-kpi"><span class="rc-kpi-label">Open exceptions</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="open_exceptions" data-row="0" data-fmt="num">—</span><span class="rc-kpi-sub"><b data-source="totals" data-field="open_value" data-row="0" data-fmt="eur0">—</b> at stake (absolute)</span></div>
+      <div class="rc-kpi"><span class="rc-kpi-label" id="kpi-fees-label">Fees · month to date</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="fees_cur" data-row="0" data-fmt="eur0">—</span><span class="rc-kpi-sub"><b data-source="totals" data-field="fee_rate_cur" data-row="0" data-fmt="pct2">—</b> of volume · <span id="kpi-prev-label">previous month</span> <b data-source="totals" data-field="fees_prev" data-row="0" data-fmt="eur0">—</b></span></div>
+      <div class="rc-kpi"><span class="rc-kpi-label">Payouts pending</span><span class="rc-kpi-value dash-skeleton" data-source="totals" data-field="transit" data-row="0" data-fmt="num">—</span><span class="rc-kpi-sub"><b data-source="totals" data-field="transit_value" data-row="0" data-fmt="eur0">—</b> in transit · <b data-source="totals" data-field="flagged" data-row="0" data-fmt="num">—</b> flagged</span></div>
+    </div>
+    <div class="rc-card" id="ov-ex">
+      <div class="rc-head"><h2>Open exceptions by type and age</h2><p class="rc-note">Open and waiting exceptions; age in days since the transaction. Select a type to open it on the Exceptions page.</p></div>
+      <div class="rc-scroll rc-free">
+        <table id="ov-ex-table" data-source="ex_age" data-row-key="type">
+          <thead><tr><th data-field="type">Type</th><th data-field="d0_2">0–2 d</th><th data-field="d3_7">3–7 d</th><th data-field="d8_30">8–30 d</th><th data-field="d31">&gt; 30 d</th><th data-field="total">Total</th><th data-field="value">Value</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="rc-grid">
+      <div class="rc-card" id="ov-unmatched">
+        <div class="rc-head"><h2>Unmatched value per provider</h2><p class="rc-note">Payments, refunds and chargebacks not yet matched to an order, signed, on one shared scale.</p></div>
+        <ul class="rc-list" id="ov-un-list"></ul>
+      </div>
+      <div class="rc-card" id="ov-fees">
+        <div class="rc-head"><h2 id="ov-fees-title">Effective fee rate by provider</h2><p class="rc-note">Fees ÷ captured volume, month to date, highest first.</p></div>
+        <ul class="rc-list" id="ov-fee-list"></ul>
+      </div>
+    </div>
+    <div class="rc-grid">
+      <div class="rc-card" id="ov-payouts">
+        <div class="rc-head"><h2>Payouts pending or flagged</h2><p class="rc-note">Batches not yet seen on the bank statement, or seen with a different amount.</p></div>
+        <div class="rc-scroll rc-free">
+          <table id="ov-po-table" data-source="payouts" data-row-key="batch">
+            <thead><tr><th data-field="batch">Batch</th><th data-field="account" class="rc-l">Account</th><th data-field="date">Paid out</th><th data-field="expected" class="rc-hide-sm">Expected</th><th data-field="net">Net</th><th data-field="status" class="rc-l">Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="rc-card" id="ov-activity">
+        <div class="rc-head"><h2>Recent decisions</h2><p class="rc-note">Who did what, newest first (fictional colleagues).</p></div>
+        <ul class="rc-list" id="ov-act-list" data-source="activity"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECONCILE -->
+  <section class="rc-page" id="reconcile" role="tabpanel" aria-labelledby="tab-reconcile" hidden>
+    <p class="rc-note">Exact reference matches are applied automatically. Likely ones are suggested for review; the rest wait on the workbench. Accepting, rejecting and matching by hand happen in the app.</p>
+    <div class="rc-subtabs">
+      <div class="rc-seg" role="group" aria-label="Reconcile view">
+        <button type="button" data-rtab="suggestions">Suggestions · <b data-source="totals" data-field="suggestions" data-row="0" data-fmt="num">—</b></button>
+        <button type="button" data-rtab="workbench">Workbench · <b data-source="wb_summary" data-field="n" data-where="provider=all&amp;type=all" data-fmt="num">—</b> / <b data-source="totals" data-field="open_orders" data-row="0" data-fmt="num">—</b></button>
+        <button type="button" data-rtab="matched">Matched · <b data-source="matched_summary" data-field="count" data-where="confidence=all&amp;kind=all&amp;provider=all" data-fmt="num">—</b></button>
+      </div>
+    </div>
+
+    <div id="r-suggestions" class="rc-page">
+      <div class="rc-tools">
+        <label>Provider<select id="s-prov" aria-label="Provider"></select></label>
+        <label>Suggestion kind<select id="s-kind" aria-label="Suggestion kind"></select></label>
+        <input class="rc-search" id="s-q" type="search" placeholder="Search order, payer, reference" aria-label="Search suggestions">
+      </div>
+      <div class="rc-card">
+        <div class="rc-head"><h2>Suggestions to review</h2><p class="rc-note">A payment without a usable reference paired with an open order of the same amount, inside the provider's date window, with the same e-mail and/or name. Score up to 100.</p></div>
+        <div class="rc-scroll">
+          <table id="s-table" data-source="suggestions" data-row-key="id">
+            <thead><tr>
+              <th data-field="date">Paid</th><th data-field="provider" class="rc-l">Provider</th><th data-field="account" class="rc-l rc-hide-md">Account</th>
+              <th data-field="amount">Amount</th><th data-field="ref" class="rc-l rc-hide-sm">Payment reference</th><th data-field="payer" class="rc-l rc-hide-sm">Payer</th>
+              <th data-field="orders" class="rc-l">Order</th><th data-field="order_date" class="rc-hide-md">Ordered</th><th data-field="shop" class="rc-l rc-hide-md">Shop</th>
+              <th data-field="score">Score</th><th data-field="reasons" class="rc-l rc-hide-sm">Why</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="r-workbench" class="rc-page" hidden>
+      <div class="rc-tools">
+        <label>Provider<select id="w-prov" aria-label="Provider"></select></label>
+        <label>Type<select id="w-type" aria-label="Type"></select></label>
+      </div>
+      <div class="rc-card">
+        <div class="rc-head"><h2>Unmatched payments</h2><p class="rc-note">Provider side: <b data-source="wb_summary" data-field="n" data-fmt="num" id="w-n">—</b> items, <b data-source="wb_summary" data-field="value" data-fmt="eur2" id="w-v">—</b> signed. “Suggested” ones have a suggestion waiting.</p></div>
+        <div class="rc-scroll">
+          <table id="w-table" data-source="txns" data-row-key="id">
+            <thead><tr>
+              <th data-field="date">Date</th><th data-field="provider" class="rc-l">Provider</th><th data-field="account" class="rc-l rc-hide-sm">Account</th><th data-field="type" class="rc-l">Type</th>
+              <th data-field="ref" class="rc-l">Reference</th><th data-field="payer" class="rc-l rc-hide-sm">Payer</th><th data-field="amount">Amount</th><th data-field="status" class="rc-l">Status</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-head"><h2>Open orders</h2><p class="rc-note">Shop side: orders with no payment matched yet. “Marked paid” orders older than 3 days without a payment are also exceptions.</p></div>
+        <div class="rc-tools"><input class="rc-search" id="w-q" type="search" placeholder="Search order or customer" aria-label="Search open orders"></div>
+        <div class="rc-scroll">
+          <table id="oo-table" data-source="orders_open" data-row-key="no">
+            <thead><tr>
+              <th data-field="no">Order</th><th data-field="shop" class="rc-l rc-hide-sm">Shop</th><th data-field="date">Ordered</th><th data-field="method" class="rc-l">Payment method</th>
+              <th data-field="customer" class="rc-l rc-hide-sm">Customer</th><th data-field="amount">Amount</th><th data-field="marked_paid" class="rc-l rc-hide-md">Marked paid</th><th data-field="suggested" class="rc-l">Suggestion</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="r-matched" class="rc-page" hidden>
+      <div class="rc-tools">
+        <label>Confidence<select id="m-conf" aria-label="Confidence"></select></label>
+        <label>Kind<select id="m-kind" aria-label="Kind"></select></label>
+        <label>Provider<select id="m-prov" aria-label="Provider"></select></label>
+        <input class="rc-search" id="m-q" type="search" placeholder="Search order or reference" aria-label="Search matches">
+      </div>
+      <div class="rc-card">
+        <div class="rc-stats" id="m-stats">
+          <span><b data-source="matched_summary" data-field="count" data-fmt="num">—</b> matches</span>
+          <span>Payments side <b data-source="matched_summary" data-field="paid" data-fmt="eur2">—</b></span>
+          <span>Orders side (payments) <b data-source="matched_summary" data-field="order_total" data-fmt="eur2">—</b></span>
+        </div>
+        <div class="rc-scroll">
+          <table id="m-table" data-source="matches" data-row-key="id">
+            <thead><tr>
+              <th data-field="date">Date</th><th data-field="confidence" class="rc-l">Confidence</th><th data-field="kind" class="rc-l rc-hide-sm">Kind</th><th data-field="provider" class="rc-l">Provider</th>
+              <th data-field="payments" class="rc-l rc-hide-md">Payment reference</th><th data-field="orders" class="rc-l">Order</th><th data-field="customer" class="rc-l rc-hide-md">Customer</th>
+              <th data-field="paid">Paid</th><th data-field="order_total" class="rc-hide-sm">Order total</th><th data-field="difference">Difference</th><th data-field="decided" class="rc-l rc-hide-md">Decided</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXCEPTIONS -->
+  <section class="rc-page" id="exceptions" role="tabpanel" aria-labelledby="tab-exceptions" hidden>
+    <p class="rc-note">Detected automatically from the matching state. Owner, status and notes are set in the app; resolved or written-off items count as reconciled at month close.</p>
+    <div class="rc-tools"><div class="rc-seg" role="group" aria-label="Status" id="x-status"></div></div>
+    <div class="rc-tools">
+      <label>Type<select id="x-type" aria-label="Type"></select></label>
+      <label>Owner<select id="x-owner" aria-label="Owner"></select></label>
+      <label>Age<select id="x-age" aria-label="Age"></select></label>
+      <input class="rc-search" id="x-q" type="search" placeholder="Search item, detail, note" aria-label="Search exceptions">
+    </div>
+    <div class="rc-card">
+      <div class="rc-stats" id="x-stats"><span><b data-source="ex_summary" data-field="count" data-fmt="num">—</b> exceptions</span><span>Signed total <b data-source="ex_summary" data-field="total" data-fmt="eur2">—</b></span></div>
+      <div class="rc-scroll">
+        <table id="x-table" data-source="exceptions" data-row-key="id">
+          <thead><tr>
+            <th data-field="type"><button class="rc-sort" data-sort="type">Type</button></th>
+            <th data-field="title" class="rc-l">Item</th>
+            <th data-field="detail" class="rc-l rc-hide-md">Detail</th>
+            <th data-field="provider" class="rc-l rc-hide-sm"><button class="rc-sort" data-sort="provider">Provider</button></th>
+            <th data-field="amount"><button class="rc-sort" data-sort="amount">Amount</button></th>
+            <th data-field="age"><button class="rc-sort" data-sort="age">Age, days</button></th>
+            <th data-field="owner" class="rc-l rc-hide-md">Owner</th>
+            <th data-field="status" class="rc-l">Status</th>
+            <th data-field="last_note" class="rc-l rc-hide-sm">Last note</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYOUTS -->
+  <section class="rc-page" id="payouts" role="tabpanel" aria-labelledby="tab-payouts" hidden>
+    <p class="rc-note">Every provider settlement batch with its lines, checked against the demo bank statement. Gross − fees = net must tie out for each batch and in total.</p>
+    <div class="rc-subtabs">
+      <div class="rc-seg" role="group" aria-label="Payouts view">
+        <button type="button" data-ptab="batches">Payout batches · <b data-source="payout_summary" data-field="batches" data-where="scope=all&amp;month=all&amp;status=all" data-fmt="num">—</b></button>
+        <button type="button" data-ptab="bank">Bank statement · <b data-source="totals" data-field="bank_lines" data-row="0" data-fmt="num">—</b></button>
+      </div>
+    </div>
+    <div id="p-batches" class="rc-page">
+      <div class="rc-tools">
+        <label>Account<select id="p-acc" aria-label="Account"></select></label>
+        <label>Payout month<select id="p-month" aria-label="Payout month"></select></label>
+        <label>Bank status<select id="p-status" aria-label="Bank status"></select></label>
+      </div>
+      <div class="rc-kpis" id="p-kpis">
+        <div class="rc-kpi"><span class="rc-kpi-label">Batches</span><span class="rc-kpi-value dash-skeleton" data-source="payout_summary" data-field="batches" data-fmt="num">—</span><span class="rc-kpi-sub">Net <b data-source="payout_summary" data-field="net" data-fmt="eurc">—</b></span></div>
+        <div class="rc-kpi"><span class="rc-kpi-label">Arrived</span><span class="rc-kpi-value dash-skeleton" data-source="payout_summary" data-field="arrived" data-fmt="num">—</span><span class="rc-kpi-sub">In transit <b data-source="payout_summary" data-field="transit" data-fmt="num">—</b></span></div>
+        <div class="rc-kpi"><span class="rc-kpi-label">Missing from bank</span><span class="rc-kpi-value dash-skeleton" data-source="payout_summary" data-field="missing" data-fmt="num">—</span><span class="rc-kpi-sub">Amount differs <b data-source="payout_summary" data-field="diff" data-fmt="num">—</b></span></div>
+        <div class="rc-kpi"><span class="rc-kpi-label">Gross − fees = net</span><span class="rc-kpi-value dash-skeleton" data-source="payout_summary" data-field="gross" data-fmt="eurc">—</span><span class="rc-kpi-sub">Fees <b data-source="payout_summary" data-field="fees" data-fmt="eur2">—</b></span></div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-scroll">
+          <table id="p-table" data-source="payouts" data-row-key="batch">
+            <thead><tr>
+              <th data-field="date">Payout date</th><th data-field="account" class="rc-l">Account</th><th data-field="batch" class="rc-l">Batch</th><th data-field="period_from" class="rc-hide-md">Period from</th><th data-field="period_to" class="rc-hide-md">Period to</th>
+              <th data-field="lines" class="rc-hide-sm">Lines</th><th data-field="gross" class="rc-hide-sm">Gross</th><th data-field="fees" class="rc-hide-md">Fees</th><th data-field="net">Net</th>
+              <th data-field="bank_date" class="rc-hide-sm">Bank</th><th data-field="bank_amount" class="rc-hide-md">Bank amount</th><th data-field="status" class="rc-l">Status</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="p-bank" class="rc-page" hidden>
+      <div class="rc-tools">
+        <label>Kind<select id="b-kind" aria-label="Kind"></select></label>
+        <input class="rc-search" id="b-q" type="search" placeholder="Search text or counterparty" aria-label="Search bank lines">
+      </div>
+      <div class="rc-card">
+        <div class="rc-head"><h2>Demo bank statement</h2><p class="rc-note">Credits and debits on the fictional bank account: provider settlements, customer transfers and refunds.</p></div>
+        <div class="rc-scroll">
+          <table id="b-table" data-source="bank" data-row-key="id">
+            <thead><tr><th data-field="date">Date</th><th data-field="counterparty" class="rc-l">Counterparty</th><th data-field="text" class="rc-l">Text</th><th data-field="kind" class="rc-l rc-hide-sm">Kind</th><th data-field="amount">Amount</th><th data-field="matched_to" class="rc-l rc-hide-sm">Matched to</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEES -->
+  <section class="rc-page" id="fees" role="tabpanel" aria-labelledby="tab-fees" hidden>
+    <p class="rc-note">What payment providers and carriers charged, by transaction date. Effective rate = fees ÷ captured volume (refund and chargeback fees included in fees).</p>
+    <div class="rc-tools"><div class="rc-seg" role="group" aria-label="Group by" id="f-by"></div></div>
+    <div class="rc-tools">
+      <label>Month<select id="f-month" aria-label="Month"></select></label>
+      <label>Provider<select id="f-prov" aria-label="Provider"></select></label>
+    </div>
+    <div class="rc-grid">
+      <div class="rc-card" id="f-chart" data-source="fees_agg">
+        <div class="rc-head"><h2>Fees by month</h2><p class="rc-note" id="f-chart-note">All 90 days; the current month is month to date. Hover a month for volume and rate.</p></div>
+        <div class="rc-plot"></div>
+      </div>
+      <div class="rc-card">
+        <div class="rc-head"><h2 id="f-rates-title">Effective rate</h2><p class="rc-note">Highest first, on one shared scale.</p></div>
+        <ul class="rc-list" id="f-rate-list"></ul>
+      </div>
+    </div>
+    <div class="rc-card">
+      <div class="rc-scroll rc-free">
+        <table id="f-table" data-source="fees_agg" data-row-key="by,month,provider,key">
+          <thead><tr>
+            <th data-field="key" id="f-key-th">Provider</th><th data-field="payments">Payments</th><th data-field="volume">Captured volume</th>
+            <th data-field="refunds" class="rc-hide-sm">Refunds</th><th data-field="chargebacks" class="rc-hide-md">Chargebacks</th><th data-field="fees">Fees</th>
+            <th data-field="rate">Effective rate</th><th data-field="avg_fee" class="rc-hide-sm">Avg fee / payment</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot><tr>
+            <td>Total</td><td data-source="fees_agg" data-field="payments" data-fmt="num">—</td><td data-source="fees_agg" data-field="volume" data-fmt="eur2">—</td>
+            <td class="rc-hide-sm" data-source="fees_agg" data-field="refunds" data-fmt="eur2">—</td><td class="rc-hide-md" data-source="fees_agg" data-field="chargebacks" data-fmt="eur2">—</td>
+            <td data-source="fees_agg" data-field="fees" data-fmt="eur2">—</td><td data-source="fees_agg" data-field="rate" data-fmt="pct2">—</td><td class="rc-hide-sm" data-source="fees_agg" data-field="avg_fee" data-fmt="eur2">—</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTH CLOSE -->
+  <section class="rc-page" id="close" role="tabpanel" aria-labelledby="tab-close" hidden>
+    <div class="rc-tools"><div class="rc-seg" role="group" aria-label="Month" id="c-month"></div></div>
+    <p class="rc-notice" id="c-running" hidden></p>
+    <div class="rc-card" id="c-checks">
+      <div class="rc-head"><h2 id="c-title">Close the month</h2><p class="rc-note">A month can be closed when every provider is reconciled, payouts are on the bank, open exceptions are under the threshold, fees are reviewed and the accounting export is done.</p></div>
+      <ul class="rc-checks">
+        <li class="rc-check"><span class="rc-mark" id="c-m-prov">·</span><div><strong>All providers reconciled</strong><p>Every transaction dated in the month is matched, or its exception is resolved or written off.</p><div class="rc-sublist" id="c-provs" data-source="close_providers"></div></div></li>
+        <li class="rc-check"><span class="rc-mark" id="c-m-pay">·</span><div><strong>Payouts arrived on the bank</strong><p><b data-source="close_checks" data-field="payouts" data-fmt="num">—</b> payouts paid out in the month; <b data-source="close_checks" data-field="payouts_bad" data-fmt="num">—</b> still in transit, missing or with a different bank amount.</p><div class="rc-sublist" id="c-bad"></div></div></li>
+        <li class="rc-check"><span class="rc-mark" id="c-m-ex">·</span><div><strong>Open exceptions under the threshold</strong><p><b data-source="close_checks" data-field="exceptions" data-fmt="num">—</b> open or waiting · <b data-source="close_checks" data-field="exceptions_value" data-fmt="eur2">—</b> absolute. Threshold: at most <b data-source="meta" data-field="threshold_count" data-row="0" data-fmt="num">—</b> items and <b data-source="meta" data-field="threshold_value" data-row="0" data-fmt="eur2">—</b>.</p></div></li>
+        <li class="rc-check"><span class="rc-mark rc-no">✕</span><div><strong>Fees reviewed</strong><p>Not ticked in the demo. Compare the rates on the Fees page with the contracts, then tick it in the app.</p></div></li>
+        <li class="rc-check"><span class="rc-mark rc-no">✕</span><div><strong>Export for accounting done</strong><p>Not done in the demo. In the app this downloads matched pairs, unmatched items and fees per provider as CSV; here the same rows can be downloaded from Sources.</p></div></li>
+      </ul>
+    </div>
+    <div class="rc-card">
+      <div class="rc-head"><h2>Close status by month</h2><p class="rc-note">The three automatic checks for each month in the demo's 90 days. Select a month to open it.</p></div>
+      <div class="rc-scroll rc-free">
+        <table id="c-table" data-source="close_checks" data-row-key="month">
+          <thead><tr><th data-field="month">Month</th><th data-field="providers_ok" class="rc-l">Providers reconciled</th><th data-field="payouts_bad">Payouts not on bank</th><th data-field="exceptions">Open exceptions</th><th data-field="exceptions_value" class="rc-hide-sm">Exception value</th><th data-field="checks_passed">Automatic checks passed</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTIVITY -->
+  <section class="rc-page" id="activity" role="tabpanel" aria-labelledby="tab-activity" hidden>
+    <p class="rc-note">Every accept, reject, manual match, unmatch, exception change and month-close step, with who and when. These are the demo's seeded decisions by fictional colleagues.</p>
+    <div class="rc-card">
+      <div class="rc-scroll rc-free">
+        <table id="a-table" data-source="activity" data-row-key="id">
+          <thead><tr><th data-field="at">When</th><th data-field="by" class="rc-l">Who</th><th data-field="action" class="rc-l rc-hide-sm">Action</th><th data-field="what" class="rc-l">What</th><th data-field="note" class="rc-l rc-hide-sm">Note</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <details id="definitions">
+    <summary>Definitions, coverage and limits</summary>
+    <ul>
+      <li>Demo data: every figure, order, payment, payout, bank line and person on this page is fictional sample data copied from the Business Apps Payment reconciliation demo on the date in the header (its 90 days of orders up to the day before). No real payment, customer or bank data is included.</li>
+      <li>Match rate = captured payments matched to a shop order (by reference, or a suggestion accepted in the app) ÷ all captured payments, by count and by value. Unmatched payments include refunds and chargebacks, signed.</li>
+      <li>Suggestions pair a payment without a usable reference with an open order of the same amount, inside the provider's date window (cards and wallets 0–3 days, Klarna 0–10, cash on delivery 1–14, bank transfer 0–21), with the same e-mail and/or name.</li>
+      <li>Exception types: payment without order, order paid twice, amount differs (rounding, currency, partial capture), refund without credit note, chargeback, payout missing from bank, payout ≠ bank amount, order marked paid with no payment, bank credit without a payout. Active = open or waiting.</li>
+      <li>Payouts: a batch has arrived when a bank line carries its net; it is missing when nothing arrived two business days after the payout date.</li>
+      <li>Fees: per-payment fees plus refund and chargeback fees. Effective rate = fees ÷ captured volume.</li>
+      <li>Month close: the threshold is the demo's default. Fees reviewed and the accounting export are ticked by a person in the app and are not done in the demo.</li>
+      <li>Left out because the dashboard can't do them: accepting, rejecting or manually matching, unmatching, changing an exception's owner, status or notes, closing or reopening a month, the CSV exports and resetting the demo. The rows behind every table can be downloaded from Sources.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+// ---------- calculations readers can inspect ----------
+dash.calc('totals', {
+  inputs: ['txns', 'suggestions', 'exceptions', 'payouts', 'orders_open', 'bank', 'meta'],
+  title: 'Headline figures',
+  description: 'Match rate, unmatched items, suggestions, open exceptions, fees this and last month, and payouts in transit or flagged, as on the demo’s Overview.',
+  fn: (txns, suggestions, exceptions, payouts, orders_open, bank, meta) => {
+    const cur = meta[0].as_of.slice(0, 7);
+    const [y, mo] = cur.split('-').map(Number);
+    const prev = new Date(Date.UTC(y, mo - 2, 1)).toISOString().slice(0, 7);
+    const r2 = (v) => Math.round(v * 100) / 100;
+    let caps = 0, matched = 0, value = 0, mv = 0, un = 0, unV = 0, fc = 0, vc = 0, fp = 0;
+    for (const t of txns) {
+      if (t.type === 'Payment') { caps += 1; value += t.amount; if (t.status === 'Matched') { matched += 1; mv += t.amount; } }
+      if (t.status !== 'Matched') { un += 1; unV += t.amount; }
+      const m = t.date.slice(0, 7);
+      if (m === cur) { fc += t.fee; if (t.type === 'Payment') vc += t.amount; }
+      if (m === prev) fp += t.fee;
+    }
+    const act = exceptions.filter((x) => x.status === 'Open' || x.status === 'Waiting');
+    const transit = payouts.filter((p) => p.status === 'In transit');
+    return [{cur_month: cur, prev_month: prev, caps, matched, rate: caps ? matched / caps : null, value: r2(value), matched_value: r2(mv), rate_value: value ? mv / value : null,
+      unmatched: un, unmatched_value: r2(unV), suggestions: suggestions.length, open_orders: orders_open.length, bank_lines: bank.length,
+      open_exceptions: act.length, open_value: r2(act.reduce((s, x) => s + Math.abs(x.amount), 0)),
+      fees_cur: r2(fc), vol_cur: r2(vc), fee_rate_cur: vc ? fc / vc : null, fees_prev: r2(fp),
+      transit: transit.length, transit_value: r2(transit.reduce((s, p) => s + p.net, 0)),
+      flagged: payouts.filter((p) => p.status === 'Missing from bank' || p.status === 'Amount differs').length}];
+  },
+});
+dash.calc('ex_age', {
+  inputs: ['exceptions'],
+  title: 'Open exceptions by type and age',
+  description: 'Open and waiting exceptions per type, counted by age in days (0–2, 3–7, 8–30, over 30), with the signed value.',
+  fn: (exceptions) => {
+    const out = new Map();
+    for (const x of exceptions) {
+      if (x.status !== 'Open' && x.status !== 'Waiting') continue;
+      const o = out.get(x.type) || {type: x.type, d0_2: 0, d3_7: 0, d8_30: 0, d31: 0, total: 0, value: 0};
+      o[x.age <= 2 ? 'd0_2' : x.age <= 7 ? 'd3_7' : x.age <= 30 ? 'd8_30' : 'd31'] += 1;
+      o.total += 1; o.value = Math.round((o.value + x.amount) * 100) / 100;
+      out.set(x.type, o);
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('unmatched_by_provider', {
+  inputs: ['txns'],
+  title: 'Unmatched value per provider',
+  description: 'Count and signed value of payments, refunds and chargebacks not matched to an order, per provider.',
+  fn: (txns) => {
+    const out = new Map();
+    for (const t of txns) {
+      if (t.status === 'Matched') continue;
+      const o = out.get(t.provider) || {provider: t.provider, n: 0, value: 0};
+      o.n += 1; o.value = Math.round((o.value + t.amount) * 100) / 100;
+      out.set(t.provider, o);
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('wb_summary', {
+  inputs: ['txns'],
+  title: 'Workbench counts',
+  description: 'Unmatched provider items per provider and type (all as a choice for each): count and signed value.',
+  fn: (txns) => {
+    const out = new Map();
+    for (const t of txns) {
+      if (t.status === 'Matched') continue;
+      for (const provider of [t.provider, 'all']) for (const type of [t.type, 'all']) {
+        const k = provider + '|' + type, o = out.get(k) || {provider, type, n: 0, value: 0};
+        o.n += 1; o.value = Math.round((o.value + t.amount) * 100) / 100;
+        out.set(k, o);
+      }
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('matched_summary', {
+  inputs: ['matches'],
+  title: 'Matched totals',
+  description: 'Matches per confidence, kind and provider (all as a choice for each): count, paid on the payments side and order totals on the orders side.',
+  fn: (matches) => {
+    const out = new Map();
+    for (const m of matches) for (const confidence of [m.confidence, 'all']) for (const kind of [m.kind, 'all']) for (const provider of [m.provider, 'all']) {
+      const k = [confidence, kind, provider].join('|'), o = out.get(k) || {confidence, kind, provider, count: 0, paid: 0, order_total: 0};
+      o.count += 1; o.paid = Math.round((o.paid + m.paid) * 100) / 100; o.order_total = Math.round((o.order_total + (m.order_total || 0)) * 100) / 100;
+      out.set(k, o);
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('ex_summary', {
+  inputs: ['exceptions'],
+  title: 'Exception counts',
+  description: 'Exceptions per status group (Active = open or waiting), type, owner and age band (all as a choice for each): count and signed total.',
+  fn: (exceptions) => {
+    const out = new Map();
+    for (const x of exceptions) {
+      const groups = ['All', x.status].concat(x.status === 'Open' || x.status === 'Waiting' ? ['Active'] : []);
+      const band = x.age <= 2 ? '0–2 days' : x.age <= 7 ? '3–7 days' : x.age <= 30 ? '8–30 days' : 'Over 30 days';
+      for (const status of groups) for (const type of [x.type, 'all']) for (const owner of [x.owner, 'all']) for (const age of [band, 'all']) {
+        const k = [status, type, owner, age].join('|'), o = out.get(k) || {status, type, owner, age, count: 0, total: 0};
+        o.count += 1; o.total = Math.round((o.total + x.amount) * 100) / 100;
+        out.set(k, o);
+      }
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('payout_summary', {
+  inputs: ['payouts'],
+  title: 'Payout batch counts',
+  description: 'Batches per scope (all, a provider, or one account), payout month and bank status (all as a choice for each): counts by status and gross, fees, net.',
+  fn: (payouts) => {
+    const out = new Map();
+    const KEY = {'Arrived': 'arrived', 'In transit': 'transit', 'Missing from bank': 'missing', 'Amount differs': 'diff'};
+    for (const p of payouts) for (const scope of ['all', 'p:' + p.provider, p.account]) for (const month of [p.date.slice(0, 7), 'all']) for (const status of [p.status, 'all']) {
+      const k = [scope, month, status].join('|');
+      const o = out.get(k) || {scope, month, status, batches: 0, arrived: 0, transit: 0, missing: 0, diff: 0, gross: 0, fees: 0, net: 0};
+      o.batches += 1; o[KEY[p.status]] += 1;
+      o.gross = Math.round((o.gross + p.gross) * 100) / 100; o.fees = Math.round((o.fees + p.fees) * 100) / 100; o.net = Math.round((o.net + p.net) * 100) / 100;
+      out.set(k, o);
+    }
+    return [...out.values()];
+  },
+});
+dash.calc('fees_agg', {
+  inputs: ['txns'],
+  title: 'Fees grouped',
+  description: 'Per month (or all 90 days) and provider (all as a choice): captured payments and volume, refunds, chargebacks, fees, effective rate and average fee, grouped by provider, account, method, card brand or month, with a Total row.',
+  fn: (txns) => {
+    const BY = {provider: (t) => t.provider, account: (t) => t.account, method: (t) => t.method || '—', brand: (t) => t.brand || '— not a card', month: (t) => t.date.slice(0, 7), total: () => 'Total'};
+    const out = new Map();
+    for (const t of txns) for (const month of [t.date.slice(0, 7), 'all']) for (const provider of [t.provider, 'all']) for (const by of Object.keys(BY)) {
+      const key = BY[by](t), k = [by, month, provider, key].join('|');
+      const o = out.get(k) || {by, month, provider, key, payments: 0, volume: 0, refunds: 0, chargebacks: 0, fees: 0};
+      o.fees += t.fee;
+      if (t.type === 'Payment') { o.payments += 1; o.volume += t.amount; } else if (t.type === 'Refund') o.refunds += t.amount; else o.chargebacks += t.amount;
+      out.set(k, o);
+    }
+    const r2 = (v) => Math.round(v * 100) / 100;
+    return [...out.values()].map((o) => ({...o, volume: r2(o.volume), refunds: r2(o.refunds), chargebacks: r2(o.chargebacks), fees: r2(o.fees),
+      rate: o.volume ? o.fees / o.volume : null, avg_fee: o.payments ? r2(o.fees / o.payments) : null}));
+  },
+});
+dash.calc('close_providers', {
+  inputs: ['txns'],
+  title: 'Reconciled per provider and month',
+  description: 'Transactions dated in each month per provider; unmatched = not matched and not covered by a resolved or written-off exception.',
+  fn: (txns) => {
+    const out = new Map();
+    for (const t of txns) {
+      const k = t.date.slice(0, 7) + '|' + t.provider;
+      const o = out.get(k) || {month: t.date.slice(0, 7), provider: t.provider, n: 0, matched: 0, unmatched: 0, unmatched_value: 0};
+      o.n += 1;
+      if (t.status === 'Matched' || t.covered) o.matched += 1; else { o.unmatched += 1; o.unmatched_value = Math.round((o.unmatched_value + t.amount) * 100) / 100; }
+      out.set(k, o);
+    }
+    return [...out.values()].map((o) => ({...o, ok: o.unmatched === 0}));
+  },
+});
+dash.calc('close_checks', {
+  inputs: ['txns', 'payouts', 'exceptions', 'meta'],
+  title: 'Month close checks',
+  description: 'For each month of the demo: providers reconciled, payouts on the bank, and open exceptions against the threshold.',
+  fn: (txns, payouts, exceptions, meta) => {
+    const ref = meta[0].as_of, start = meta[0].start;
+    const months = [];
+    for (let m = start.slice(0, 7); m <= ref.slice(0, 7);) { months.push(m); const [y, mo] = m.split('-').map(Number); m = new Date(Date.UTC(y, mo, 1)).toISOString().slice(0, 7); }
+    return months.map((m) => {
+      const ts = txns.filter((t) => t.date.slice(0, 7) === m);
+      const un = ts.filter((t) => t.status !== 'Matched' && !t.covered);
+      const pos = payouts.filter((p) => p.date.slice(0, 7) === m);
+      const bad = pos.filter((p) => p.status !== 'Arrived');
+      const exs = exceptions.filter((x) => (x.status === 'Open' || x.status === 'Waiting') && x.date.slice(0, 7) === m);
+      const exV = Math.round(exs.reduce((s, x) => s + Math.abs(x.amount), 0) * 100) / 100;
+      const providers_ok = un.length === 0, payouts_ok = bad.length === 0;
+      const exceptions_ok = exs.length <= meta[0].threshold_count && exV <= meta[0].threshold_value;
+      return {month: m, ended: m < ref.slice(0, 7), providers_ok, unmatched: un.length, payouts: pos.length, payouts_bad: bad.length, payouts_ok,
+        exceptions: exs.length, exceptions_value: exV, exceptions_ok, checks_passed: (providers_ok ? 1 : 0) + (payouts_ok ? 1 : 0) + (exceptions_ok ? 1 : 0)};
+    });
+  },
+});
+</script>
+
+<script>
+(() => {
+  const root = document.querySelector('.rc');
+  const q = (sel, e = root) => e.querySelector(sel);
+  const qa = (sel, e = root) => [...e.querySelectorAll(sel)];
+  const enc = encodeURIComponent;
+  const where = (o) => Object.entries(o).map(([k, v]) => `${enc(k)}=${enc(v)}`).join('&');
+  const keyOf = (...parts) => parts.map((p) => enc(p ?? '')).join(',');
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const markEl = (tag, source, field, w, text, cls) => { const e = el(tag, cls, text); e.dataset.source = source; e.dataset.field = field; if (w) e.dataset.where = w; return e; };
+  const PAGES = ['overview', 'reconcile', 'exceptions', 'payouts', 'fees', 'close', 'activity'];
+  const PROV = ['Monri', 'Adyen', 'PayPal', 'Klarna', 'Flik/Bankart', 'VALÚ', 'Cash on delivery', 'Bank transfer'];
+  const pcol = (p) => { const i = PROV.indexOf(p); return i < 0 ? 'var(--cds-chart-muted)' : dash.colors[i % dash.colors.length]; };
+  const pcmp = (a, b) => { const x = PROV.indexOf(a), y = PROV.indexOf(b); return (x < 0 ? 99 : x) - (y < 0 ? 99 : y) || String(a).localeCompare(String(b)); };
+  const EXT = ['Payment without order', 'Order paid twice', 'Amount differs', 'Refund without credit note', 'Chargeback', 'Payout missing from bank', 'Payout ≠ bank amount', 'Marked paid, no payment', 'Bank credit without payout'];
+  const DEFAULTS = {r_tab: 'suggestions', s_prov: 'all', s_kind: 'all', s_q: '', w_prov: 'all', w_type: 'all', w_q: '', m_conf: 'all', m_kind: 'all', m_prov: 'all', m_q: '',
+    x_status: 'Active', x_type: 'all', x_owner: 'all', x_age: 'all', x_q: '', x_sort: 'age', x_dir: -1, p_tab: 'batches', p_acc: 'all', p_month: 'all', p_status: 'all',
+    b_kind: 'all', b_q: '', f_by: 'provider', f_month: 'all', f_prov: 'all', c_month: ''};
+  const P = () => { const p = {...DEFAULTS}; for (const [k, v] of Object.entries(dash.params() || {})) if (v !== undefined && v !== null) p[k] = v; return p; };
+  const set = (o) => dash.setParams(o);
+
+  // ---------- formatting ----------
+  const nf = (o) => new Intl.NumberFormat('en-GB', o);
+  const fNum = nf({maximumFractionDigits: 0});
+  const fEur0 = nf({style: 'currency', currency: 'EUR', maximumFractionDigits: 0});
+  const fEur2 = nf({style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2});
+  const fEurC = nf({style: 'currency', currency: 'EUR', notation: 'compact', maximumFractionDigits: 1});
+  const FMT = {num: (v) => fNum.format(v), eur0: (v) => fEur0.format(v), eur2: (v) => fEur2.format(v), eurc: (v) => (Math.abs(v) >= 10000 ? fEurC.format(v) : fEur0.format(v)), pct: d3.format('.1%'), pct2: d3.format('.2%')};
+  const dayDate = (s) => new Date(String(s).slice(0, 10) + 'T00:00:00Z');
+  const fDayF = d3.utcFormat('%-d %b %Y');
+  const fMonthF = d3.utcFormat('%B %Y');
+  const fMonthS = d3.utcFormat('%b %y');
+  const monthName = (m) => fMonthF(dayDate(m + '-01'));
+  const fTs = (s) => { const d = new Date(s); return Number.isNaN(+d) ? '—' : d.toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Ljubljana'}); };
+  const fmt = (v, kind = 'num') => {
+    if (v == null || v === '') return '—';
+    if (kind === 'day') return fDayF(dayDate(v));
+    if (kind === 'text') return String(v);
+    if (!Number.isFinite(Number(v))) return '—';
+    return FMT[kind](Number(v));
+  };
+
+  // ---------- state helpers ----------
+  const D = (id) => dash.data(id);
+  const failed = (s) => ['error', 'connect', 'declined', 'missing'].includes(s.status);
+  const rows = (id) => (D(id).status === 'ok' ? D(id).data : []);
+  function failNode() { const f = el('div', 'rc-fail'); f.append(el('i'), el('span', null, 'Failed to load')); return f; }
+  function ready(box, ...ids) {
+    const sets = ids.map(D);
+    if (sets.some(failed)) { box.classList.remove('dash-skeleton'); box.replaceChildren(failNode()); return false; }
+    if (sets.some((s) => s.status !== 'ok')) { box.classList.add('dash-skeleton'); box.replaceChildren(); return false; }
+    box.classList.remove('dash-skeleton');
+    return true;
+  }
+  function fillMarks(container, src, w, row) {
+    const s = D(src);
+    for (const e of qa(`[data-source="${src}"][data-field]`, container)) {
+      if (e.closest('thead')) continue;
+      if (w != null && !e.hasAttribute('data-row')) e.dataset.where = w;
+      if (failed(s)) { e.classList.remove('dash-skeleton'); e.textContent = '—'; continue; }
+      if (s.status !== 'ok') { e.classList.add('dash-skeleton'); continue; }
+      e.classList.remove('dash-skeleton');
+      const v = row ? row[e.dataset.field] : null;
+      e.textContent = fmt(v, e.dataset.fmt || 'num');
+    }
+  }
+  function caption(table, text) { if (!text) { table.deleteCaption(); return; } table.createCaption().textContent = text; }
+  function fillSelect(sel, opts, value) {
+    const sig = opts.map((o) => o[0] + '=' + o[1]).join('|');
+    if (sel.dataset.sig !== sig) { sel.replaceChildren(...opts.map(([v, t]) => new Option(t, v))); sel.dataset.sig = sig; }
+    sel.value = value;
+    if (sel.value !== String(value) && opts.length) sel.value = opts[0][0];
+  }
+  function segButtons(box, opts, value, onPick) {
+    const sig = opts.map((o) => o[0]).join('|');
+    if (box.dataset.sig !== sig) {
+      box.replaceChildren(...opts.map(([v, t]) => { const b = el('button', null, t); b.type = 'button'; b.dataset.v = v; b.addEventListener('click', () => onPick(v)); return b; }));
+      box.dataset.sig = sig;
+    }
+    qa('button', box).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === value)));
+  }
+  function syncSearch(input, value) { if (input !== document.activeElement) input.value = value || ''; }
+  const td = (text, cls) => el('td', cls || null, text);
+  const badge = (text, tone) => el('span', 'rc-badge' + (tone ? ' rc-b-' + tone : ''), text);
+  const provCell = (p) => { const c = el('td', 'rc-l'); const dot = el('i', 'rc-dot'); dot.style.background = pcol(p); c.append(dot, p); return c; };
+  const amtCell = (v, cls) => { const c = td(fmt(v, 'eur2'), cls); if (v < 0) c.classList.add('rc-neg'); return c; };
+  const STATUS_TONE = {Arrived: 'ok', 'In transit': null, 'Missing from bank': 'bad', 'Amount differs': 'bad', Open: 'warn', Waiting: null, Resolved: 'ok', 'Written off': null, Matched: 'ok', Suggested: 'warn', Unmatched: 'bad'};
+  const statusCell = (s) => { const c = el('td', 'rc-l'); c.append(badge(s, STATUS_TONE[s])); return c; };
+  const CAP = 1500;
+  const totalsRow = () => rows('totals')[0];
+
+  // ---------- tooltip and chart ----------
+  function tooltip(box) {
+    let tip = box.querySelector(':scope > .rc-tip');
+    if (!tip) { tip = el('div', 'rc-tip'); tip.hidden = true; tip.setAttribute('role', 'tooltip'); box.append(tip); }
+    return {
+      show(event, title, lines) {
+        tip.replaceChildren(el('div', 'rc-tip-title', title));
+        for (const [label, value] of lines) { const row = el('div', 'rc-tip-row'); row.append(el('span', null, label), el('b', null, value)); tip.append(row); }
+        tip.hidden = false;
+        const b = box.getBoundingClientRect();
+        let x = event.clientX - b.left + 14, y = event.clientY - b.top + 14;
+        if (x + tip.offsetWidth > box.clientWidth) x = event.clientX - b.left - tip.offsetWidth - 14;
+        if (y + tip.offsetHeight > box.clientHeight) y = event.clientY - b.top - tip.offsetHeight - 14;
+        tip.style.left = Math.max(0, x) + 'px'; tip.style.top = Math.max(0, y) + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+  function textWidth(svgNode, strings) {
+    const g = d3.select(svgNode).append('g').attr('opacity', 0);
+    let w = 0;
+    for (const s of strings) w = Math.max(w, g.append('text').text(s).node().getComputedTextLength());
+    g.remove();
+    return Math.ceil(w);
+  }
+  const axisEur = (v) => (Math.abs(v) >= 1000 ? fEurC.format(v) : fEur0.format(v));
+  function barChart(box, plot, cols, label) {
+    const tip = tooltip(box);
+    const W = Math.max(280, plot.clientWidth), H = 240;
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', label);
+    plot.replaceChildren(svg.node());
+    const y = d3.scaleLinear([0, d3.max(cols, (c) => c.v) || 1], [H - 24, 10]).nice();
+    const ticks = y.ticks(4);
+    const ml = textWidth(svg.node(), ticks.map(axisEur)) + 10;
+    const x = d3.scaleBand(cols.map((c) => c.k), [ml, W - 4]).paddingInner(0.3).paddingOuter(0.15);
+    const bw = Math.min(32, x.bandwidth()), off = (x.bandwidth() - bw) / 2;
+    svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', ml).attr('x2', W - 4).attr('y1', (t) => y(t) + 0.5).attr('y2', (t) => y(t) + 0.5).style('stroke', (t) => (t === 0 ? 'var(--cds-chart-axis)' : 'var(--cds-chart-grid)'));
+    svg.append('g').selectAll('text').data(ticks).join('text').attr('x', ml - 8).attr('y', (t) => y(t)).attr('dy', '0.35em').attr('text-anchor', 'end').text(axisEur);
+    svg.append('g').selectAll('text').data(cols).join('text').attr('x', (c) => x(c.k) + x.bandwidth() / 2).attr('y', H - 6).attr('text-anchor', 'middle').text((c) => c.label);
+    svg.append('g').selectAll('rect').data(cols).join('rect').attr('x', (c) => x(c.k) + off).attr('width', bw)
+      .attr('y', (c) => y(Math.max(0, c.v))).attr('height', (c) => Math.max(1, y(0) - y(Math.max(0, c.v)))).attr('rx', 4)
+      .style('fill', dash.colors[0]).style('fill-opacity', (c) => (c.partial ? 0.5 : 1));
+    svg.append('g').selectAll('rect').data(cols).join('rect').attr('x', (c) => x(c.k) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 0).attr('height', H).style('fill', 'transparent')
+      .on('mousemove', (event, c) => tip.show(event, c.title, c.lines)).on('mouseleave', () => tip.hide());
+  }
+
+  // ---------- pages ----------
+  let page = 'overview';
+  function showPage(next, link = true) {
+    page = PAGES.includes(next) ? next : 'overview';
+    root.dataset.page = page;
+    for (const id of PAGES) {
+      document.getElementById(id).hidden = id !== page;
+      const tab = q(`[data-tab="${id}"]`);
+      tab.setAttribute('aria-selected', String(id === page));
+      tab.tabIndex = id === page ? 0 : -1;
+    }
+    if (link) dash.setLink(page);
+    draw();
+  }
+  const tabs = qa('.rc-tab');
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => showPage(tab.dataset.tab));
+    tab.addEventListener('keydown', (e) => {
+      const k = {ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1}[e.key];
+      if (k == null) return;
+      e.preventDefault();
+      const t = tabs[(k + tabs.length) % tabs.length];
+      showPage(t.dataset.tab); t.focus();
+    });
+  });
+
+  // ---------- header ----------
+  function drawHeader() {
+    const meta = D('meta');
+    const asof = q('#asof');
+    if (meta.status === 'ok') asof.textContent = fmt(meta.data[0].as_of, 'day'); else if (failed(meta)) asof.textContent = '—';
+    const box = q('#takeaway'), t = D('totals');
+    if (failed(t)) { box.classList.remove('dash-skeleton'); box.textContent = 'The demo data failed to load.'; return; }
+    if (t.status !== 'ok') { box.classList.add('dash-skeleton'); box.replaceChildren(); return; }
+    box.classList.remove('dash-skeleton');
+    const r = t.data[0], b = (f, k) => markEl('b', 'totals', f, null, fmt(r[f], k));
+    const nodes = [b('rate', 'pct'), ' of captured payments are matched to a shop order (', b('matched', 'num'), ' of ', b('caps', 'num'), '). ',
+      b('suggestions', 'num'), ' suggestions wait for review and ', b('open_exceptions', 'num'), ' exceptions are open, ', b('open_value', 'eur0'), ' at stake; ',
+      b('flagged', 'num'), ' payouts are flagged against the bank.'];
+    for (const n of nodes) if (n.dataset) n.dataset.row = '0';
+    box.replaceChildren(...nodes);
+  }
+
+  // ---------- overview ----------
+  function drawOverview() {
+    const t = totalsRow();
+    fillMarks(q('#ov-kpis'), 'totals', null, t);
+    if (t) {
+      q('#kpi-fees-label').textContent = `Fees · ${fMonthS(dayDate(t.cur_month + '-01'))} to date`;
+      q('#kpi-prev-label').textContent = fMonthS(dayDate(t.prev_month + '-01'));
+      q('#ov-fees-title').textContent = `Effective fee rate by provider · ${monthName(t.cur_month)} to date`;
+    }
+    // exceptions by type and age
+    const tb = q('#ov-ex-table').tBodies[0];
+    if (ready(tb, 'ex_age')) {
+      const list = [...rows('ex_age')].sort((a, b) => EXT.indexOf(a.type) - EXT.indexOf(b.type));
+      tb.replaceChildren(...list.map((r) => {
+        const tr = el('tr'); tr.dataset.key = keyOf(r.type); tr.dataset.click = '1'; tr.title = 'Open these exceptions';
+        tr.addEventListener('click', () => { set({x_status: 'Active', x_type: r.type, x_owner: 'all', x_age: 'all'}); showPage('exceptions'); });
+        const old = td(r.d31 ? fmt(r.d31) : '·'); if (r.d31) old.classList.add('rc-age-hot');
+        tr.append(td(r.type), td(r.d0_2 ? fmt(r.d0_2) : '·'), td(r.d3_7 ? fmt(r.d3_7) : '·'), td(r.d8_30 ? fmt(r.d8_30) : '·'), old, td(fmt(r.total)), amtCell(r.value));
+        return tr;
+      }));
+      caption(q('#ov-ex-table'), list.length ? null : 'No open exceptions.');
+    }
+    // unmatched per provider
+    const ul = q('#ov-un-list');
+    if (ready(ul, 'unmatched_by_provider')) {
+      const list = [...rows('unmatched_by_provider')].sort((a, b) => pcmp(a.provider, b.provider));
+      const max = Math.max(1, ...list.map((r) => Math.abs(r.value)));
+      ul.replaceChildren(...list.map((r) => {
+        const w = where({provider: r.provider});
+        const li = el('li'), l = el('div', 'rc-l');
+        const sm = el('small'); sm.append(markEl('span', 'unmatched_by_provider', 'n', w, fmt(r.n)), ' unmatched');
+        const track = el('div', 'rc-track'), fill = el('i'); fill.style.width = Math.max(2, Math.abs(r.value) / max * 100) + '%'; fill.style.background = pcol(r.provider); track.append(fill);
+        l.append(el('span', null, r.provider), sm, track);
+        li.append(l, markEl('b', 'unmatched_by_provider', 'value', w, fmt(r.value, 'eur2')));
+        return li;
+      }));
+    }
+    // fees this month by provider
+    const fl = q('#ov-fee-list');
+    if (ready(fl, 'fees_agg', 'totals') && t) {
+      const list = rows('fees_agg').filter((r) => r.by === 'provider' && r.month === t.cur_month && r.provider === 'all').sort((a, b) => (b.rate ?? -1) - (a.rate ?? -1));
+      const max = Math.max(0.00001, ...list.map((r) => r.rate || 0));
+      fl.replaceChildren(...list.map((r) => {
+        const w = where({by: 'provider', month: r.month, provider: 'all', key: r.key});
+        const li = el('li'), l = el('div', 'rc-l');
+        const sm = el('small'); sm.append(markEl('span', 'fees_agg', 'volume', w, fmt(r.volume, 'eur0')), ' volume · ', markEl('span', 'fees_agg', 'fees', w, fmt(r.fees, 'eur2')), ' fees');
+        const track = el('div', 'rc-track'), fill = el('i'); fill.style.width = Math.max(1, (r.rate || 0) / max * 100) + '%'; fill.style.background = pcol(r.key); track.append(fill);
+        l.append(el('span', null, r.key), sm, track);
+        li.append(l, markEl('b', 'fees_agg', 'rate', w, fmt(r.rate, 'pct2')));
+        return li;
+      }));
+    }
+    // payouts pending or flagged
+    const pb = q('#ov-po-table').tBodies[0];
+    if (ready(pb, 'payouts')) {
+      const order = {'Missing from bank': 0, 'Amount differs': 1, 'In transit': 2};
+      const list = rows('payouts').filter((p) => p.status !== 'Arrived').sort((a, b) => order[a.status] - order[b.status] || (a.date < b.date ? 1 : -1));
+      pb.replaceChildren(...list.map((p) => { const tr = el('tr'); tr.dataset.key = keyOf(p.batch); tr.append(td(p.batch, 'rc-mono'), td(p.account, 'rc-l'), td(fmt(p.date, 'day')), td(fmt(p.expected, 'day'), 'rc-hide-sm'), amtCell(p.net), statusCell(p.status)); return tr; }));
+      caption(q('#ov-po-table'), list.length ? null : 'Every payout is on the bank.');
+    }
+    // recent decisions
+    const al = q('#ov-act-list');
+    if (ready(al, 'activity')) {
+      al.replaceChildren(...rows('activity').slice(0, 6).map((a) => {
+        const li = el('li'), l = el('div', 'rc-l');
+        l.append(el('span', null, a.what), el('small', null, `${a.by} · ${fTs(a.at)}${a.note ? ' · “' + a.note + '”' : ''}`));
+        li.append(l);
+        return li;
+      }));
+    }
+  }
+
+  // ---------- reconcile ----------
+  qa('[data-rtab]').forEach((b) => b.addEventListener('click', () => set({r_tab: b.dataset.rtab})));
+  const sProv = q('#s-prov'), sKind = q('#s-kind'), sQ = q('#s-q');
+  sProv.addEventListener('change', () => set({s_prov: sProv.value}));
+  sKind.addEventListener('change', () => set({s_kind: sKind.value}));
+  sQ.addEventListener('input', () => set({s_q: sQ.value}));
+  const wProv = q('#w-prov'), wType = q('#w-type'), wQ = q('#w-q');
+  wProv.addEventListener('change', () => set({w_prov: wProv.value}));
+  wType.addEventListener('change', () => set({w_type: wType.value}));
+  wQ.addEventListener('input', () => set({w_q: wQ.value}));
+  const mConf = q('#m-conf'), mKind = q('#m-kind'), mProv = q('#m-prov'), mQ = q('#m-q');
+  mConf.addEventListener('change', () => set({m_conf: mConf.value}));
+  mKind.addEventListener('change', () => set({m_kind: mKind.value}));
+  mProv.addEventListener('change', () => set({m_prov: mProv.value}));
+  mQ.addEventListener('input', () => set({m_q: mQ.value}));
+  const provOpts = () => [['all', 'All providers'], ...PROV.map((p) => [p, p])];
+  function drawReconcile(p) {
+    const tab = ['suggestions', 'workbench', 'matched'].includes(p.r_tab) ? p.r_tab : 'suggestions';
+    qa('[data-rtab]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.rtab === tab)));
+    const segRow = q('[data-rtab]').parentElement;
+    fillMarks(segRow, 'totals', null, totalsRow());
+    fillMarks(segRow, 'wb_summary', null, rows('wb_summary').find((r) => r.provider === 'all' && r.type === 'all'));
+    fillMarks(segRow, 'matched_summary', null, rows('matched_summary').find((r) => r.confidence === 'all' && r.kind === 'all' && r.provider === 'all'));
+    q('#r-suggestions').hidden = tab !== 'suggestions';
+    q('#r-workbench').hidden = tab !== 'workbench';
+    q('#r-matched').hidden = tab !== 'matched';
+
+    if (tab === 'suggestions') {
+      fillSelect(sProv, provOpts(), p.s_prov);
+      fillSelect(sKind, [['all', 'All suggestions'], ['One payment → one order', 'One payment → one order'], ['One payment → two orders', 'One payment → two orders'], ['Same e-mail only', 'Same e-mail only']], p.s_kind);
+      syncSearch(sQ, p.s_q);
+      const table = q('#s-table'), body = table.tBodies[0];
+      if (ready(body, 'suggestions')) {
+        const term = (p.s_q || '').trim().toLowerCase();
+        const list = rows('suggestions').filter((s) => (sProv.value === 'all' || s.provider === sProv.value) && (sKind.value === 'all' || s.kind === sKind.value) && (!term || `${s.orders} ${s.payer} ${s.ref || ''} ${s.customer}`.toLowerCase().includes(term)));
+        body.replaceChildren(...list.map((s) => {
+          const tr = el('tr'); tr.dataset.key = keyOf(s.id);
+          const why = td(s.reasons, 'rc-text rc-hide-sm'); why.title = s.reasons;
+          tr.append(td(fmt(s.date, 'day')), provCell(s.provider), td(s.account, 'rc-l rc-hide-md'), amtCell(s.amount), td(s.ref ?? '—', 'rc-l rc-hide-sm'), td(s.payer, 'rc-l rc-hide-sm'),
+            td(s.orders, 'rc-mono'), td(fmt(s.order_date, 'day'), 'rc-hide-md'), td(s.shop, 'rc-l rc-hide-md'), td(fmt(s.score)), why);
+          return tr;
+        }));
+        caption(table, list.length ? null : 'No suggestions for these filters.');
+      }
+    }
+    if (tab === 'workbench') {
+      fillSelect(wProv, provOpts(), p.w_prov);
+      fillSelect(wType, [['all', 'All types'], ['Payment', 'Payments'], ['Refund', 'Refunds'], ['Chargeback', 'Chargebacks']], p.w_type);
+      syncSearch(wQ, p.w_q);
+      const prov = wProv.value, type = wType.value;
+      const sum = rows('wb_summary').find((r) => r.provider === prov && r.type === type);
+      fillMarks(q('#r-workbench .rc-head'), 'wb_summary', where({provider: prov, type}), sum || (D('wb_summary').status === 'ok' ? {n: 0, value: 0} : null));
+      const table = q('#w-table'), body = table.tBodies[0];
+      if (ready(body, 'txns')) {
+        const list = rows('txns').filter((t) => t.status !== 'Matched' && (prov === 'all' || t.provider === prov) && (type === 'all' || t.type === type)).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        body.replaceChildren(...list.map((t) => { const tr = el('tr'); tr.dataset.key = keyOf(t.id); tr.append(td(fmt(t.date, 'day')), provCell(t.provider), td(t.account, 'rc-l rc-hide-sm'), td(t.type, 'rc-l'), td(t.ref ?? '—', 'rc-l'), td(t.payer, 'rc-l rc-hide-sm'), amtCell(t.amount), statusCell(t.status)); return tr; }));
+        caption(table, list.length ? null : 'Nothing unmatched for these filters.');
+      }
+      const ot = q('#oo-table'), ob = ot.tBodies[0];
+      if (ready(ob, 'orders_open')) {
+        const term = (p.w_q || '').trim().toLowerCase();
+        const list = rows('orders_open').filter((o) => (prov === 'all' || o.method === prov) && (!term || `${o.no} ${o.customer}`.toLowerCase().includes(term))).sort((a, b) => (a.date < b.date ? 1 : -1));
+        ob.replaceChildren(...list.map((o) => { const tr = el('tr'); tr.dataset.key = keyOf(o.no); tr.append(td(o.no), td(o.shop, 'rc-l rc-hide-sm'), td(fmt(o.date, 'day')), td(o.method, 'rc-l'), td(o.customer, 'rc-l rc-hide-sm'), amtCell(o.amount), td(o.marked_paid ? 'Yes' : 'No', 'rc-l rc-hide-md'), td(o.suggested ? 'Suggested' : '—', 'rc-l')); return tr; }));
+        caption(ot, list.length ? null : 'No open orders for these filters.');
+      }
+    }
+    if (tab === 'matched') {
+      fillSelect(mConf, [['all', 'All confidence levels'], ['Exact', 'Exact'], ['Likely', 'Likely'], ['Manual', 'Manual']], p.m_conf);
+      fillSelect(mKind, [['all', 'Payments, refunds, chargebacks'], ['Payment', 'Payments'], ['Refund', 'Refunds'], ['Chargeback', 'Chargebacks']], p.m_kind);
+      fillSelect(mProv, provOpts(), p.m_prov);
+      syncSearch(mQ, p.m_q);
+      const conf = mConf.value, kind = mKind.value, prov = mProv.value;
+      const sum = rows('matched_summary').find((r) => r.confidence === conf && r.kind === kind && r.provider === prov);
+      fillMarks(q('#m-stats'), 'matched_summary', where({confidence: conf, kind, provider: prov}), sum || (D('matched_summary').status === 'ok' ? {count: 0, paid: 0, order_total: 0} : null));
+      const table = q('#m-table'), body = table.tBodies[0];
+      if (ready(body, 'matches')) {
+        const term = (p.m_q || '').trim().toLowerCase();
+        const list = rows('matches').filter((m) => (conf === 'all' || m.confidence === conf) && (kind === 'all' || m.kind === kind) && (prov === 'all' || m.provider === prov) && (!term || `${m.orders} ${m.payments} ${m.customer}`.toLowerCase().includes(term)));
+        const frag = document.createDocumentFragment();
+        for (const m of list.slice(0, CAP)) {
+          const tr = el('tr'); tr.dataset.key = keyOf(m.id);
+          tr.append(td(fmt(m.date, 'day')), td(m.confidence, 'rc-l'), td(m.kind, 'rc-l rc-hide-sm'), provCell(m.provider), td(m.payments, 'rc-l rc-hide-md'), td(m.orders, 'rc-mono'), td(m.customer, 'rc-l rc-hide-md'),
+            amtCell(m.paid), td(fmt(m.order_total, 'eur2'), 'rc-hide-sm'), amtCell(m.difference), td(m.decided, 'rc-l rc-hide-md'));
+          frag.append(tr);
+        }
+        body.replaceChildren(frag);
+        caption(table, !list.length ? 'No matches for these filters.' : list.length > CAP ? `Showing the newest ${fNum.format(CAP)}; narrow the list with the filters or the search.` : null);
+      }
+    }
+  }
+
+  // ---------- exceptions ----------
+  const xType = q('#x-type'), xOwner = q('#x-owner'), xAge = q('#x-age'), xQ = q('#x-q');
+  xType.addEventListener('change', () => set({x_type: xType.value}));
+  xOwner.addEventListener('change', () => set({x_owner: xOwner.value}));
+  xAge.addEventListener('change', () => set({x_age: xAge.value}));
+  xQ.addEventListener('input', () => set({x_q: xQ.value}));
+  qa('#x-table .rc-sort').forEach((b) => b.addEventListener('click', () => {
+    const p = P(), f = b.dataset.sort;
+    set(p.x_sort === f ? {x_dir: -Number(p.x_dir)} : {x_sort: f, x_dir: f === 'type' || f === 'provider' ? 1 : -1});
+  }));
+  const AGES = ['0–2 days', '3–7 days', '8–30 days', 'Over 30 days'];
+  const bandOf = (a) => (a <= 2 ? AGES[0] : a <= 7 ? AGES[1] : a <= 30 ? AGES[2] : AGES[3]);
+  function drawExceptions(p) {
+    const sum = rows('ex_summary');
+    const cnt = (s) => sum.find((r) => r.status === s && r.type === 'all' && r.owner === 'all' && r.age === 'all')?.count ?? 0;
+    const STATUSES = ['Active', 'Open', 'Waiting', 'Resolved', 'Written off', 'All'];
+    const status = STATUSES.includes(p.x_status) ? p.x_status : 'Active';
+    segButtons(q('#x-status'), STATUSES.map((s) => [s, s]), status, (v) => set({x_status: v}));
+    qa('#x-status button').forEach((b) => {
+      const s = b.dataset.v;
+      b.replaceChildren(s + ' · ', markEl('b', 'ex_summary', 'count', where({status: s, type: 'all', owner: 'all', age: 'all'}), D('ex_summary').status === 'ok' ? fmt(cnt(s)) : '—'));
+    });
+    const all = rows('exceptions');
+    fillSelect(xType, [['all', 'All types'], ...EXT.map((t) => [t, t])], p.x_type);
+    fillSelect(xOwner, [['all', 'Any owner'], ...[...new Set(all.map((x) => x.owner))].sort().map((o) => [o, o])], p.x_owner);
+    fillSelect(xAge, [['all', 'Any age'], ...AGES.map((a) => [a, a])], p.x_age);
+    syncSearch(xQ, p.x_q);
+    const type = xType.value, owner = xOwner.value, ageV = xAge.value;
+    const srow = sum.find((r) => r.status === status && r.type === type && r.owner === owner && r.age === ageV);
+    fillMarks(q('#x-stats'), 'ex_summary', where({status, type, owner, age: ageV}), srow || (D('ex_summary').status === 'ok' ? {count: 0, total: 0} : null));
+    const table = q('#x-table'), body = table.tBodies[0];
+    const sort = ['type', 'provider', 'amount', 'age'].includes(p.x_sort) ? p.x_sort : 'age', dir = Number(p.x_dir) > 0 ? 1 : -1;
+    for (const th of qa('thead th', table)) { const b = th.querySelector('.rc-sort'); if (b && b.dataset.sort === sort) th.setAttribute('aria-sort', dir > 0 ? 'ascending' : 'descending'); else th.removeAttribute('aria-sort'); }
+    if (ready(body, 'exceptions')) {
+      const term = (p.x_q || '').trim().toLowerCase();
+      const inStatus = (x) => status === 'All' || (status === 'Active' ? x.status === 'Open' || x.status === 'Waiting' : x.status === status);
+      const list = all.filter((x) => inStatus(x) && (type === 'all' || x.type === type) && (owner === 'all' || x.owner === owner) && (ageV === 'all' || bandOf(x.age) === ageV)
+        && (!term || `${x.title} ${x.detail} ${x.last_note || ''} ${x.owner}`.toLowerCase().includes(term)));
+      const val = (x) => (sort === 'amount' ? Math.abs(x.amount) : sort === 'age' ? x.age : x[sort]);
+      list.sort((a, b) => { const va = val(a), vb = val(b); return (va < vb ? -1 : va > vb ? 1 : a.id < b.id ? -1 : 1) * dir; });
+      body.replaceChildren(...list.map((x) => {
+        const tr = el('tr'); tr.dataset.key = keyOf(x.id);
+        const item = td(x.title, 'rc-l');
+        const det = td(x.detail, 'rc-text rc-hide-md'); det.title = x.detail;
+        const note = td(x.last_note ?? '—', 'rc-text rc-hide-sm'); if (x.last_note) note.title = `${x.last_note_by}, ${fTs(x.last_note_at)}`;
+        const age = td(fmt(x.age)); if (x.age > 30) age.classList.add('rc-age-hot');
+        tr.append(td(x.type), item, det, provCell(x.provider), amtCell(x.amount), age, td(x.owner, 'rc-l rc-hide-md'), statusCell(x.status), note);
+        tr.children[3].classList.add('rc-hide-sm');
+        return tr;
+      }));
+      caption(table, list.length ? null : 'No exceptions for these filters.');
+    }
+  }
+
+  // ---------- payouts ----------
+  qa('[data-ptab]').forEach((b) => b.addEventListener('click', () => set({p_tab: b.dataset.ptab})));
+  const pAcc = q('#p-acc'), pMonth = q('#p-month'), pStatus = q('#p-status'), bKind = q('#b-kind'), bQ = q('#b-q');
+  pAcc.addEventListener('change', () => set({p_acc: pAcc.value}));
+  pMonth.addEventListener('change', () => set({p_month: pMonth.value}));
+  pStatus.addEventListener('change', () => set({p_status: pStatus.value}));
+  bKind.addEventListener('change', () => set({b_kind: bKind.value}));
+  bQ.addEventListener('input', () => set({b_q: bQ.value}));
+  function drawPayouts(p) {
+    const tab = p.p_tab === 'bank' ? 'bank' : 'batches';
+    qa('[data-ptab]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.ptab === tab)));
+    const segRow = q('[data-ptab]').parentElement;
+    fillMarks(segRow, 'payout_summary', null, rows('payout_summary').find((r) => r.scope === 'all' && r.month === 'all' && r.status === 'all'));
+    fillMarks(segRow, 'totals', null, totalsRow());
+    q('#p-batches').hidden = tab !== 'batches';
+    q('#p-bank').hidden = tab !== 'bank';
+    const pos = rows('payouts');
+    if (tab === 'batches') {
+      const accOpts = [['all', 'All accounts']];
+      for (const prov of [...new Set(pos.map((x) => x.provider))].sort(pcmp)) {
+        const accs = [...new Set(pos.filter((x) => x.provider === prov).map((x) => x.account))].sort();
+        if (accs.length > 1) accOpts.push(['p:' + prov, 'All ' + prov]);
+        for (const a of accs) accOpts.push([a, a]);
+      }
+      fillSelect(pAcc, accOpts, p.p_acc);
+      fillSelect(pMonth, [['all', 'All months'], ...[...new Set(pos.map((x) => x.date.slice(0, 7)))].sort().reverse().map((m) => [m, monthName(m)])], p.p_month);
+      fillSelect(pStatus, [['all', 'Any bank status'], ['Arrived', 'Arrived'], ['In transit', 'In transit'], ['Missing from bank', 'Missing from bank'], ['Amount differs', 'Amount differs']], p.p_status);
+      const scope = pAcc.value, month = pMonth.value, status = pStatus.value;
+      const srow = rows('payout_summary').find((r) => r.scope === scope && r.month === month && r.status === status);
+      fillMarks(q('#p-kpis'), 'payout_summary', where({scope, month, status}), srow || (D('payout_summary').status === 'ok' ? {batches: 0, arrived: 0, transit: 0, missing: 0, diff: 0, gross: 0, fees: 0, net: 0} : null));
+      const table = q('#p-table'), body = table.tBodies[0];
+      if (ready(body, 'payouts')) {
+        const list = pos.filter((x) => (scope === 'all' || (scope.startsWith('p:') ? x.provider === scope.slice(2) : x.account === scope)) && (month === 'all' || x.date.slice(0, 7) === month) && (status === 'all' || x.status === status))
+          .sort((a, b) => pcmp(a.provider, b.provider) || a.account.localeCompare(b.account) || (a.date < b.date ? 1 : -1));
+        body.replaceChildren(...list.map((x) => {
+          const tr = el('tr'); tr.dataset.key = keyOf(x.batch);
+          tr.append(td(fmt(x.date, 'day')), td(x.account, 'rc-l'), td(x.batch, 'rc-mono'), td(fmt(x.period_from, 'day'), 'rc-hide-md'), td(fmt(x.period_to, 'day'), 'rc-hide-md'), td(fmt(x.lines), 'rc-hide-sm'),
+            amtCell(x.gross, 'rc-hide-sm'), amtCell(x.fees, 'rc-hide-md'), amtCell(x.net), Object.assign(td(fmt(x.bank_date, 'day'), 'rc-hide-sm'), {title: 'Expected by ' + fmt(x.expected, 'day')}), td(fmt(x.bank_amount, 'eur2'), 'rc-hide-md'), statusCell(x.status));
+          return tr;
+        }));
+        caption(table, list.length ? null : 'No batches for these filters.');
+      }
+    } else {
+      fillSelect(bKind, [['all', 'All lines'], ['Payout', 'Payouts'], ['Customer payment', 'Customer payments'], ['Refund', 'Refunds'], ['Unknown', 'Unknown']], p.b_kind);
+      syncSearch(bQ, p.b_q);
+      const table = q('#b-table'), body = table.tBodies[0];
+      if (ready(body, 'bank')) {
+        const term = (p.b_q || '').trim().toLowerCase();
+        const list = rows('bank').filter((b) => (bKind.value === 'all' || b.kind === bKind.value) && (!term || `${b.text} ${b.counterparty} ${b.matched_to || ''}`.toLowerCase().includes(term))).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        body.replaceChildren(...list.map((b) => { const tr = el('tr'); tr.dataset.key = keyOf(b.id); tr.append(td(fmt(b.date, 'day')), td(b.counterparty, 'rc-l'), td(b.text, 'rc-l'), td(b.kind, 'rc-l rc-hide-sm'), amtCell(b.amount), td(b.matched_to ?? '—', 'rc-l rc-hide-sm')); return tr; }));
+        caption(table, list.length ? null : 'No bank lines for these filters.');
+      }
+    }
+  }
+
+  // ---------- fees ----------
+  const BY = [['provider', 'Provider'], ['account', 'Account'], ['method', 'Method'], ['brand', 'Card brand'], ['month', 'Month']];
+  const fMonth = q('#f-month'), fProv = q('#f-prov');
+  fMonth.addEventListener('change', () => set({f_month: fMonth.value}));
+  fProv.addEventListener('change', () => set({f_prov: fProv.value}));
+  function drawFees(p) {
+    const all = rows('fees_agg');
+    const by = BY.some(([v]) => v === p.f_by) ? p.f_by : 'provider';
+    segButtons(q('#f-by'), BY, by, (v) => set({f_by: v}));
+    const months = [...new Set(all.filter((r) => r.by === 'month' && r.month === 'all').map((r) => r.key))].sort();
+    const cur = totalsRow()?.cur_month;
+    fillSelect(fMonth, [['all', 'All 90 days'], ...[...months].reverse().map((m) => [m, monthName(m) + (m === cur ? ' (to date)' : '')])], p.f_month);
+    fillSelect(fProv, provOpts(), p.f_prov);
+    const month = fMonth.value, prov = fProv.value;
+    const byLabel = BY.find(([v]) => v === by)[1];
+    q('#f-key-th').textContent = byLabel;
+    q('#f-rates-title').textContent = `Effective rate by ${byLabel.toLowerCase()} · ${month === 'all' ? 'all 90 days' : monthName(month)}`;
+    const label = (r) => (by === 'month' ? monthName(r.key) : r.key);
+    // chart
+    const box = q('#f-chart'), plot = q('.rc-plot', box);
+    if (ready(plot, 'fees_agg', 'totals')) {
+      const ms = all.filter((r) => r.by === 'month' && r.month === 'all' && r.provider === prov).sort((a, b) => a.key.localeCompare(b.key));
+      if (!ms.length) plot.replaceChildren(el('p', 'rc-note', 'No fees for this provider.'));
+      else barChart(box, plot, ms.map((r) => ({k: r.key, v: r.fees, partial: r.key === cur, label: fMonthS(dayDate(r.key + '-01')) + (r.key === cur ? ' (MTD)' : ''), title: monthName(r.key),
+        lines: [['Fees', fmt(r.fees, 'eur2')], ['Captured volume', fmt(r.volume, 'eur2')], ['Effective rate', fmt(r.rate, 'pct2')]]})), 'Fees by month');
+    }
+    const list = all.filter((r) => r.by === by && r.month === month && r.provider === prov);
+    const ul = q('#f-rate-list');
+    if (ready(ul, 'fees_agg')) {
+      const rated = list.filter((r) => r.volume > 0 && r.rate != null).sort((a, b) => b.rate - a.rate).slice(0, 12);
+      const max = Math.max(0.00001, ...rated.map((r) => r.rate));
+      ul.replaceChildren(...rated.map((r) => {
+        const li = el('li'), l = el('div', 'rc-l');
+        const track = el('div', 'rc-track'), fill = el('i'); fill.style.width = Math.max(1, r.rate / max * 100) + '%'; fill.style.background = by === 'provider' ? pcol(r.key) : dash.colors[0]; track.append(fill);
+        l.append(el('span', null, label(r)), track);
+        li.append(l, markEl('b', 'fees_agg', 'rate', where({by, month, provider: prov, key: r.key}), fmt(r.rate, 'pct2')));
+        return li;
+      }));
+      if (!rated.length) ul.replaceChildren(el('li', 'rc-note', 'No captured volume for these filters.'));
+    }
+    const table = q('#f-table'), body = table.tBodies[0];
+    if (ready(body, 'fees_agg')) {
+      const sorted = [...list].sort(by === 'month' ? (a, b) => a.key.localeCompare(b.key) : (a, b) => b.fees - a.fees || a.key.localeCompare(b.key));
+      body.replaceChildren(...sorted.map((r) => { const tr = el('tr'); tr.dataset.key = keyOf(r.by, r.month, r.provider, r.key); tr.append(td(label(r)), td(fmt(r.payments)), td(fmt(r.volume, 'eur2')), amtCell(r.refunds, 'rc-hide-sm'), amtCell(r.chargebacks, 'rc-hide-md'), td(fmt(r.fees, 'eur2')), td(fmt(r.rate, 'pct2')), td(fmt(r.avg_fee, 'eur2'), 'rc-hide-sm')); return tr; }));
+      caption(table, sorted.length ? null : 'No fees for these filters.');
+    }
+    fillMarks(table.tFoot, 'fees_agg', where({by: 'total', month, provider: prov, key: 'Total'}), all.find((r) => r.by === 'total' && r.month === month && r.provider === prov));
+  }
+
+  // ---------- month close ----------
+  q('#c-table tbody').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-month]'); if (tr) set({c_month: tr.dataset.month}); });
+  function mark(id, ok) { const m = q(id); m.textContent = ok == null ? '·' : ok ? '✓' : '✕'; m.classList.toggle('rc-ok', ok === true); m.classList.toggle('rc-no', ok === false); m.setAttribute('aria-label', ok == null ? 'Loading' : ok ? 'Done' : 'Not done'); }
+  function drawClose(p) {
+    const cc = rows('close_checks');
+    const def = cc.length > 1 ? cc[cc.length - 2].month : cc[0]?.month || '';
+    const month = cc.some((r) => r.month === p.c_month) ? p.c_month : def;
+    segButtons(q('#c-month'), cc.map((r) => [r.month, fMonthS(dayDate(r.month + '-01'))]), month, (v) => set({c_month: v}));
+    const r = cc.find((x) => x.month === month);
+    q('#c-title').textContent = month ? `Close ${monthName(month)}` : 'Close the month';
+    fillMarks(q('#c-checks'), 'close_checks', where({month}), r);
+    fillMarks(q('#c-checks'), 'meta', null, rows('meta')[0]);
+    const run = q('#c-running');
+    run.hidden = !r || r.ended;
+    if (r && !r.ended) run.textContent = `${monthName(month)} is still running; you can work through the list, but closing is only possible after the month ends.`;
+    mark('#c-m-prov', r ? r.providers_ok : null); mark('#c-m-pay', r ? r.payouts_ok : null); mark('#c-m-ex', r ? r.exceptions_ok : null);
+    const provs = rows('close_providers').filter((x) => x.month === month).sort((a, b) => pcmp(a.provider, b.provider));
+    q('#c-provs').replaceChildren(...provs.map((x) => {
+      const w = where({month, provider: x.provider});
+      const b = badge('', x.ok ? 'ok' : 'bad');
+      if (x.ok) b.append(`${x.provider} · `, markEl('span', 'close_providers', 'matched', w, fmt(x.matched)), '/', markEl('span', 'close_providers', 'n', w, fmt(x.n)), ' ✓');
+      else b.append(`${x.provider} · `, markEl('span', 'close_providers', 'unmatched', w, fmt(x.unmatched)), ' open · ', markEl('span', 'close_providers', 'unmatched_value', w, fmt(x.unmatched_value, 'eur2')));
+      return b;
+    }));
+    q('#c-bad').replaceChildren(...rows('payouts').filter((x) => x.date.slice(0, 7) === month && x.status !== 'Arrived').map((x) => {
+      const b = badge('', 'bad'); b.append(markEl('span', 'payouts', 'batch', where({batch: x.batch}), x.batch), ' · ', markEl('span', 'payouts', 'status', where({batch: x.batch}), x.status)); return b;
+    }));
+    const body = q('#c-table').tBodies[0];
+    if (ready(body, 'close_checks')) {
+      body.replaceChildren(...cc.map((x) => {
+        const tr = el('tr', x.month === month ? 'rc-sel' : null); tr.dataset.key = keyOf(x.month); tr.dataset.month = x.month; tr.dataset.click = '1';
+        const pc = el('td', 'rc-l'); pc.append(badge(x.providers_ok ? 'Yes' : 'No', x.providers_ok ? 'ok' : 'bad'));
+        const pb = td(fmt(x.payouts_bad)); pb.classList.toggle('rc-neg', !x.payouts_ok);
+        const ex = td(fmt(x.exceptions)); ex.classList.toggle('rc-neg', !x.exceptions_ok);
+        tr.append(td(monthName(x.month)), pc, pb, ex, td(fmt(x.exceptions_value, 'eur2'), 'rc-hide-sm'), td(fmt(x.checks_passed)));
+        return tr;
+      }));
+    }
+  }
+
+  // ---------- activity ----------
+  function drawActivity() {
+    const body = q('#a-table').tBodies[0];
+    if (ready(body, 'activity')) body.replaceChildren(...rows('activity').map((a) => { const tr = el('tr'); tr.dataset.key = keyOf(a.id); tr.append(td(fTs(a.at)), td(a.by, 'rc-l'), td(a.action, 'rc-l rc-hide-sm'), td(a.what, 'rc-l'), td(a.note || '—', 'rc-text rc-hide-sm')); return tr; }));
+  }
+
+  // ---------- draw ----------
+  function draw() {
+    const p = P();
+    drawHeader();
+    if (page === 'overview') drawOverview();
+    else if (page === 'reconcile') drawReconcile(p);
+    else if (page === 'exceptions') drawExceptions(p);
+    else if (page === 'payouts') drawPayouts(p);
+    else if (page === 'fees') drawFees(p);
+    else if (page === 'close') drawClose(p);
+    else if (page === 'activity') drawActivity();
+  }
+  dash.onData(draw);
+  const named = location.hash.slice(1);
+  showPage(PAGES.includes(named) ? named : 'overview', false);
+  if (named && !PAGES.includes(named)) { const t = document.getElementById(named); if (t) t.scrollIntoView(); }
+})();
+</script>
+
+</div>
+</body>
+</html>

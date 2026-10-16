@@ -1,0 +1,444 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+/* Home page look "classic": everything is scoped to :root[data-look="classic"] (see home-looks/README.md).
+   The earlier home page, in the design language of cursor.com: warm neutrals, hairline borders, regular-weight type,
+   pill buttons, monospace uppercase labels and one orange accent. A slim sticky top bar (brand, group links, pill
+   buttons), a left-aligned hero, a "window" with traffic-light dots holding the pinned or recent apps, Needs you today as
+   hairline cards, Quick access as a hairline table, a sticky toolbar (search, Cards / List, group chips), warm cards with
+   "Open →", and a column footer. Geist and Geist Mono stand in for Cursor's licensed faces. Light and dark follow the
+   shell's html[data-stratum-mode]. classic.js adds the group links, "Browse apps", the hero, and moves the search. */
+
+/* tokens: the look's own, and the page's mapped onto them */
+:root[data-look="classic"]{
+  --cl-bg:#F7F7F4;--cl-card:#F2F1ED;--cl-card2:#EBEAE5;--cl-ink:#26251E;--cl-ink2:rgba(38,37,30,.62);--cl-ink3:rgba(38,37,30,.42);
+  --cl-line:rgba(38,37,30,.1);--cl-line2:rgba(38,37,30,.2);--cl-btn:#26251E;--cl-btnInk:#F7F7F4;--cl-btnHover:#3B3A33;
+  --cl-accent:#F54E00;--cl-nav:rgba(247,247,244,.86);--cl-dot:rgba(38,37,30,.18);--cl-warn:#B86E00;--cl-bad:#CF2D56;
+  --cl-pop:0 18px 40px -18px rgba(0,0,0,.35),0 2px 6px -2px rgba(38,37,30,.06);
+  --cl-icon:drop-shadow(0 0 .5px rgba(38,37,30,.3)) drop-shadow(0 1px 1.5px rgba(38,37,30,.1));
+  --cl-sans:'Geist',ui-sans-serif,system-ui,-apple-system,'Helvetica Neue',sans-serif;
+  --cl-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --bg:var(--cl-bg);--bgHover:var(--cl-card);--main:var(--cl-bg);--mainHover:var(--cl-card);--card:var(--cl-card);--pbg:var(--cl-bg);
+  --hover:var(--cl-card2);--press:var(--cl-line2);--sel:var(--cl-card2);--chip:var(--cl-card);--chipH:var(--cl-card2);
+  --ink:var(--cl-ink);--ink2:var(--cl-ink2);--ink3:var(--cl-ink3);--ink4:var(--cl-ink3);--line:var(--cl-line);--line2:var(--cl-line2);--line3:var(--cl-line);
+  --brand:var(--cl-btn);--brandH:var(--cl-btnHover);--brandP:var(--cl-btnHover);--brandFg:var(--cl-ink);--tint:var(--cl-card);--tint2:transparent;
+  --tintLine:var(--cl-line2);--tintFg:var(--cl-ink);--onBrand2:var(--cl-btnInk);
+  --okFg:var(--cl-ink2);--okBg:transparent;--okLine:var(--cl-line2);--warnFg:var(--cl-warn);--warnBg:transparent;--warnLine:var(--cl-line2);--warnBar:var(--cl-warn);
+  --badFg:var(--cl-bad);--badBg:transparent;--badLine:var(--cl-line2);--badBar:var(--cl-bad);--infoBar:var(--cl-ink3);
+  --input:var(--cl-card);--inputLine:var(--cl-line);--inputBottom:var(--cl-line);--focus:var(--cl-accent);--scrim:rgba(20,18,11,.32);--iconShade:rgba(38,37,30,.16);
+  --sh2:none;--sh4:none;--sh8:none;--sh16:var(--cl-pop);--sh28:var(--cl-pop);--sh64:var(--cl-pop);
+  --sans:var(--cl-sans);
+  color-scheme:light;scroll-padding-top:68px}
+:root[data-look="classic"][data-stratum-mode="dark"]{
+  --cl-bg:#14120B;--cl-card:#1B1913;--cl-card2:#201E18;--cl-ink:#EDECEC;--cl-ink2:rgba(237,236,236,.62);--cl-ink3:rgba(237,236,236,.42);
+  --cl-line:rgba(237,236,236,.1);--cl-line2:rgba(237,236,236,.2);--cl-btn:#EDECEC;--cl-btnInk:#14120B;--cl-btnHover:#D7D6D5;
+  --cl-nav:rgba(20,18,11,.86);--cl-dot:rgba(237,236,236,.2);--cl-warn:#E9A23B;--cl-bad:#F0708E;
+  --cl-pop:0 18px 40px -18px rgba(0,0,0,.85),0 2px 6px -2px rgba(0,0,0,.4);--scrim:rgba(0,0,0,.55);--iconShade:rgba(0,0,0,.4);
+  color-scheme:dark}
+/* before the shell has said which mode it resolved (it always does at once; this only covers it failing to load) */
+@media (prefers-color-scheme:dark){:root[data-look="classic"]:not([data-stratum-mode]):not([data-theme="light"]){
+  --cl-bg:#14120B;--cl-card:#1B1913;--cl-card2:#201E18;--cl-ink:#EDECEC;--cl-ink2:rgba(237,236,236,.62);--cl-ink3:rgba(237,236,236,.42);
+  --cl-line:rgba(237,236,236,.1);--cl-line2:rgba(237,236,236,.2);--cl-btn:#EDECEC;--cl-btnInk:#14120B;--cl-btnHover:#D7D6D5;
+  --cl-nav:rgba(20,18,11,.86);--cl-dot:rgba(237,236,236,.2);--cl-warn:#E9A23B;--cl-bad:#F0708E;
+  --cl-pop:0 18px 40px -18px rgba(0,0,0,.85),0 2px 6px -2px rgba(0,0,0,.4);--scrim:rgba(0,0,0,.55);--iconShade:rgba(0,0,0,.4);color-scheme:dark}}
+
+:root[data-look="classic"] body{background:var(--cl-bg);color:var(--cl-ink);font:400 15px/1.5 var(--cl-sans)}
+:root[data-look="classic"] :focus-visible{outline:2px solid var(--cl-accent);outline-offset:2px}
+:root[data-look="classic"] .skip{border-radius:999px;background:var(--cl-btn);color:var(--cl-btnInk);font-weight:400;padding:10px 16px}
+:root[data-look="classic"] .card p .mono{font:400 13px var(--cl-mono)}
+
+/* ---------- top bar: brand, group links, pill buttons ---------- */
+:root[data-look="classic"] .tb{display:flex;align-items:center;gap:24px;height:56px;padding:0 max(24px,calc((100% - 1200px) / 2 + 24px));background:var(--cl-nav);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);border-bottom:1px solid transparent;transition:border-color .14s}
+:root[data-look="classic"] .tb.cl-scrolled{border-bottom-color:var(--cl-line)}
+:root[data-look="classic"] .waf{display:none}
+:root[data-look="classic"] .tb-l{flex:none;gap:24px}
+:root[data-look="classic"] .tb .brand{padding:0;gap:10px;font-size:16px;line-height:22px;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .tb .brand img{display:block;width:26px;height:26px;filter:none}
+:root[data-look="classic"] .cl-links{display:flex;gap:22px;margin-left:12px}
+:root[data-look="classic"] .cl-links a{font-size:14px;line-height:20px;color:var(--cl-ink2);text-decoration:none;white-space:nowrap;transition:color .14s}
+:root[data-look="classic"] .cl-links a:hover{color:var(--cl-ink)}
+:root[data-look="classic"] .tb-r{margin-left:auto;gap:8px}
+/* the page's buttons as small pills: ghost ones, and the dark one */
+:root[data-look="classic"] .fbtn{height:32px;padding:0 14px;gap:6px;border-radius:999px;border:1px solid var(--cl-line2);background:transparent;color:var(--cl-ink);font:400 14px/1 var(--cl-sans);transition:background .14s,border-color .14s}
+:root[data-look="classic"] .fbtn:hover{background:var(--cl-card);border-color:var(--cl-ink3)}
+:root[data-look="classic"] .fbtn:active{background:var(--cl-card2)}
+:root[data-look="classic"] .fbtn .i{width:15px;height:15px;stroke-width:1.8}
+:root[data-look="classic"] .fbtn.pri{background:var(--cl-btn);border-color:var(--cl-btn);color:var(--cl-btnInk)}
+:root[data-look="classic"] .fbtn.pri:hover{background:var(--cl-btnHover);border-color:var(--cl-btnHover)}
+:root[data-look="classic"] .tb .fbtn.pri{background:transparent;border-color:var(--cl-line2);color:var(--cl-ink)}
+:root[data-look="classic"] .tb .fbtn.pri:hover{background:var(--cl-card);border-color:var(--cl-ink3)}
+:root[data-look="classic"] .cl-browse{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 14px;border-radius:999px;border:1px solid var(--cl-btn);background:var(--cl-btn);color:var(--cl-btnInk);font:400 14px/1 var(--cl-sans);white-space:nowrap;cursor:pointer;transition:background .14s,border-color .14s}
+:root[data-look="classic"] .cl-browse:hover{background:var(--cl-btnHover);border-color:var(--cl-btnHover)}
+:root[data-look="classic"] .cl-browse .i{stroke-width:2;transition:transform .14s}
+:root[data-look="classic"] .cl-browse[aria-expanded="true"] .i{transform:rotate(180deg)}
+/* bell and Style: a round icon button and a ghost pill */
+:root[data-look="classic"] .ib{width:32px;height:32px;border-radius:999px;color:var(--cl-ink2)}
+:root[data-look="classic"] .ib:hover{background:var(--cl-card);color:var(--cl-ink)}
+:root[data-look="classic"] .ib b{top:-2px;right:-3px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--cl-accent);color:#fff;font:500 10px/16px var(--cl-mono);box-shadow:0 0 0 2px var(--cl-bg)}
+:root[data-look="classic"] .look-btn{width:auto;height:32px;padding:0 14px 0 11px;gap:6px;border:1px solid var(--cl-line2);color:var(--cl-ink);font:400 14px/1 var(--cl-sans)}
+:root[data-look="classic"] .look-btn .i{width:16px;height:16px;color:var(--cl-ink2)}
+:root[data-look="classic"] .look-btn:hover{border-color:var(--cl-ink3)}
+:root[data-look="classic"] .look-btn[aria-expanded="true"]{background:var(--cl-card)}
+/* the Style menu, the groups menu and the install steps: hairline popovers */
+:root[data-look="classic"] .look-menu,:root[data-look="classic"] .menu,:root[data-look="classic"] .inst-pop{background:var(--cl-bg);border:1px solid var(--cl-line2);border-radius:12px;box-shadow:var(--cl-pop);color:var(--cl-ink)}
+:root[data-look="classic"] .look-menu{top:calc(100% + 10px);padding:6px;min-width:270px}
+:root[data-look="classic"] .look-menu h3,:root[data-look="classic"] .menu .mh{margin:0;padding:8px 10px 6px;font:400 11px/16px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .look-menu button{padding:8px 10px;border-radius:8px;font:400 14px/20px var(--cl-sans);color:var(--cl-ink)}
+:root[data-look="classic"] .look-menu button:hover,:root[data-look="classic"] .look-menu button:focus-visible{background:var(--cl-card)}
+:root[data-look="classic"] .look-menu button[aria-checked="true"]{font-weight:500;background:var(--cl-card)}
+:root[data-look="classic"] .look-menu button[aria-checked="true"]::after{color:var(--cl-ink)}
+:root[data-look="classic"] .look-menu small{font:400 12px/16px var(--cl-sans);color:var(--cl-ink3)}
+:root[data-look="classic"] .look-menu .sw{border-radius:6px;box-shadow:inset 0 0 0 1px var(--cl-line2)}
+:root[data-look="classic"] .menu{padding:6px;width:270px}
+:root[data-look="classic"] .menu button{height:38px;border-radius:8px;font:400 14px var(--cl-sans);color:var(--cl-ink)}
+:root[data-look="classic"] .menu button:hover,:root[data-look="classic"] .menu button:focus-visible{background:var(--cl-card);box-shadow:none}
+:root[data-look="classic"] .menu button .i{color:var(--cl-ink3)}
+:root[data-look="classic"] .menu button span{font:400 11px var(--cl-mono);color:var(--cl-ink3)}
+:root[data-look="classic"] .menu button[aria-checked="true"]{font-weight:500;color:var(--cl-ink);background:var(--cl-card)}
+:root[data-look="classic"] .menu button[aria-checked="true"] .i{color:var(--cl-ink)}
+:root[data-look="classic"] .inst-pop{top:calc(100% + 10px);padding:18px 18px 16px}
+:root[data-look="classic"] .inst-pop h2{margin:0 36px 6px 0;font-size:16px;line-height:22px;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .inst-pop p,:root[data-look="classic"] .inst-pop ol{color:var(--cl-ink2);font-size:14px}
+:root[data-look="classic"] .inst-pop ol{margin-top:12px}
+:root[data-look="classic"] .inst-pop b{font-weight:500;color:var(--cl-ink)}
+:root[data-look="classic"] .inst-pop kbd{font:400 12px var(--cl-mono);border:1px solid var(--cl-line2);border-radius:5px;padding:1px 5px;color:var(--cl-ink)}
+:root[data-look="classic"] .inst-pop .note{font-size:12.5px;color:var(--cl-ink3)}
+:root[data-look="classic"] .inst-pop .x{top:8px;right:8px;border-radius:50%;color:var(--cl-ink3)}
+:root[data-look="classic"] .inst-pop .x:hover{background:var(--cl-card);color:var(--cl-ink)}
+/* the theme switch sits bottom right again, where the earlier page had it */
+@media (min-width:701px){:root[data-look="classic"] stratum-shell{top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;right:14px!important}}
+
+/* ---------- the page: no icon rail, one centred column ---------- */
+:root[data-look="classic"] .rail{display:none}
+:root[data-look="classic"] .main{margin-left:0;min-height:0;background:transparent;border-radius:0;box-shadow:none}
+:root[data-look="classic"] .mi{display:block;max-width:1200px;margin:0 auto;padding:0 24px 96px}
+:root[data-look="classic"] .psearch,:root[data-look="classic"] .mi .chips-top{display:none}
+
+/* ---------- hero: the greeting as a monospace line, then the title, the lede and two pills ---------- */
+:root[data-look="classic"] .hello{display:block;max-width:860px;margin:0;padding:88px 0 0}
+:root[data-look="classic"] .hello>div:first-child{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;font:400 12px/18px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .hello h1{margin:0;font:inherit;letter-spacing:inherit}
+:root[data-look="classic"] .hello #today{margin:0;font:inherit;color:inherit}
+:root[data-look="classic"] .hello #today::before{content:"·";margin-right:10px}
+:root[data-look="classic"] .cl-title{margin:22px 0 0;font-size:clamp(30px,4.4vw,52px);line-height:1.12;font-weight:400;letter-spacing:-.025em;color:var(--cl-ink);text-wrap:balance}
+:root[data-look="classic"] .cl-lede{margin:20px 0 0;max-width:620px;font-size:18px;line-height:1.55;color:var(--cl-ink2)}
+:root[data-look="classic"] .cl-act{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
+:root[data-look="classic"] .cl-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--cl-btn);background:var(--cl-btn);color:var(--cl-btnInk);font:400 15px var(--cl-sans);text-decoration:none;white-space:nowrap;transition:background .14s,border-color .14s}
+:root[data-look="classic"] .cl-btn:hover{background:var(--cl-btnHover);border-color:var(--cl-btnHover)}
+:root[data-look="classic"] .cl-btn.ghost{background:transparent;color:var(--cl-ink);border-color:var(--cl-line2)}
+:root[data-look="classic"] .cl-btn.ghost:hover{background:var(--cl-card);border-color:var(--cl-ink3)}
+
+/* ---------- the window: traffic-light dots, a monospace title, the pinned (or recent and new) apps ---------- */
+:root[data-look="classic"] .pins{margin:56px 0 0;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:38px auto auto;grid-template-areas:"dots title end" "row row row" "hint hint hint";border:1px solid var(--cl-line);border-radius:12px;background:var(--cl-card)}
+:root[data-look="classic"] .pins::before{content:"";grid-area:dots;align-self:center;justify-self:start;margin-left:14px;width:10px;height:10px;border-radius:50%;background:var(--cl-dot);box-shadow:17px 0 0 var(--cl-dot),34px 0 0 var(--cl-dot)}
+:root[data-look="classic"] .pins::after{content:"";grid-area:1/1/2/-1;border-bottom:1px solid var(--cl-line);pointer-events:none}
+:root[data-look="classic"] .pins .sh{display:contents}
+:root[data-look="classic"] .pins .sh h2{grid-area:title;margin:0;font:400 12px/38px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink2);text-align:center;white-space:nowrap}
+:root[data-look="classic"] .pins .sh .end{grid-area:end;justify-self:end;align-self:center;margin:0 7px 0 0}
+:root[data-look="classic"] .pins .sh .sub{grid-area:hint;padding:0 20px 18px;text-align:center;font:400 12px/18px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+:root[data-look="classic"] .pins .sh .sub:empty{display:none}
+:root[data-look="classic"] .pins .sh .sub .i{width:13px;height:13px;vertical-align:-2px;color:var(--cl-ink2)}
+:root[data-look="classic"] #pinEdit{height:26px;padding:0 11px;gap:5px;font-size:12.5px}
+:root[data-look="classic"] #pinEdit .i{width:13px;height:13px}
+:root[data-look="classic"] #pinEdit.sub{border-color:var(--cl-line2);color:var(--cl-ink2)}
+:root[data-look="classic"] #pinEdit.sub:hover{background:var(--cl-bg);color:var(--cl-ink)}
+:root[data-look="classic"] .prow{grid-area:row;list-style:none;margin:0;padding:28px 20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:22px 8px;border-radius:0}
+:root[data-look="classic"] .pt{width:auto;min-width:0}
+:root[data-look="classic"] .pl{gap:9px;padding:6px 4px;border-radius:12px;color:var(--cl-ink2);font-size:13px;line-height:18px;text-align:center}
+:root[data-look="classic"] .pl:hover{background:transparent;color:var(--cl-ink)}
+:root[data-look="classic"] .pl img{width:60px;height:60px;filter:var(--cl-icon);transition:transform .14s}
+:root[data-look="classic"] .pl:hover img{transform:translateY(-2px)}
+:root[data-look="classic"] .pt.all .ring{width:60px;height:60px;border-radius:50%;border:1px dashed var(--cl-line2);background:transparent;color:var(--cl-ink2);transition:border-color .14s,color .14s}
+:root[data-look="classic"] .pt.all .pl:hover .ring{border-style:solid;border-color:var(--cl-ink3);color:var(--cl-ink)}
+:root[data-look="classic"] .pins.editing .pt[data-app] .pl{background:var(--cl-bg);box-shadow:inset 0 0 0 1px var(--cl-line)}
+:root[data-look="classic"] .pe{gap:4px;margin-top:6px}
+:root[data-look="classic"] .pe button{width:26px;height:26px;border-radius:50%;border:1px solid var(--cl-line2);background:var(--cl-bg);color:var(--cl-ink2)}
+:root[data-look="classic"] .pe button:hover:not(:disabled){background:var(--cl-card2);color:var(--cl-ink)}
+:root[data-look="classic"] .pt.drop-before::before,:root[data-look="classic"] .pt.drop-after::after{background:var(--cl-accent)}
+:root[data-look="classic"] .pins.drop-ok{outline:1px dashed var(--cl-accent);outline-offset:3px}
+:root[data-look="classic"] .pins.drop-ok .prow{outline:0}
+
+/* ---------- section headings (Needs you today, Quick access): like the group headings ---------- */
+:root[data-look="classic"] .needs,:root[data-look="classic"] .qa{margin:80px 0 0}
+:root[data-look="classic"] .needs .sh,:root[data-look="classic"] .qa .sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;min-height:0;margin:0 0 20px;padding:0}
+:root[data-look="classic"] .needs .sh h2,:root[data-look="classic"] .qa .sh h2{margin:0;font-size:26px;line-height:1.2;font-weight:400;letter-spacing:-.02em}
+:root[data-look="classic"] .needs .sh .sub{font:400 12px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+:root[data-look="classic"] .lnk{height:auto;padding:4px 0;border-radius:0;background:none;color:var(--cl-ink);font:400 14px var(--cl-sans);gap:6px}
+:root[data-look="classic"] .lnk::after{content:"→";transition:transform .14s}
+:root[data-look="classic"] .lnk:hover{background:none;text-decoration:none}
+:root[data-look="classic"] .lnk:hover::after{transform:translateX(3px)}
+
+/* Needs you today: hairline cards */
+:root[data-look="classic"] .nlist{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+:root[data-look="classic"] .need{padding:18px 20px 12px;border:1px solid var(--cl-line);border-radius:12px;background:var(--cl-card);box-shadow:none}
+:root[data-look="classic"] .need::before{display:none}
+:root[data-look="classic"] .need header{gap:12px;margin:0 0 8px}
+:root[data-look="classic"] .need header img{width:32px;height:32px;filter:var(--cl-icon)}
+:root[data-look="classic"] .need header b{font-size:16px;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .need header a:hover{text-decoration:underline;text-decoration-color:var(--cl-line2);text-underline-offset:3px}
+:root[data-look="classic"] .need time{font:400 11px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .need li+li{border-top:1px solid var(--cl-line)}
+:root[data-look="classic"] .need li a{min-height:44px;margin:0 -8px;padding:6px 8px;gap:12px;border-radius:8px;font-size:14px;line-height:20px;color:var(--cl-ink)}
+:root[data-look="classic"] .need li a:hover{background:var(--cl-card2)}
+:root[data-look="classic"] .need li a .i{color:var(--cl-ink3);transition:transform .14s}
+:root[data-look="classic"] .need li a:hover .i{transform:translateX(2px);color:var(--cl-ink)}
+:root[data-look="classic"] .cnt{min-width:34px;height:22px;padding:0 8px;border-radius:999px;border:1px solid var(--cl-line2);background:transparent;color:var(--cl-ink);font:400 12px/20px var(--cl-mono)}
+:root[data-look="classic"] .cnt.warn{color:var(--cl-warn);border-color:color-mix(in srgb,var(--cl-warn) 45%,transparent)}
+:root[data-look="classic"] .cnt.bad{color:var(--cl-bad);border-color:color-mix(in srgb,var(--cl-bad) 45%,transparent)}
+:root[data-look="classic"] .cnt.dot{min-width:0;width:8px;height:8px;padding:0;margin:0 13px;border:0;background:var(--cl-ink3)}
+:root[data-look="classic"] .cnt.dot.warn{background:var(--cl-warn)}
+:root[data-look="classic"] .cnt.dot.bad{background:var(--cl-bad)}
+:root[data-look="classic"] .nempty{gap:12px;padding:18px 20px;border:1px dashed var(--cl-line2);border-radius:12px;background:transparent;box-shadow:none;color:var(--cl-ink2);font-size:14px}
+:root[data-look="classic"] .nempty .i{color:var(--cl-ink3)}
+
+/* Quick access: a pill tab switch and a hairline table */
+:root[data-look="classic"] .qa{border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+:root[data-look="classic"] .mi .qh{display:flex}
+:root[data-look="classic"] .qtabs{height:auto;margin:0 0 16px;padding:0;gap:10px;border-bottom:0;flex-wrap:wrap}
+:root[data-look="classic"] .qtabs .tlist{height:auto;gap:2px;padding:3px;border:1px solid var(--cl-line);border-radius:999px}
+:root[data-look="classic"] .qtabs [role="tab"]{height:32px;padding:0 14px;border-radius:999px;color:var(--cl-ink2);font:400 13px var(--cl-sans);transition:background .14s,color .14s}
+:root[data-look="classic"] .qtabs [role="tab"]:hover{color:var(--cl-ink);background:var(--cl-card)}
+:root[data-look="classic"] .qtabs [role="tab"] span::after{font-weight:400}
+:root[data-look="classic"] .qtabs [role="tab"][aria-selected="true"]{background:var(--cl-btn);color:var(--cl-btnInk);font-weight:400}
+:root[data-look="classic"] .qtabs [role="tab"][aria-selected="true"]::after{display:none}
+:root[data-look="classic"] .qtabs [role="tab"]:focus-visible{outline-offset:2px}
+:root[data-look="classic"] .qsel{color:var(--cl-ink2);font-size:13px}
+:root[data-look="classic"] .qsel select{height:40px;padding:0 30px 0 32px;border:1px solid var(--cl-line);border-radius:999px;font:400 13px var(--cl-sans)}
+:root[data-look="classic"] .qsel select:hover{background:var(--cl-card)}
+:root[data-look="classic"] .qsel .i:first-child{left:12px}
+:root[data-look="classic"] .qsel .i:last-child{right:12px}
+:root[data-look="classic"] .qsel select option{background:var(--cl-bg);color:var(--cl-ink)}
+:root[data-look="classic"] .qt{font-size:14px}
+:root[data-look="classic"] .qt th{height:36px;padding:0 12px;border-top:1px solid var(--cl-line);border-bottom:1px solid var(--cl-line);font:400 11px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .qt td{height:56px;padding:0 12px;border-bottom:1px solid var(--cl-line);color:var(--cl-ink2)}
+:root[data-look="classic"] .qt th:first-child,:root[data-look="classic"] .qt td:first-child{padding-left:6px}
+:root[data-look="classic"] .qt tbody tr:last-child td{border-bottom:1px solid var(--cl-line)}
+:root[data-look="classic"] .qt tbody tr[data-app]:hover td{background:var(--cl-card)}
+:root[data-look="classic"] .qt tbody tr:hover .nm{text-decoration:none}
+:root[data-look="classic"] .ql{gap:12px}
+:root[data-look="classic"] .ql img{width:32px;height:32px;filter:var(--cl-icon)}
+:root[data-look="classic"] .ql .nm{font-size:15px;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .qt .none td{padding:32px 16px;color:var(--cl-ink2)}
+:root[data-look="classic"] .qfoot{padding:12px 0 0;border-top:0}
+
+/* labels: monospace capitals, the orange dot for NEW */
+:root[data-look="classic"] .pill{height:auto;padding:0;border:0;border-radius:0;background:none;color:var(--cl-ink3);font:400 11px/16px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase}
+:root[data-look="classic"] .pill.kind{background:none;color:var(--cl-ink3);font-weight:400}
+:root[data-look="classic"] .pill.yours{background:none;color:var(--cl-ink2)}
+:root[data-look="classic"] .pill.new{background:none;color:var(--cl-accent);display:inline-flex;align-items:center;gap:6px}
+:root[data-look="classic"] .pill.new::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cl-accent)}
+/* the pin star */
+:root[data-look="classic"] .pin{width:32px;height:32px;border-radius:50%;color:var(--cl-ink3)}
+:root[data-look="classic"] .pin:hover{background:var(--cl-line);color:var(--cl-ink)}
+:root[data-look="classic"] .pin[aria-pressed="true"]{color:var(--cl-ink)}
+:root[data-look="classic"] .qt tbody tr:hover .pin:hover{background:var(--cl-line)}
+
+/* ---------- toolbar above the apps (sticky): search, Cards / List, group chips ---------- */
+:root[data-look="classic"] .appsec{margin-top:80px}
+:root[data-look="classic"] body.searching .appsec{margin-top:24px}
+:root[data-look="classic"] .ah{position:sticky;top:56px;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 -24px;padding:12px 24px;background:var(--cl-bg);border-bottom:1px solid transparent;transition:border-color .14s}
+:root[data-look="classic"] .ah.cl-stuck{border-bottom-color:var(--cl-line)}
+:root[data-look="classic"] .ah h2,:root[data-look="classic"] .ah .n{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:root[data-look="classic"] .find{position:relative;flex:1 1 260px;max-width:420px;min-width:0;order:1}
+:root[data-look="classic"] .find .i{left:14px;top:12px;width:16px;height:16px;color:var(--cl-ink3);stroke-width:1.8}
+:root[data-look="classic"] .find input{height:40px;padding:0 62px 0 38px;border-radius:999px;border:1px solid var(--cl-line);background:var(--cl-card);color:var(--cl-ink);font:400 16px var(--cl-sans);transition:background .14s,border-color .14s}
+:root[data-look="classic"] .find input::placeholder{color:var(--cl-ink3)}
+:root[data-look="classic"] .find input:hover{border-color:var(--cl-line2)}
+:root[data-look="classic"] .find input:focus{border-color:var(--cl-line2);background:var(--cl-bg);box-shadow:none}
+:root[data-look="classic"] .find .k{right:9px;top:9px;height:22px;padding:0 6px;border:1px solid var(--cl-line2);border-radius:5px;background:transparent;color:var(--cl-ink3);font:400 11px/20px var(--cl-mono)}
+:root[data-look="classic"] .find .k:hover{background:var(--cl-card2);color:var(--cl-ink)}
+:root[data-look="classic"] .find .clr{right:5px;top:5px;width:30px;height:30px;border-radius:50%;color:var(--cl-ink3)}
+:root[data-look="classic"] .find .clr .i{position:static}
+:root[data-look="classic"] .find .clr:hover{background:var(--cl-card2)}
+:root[data-look="classic"] .tb .find{flex:0 1 280px;order:0}
+:root[data-look="classic"] .view{order:2;margin-left:0;display:inline-flex;gap:2px;padding:3px;border:1px solid var(--cl-line);border-radius:999px;background:transparent;overflow:visible}
+:root[data-look="classic"] .view button{width:auto;height:32px;padding:0 12px;gap:6px;border-radius:999px;color:var(--cl-ink2);font:400 13px var(--cl-sans);display:inline-flex;align-items:center;transition:background .14s,color .14s}
+:root[data-look="classic"] .view button+button{border-left:0}
+:root[data-look="classic"] .view button .i{width:15px;height:15px;stroke-width:1.8}
+:root[data-look="classic"] .view button[data-view="cards"]::after{content:"Cards"}
+:root[data-look="classic"] .view button[data-view="list"]::after{content:"List"}
+:root[data-look="classic"] .view button:hover{background:var(--cl-card);color:var(--cl-ink)}
+:root[data-look="classic"] .view button[aria-pressed="true"]{background:var(--cl-btn);color:var(--cl-btnInk)}
+:root[data-look="classic"] .ah .chips{order:5;flex:1 1 100%;margin:0 -24px;padding:0 24px}
+:root[data-look="classic"] .chips{gap:6px}
+:root[data-look="classic"] .chips button{height:32px;padding:0 14px;gap:8px;border-radius:999px;border:1px solid var(--cl-line);background:transparent;color:var(--cl-ink2);font:400 13px var(--cl-sans);transition:background .14s,color .14s}
+:root[data-look="classic"] .chips button span{font:400 11px var(--cl-mono);color:var(--cl-ink3)}
+:root[data-look="classic"] .chips button:hover{background:var(--cl-card);color:var(--cl-ink)}
+:root[data-look="classic"] .chips button[aria-pressed="true"]{background:var(--cl-btn);border-color:var(--cl-btn);color:var(--cl-btnInk);font-weight:400}
+:root[data-look="classic"] .chips button[aria-pressed="true"] span{color:inherit;opacity:.65;font-weight:400}
+:root[data-look="classic"] .status{min-height:18px;margin:10px 0 0;font:400 12px/18px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+
+/* ---------- groups and cards ---------- */
+:root[data-look="classic"] .groups-wrap{padding:0}
+:root[data-look="classic"] .group{margin:64px 0 0;scroll-margin-top:118px}
+:root[data-look="classic"] .ghead{gap:4px 12px;margin:0 0 20px}
+:root[data-look="classic"] .ghead h2{font-size:26px;line-height:1.2;font-weight:400;letter-spacing:-.02em}
+:root[data-look="classic"] .gcount{font:400 12px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+:root[data-look="classic"] .ghead p{display:block;flex:1 1 100%;margin:0;color:var(--cl-ink2);font-size:15px}
+:root[data-look="classic"] .grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+:root[data-look="classic"] .card{gap:12px;padding:20px;border:1px solid var(--cl-line);border-radius:12px;background:var(--cl-card);box-shadow:none;transition:background .14s,border-color .14s}
+:root[data-look="classic"] .card:hover{background:var(--cl-card2);box-shadow:none}
+:root[data-look="classic"] .card .top{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;column-gap:14px;row-gap:12px}
+:root[data-look="classic"] .card .ttl{display:contents}
+:root[data-look="classic"] .card .ai{grid-column:1;grid-row:1;width:48px;height:48px;filter:var(--cl-icon)}
+:root[data-look="classic"] .card h3{grid-column:2;grid-row:1;font-size:17px;line-height:1.3;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .card h3 a::after{border-radius:12px}
+:root[data-look="classic"] .card:hover h3 a{text-decoration:none}
+:root[data-look="classic"] .card .tags{grid-column:1/-1;grid-row:2;gap:4px 12px}
+:root[data-look="classic"] .card .pin{grid-column:3;grid-row:1;margin:-4px -8px 0 0;align-self:start}
+:root[data-look="classic"] .card p{color:var(--cl-ink2);font-size:14.5px;line-height:1.5}
+:root[data-look="classic"] .screens{margin-top:0;gap:4px 14px}
+:root[data-look="classic"] .screens a{height:auto;padding:0 0 1px;border-radius:0;background:none;border-bottom:1px solid var(--cl-line2);color:var(--cl-ink2);font:400 12px/18px var(--cl-mono)}
+:root[data-look="classic"] .screens a:hover{background:none;color:var(--cl-ink);border-color:var(--cl-ink3)}
+/* "Open →" at the foot of every card (the whole card is the app's link) */
+:root[data-look="classic"] .card::after{content:"Open →";margin-top:auto;align-self:flex-start;padding:4px 0;color:var(--cl-ink);font-size:14px;line-height:20px;word-spacing:0;transition:word-spacing .14s}
+:root[data-look="classic"] .card:hover::after{word-spacing:4px}
+/* list view: hairline rows in two columns */
+:root[data-look="classic"] .list .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:0 24px;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+:root[data-look="classic"] .list .card{display:grid;grid-template-columns:40px minmax(0,1fr) 32px 20px;grid-template-areas:"ic t pin go" "ic d pin go";column-gap:14px;row-gap:0;align-items:center;padding:12px 6px;border:0;border-bottom:1px solid var(--cl-line);border-radius:0;background:transparent}
+:root[data-look="classic"] .list .card:hover{background:var(--cl-card)}
+:root[data-look="classic"] .list .card .top{display:contents}
+:root[data-look="classic"] .list .card .ai{grid-area:ic;width:40px;height:40px}
+:root[data-look="classic"] .list .card h3{grid-area:t;font-size:15px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="classic"] .list .card[data-new] h3::after{content:"NEW";margin-left:8px;color:var(--cl-accent);font:400 10px var(--cl-mono);letter-spacing:.06em;vertical-align:2px}
+:root[data-look="classic"] .list .card h3 a::after{border-radius:0}
+:root[data-look="classic"] .list .card .tags,:root[data-look="classic"] .list .card .screens{display:none}
+:root[data-look="classic"] .list .card p{grid-area:d;font-size:13px;line-height:1.45;color:var(--cl-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="classic"] .list .card .pin{grid-area:pin;margin:0;align-self:center}
+:root[data-look="classic"] .list .card::after{content:"→";grid-area:go;margin:0;padding:0;align-self:center;color:var(--cl-ink2);font-size:15px;text-align:center;transition:transform .14s}
+:root[data-look="classic"] .list .card:hover::after{transform:translateX(3px);color:var(--cl-ink)}
+:root[data-look="classic"] .empty{margin:40px 0;padding:36px 18px;border:1px dashed var(--cl-line2);border-radius:12px;color:var(--cl-ink2)}
+
+/* ---------- footer: brand and a line, then two columns of links ---------- */
+:root[data-look="classic"] .foot{margin-top:112px;padding-top:32px;border-top:1px solid var(--cl-line);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,2fr);grid-template-areas:"brand nav" "text nav" "fine fine";gap:12px 32px;align-items:start;color:var(--cl-ink2);font-size:14px}
+:root[data-look="classic"] .foot .fb{grid-area:brand;gap:10px;color:var(--cl-ink);font-size:15px;font-weight:500;letter-spacing:-.01em}
+:root[data-look="classic"] .foot p{grid-area:text;margin:0;max-width:360px;color:var(--cl-ink2);font-size:14px}
+:root[data-look="classic"] .foot p a{color:var(--cl-ink);text-decoration:underline;text-decoration-color:var(--cl-line2);text-underline-offset:3px}
+:root[data-look="classic"] .foot nav{grid-area:nav;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 32px;align-content:start}
+:root[data-look="classic"] .foot nav::before,:root[data-look="classic"] .foot nav::after{grid-row:1;margin:0 0 4px;font:400 12px/18px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .foot nav::before{content:"Apps";grid-column:1}
+:root[data-look="classic"] .foot nav::after{content:"More";grid-column:2}
+:root[data-look="classic"] .foot nav a{grid-column:1;color:var(--cl-ink2);font-size:14px;line-height:20px;text-decoration:none}
+:root[data-look="classic"] .foot nav a:nth-child(n+4){grid-column:2}
+:root[data-look="classic"] .foot nav a:nth-child(1),:root[data-look="classic"] .foot nav a:nth-child(4){grid-row:2}
+:root[data-look="classic"] .foot nav a:nth-child(2),:root[data-look="classic"] .foot nav a:nth-child(5){grid-row:3}
+:root[data-look="classic"] .foot nav a:nth-child(3),:root[data-look="classic"] .foot nav a:nth-child(6){grid-row:4}
+:root[data-look="classic"] .foot nav a:nth-child(7){grid-row:5}
+:root[data-look="classic"] .foot nav a:hover{color:var(--cl-ink);text-decoration:none}
+:root[data-look="classic"] .foot>span{grid-area:fine;margin:16px 0 0;font:400 12px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+
+/* ---------- ⌘K command bar ---------- */
+:root[data-look="classic"] .cmdk-back{background:var(--scrim);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+:root[data-look="classic"] .cmdk-box{border:1px solid var(--cl-line2);border-radius:12px;background:var(--cl-bg);box-shadow:0 30px 70px -24px rgba(0,0,0,.5),0 2px 8px -2px rgba(0,0,0,.08)}
+:root[data-look="classic"] .cx-in{height:56px;padding:0 12px 0 18px;border-bottom:1px solid var(--cl-line)}
+:root[data-look="classic"] .cx-in .i{color:var(--cl-ink3)}
+:root[data-look="classic"] .cx-in input{font:400 17px var(--cl-sans);color:var(--cl-ink)}
+:root[data-look="classic"] .cx-in input::placeholder{color:var(--cl-ink3)}
+:root[data-look="classic"] .cx-esc{height:22px;padding:0 6px;border:1px solid var(--cl-line2);border-radius:5px;color:var(--cl-ink3);font:400 11px/20px var(--cl-mono)}
+:root[data-look="classic"] .cx-esc:hover{background:var(--cl-card)}
+:root[data-look="classic"] .cx-cancel{color:var(--cl-ink);font:400 15px var(--cl-sans)}
+:root[data-look="classic"] .cx-list{padding:6px 8px 10px}
+:root[data-look="classic"] .cx-h{padding:12px 10px 6px;font:400 11px/16px var(--cl-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--cl-ink3)}
+:root[data-look="classic"] .cx-o{min-height:50px;padding:6px 10px;border-radius:8px}
+:root[data-look="classic"] .cx-o.on{background:var(--cl-card)}
+:root[data-look="classic"] .cx-o.on::before{display:none}
+:root[data-look="classic"] .cx-ic{width:30px;height:30px;border-radius:8px}
+:root[data-look="classic"] .cx-ic img{width:30px;height:30px;filter:var(--cl-icon)}
+:root[data-look="classic"] .cx-ic.sym{background:transparent;border:1px solid var(--cl-line2);color:var(--cl-ink2)}
+:root[data-look="classic"] .cx-tt{font-size:14.5px;color:var(--cl-ink)}
+:root[data-look="classic"] .cx-t small{font:400 11.5px/16px var(--cl-mono);color:var(--cl-ink3)}
+:root[data-look="classic"] .cx-tt mark{color:var(--cl-ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--cl-accent);text-underline-offset:3px;text-decoration-thickness:1.5px}
+:root[data-look="classic"] .cx-r .i{color:var(--cl-ink)}
+:root[data-look="classic"] .cx-r kbd,:root[data-look="classic"] .cx-foot kbd{height:20px;min-width:20px;padding:0 5px;border:1px solid var(--cl-line2);border-radius:5px;color:var(--cl-ink2);font:400 11px/18px var(--cl-mono)}
+:root[data-look="classic"] .cx-none{color:var(--cl-ink2)}
+:root[data-look="classic"] .cx-foot{padding:10px 18px;border-top:1px solid var(--cl-line);font:400 11px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+
+/* ---------- desktop widths: the group links need room ---------- */
+@media (max-width:1199px){:root[data-look="classic"] .cl-links{display:none}}
+@media (max-width:900px){:root[data-look="classic"] .look-btn{width:32px;padding:0;justify-content:center}}
+
+/* ---------- phone ---------- */
+@media (max-width:700px){
+  :root[data-look="classic"]{scroll-padding-top:68px}
+  :root[data-look="classic"] .tb{gap:12px;min-height:calc(56px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 64px 0 16px;background:var(--cl-bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+  :root[data-look="classic"] .cl-browse{display:none}
+  :root[data-look="classic"] .tb .brand{font-size:16px}
+  :root[data-look="classic"] .tb-r{gap:6px}
+  :root[data-look="classic"] .mi{padding:0 16px calc(96px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="classic"] .hello{padding-top:40px}
+  :root[data-look="classic"] .cl-title{margin-top:18px}
+  :root[data-look="classic"] .cl-lede{font-size:16px;margin-top:16px}
+  :root[data-look="classic"] .cl-act{margin-top:28px}
+  :root[data-look="classic"] .cl-act .cl-btn{flex:1 1 auto}
+  :root[data-look="classic"] .pins{margin-top:36px}
+  :root[data-look="classic"] .prow{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 4px;padding:20px 10px 16px;overflow:visible;flex-wrap:wrap}
+  :root[data-look="classic"] .pins.editing .prow{grid-template-columns:repeat(3,minmax(0,1fr))}
+  :root[data-look="classic"] .pins.editing .pt{width:auto}
+  :root[data-look="classic"] .pl{font-size:11.5px;line-height:15px}
+  :root[data-look="classic"] .pl img,:root[data-look="classic"] .pt.all .ring{width:54px;height:54px}
+  :root[data-look="classic"] .pe button{width:30px;height:30px}
+  :root[data-look="classic"] .pins .sh .sub{padding:0 14px 16px}
+  :root[data-look="classic"] .needs,:root[data-look="classic"] .qa{margin-top:56px}
+  :root[data-look="classic"] .needs .sh h2,:root[data-look="classic"] .qa .sh h2{font-size:22px}
+  :root[data-look="classic"] .needs .sh{margin-bottom:16px}
+  :root[data-look="classic"] .nlist{gap:10px;margin:0 -16px;padding:2px 16px 6px}
+  :root[data-look="classic"] .need{width:min(300px,82vw)}
+  :root[data-look="classic"] .nempty{margin:0}
+  :root[data-look="classic"] .qa .sh{margin-bottom:14px}
+  :root[data-look="classic"] .qtabs{margin:0 -16px 10px;padding:0 16px;height:auto;overflow-x:auto;border-bottom:0;flex-wrap:nowrap}
+  :root[data-look="classic"] .qtabs .tlist{flex:none}
+  :root[data-look="classic"] .qtabs [role="tab"]{height:32px;padding:0 12px;font-size:13px}
+  :root[data-look="classic"] .qt tbody{border-top:1px solid var(--cl-line)}
+  :root[data-look="classic"] .qt tr{min-height:64px;padding:0}
+  :root[data-look="classic"] .qt td.c-nm{border-bottom:1px solid var(--cl-line);padding-left:2px}
+  :root[data-look="classic"] .qt tbody tr:last-child td.c-nm{border-bottom:0}
+  :root[data-look="classic"] .qt td.c-pin{border-bottom:1px solid var(--cl-line);align-self:stretch;display:flex;align-items:center;justify-content:flex-end}
+  :root[data-look="classic"] .qt tbody tr:last-child td.c-pin{border-bottom:0}
+  :root[data-look="classic"] .qt tbody{border-bottom:1px solid var(--cl-line)}
+  :root[data-look="classic"] .ql img{width:40px;height:40px}
+  :root[data-look="classic"] .ql .nm{font-size:15.5px;font-weight:500}
+  :root[data-look="classic"] .ql .meta{font:400 11px/16px var(--cl-mono);letter-spacing:.02em;color:var(--cl-ink3)}
+  :root[data-look="classic"] .qfoot{padding:8px 0 0}
+  :root[data-look="classic"] .appsec{margin-top:56px}
+  :root[data-look="classic"] .ah{top:calc(56px + env(safe-area-inset-top,0px));margin:0 -16px;padding:10px 16px}
+  :root[data-look="classic"] .ah .chips{display:flex;margin:0 -16px;padding:0 16px}
+  :root[data-look="classic"] .find{flex:1 1 0}
+  :root[data-look="classic"] .view button{gap:0;padding:0 10px}
+  :root[data-look="classic"] .view button::after{display:none}
+  :root[data-look="classic"] .view button .i{width:17px;height:17px}
+  :root[data-look="classic"] .status{padding:0;min-height:0}
+  :root[data-look="classic"] .group{margin-top:48px;scroll-margin-top:110px}
+  :root[data-look="classic"] .ghead{margin-bottom:16px}
+  :root[data-look="classic"] .ghead h2{font-size:22px}
+  :root[data-look="classic"] .ghead p{display:block}
+  :root[data-look="classic"] .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  :root[data-look="classic"] .card{align-items:stretch;min-height:0;padding:18px;gap:12px;text-align:left}
+  :root[data-look="classic"] .card .top{flex-direction:row;align-items:center;width:auto;grid-template-columns:44px minmax(0,1fr) auto}
+  :root[data-look="classic"] .card .ai{width:44px;height:44px}
+  :root[data-look="classic"] .card h3{display:block;font-size:16.5px;line-height:1.3;font-weight:500;-webkit-line-clamp:unset;overflow:visible}
+  :root[data-look="classic"] .card .tags{display:flex}
+  :root[data-look="classic"] .card p{display:block;font-size:14.5px}
+  :root[data-look="classic"] .card .screens{display:flex}
+  :root[data-look="classic"] .card .pin{position:relative;top:auto;right:auto;width:36px;height:36px;margin:-6px -10px 0 0}
+  :root[data-look="classic"] .card .pin .i{width:18px;height:18px}
+  :root[data-look="classic"] .card .pin:not([aria-pressed="true"]){color:var(--cl-ink3)}
+  :root[data-look="classic"] .list .grid{display:grid}
+  :root[data-look="classic"] .list .card{grid-template-columns:40px minmax(0,1fr) 36px 14px;column-gap:12px;padding:12px 2px}
+  :root[data-look="classic"] .list .card h3{font-size:15px;line-height:1.35}
+  :root[data-look="classic"] .list .card .tags,:root[data-look="classic"] .list .card .screens{display:none}
+  :root[data-look="classic"] .list .card .pin{margin:0}
+  :root[data-look="classic"] .foot{margin:80px 0 0;grid-template-columns:minmax(0,1fr);grid-template-areas:"brand" "text" "nav" "fine";gap:12px}
+  :root[data-look="classic"] .foot nav{margin-top:20px}
+  :root[data-look="classic"] .menu{width:auto;border-radius:16px;padding:6px;box-shadow:var(--cl-pop),0 0 0 100vmax var(--scrim)}
+  :root[data-look="classic"] .menu button{height:46px;font-size:15px}
+  :root[data-look="classic"] .inst-pop{top:auto;border-radius:16px;box-shadow:var(--cl-pop),0 0 0 100vmax var(--scrim)}
+  :root[data-look="classic"] .look-menu{position:fixed;left:12px;right:12px;top:calc(60px + env(safe-area-inset-top,0px));min-width:0}
+  /* bottom bar: translucent, hairline, monospace labels */
+  :root[data-look="classic"] .bn{background:var(--cl-nav);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);border-top:1px solid var(--cl-line)}
+  :root[data-look="classic"] .bn a,:root[data-look="classic"] .bn button{gap:4px;color:var(--cl-ink3);font:400 10px/14px var(--cl-mono);letter-spacing:.06em;text-transform:uppercase}
+  :root[data-look="classic"] .bn .on{color:var(--cl-ink);font-weight:400}
+  :root[data-look="classic"] .bn .on .i{fill:none}
+  :root[data-look="classic"] .bn .on::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--cl-ink)}
+  :root[data-look="classic"] .bn a,:root[data-look="classic"] .bn button{position:relative}
+  /* the command bar fills the screen */
+  :root[data-look="classic"] .cmdk-box{border:0;border-radius:0}
+  :root[data-look="classic"] .cx-in{height:58px;padding:0 8px 0 16px}
+}

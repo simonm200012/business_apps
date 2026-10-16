@@ -1,0 +1,1670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>ERP &amp; BI Client Atlas</title>
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>
+/* ERP & BI Client Atlas in the language of LinkedIn Sales Navigator (CA1): a warm grey feed of white cards, a sticky
+   white top bar with search and tabs, blue links and outlined Save-style pills, green filter pills, deadline alerts
+   and spotlights. Desktop: filters on the left, the feed in the middle, the market map on the right. */
+:root {
+  --bg: #F4F2EE;
+  --surface: #FFFFFF;
+  --fill: #F3F6F8;
+  --search: #EDF3F8;
+  --ink: #191919;
+  --ink-2: #666666;
+  --ink-3: #8C8C8C;
+  --line: #E8E8E8;
+  --ring: rgba(0,0,0,.08);
+  --hover: rgba(0,0,0,.06);
+  --accent: #0A66C2;
+  --accent-hover: #004182;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DCE6F1;
+  --accent-wash: rgba(112,181,249,.16);
+  --green: #01754F;
+  --green-ink: #FFFFFF;
+  --green-text: #057642;
+  --amber: #915907;
+  --amber-soft: #FCE2BA;
+  --red: #CC1016;
+  --home-wash: #F1F7EE;
+  --cover: linear-gradient(115deg, #B9CDE0 0%, #D6E2EC 45%, #EDE6DA 100%);
+  --erp: #0A66C2;
+  --crm: #7A3E9D;
+  --bi: #B26B00;
+  --dwh: #0E6372;
+  --av-partners: #DCE6F1; --av-partners-ink: #0A66C2;
+  --av-brokers: #F3E8F8;  --av-brokers-ink: #7A3E9D;
+  --av-leads: #E7F3EE;    --av-leads-ink: #01754F;
+  --av-tenders: #FCE2BA;  --av-tenders-ink: #915907;
+  --av-funding: #DDF1F3;  --av-funding-ink: #0E6372;
+  --av-events: #FBE5E3;   --av-events-ink: #B4382C;
+  --tile-0: #EEF0F2; --tile-ink-0: #6E7377;
+  --tile-1: #DCE6F1; --tile-ink-1: #0A4A8C;
+  --tile-2: #8DB8E6; --tile-ink-2: #062E57;
+  --tile-3: #0A66C2; --tile-ink-3: #FFFFFF;
+  --font-body: "Source Sans 3", -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --radius: 8px;
+  --bar: 52px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #1B1F23; --fill: #262B30; --search: #38434F; --ink: #E9E9E9; --ink-2: #A9ABAD; --ink-3: #868A8E;
+    --line: #33383D; --ring: rgba(255,255,255,.1); --hover: rgba(255,255,255,.08);
+    --accent: #71B7FB; --accent-hover: #A8D4FF; --accent-ink: #000000; --accent-soft: #1E3346; --accent-wash: rgba(113,183,251,.14);
+    --green: #5DBB8C; --green-ink: #04140C; --green-text: #6FCB9C; --amber: #E7A33E; --amber-soft: #45351A; --red: #F0574B; --home-wash: #1C2A22;
+    --cover: linear-gradient(115deg, #24384C 0%, #2B3640 50%, #3A332A 100%);
+    --erp: #71B7FB; --crm: #CF9BEA; --bi: #E7B451; --dwh: #6CC6D2;
+    --av-partners: #1E3346; --av-partners-ink: #9CCBFB; --av-brokers: #33263D; --av-brokers-ink: #D8B2EE;
+    --av-leads: #17332A; --av-leads-ink: #7FD3A8; --av-tenders: #45351A; --av-tenders-ink: #F0C27A;
+    --av-funding: #173539; --av-funding-ink: #84D3DD; --av-events: #3E2421; --av-events-ink: #F1A49A;
+    --tile-0: #2A2F34; --tile-ink-0: #8E9296; --tile-1: #1E3346; --tile-ink-1: #A9D2FB;
+    --tile-2: #2F5F8E; --tile-ink-2: #EAF4FE; --tile-3: #71B7FB; --tile-ink-3: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #1B1F23; --fill: #262B30; --search: #38434F; --ink: #E9E9E9; --ink-2: #A9ABAD; --ink-3: #868A8E;
+  --line: #33383D; --ring: rgba(255,255,255,.1); --hover: rgba(255,255,255,.08);
+  --accent: #71B7FB; --accent-hover: #A8D4FF; --accent-ink: #000000; --accent-soft: #1E3346; --accent-wash: rgba(113,183,251,.14);
+  --green: #5DBB8C; --green-ink: #04140C; --green-text: #6FCB9C; --amber: #E7A33E; --amber-soft: #45351A; --red: #F0574B; --home-wash: #1C2A22;
+  --cover: linear-gradient(115deg, #24384C 0%, #2B3640 50%, #3A332A 100%);
+  --erp: #71B7FB; --crm: #CF9BEA; --bi: #E7B451; --dwh: #6CC6D2;
+  --av-partners: #1E3346; --av-partners-ink: #9CCBFB; --av-brokers: #33263D; --av-brokers-ink: #D8B2EE;
+  --av-leads: #17332A; --av-leads-ink: #7FD3A8; --av-tenders: #45351A; --av-tenders-ink: #F0C27A;
+  --av-funding: #173539; --av-funding-ink: #84D3DD; --av-events: #3E2421; --av-events-ink: #F1A49A;
+  --tile-0: #2A2F34; --tile-ink-0: #8E9296; --tile-1: #1E3346; --tile-ink-1: #A9D2FB;
+  --tile-2: #2F5F8E; --tile-ink-2: #EAF4FE; --tile-3: #71B7FB; --tile-ink-3: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.42; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { margin: 0; font-weight: 600; text-wrap: balance; }
+p { margin: 0; }
+button, select, input, textarea { font: inherit; color: var(--ink); }
+code, .mono { font-family: var(--font-mono); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+svg { flex: none; }
+
+/* ── top bar: logo, search, tabs, alerts ──────────────────────────────────── */
+.gnav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); border-bottom: 1px solid var(--line); }
+.gnav-in { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; }
+.gn-logo { order: 1; width: 34px; height: 34px; border-radius: 4px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 700 14px/1 var(--font-body); letter-spacing: -.01em; flex: none; margin: 9px 0; }
+.gn-logo:hover { text-decoration: none; background: var(--accent-hover); }
+.gn-search { order: 2; flex: 1 1 auto; min-width: 0; max-width: 300px; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 4px; background: var(--search); color: var(--ink-2); cursor: text; }
+.gn-search:focus-within { box-shadow: 0 0 0 2px var(--accent); }
+.gn-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; outline: none; font-size: 14px; }
+.gn-search input::placeholder { color: var(--ink-2); }
+.gn-search input::-webkit-search-cancel-button { cursor: pointer; }
+.gn-tabs { order: 3; display: flex; margin-left: auto; align-self: stretch; }
+.gn-tabs a, .gn-bell { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 76px; padding: 0 8px; color: var(--ink-2); font: 400 12px/1.2 var(--font-body); white-space: nowrap; border-bottom: 2px solid transparent; }
+.gn-tabs a:hover, .gn-bell:hover { color: var(--ink); text-decoration: none; }
+.gn-tabs a[aria-current="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.gn-tabs small { font-size: 12px; color: inherit; }
+.gn-bell { order: 4; align-self: stretch; }
+.gn-bell b { position: absolute; top: 5px; left: calc(50% + 4px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--red); color: #fff; font: 700 11px/17px var(--font-body); text-align: center; border: 2px solid var(--surface); box-sizing: content-box; }
+.gn-bell b:empty { display: none; }
+
+/* ── page grid ────────────────────────────────────────────────────────────── */
+.layout { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; display: grid; grid-template-columns: 232px minmax(0, 1fr) 300px; gap: 8px 24px; align-items: start; }
+.col-l { grid-column: 1; grid-row: 1 / span 9; position: sticky; top: calc(var(--bar) + 20px + env(safe-area-inset-top, 0px)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
+.layout > section, .layout > .foot { grid-column: 2; min-width: 0; }
+.layout > .mapcard { grid-column: 3; grid-row: 1 / span 3; position: sticky; top: calc(var(--bar) + 20px + env(safe-area-inset-top, 0px)); }
+.layout > .foot { grid-column: 3; grid-row: 4 / span 6; }
+section, .mapcard { scroll-margin-top: calc(var(--bar) + 16px); }
+
+.pane { background: var(--surface); border-radius: var(--radius); box-shadow: 0 0 0 1px var(--ring); padding: 16px; min-width: 0; }
+.pane-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+.pane-h h2 { font-size: 18px; line-height: 1.3; }
+.pane-h small, .pane-h .count { font-size: 14px; color: var(--ink-2); font-weight: 400; white-space: nowrap; }
+.pane-sub { color: var(--ink-2); font-size: 14px; margin-bottom: 12px; max-width: 70ch; }
+
+/* profile card (the masthead) */
+.prof { padding: 0 0 16px; overflow: hidden; text-align: center; }
+.prof-cover { height: 56px; background: var(--cover); }
+.prof-av { width: 64px; height: 64px; margin: -32px auto 10px; border-radius: 6px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 700 22px/1 var(--font-body); border: 3px solid var(--surface); position: relative; }
+.prof h1 { font-size: 18px; line-height: 1.25; padding: 0 16px; }
+.prof h1 em { font-style: normal; }
+.prof-lede { color: var(--ink-2); font-size: 13.5px; padding: 6px 16px 0; }
+.prof .eyebrow { margin: 12px 16px 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.5; color: var(--ink-2); }
+.prof .eyebrow span + span::before { content: " · "; }
+
+/* filters (the old rail) */
+.rail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.rail > div { min-width: 0; }
+.rail h2 { font-size: 16px; }
+.rail-label { display: block; font-size: 14px; font-weight: 600; color: var(--ink-2); margin-bottom: 6px; }
+.chipset { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--ink-3); background: var(--surface); color: var(--ink-2); font: 600 14px/1 var(--font-body); cursor: pointer; white-space: nowrap; }
+.chip:hover { background: var(--hover); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink-2); }
+.chip .dot { display: none; }
+.chip[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: var(--green-ink); box-shadow: none; }
+.chip[aria-pressed="true"]::after { content: "✓"; font-weight: 700; margin-left: 2px; }
+.select { appearance: none; -webkit-appearance: none; max-width: 100%; height: 32px; padding: 0 30px 0 10px; border-radius: 4px; border: 1px solid var(--ink-3); cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink);
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='M8 11 3 6h10z' fill='%23888'/%3E%3C/svg%3E") no-repeat right 8px center; }
+.select:hover { border-color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--ink-2); }
+.rail .select { width: 100%; }
+.saved { font-size: 12px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.saved::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.saved.cloud::before { background: var(--green-text); }
+
+/* buttons: LinkedIn pills */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; padding: 0 16px; border-radius: 16px; border: 1px solid var(--accent); background: transparent; color: var(--accent); font: 600 15px/1 var(--font-body); cursor: pointer; white-space: nowrap; }
+.btn:hover { background: var(--accent-wash); box-shadow: inset 0 0 0 1px var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); box-shadow: none; }
+.btn.quiet { border-color: transparent; color: var(--ink-2); }
+.btn.quiet:hover { background: var(--hover); color: var(--ink); box-shadow: none; }
+.btn:disabled { opacity: .55; cursor: progress; }
+.linkbtn, .jump { background: none; border: 0; padding: 0; font: 600 14px var(--font-body); color: var(--accent); cursor: pointer; }
+.linkbtn:hover, .jump:hover { text-decoration: underline; }
+
+/* ── alerts card ─────────────────────────────────────────────────────────── */
+.al { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 12px; margin-top: 8px; }
+.flag { width: 48px; height: 48px; border-radius: 4px; background: var(--amber-soft); color: var(--amber); display: grid; place-items: center; }
+.al h3 { font-size: 16px; line-height: 1.3; }
+.al .meta { font-size: 13px; color: var(--ink-2); margin-top: 1px; }
+.al p.offer { font-size: 14px; margin-top: 4px; }
+.al-acts { grid-column: 2; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.al-more { list-style: none; margin: 14px -16px -16px; padding: 0; border-top: 1px solid var(--line); }
+.al-more li + li { border-top: 1px solid var(--line); }
+.al-more button { width: 100%; display: grid; grid-template-columns: 86px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 16px; border: 0; background: none; text-align: left; cursor: pointer; font-size: 14px; }
+.al-more button:hover { background: var(--hover); }
+.al-more .d { font-weight: 600; color: var(--amber); font-variant-numeric: tabular-nums; }
+.al-more .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.al-more .cc-s { font-size: 12px; color: var(--ink-2); }
+
+/* ── where to start ──────────────────────────────────────────────────────── */
+.moves { list-style: none; margin: 4px -16px -16px; padding: 0; counter-reset: mv; }
+.move { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 2px 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.move::before { counter-increment: mv; content: counter(mv); grid-row: span 3; width: 48px; height: 48px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 700 18px/1 var(--font-body); }
+.move h3 { font-size: 16px; line-height: 1.3; }
+.move p { color: var(--ink-2); font-size: 14px; }
+.move .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; margin-top: 6px; }
+.when { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--green-text); }
+.when::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+/* ── market map ──────────────────────────────────────────────────────────── */
+.mapcard { display: grid; gap: 12px; }
+.mapcard h2 { font-size: 16px; }
+.mapcard .sub { font-size: 13px; color: var(--ink-2); }
+.tilemap { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; max-width: 360px; width: 100%; margin-inline: auto; }
+.tile { aspect-ratio: 1; max-width: 100%; border: 0; border-radius: 4px; cursor: pointer; position: relative; padding: 0; display: grid; place-items: center;
+  font: 600 10.5px/1 var(--font-body); letter-spacing: .02em; background: var(--tile-0); color: var(--tile-ink-0); transition: transform .12s ease, box-shadow .12s ease; }
+.tile[data-l="1"] { background: var(--tile-1); color: var(--tile-ink-1); }
+.tile[data-l="2"] { background: var(--tile-2); color: var(--tile-ink-2); }
+.tile[data-l="3"] { background: var(--tile-3); color: var(--tile-ink-3); }
+.tile:hover { transform: translateY(-1px); }
+.tile.dim { opacity: .35; }
+.tile.sel { box-shadow: 0 0 0 2px var(--ink); }
+.tile.home { font-weight: 700; }
+.tile.home::after { content: ""; position: absolute; inset: -3px; border: 1.5px dashed var(--accent); border-radius: 6px; pointer-events: none; }
+.tile .trig { position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 1.5px var(--surface); }
+.mapcap { min-height: 40px; font-size: 13px; background: var(--fill); border-radius: 4px; padding: 8px 10px; }
+.mapcap b { font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--ink-2); align-items: center; }
+.legend .sw { display: inline-flex; gap: 2px; vertical-align: middle; }
+.legend .sw i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.legend .tdot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); display: inline-block; }
+.legend .hdash { width: 11px; height: 11px; border: 1.5px dashed var(--accent); border-radius: 2px; display: inline-block; vertical-align: middle; }
+
+/* ── channels: spotlights, sub-tabs, lead rows ───────────────────────────── */
+.spots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 4px 0 12px; }
+.spot { display: grid; gap: 2px; align-content: start; text-align: left; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; }
+.spot b { font: 600 22px/1.1 var(--font-body); color: var(--accent); font-variant-numeric: tabular-nums; }
+.spot span { font-size: 12.5px; color: var(--ink-2); line-height: 1.25; }
+.spot:hover { background: var(--hover); }
+.spot[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-wash); }
+.kindtabs { display: flex; gap: 18px; overflow-x: auto; margin: 0 -16px; padding: 0 16px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.kindtabs::-webkit-scrollbar { display: none; }
+.ktab { flex: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 0 9px; font: 600 14px var(--font-body); color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.ktab .n { font-weight: 400; margin-left: 4px; }
+.ktab:hover { color: var(--ink); }
+.ktab[aria-selected="true"] { color: var(--green-text); border-bottom-color: var(--green-text); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 0 2px; }
+.summary { font-size: 13px; color: var(--ink-2); }
+.summary b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.grid { display: block; margin: 8px -16px -16px; }
+.card { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 0 12px; padding: 14px 16px; border-top: 1px solid var(--line); min-width: 0; }
+.card[data-status="doing"] { background: linear-gradient(90deg, var(--accent-wash), transparent 70%); }
+.card[data-status="done"] .av, .card[data-status="skip"] .av { opacity: .55; }
+.card[data-status="skip"] .ch-b { opacity: .65; }
+.av { width: 48px; height: 48px; border-radius: 4px; display: grid; place-items: center; font: 700 15px/1 var(--font-body); background: var(--av-partners); color: var(--av-partners-ink); grid-row: span 2; }
+.av[data-k="brokers"] { background: var(--av-brokers); color: var(--av-brokers-ink); }
+.av[data-k="leads"] { background: var(--av-leads); color: var(--av-leads-ink); }
+.av[data-k="tenders"] { background: var(--av-tenders); color: var(--av-tenders-ink); }
+.av[data-k="funding"] { background: var(--av-funding); color: var(--av-funding-ink); }
+.av[data-k="events"] { background: var(--av-events); color: var(--av-events-ink); }
+.ch-b { min-width: 0; display: grid; gap: 4px; }
+.card h3 { font-size: 16px; line-height: 1.3; }
+.card h3 a { color: var(--ink); font-weight: 600; }
+.card h3 a:hover { color: var(--accent); }
+.card h3 .ext { font-size: 13px; color: var(--ink-2); margin-left: 4px; font-weight: 400; }
+.ch-meta { font-size: 13px; color: var(--ink-2); margin-top: -2px; }
+.st { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.st i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.st-l::before { content: "Not started"; }
+.card[data-status="next"] .st { color: var(--amber); } .card[data-status="next"] .st i { background: #E7A33E; } .card[data-status="next"] .st-l::before { content: "To try"; }
+.card[data-status="doing"] .st { color: var(--green-text); } .card[data-status="doing"] .st i { background: var(--green-text); } .card[data-status="doing"] .st-l::before { content: "In progress"; }
+.card[data-status="done"] .st { color: var(--accent); } .card[data-status="done"] .st i { background: var(--accent); } .card[data-status="done"] .st-l::before { content: "Done"; }
+.card[data-status="skip"] .st-l::before { content: "Not for me"; }
+.card .what { font-size: 14px; }
+.how { font-size: 14px; color: var(--ink-2); }
+.how b { color: var(--ink); font-weight: 600; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 2px; }
+.tag { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--fill); color: var(--ink-2); font-size: 12px; font-weight: 600; }
+.tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.ch-act { grid-column: 3; grid-row: 1; }
+.stsel { height: 32px; border-radius: 16px; padding: 0 30px 0 14px; font-weight: 600; font-size: 14px; color: var(--ink-2); border-color: var(--ink-3); }
+.card[data-status=""] .stsel { color: var(--accent); border-color: var(--accent); }
+.card-foot { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.notebtn { background: none; border: 0; border-radius: 4px; padding: 4px 8px; margin-left: -8px; font: 600 14px var(--font-body); color: var(--ink-2); cursor: pointer; }
+.notebtn:hover { background: var(--hover); color: var(--ink); }
+.notebtn .has { color: var(--green-text); }
+textarea.note { width: 100%; min-height: 64px; resize: vertical; border: 1px solid var(--ink-3); border-radius: 4px; background: var(--surface); padding: 8px 10px; font-size: 14px; }
+textarea.note:focus, .field textarea:focus, .outbox textarea:focus { outline: none; border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.empty { margin: 0 16px 16px; padding: 24px; text-align: center; border: 1px dashed var(--ink-3); border-radius: 6px; color: var(--ink-2); }
+
+/* ── deadlines ───────────────────────────────────────────────────────────── */
+.ledger { list-style: none; margin: 4px -16px -16px; padding: 0; }
+.lrow { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 12px; padding: 12px 16px; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--bar) + 60px); }
+.lrow .flag { grid-row: span 2; }
+.lrow.past .flag { background: var(--fill); color: var(--ink-3); }
+.lrow h3 { font-size: 15px; line-height: 1.32; }
+.meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.lrow .date { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.lrow .state { font-size: 12px; }
+.lrow .state::before { content: "· "; }
+.cc { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.cc span { font: 600 11px/1 var(--font-body); padding: 3px 6px; border-radius: 4px; background: var(--fill); color: var(--ink-2); letter-spacing: .02em; }
+.cc span.home { background: var(--accent); color: var(--accent-ink); }
+.lrow .offer { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+.lrow .offer b { color: var(--ink); font-weight: 600; }
+.lrow .tags { margin-top: 6px; }
+.lrow.past h3 { color: var(--ink-2); }
+.lrow.home-row { background: var(--home-wash); }
+.lrow.home-row .flag { background: var(--green); color: var(--green-ink); }
+.yours { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 10px; background: var(--green); color: var(--green-ink); font-size: 12px; font-weight: 600; }
+.lrow.dimmed { opacity: .45; }
+.now { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-top: 1px solid var(--line); font: 600 12px var(--font-body); color: var(--red); }
+.now::after { content: ""; flex: 1; height: 1px; background: var(--red); }
+
+/* ── search kit ──────────────────────────────────────────────────────────── */
+.kit { margin: 4px -16px -16px; }
+.kitem { padding: 14px 16px; border-top: 1px solid var(--line); display: grid; gap: 8px; min-width: 0; }
+.kitem h3 { font-size: 15px; }
+.kitem p { font-size: 13.5px; color: var(--ink-2); }
+.codebox { position: relative; background: var(--fill); border-radius: 6px; padding: 10px 12px; padding-right: 78px; font: 13px/1.55 var(--font-mono); overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.copy { position: absolute; top: 6px; right: 6px; min-height: 28px; padding: 0 12px; font-size: 14px; background: var(--surface); }
+.cpv { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.cpv td { padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.cpv td:first-child { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; padding-right: 10px; }
+.cpv tr:last-child td { border-bottom: 0; }
+.recipe { margin: 0; padding-left: 20px; font-size: 14px; display: grid; gap: 4px; }
+
+/* ── outreach drafts ─────────────────────────────────────────────────────── */
+.desk { display: grid; gap: 14px; margin-top: 4px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.field { display: grid; gap: 4px; align-content: start; }
+.field label { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.field .select { width: 100%; height: 36px; font-weight: 400; }
+#o-notes-field { grid-column: 1 / -1; }
+.field textarea { width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--ink-3); border-radius: 4px; background: var(--surface); padding: 8px 10px; font-size: 14px; }
+.btns { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.outbox { display: grid; gap: 8px; min-width: 0; }
+.outbox textarea { width: 100%; min-height: 320px; resize: vertical; background: var(--surface); border: 1px solid var(--ink-3); border-radius: 4px; padding: 12px 14px; font: 15px/1.55 var(--font-body); }
+.outhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ostatus { font-size: 13px; color: var(--ink-2); }
+
+/* ── sources ─────────────────────────────────────────────────────────────── */
+.foot { font-size: 13px; color: var(--ink-2); display: grid; gap: 8px; }
+.foot h2 { font-size: 16px; color: var(--ink); }
+.foot ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.foot a { font-weight: 400; }
+
+/* ── tablet: filters left, everything else in one column ─────────────────── */
+@media (max-width: 1099px) {
+  .layout { grid-template-columns: 232px minmax(0, 1fr); }
+  .layout > .mapcard, .layout > .foot { grid-column: 2; grid-row: auto; position: static; }
+  .gn-tabs a, .gn-bell { min-width: 64px; }
+}
+/* ── phone: the LinkedIn app — search bar, a row of tabs, one column of cards ── */
+@media (max-width: 759px) {
+  :root { --bar: 92px; }
+  body { font-size: 15px; }
+  .gnav-in { padding: 0 12px; gap: 0 10px; }
+  .gn-logo { width: 32px; height: 32px; margin: 8px 0; font-size: 13px; }
+  .gn-search { max-width: none; height: 34px; }
+  .gn-bell { order: 3; min-width: 40px; padding: 0 2px; font-size: 0; gap: 0; }
+  .gn-bell b { top: 4px; left: 50%; }
+  .gn-tabs { order: 4; flex: 1 0 100%; margin: 0 -12px; padding: 0 12px; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+  .gn-tabs::-webkit-scrollbar { display: none; }
+  .gn-tabs a { flex: none; min-width: 0; flex-direction: row; gap: 4px; padding: 9px 0 8px; font: 600 15px/1.2 var(--font-body); }
+  .gn-tabs a svg { display: none; }
+  .gn-tabs a[aria-current="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .gn-tabs small { font-weight: 400; color: var(--ink-2); font-size: 13px; }
+  .layout { display: flex; flex-direction: column; align-items: stretch; padding: 8px 8px 96px; gap: 8px; }
+  .col-l { position: static; }
+  .layout > .mapcard { position: static; }
+  .pane { padding: 12px; }
+  .moves, .grid, .ledger, .kit, .al-more { margin-left: -12px; margin-right: -12px; margin-bottom: -12px; }
+  .kindtabs { margin: 0 -12px; padding: 0 12px; }
+  .move, .card, .lrow, .kitem, .al-more button { padding-left: 12px; padding-right: 12px; }
+  /* the intro shrinks to a page header, the filters to one row of pills */
+  .prof { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 2px 12px; padding: 12px; text-align: left; align-items: center; }
+  .prof-cover { display: none; }
+  .prof-av { width: 48px; height: 48px; margin: 0; border: 0; font-size: 17px; grid-row: span 1; }
+  .prof h1 { padding: 0; font-size: 19px; }
+  .prof-lede { grid-column: 1 / -1; padding: 6px 0 0; font-size: 14px; }
+  .prof .eyebrow { grid-column: 1 / -1; margin: 8px 0 0; padding-top: 8px; }
+  .rail { gap: 10px; }
+  .rail h2 { display: none; }
+  .rail .chipset { flex-wrap: nowrap; overflow-x: auto; margin: 0 -12px; padding: 0 12px 2px; scrollbar-width: none; }
+  .rail .chipset::-webkit-scrollbar { display: none; }
+  .rail .chip { flex: none; }
+  .spots { display: flex; gap: 6px; overflow-x: auto; margin: 4px -12px 10px; padding: 0 12px 2px; scrollbar-width: none; }
+  .spots::-webkit-scrollbar { display: none; }
+  .spot { flex: none; display: flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 16px; }
+  .spot b { font-size: 16px; }
+  .spot span { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .card { grid-template-columns: 40px minmax(0, 1fr); }
+  .av { width: 40px; height: 40px; font-size: 13px; grid-row: auto; }
+  .ch-b { grid-column: 2; }
+  .ch-act { grid-column: 2; grid-row: auto; margin-top: 8px; }
+  .card-foot { grid-column: 2; }
+  .move { grid-template-columns: 40px minmax(0, 1fr); }
+  .move::before { width: 40px; height: 40px; font-size: 16px; }
+  .lrow { grid-template-columns: 40px minmax(0, 1fr); }
+  .flag { width: 40px; height: 40px; }
+  .al { grid-template-columns: 40px minmax(0, 1fr); }
+  .al-more button { grid-template-columns: 78px minmax(0, 1fr); }
+  .al-more .cc-s { display: none; }
+  .outbox textarea { min-height: 260px; }
+  .copy { position: static; margin-top: 8px; }
+  .codebox { padding-right: 12px; }
+}
+/* ── leads: the companies and people you are talking to ─────────────────── */
+.lead-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 10px; }
+.lead-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.lead-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.field input { width: 100%; height: 36px; padding: 0 10px; border: 1px solid var(--ink-3); border-radius: 4px; background: var(--surface); font-size: 14px; }
+.field input:focus { outline: none; border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.lead-form { padding: 12px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--fill); }
+.lead-form .wide { grid-column: 1 / -1; }
+.lead-form .btns { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.lead-form .btns .del { margin-left: auto; color: var(--red); border-color: transparent; }
+.leads { list-style: none; margin: 0 -16px -16px; padding: 0; }
+.lead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.lead h3 { font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+.lead .meta { color: var(--ink-2); font-size: 13px; overflow-wrap: anywhere; }
+.lead .notes { grid-column: 1 / -1; color: var(--ink); font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.lead .row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.lead .acts { grid-column: 2; grid-row: 1 / span 2; display: flex; gap: 6px; align-items: start; }
+.lead .acts .btn { min-height: 30px; padding: 0 12px; }
+.lead[data-closed] h3, .lead[data-closed] .notes { color: var(--ink-2); }
+.due { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; font-weight: 600; background: var(--fill); color: var(--ink-2); }
+.due[data-due="overdue"] { background: var(--red); color: #fff; }
+.due[data-due="today"] { background: var(--amber-soft); color: var(--amber); }
+.due[data-due="soon"] { background: var(--accent-wash); color: var(--accent); }
+.st-tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); color: var(--ink-2); }
+.st-tag[data-s="won"] { color: var(--green-text); border-color: var(--green-text); }
+.st-tag[data-s="meeting"], .st-tag[data-s="proposal"] { color: var(--accent); border-color: var(--accent); }
+.leads .empty { margin: 4px 16px 16px; }
+@media (max-width: 759px) {
+  .leads { margin: 0 -12px -12px; }
+  .lead { padding: 12px; grid-template-columns: minmax(0, 1fr); }
+  .lead .acts { grid-column: 1; grid-row: auto; }
+  .leads .empty { margin: 4px 12px 12px; }
+  .lead-acts { width: 100%; }
+  .lead-acts .btn { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<header class="gnav" id="top">
+  <div class="gnav-in">
+    <a class="gn-logo" href="#top" aria-label="ERP &amp; BI Client Atlas, back to the top">CA</a>
+    <label class="gn-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span class="sr">Search channels</span><input type="search" id="q" placeholder="Search channels" autocomplete="off" enterkeyhint="search"></label>
+    <nav class="gn-tabs" id="tabs" aria-label="Sections">
+      <a href="#top" data-tab="top" aria-current="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10.5V21h6.5v-6h5v6H21V10.5z"/></svg>Home</a>
+      <a href="#leads" data-tab="leads"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-3.3 0-7 1.6-7 4.5V20h14v-2.5C16 14.6 12.3 13 9 13zm8.5-1.5 4-4-1.4-1.4-2.6 2.6-1.1-1.1-1.4 1.4z"/></svg><span>Leads <small id="tab-leads"></small></span></a>
+      <a href="#channels" data-tab="channels"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5h16v2.5H4zM4 10.75h16v2.5H4zM4 16.5h11v2.5H4z"/></svg><span>Channels <small id="tab-n">44</small></span></a>
+      <a href="#markets" data-tab="markets"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/></svg>Markets</a>
+      <a href="#deadlines" data-tab="deadlines"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3zm-2 7v10h14V9z"/></svg>Deadlines</a>
+      <a href="#kit" data-tab="kit"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1 1 10.5 3zm0 2.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>Search kit</a>
+      <a href="#outreach" data-tab="outreach"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3.4a2 2 0 0 1 2.8 0l1.2 1.2a2 2 0 0 1 0 2.8L9 19l-5 1 1-5z"/></svg>Drafts</a>
+    </nav>
+    <a class="gn-bell" href="#deadlines" id="bell" aria-label="Deadline alerts"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6v-5a7 7 0 0 0-5.5-6.84V3a1.5 1.5 0 0 0-3 0v1.16A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg><b id="bellN"></b>Alerts</a>
+  </div>
+</header>
+
+<main class="layout" id="main">
+  <div class="col-l">
+    <section class="pane prof" aria-labelledby="atlasTitle">
+      <div class="prof-cover" aria-hidden="true"></div>
+      <span class="prof-av" aria-hidden="true">CA</span>
+      <h1 id="atlasTitle">ERP &amp; BI <em>Client Atlas</em></h1>
+      <p class="prof-lede">Where to find paying clients for ERP, CRM, Power BI and data warehouse work. It starts in Slovenia and the Adriatic, then covers the rest of Europe. Track what you've tried as you go.</p>
+      <p class="eyebrow"><span>Field guide</span><span>Slovenia → Europe</span><span id="checked">Checked October 2026</span></p>
+    </section>
+    <div class="pane rail" role="region" aria-label="Filters">
+      <h2>Filters</h2>
+      <div><span class="rail-label" id="skillsLabel">Skills</span><div class="chipset" id="skillchips" role="group" aria-labelledby="skillsLabel"></div></div>
+      <div><label class="rail-label" for="region">Market</label><select class="select" id="region"></select></div>
+      <span class="saved" id="saved">Progress saved in this browser</span>
+    </div>
+  </div>
+
+  <section class="pane alerts" id="alerts" aria-labelledby="alertsTitle"></section>
+
+  <section class="pane" id="start" aria-labelledby="startTitle">
+    <div class="pane-h"><h2 id="startTitle">Where to start</h2><span class="count">5 moves</span></div>
+    <p class="pane-sub">Ordered by how fast each move usually turns into paid work for an independent consultant in Slovenia. Do the first three in parallel.</p>
+    <ol class="moves" id="moves"></ol>
+  </section>
+
+  <section class="pane" id="leads" aria-labelledby="leadsTitle">
+    <div class="pane-h"><h2 id="leadsTitle">Leads</h2><span class="count" id="leadsCount"></span></div>
+    <p class="pane-sub">The companies and people you are talking to, with the next follow-up. Follow-ups that are due show on the home page under “Needs you today”.</p>
+    <div class="lead-bar">
+      <div class="lead-filters" id="leadFilters" role="group" aria-label="Show leads"></div>
+      <div class="lead-acts"><button type="button" class="btn primary" id="leadAdd">+ Add lead</button><button type="button" class="btn" id="leadCsv">Export CSV</button></div>
+    </div>
+    <form class="form lead-form" id="leadForm" autocomplete="off" hidden>
+      <div class="field"><label for="lf-company">Company</label><input id="lf-company" maxlength="120" placeholder="e.g. Kovina d.o.o."></div>
+      <div class="field"><label for="lf-contact">Contact</label><input id="lf-contact" maxlength="120" placeholder="Name, role"></div>
+      <div class="field"><label for="lf-channel">Channel</label><select class="select" id="lf-channel"></select></div>
+      <div class="field"><label for="lf-status">Status</label><select class="select" id="lf-status"></select></div>
+      <div class="field"><label for="lf-next">Next follow-up</label><input id="lf-next" type="date"></div>
+      <div class="field wide"><label for="lf-notes">Notes</label><textarea id="lf-notes" maxlength="4000" placeholder="What you talked about, what they need, what you promised"></textarea></div>
+      <p class="pane-sub wide" id="lf-msg" role="alert" hidden></p>
+      <div class="btns"><button type="submit" class="btn primary" id="lf-save">Save lead</button><button type="button" class="btn quiet" id="lf-cancel">Cancel</button><button type="button" class="btn del" id="lf-del" hidden>Delete lead</button></div>
+    </form>
+    <ol class="leads" id="leadList"></ol>
+  </section>
+
+  <aside class="pane mapcard" id="markets" aria-labelledby="maptitle">
+    <div>
+      <h2 id="maptitle">Market map</h2>
+      <p class="sub">Tap a country to filter everything by its market.</p>
+    </div>
+    <div class="tilemap" id="tilemap"></div>
+    <div class="mapcap" id="mapcap" aria-live="polite"></div>
+    <div class="legend">
+      <span><span class="sw"><i style="background:var(--tile-0)"></i><i style="background:var(--tile-1)"></i><i style="background:var(--tile-2)"></i><i style="background:var(--tile-3)"></i></span> Market-specific channels for your skills</span>
+      <span><span class="tdot"></span> Dated e-invoicing deadline</span>
+      <span><span class="hdash"></span> Home</span>
+    </div>
+  </aside>
+
+  <section class="pane" id="channels" aria-labelledby="chTitle">
+    <div class="pane-h"><h2 id="chTitle">All channels</h2><span class="count" id="chCount"></span></div>
+    <p class="pane-sub">Every place in this atlas where clients for your skills can be found. Channels marked Europe-wide show up under every market. Time to first work is a rough estimate.</p>
+    <div class="spots" id="spots" role="group" aria-label="Spotlights"></div>
+    <div class="kindtabs" id="kindtabs" role="tablist" aria-label="Channel type"></div>
+    <div class="toolbar">
+      <p class="summary" id="summary"></p>
+      <select class="select" id="statusfilter" aria-label="Filter by your progress">
+        <option value="all">All progress states</option>
+        <option value="open">Not started or to try</option>
+        <option value="doing">In progress</option>
+        <option value="done">Done</option>
+        <option value="skip">Not for me</option>
+      </select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="pane" id="deadlines" aria-labelledby="dlTitle">
+    <div class="pane-h"><h2 id="dlTitle">Deadlines that create projects</h2><span class="count" id="dlCount"></span></div>
+    <p class="pane-sub">Legal and vendor deadlines force companies to change ERP and reporting whether they planned to or not. Each one is a reason to get in touch. The Slovenian one is highlighted.</p>
+    <ol class="ledger" id="ledger"></ol>
+  </section>
+
+  <section class="pane" id="kit" aria-labelledby="kitTitle">
+    <div class="pane-h"><h2 id="kitTitle">Search kit</h2></div>
+    <p class="pane-sub">Ready-made searches. Copy one, paste it into the tool named in the title, and set the location to your market.</p>
+    <div class="kit" id="kitgrid"></div>
+  </section>
+
+  <section class="pane" id="outreach" aria-labelledby="oTitle">
+    <div class="pane-h"><h2 id="oTitle">Outreach drafts</h2></div>
+    <p class="pane-sub" id="o-intro">Pick who you're writing to and fill the template, then edit the result before sending.</p>
+    <div class="desk">
+      <form class="form" id="oform" autocomplete="off">
+        <div class="field">
+          <label for="o-target">Writing to</label>
+          <select class="select" id="o-target"></select>
+        </div>
+        <div class="field">
+          <label for="o-skill">Lead with</label>
+          <select class="select" id="o-skill"></select>
+        </div>
+        <div class="field">
+          <label for="o-lang">Language</label>
+          <select class="select" id="o-lang"></select>
+        </div>
+        <div class="field" id="o-notes-field" hidden>
+          <label for="o-notes">Your notes for Claude (optional)</label>
+          <textarea id="o-notes" placeholder="e.g. Kovina d.o.o., 120 people, runs Pantheon, hiring a BI analyst. I cut month-end reporting from 4 days to 1 at a similar firm."></textarea>
+        </div>
+        <div class="btns">
+          <button type="button" class="btn" id="o-tpl">Fill template</button>
+          <button type="button" class="btn primary" id="o-ai" hidden>Tailor with Claude</button>
+          <button type="button" class="btn quiet" id="o-stop" hidden>Stop</button>
+        </div>
+      </form>
+      <div class="outbox">
+        <div class="outhead">
+          <span class="ostatus" id="o-status">Template filled. Replace the [brackets] before sending.</span>
+          <button type="button" class="btn" id="o-copy">Copy message</button>
+        </div>
+        <textarea id="o-out" aria-label="Draft message"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pane foot">
+    <h2>Sources and caveats</h2>
+    <p>Deadlines and programme details were checked in October 2026. Funding calls open and close, so check the current call before promising a client a subsidy. Time-to-first-work labels are estimates, not data.</p>
+    <ul>
+      <li><a href="https://kpmg.com/us/en/taxnewsflash/news/2025/10/slovenia-mandatory-e-invoicing-b2b-transactions.html">KPMG: Slovenia mandatory B2B e-invoicing from 1 Jan 2028</a></li>
+      <li><a href="https://sovos.com/regulatory-updates/vat/slovenia-b2b-e-invoicing-mandate-enacted/">Sovos: Slovenia B2B e-invoicing mandate enacted</a></li>
+      <li><a href="https://originstamp.com/en/blog/reader/eu-e-invoicing-mandates-timeline-2026-2030">EU e-invoicing timeline 2026–2030 (Belgium, Croatia, Poland, Germany)</a></li>
+      <li><a href="https://www.ey.com/en_gl/technical/tax-alerts/france-revises-schedule-for-adopting-e-invoicing-reform">EY: France e-invoicing schedule</a></li>
+      <li><a href="https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/corporate-sustainability-reporting-directive-amendments-under-omnibus-i-finalised">DLA Piper: CSRD Omnibus I finalised</a></li>
+      <li><a href="https://www.erpresearch.com/erp/microsoft-dynamics-nav">ERP Research: Dynamics NAV support dates</a></li>
+      <li><a href="https://www.gov.si/en/news/2022-07-01-european-digital-innovation-hubs-committee-selected-for-co-financing-two-consortia-from-slovenia/">gov.si: Slovenia's two European Digital Innovation Hubs</a></li>
+      <li><a href="https://www.directionsforpartners.com/emea2026">Directions EMEA 2026, Paris</a></li>
+      <li><a href="https://topdynamicspartners.com/slovenia">Dynamics partners in Slovenia</a> and <a href="https://www.erpresearch.com/sap-partners/sapphir-doo">SAP partners in Slovenia</a></li>
+    </ul>
+  </footer>
+</main>
+
+<script src="/_shared/stratum-sync.js"></script>
+<script src="leads.js?v=1"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Reference data ---------- */
+  const SKILLS = {
+    erp: { label: "ERP", c: "var(--erp)" },
+    crm: { label: "CRM", c: "var(--crm)" },
+    bi:  { label: "Power BI", c: "var(--bi)" },
+    dwh: { label: "Data warehouse", c: "var(--dwh)" }
+  };
+  const REGIONS = {
+    all:     { name: "All of Europe" },
+    si:      { name: "Slovenia" },
+    adr:     { name: "Adriatic & Western Balkans" },
+    dach:    { name: "DACH (Germany, Austria, Switzerland)" },
+    benelux: { name: "Benelux" },
+    nordic:  { name: "Nordics & Baltics" },
+    ukie:    { name: "UK & Ireland" },
+    south:   { name: "France & Southern Europe" },
+    cee:     { name: "Central & Eastern Europe" }
+  };
+  const KINDS = {
+    partners: "Partners to subcontract for",
+    brokers:  "Platforms & brokers",
+    leads:    "Leads & buying signals",
+    tenders:  "Public tenders",
+    funding:  "Programmes & funding",
+    events:   "Events & communities"
+  };
+  const SPEED = { fast: "Weeks", medium: "1–3 months", slow: "3+ months" };
+  const SPEED_ORDER = { fast: 0, medium: 1, slow: 2 };
+
+  const COUNTRIES = {
+    IS: ["Iceland", "nordic", 0, 0], NO: ["Norway", "nordic", 3, 0], SE: ["Sweden", "nordic", 4, 0], FI: ["Finland", "nordic", 5, 0],
+    EE: ["Estonia", "nordic", 5, 1],
+    IE: ["Ireland", "ukie", 0, 2], GB: ["United Kingdom", "ukie", 1, 2], DK: ["Denmark", "nordic", 3, 2], LV: ["Latvia", "nordic", 5, 2],
+    NL: ["Netherlands", "benelux", 2, 3], DE: ["Germany", "dach", 3, 3], PL: ["Poland", "cee", 4, 3], LT: ["Lithuania", "nordic", 5, 3],
+    BE: ["Belgium", "benelux", 1, 4], LU: ["Luxembourg", "benelux", 2, 4], CZ: ["Czechia", "cee", 3, 4], SK: ["Slovakia", "cee", 4, 4],
+    FR: ["France", "south", 1, 5], CH: ["Switzerland", "dach", 2, 5], AT: ["Austria", "dach", 3, 5], HU: ["Hungary", "cee", 4, 5], RO: ["Romania", "cee", 5, 5],
+    PT: ["Portugal", "south", 0, 6], ES: ["Spain", "south", 1, 6], IT: ["Italy", "south", 2, 6], SI: ["Slovenia", "si", 3, 6],
+    HR: ["Croatia", "adr", 4, 6], RS: ["Serbia", "adr", 5, 6], BG: ["Bulgaria", "cee", 6, 6],
+    MT: ["Malta", "south", 2, 7], BA: ["Bosnia and Herzegovina", "adr", 4, 7], ME: ["Montenegro", "adr", 5, 7], MK: ["North Macedonia", "adr", 6, 7],
+    AL: ["Albania", "adr", 5, 8], GR: ["Greece", "south", 6, 8], CY: ["Cyprus", "south", 7, 8]
+  };
+
+  const ALL4 = ["erp", "crm", "bi", "dwh"];
+  const CHANNELS = [
+    // Partners
+    { id: "ms-partners", kind: "partners", name: "Microsoft partner directory", url: "https://appsource.microsoft.com/en-us/marketplace/partner-dir", regions: ["eu"], skills: ALL4, speed: "fast", cost: "Free",
+      what: "Search Dynamics 365, Power BI and Fabric partners by country. Most are small firms short of senior people.",
+      how: "Filter for Slovenia, Croatia and Austria. Offer overflow capacity on Business Central, Power BI or Fabric projects, with a day rate and a start date. In Slovenia, BE-terna, Business Solutions and Nova Diginode are good first calls." },
+    { id: "pantheon", kind: "partners", name: "Datalab Pantheon partners", url: "https://www.datalab.eu", regions: ["si", "adr"], skills: ["erp", "bi", "dwh"], speed: "fast", cost: "Free",
+      what: "Pantheon is the leading local ERP in Slovenia and is sold through partners in Croatia, Serbia and Bosnia, with tens of thousands of users across the region.",
+      how: "Offer partners a ready-made “Pantheon to Power BI” reporting package they can resell. They keep the client relationship and you do the delivery." },
+    { id: "sap-partners", kind: "partners", name: "SAP partner finder", url: "https://partnerfinder.sap.com", regions: ["eu"], skills: ["erp", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "Every SAP partner by country and specialisation. With ECC mainstream maintenance ending in 2027, S/4HANA migrations are absorbing every available consultant.",
+      how: "In Slovenia, approach Sapphir and Avtenta (Telekom Slovenije group). In DACH, partners hire freelancers through brokers such as Etengo and GULP." },
+    { id: "odoo", kind: "partners", name: "Odoo partner directory", url: "https://www.odoo.com/partners", regions: ["eu"], skills: ["erp", "crm", "bi"], speed: "medium", cost: "Free",
+      what: "Thousands of small Odoo partners across Europe. Many are strong on implementation and thin on reporting and data migration.",
+      how: "Pitch data migration from legacy ERP and Power BI dashboards on top of Odoo as a white-label service." },
+    { id: "crm-dirs", kind: "partners", name: "Salesforce & HubSpot directories", url: "https://appexchange.salesforce.com/consulting", regions: ["eu"], skills: ["crm"], speed: "medium", cost: "Free",
+      what: "Directories of CRM consultancies. HubSpot's is at ecosystem.hubspot.com/marketplace/solutions.",
+      how: "Look for smaller agencies in DACH and the Nordics. Offer the ERP-to-CRM integration and reporting work they usually turn down." },
+    { id: "big4", kind: "partners", name: "Big Four & consultancies in Ljubljana", url: "", regions: ["si", "adr"], skills: ["erp", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "PwC, Deloitte, EY and KPMG run SAP, ERP and analytics projects across the Adriatic region and bring in outside specialists for peaks.",
+      how: "Ask their technology consulting leads to add you to the external-contractor list. Procurement is slower, but engagements are larger and longer." },
+    { id: "dataplat", kind: "partners", name: "Databricks & Snowflake partners", url: "https://www.databricks.com/company/partners", regions: ["eu"], skills: ["dwh", "bi"], speed: "slow", cost: "Free",
+      what: "Consultancies certified on modern data platforms. Useful if you want data warehouse work outside the Microsoft stack.",
+      how: "Get one platform certification, then approach partners in your time zone with one specific skill, such as migrating on-prem SQL Server warehouses." },
+
+    // Platforms & brokers
+    { id: "freelancermap", kind: "brokers", name: "freelancermap", url: "https://www.freelancermap.de", regions: ["dach"], skills: ALL4, speed: "fast", cost: "Free / Premium",
+      what: "Large project board for IT freelancers in Germany, Austria and Switzerland. Plenty of SAP, Power BI and data warehouse contracts, many of them remote.",
+      how: "Set alerts for “Power BI remote”, “S/4HANA” and “Data Warehouse”. Apply within 24 hours, because brokers shortlist fast." },
+    { id: "malt", kind: "brokers", name: "Malt", url: "https://www.malt.com", regions: ["benelux", "dach", "south", "nordic", "ukie"], skills: ALL4, speed: "medium", cost: "Commission",
+      what: "Europe's largest freelance marketplace. Clients in France, Germany, Benelux, Spain, Switzerland, the Nordics and the UK search it by skill and day rate.",
+      how: "Write the profile around results (“month-end close in one day with Power BI”), not tool names. Registration rules depend on where your company is based, so check eligibility first." },
+    { id: "gulp", kind: "brokers", name: "GULP", url: "https://www.gulp.de", regions: ["dach"], skills: ["erp", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "Randstad's IT freelancer agency in Germany, with a large share of SAP and data projects.",
+      how: "Create a profile with clear availability dates. Recruiters filter by start date first." },
+    { id: "dach-brokers", kind: "brokers", name: "Hays, SOLCOM, Etengo", url: "https://www.hays.de", regions: ["dach"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "The big IT contracting agencies in German-speaking Europe. Hays also operates across most of Europe.",
+      how: "Register with all three. German on your CV helps a lot, even for remote roles." },
+    { id: "emagine", kind: "brokers", name: "emagine", url: "https://www.emagine.org", regions: ["nordic", "dach", "benelux", "cee", "ukie"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "Consultancy broker serving banks, telcos and large enterprises in the Nordics, Germany, the Netherlands, Poland and the UK.",
+      how: "A good fit for longer data warehouse and BI contracts at large companies. Expect English-language, mostly remote work." },
+    { id: "ework", kind: "brokers", name: "Ework Group", url: "https://www.eworkgroup.com", regions: ["nordic", "cee"], skills: ["erp", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "One of the largest consultant brokers in Sweden, Norway, Denmark, Finland and Poland.",
+      how: "Register in their consultant database and watch their published assignments." },
+    { id: "brainville", kind: "brokers", name: "Brainville", url: "https://www.brainville.com", regions: ["nordic"], skills: ALL4, speed: "medium", cost: "Free / Paid",
+      what: "Nordic marketplace where companies and brokers post consulting assignments.",
+      how: "Nordic clients often accept remote consultants from elsewhere in the EU. Filter for Power BI and Dynamics assignments." },
+    { id: "striive", kind: "brokers", name: "Striive", url: "https://striive.com", regions: ["benelux"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "Assignment platform used by many Dutch and Belgian organisations, including public bodies.",
+      how: "Dutch public-sector roles often require days on site, so filter for remote-friendly assignments." },
+    { id: "jobserve", kind: "brokers", name: "JobServe", url: "https://www.jobserve.com", regions: ["ukie"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "Long-running UK board for IT contract roles.",
+      how: "Search “Power BI contract remote” and “Dynamics 365 contract”. Check whether a role needs UK right to work before you apply." },
+    { id: "upwork", kind: "brokers", name: "Upwork", url: "https://www.upwork.com", regions: ["eu"], skills: ALL4, speed: "fast", cost: "Fees",
+      what: "Global marketplace. Crowded and price-driven, but quick for small Power BI jobs.",
+      how: "Use it to collect your first reviews and case studies, then raise your rate. Bid on fixed-scope jobs where ERP knowledge gives you an edge." },
+    { id: "toptal", kind: "brokers", name: "Toptal", url: "https://www.toptal.com", regions: ["eu"], skills: ["bi", "dwh", "erp"], speed: "slow", cost: "Free",
+      what: "Screened network for senior freelancers, with premium rates.",
+      how: "The screening takes weeks. It's worth it once you have strong references." },
+
+    // Leads & signals
+    { id: "network", kind: "leads", name: "Former employers & colleagues", url: "", regions: ["si", "eu"], skills: ALL4, speed: "fast", cost: "Free",
+      what: "For most independent consultants, the first clients are people who have already seen their work.",
+      how: "Send a short note to 30 former colleagues saying what you now do and the one kind of project you want. Ask each for one introduction, not for work." },
+    { id: "jobs-signal", kind: "leads", name: "Job ads as buying signals", url: "https://www.mojedelo.com", regions: ["si"], skills: ALL4, speed: "fast", cost: "Free",
+      what: "A company advertising a Power BI, BI analyst or ERP role has budget and a gap right now. Check MojeDelo, Optius and LinkedIn Jobs.",
+      how: "Contact the hiring manager, not HR. Offer to deliver the urgent work as a contractor while they keep searching." },
+    { id: "accountants", kind: "leads", name: "Accounting firms & auditors", url: "", regions: ["si", "eu"], skills: ["erp", "bi", "dwh"], speed: "fast", cost: "Free",
+      what: "Accounting firms (računovodski servisi) and small audit firms see their clients' messy data and ERP problems every month.",
+      how: "Partner with three to five of them. Offer a referral fee, or a reporting package they can sell under their own name." },
+    { id: "adr-jobs", kind: "leads", name: "Moj Posao & Infostud", url: "https://www.moj-posao.net", regions: ["adr"], skills: ALL4, speed: "fast", cost: "Free",
+      what: "The main job boards in Croatia (moj-posao.net) and Serbia (poslovi.infostud.com). The same buying-signal tactic works here.",
+      how: "Your language overlap is an edge. Pantheon and Business Central are common across the region." },
+    { id: "bizi", kind: "leads", name: "Bizi.si advanced search", url: "https://www.bizi.si", regions: ["si"], skills: ALL4, speed: "medium", cost: "Paid",
+      what: "Slovenian company database. Filter by SKD activity, headcount and revenue, then export a list.",
+      how: "Build a 100-company list from SKD C (manufacturing), G (wholesale) and H (transport) with 50–250 employees: the mid-market that has outgrown spreadsheets but has no BI team." },
+    { id: "ajpes", kind: "leads", name: "AJPES", url: "https://www.ajpes.si", regions: ["si"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "The official Slovenian business register, with free access to annual reports.",
+      how: "Check revenue growth and headcount before you get in touch. Fast-growing firms are the ones whose ERP and reporting break first." },
+    { id: "salesnav", kind: "leads", name: "LinkedIn Sales Navigator", url: "https://business.linkedin.com/sales-solutions", regions: ["eu"], skills: ALL4, speed: "medium", cost: "Paid",
+      what: "Search decision-makers by title, country, industry and company size, and save them as lead lists.",
+      how: "Save CFOs, controllers and heads of IT in Slovenia, Croatia and Austria at companies with 51–500 people. Post one practical reporting tip a week so your name is familiar before you message." },
+    { id: "northdata", kind: "leads", name: "North Data", url: "https://www.northdata.com", regions: ["dach", "benelux", "ukie", "south"], skills: ALL4, speed: "medium", cost: "Free / Premium",
+      what: "Company information from official registers, strongest for Germany, Austria and Switzerland.",
+      how: "Find Austrian companies in Carinthia and Styria by size and sector. They're an easy drive for on-site days." },
+
+    // Tenders
+    { id: "municipal", kind: "tenders", name: "Direct talks with public bodies", url: "", regions: ["si"], skills: ["erp", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "Slovenia has 212 municipalities plus hospitals, schools and public institutes. Small contracts below the publication threshold are awarded directly.",
+      how: "Meet IT and finance heads in autumn, before next year's budgets are fixed. Offer a small reporting project they can award without a full tender." },
+    { id: "enarocanje", kind: "tenders", name: "Portal javnih naročil", url: "https://www.enarocanje.si", regions: ["si"], skills: ALL4, speed: "slow", cost: "Free",
+      what: "Every published Slovenian public tender, open to browse without registration. Bids are submitted through e-JN.",
+      how: "Search the CPV codes in the search kit. Also read award notices: the winners of large IT tenders are your subcontracting targets." },
+    { id: "ted", kind: "tenders", name: "TED (Tenders Electronic Daily)", url: "https://ted.europa.eu", regions: ["eu"], skills: ALL4, speed: "slow", cost: "Free",
+      what: "The EU journal of public tenders above EU thresholds, from every member state and the EU institutions.",
+      how: "Save a search on ERP, BI and data-services CPV codes for Slovenia, Croatia and Austria. Freelancers rarely win alone, so join a bidder as a named expert." },
+    { id: "eojn", kind: "tenders", name: "EOJN (Croatia)", url: "https://eojn.hr", regions: ["adr"], skills: ALL4, speed: "slow", cost: "Free",
+      what: "Croatia's electronic public procurement portal.",
+      how: "Croatian hospitals, municipalities and state companies are updating ERP and reporting after the 2026 e-invoicing change." },
+    { id: "bund", kind: "tenders", name: "service.bund.de", url: "https://www.service.bund.de", regions: ["dach"], skills: ["erp", "bi", "dwh"], speed: "slow", cost: "Free",
+      what: "German federal portal that lists public tenders, including IT services.",
+      how: "Bids usually need German and local references, so approach these together with a German partner." },
+
+    // Programmes & funding
+    { id: "sps", kind: "funding", name: "Slovenian Enterprise Fund (SPS)", url: "https://www.podjetniskisklad.si", regions: ["si"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "Runs P4D, a grant programme for SMEs that digitalise business and production processes. A subsidy shortens the client's decision.",
+      how: "Watch for the next P4D call and help prospects scope an ERP, CRM or BI project that qualifies. Check the call's conditions before promising anything." },
+    { id: "edih", kind: "funding", name: "European Digital Innovation Hubs", url: "https://european-digital-innovation-hubs.ec.europa.eu/edih-catalogue", regions: ["si", "eu"], skills: ALL4, speed: "medium", cost: "Free",
+      what: "EU-funded hubs that give SMEs subsidised digital assessments. Slovenia has two: DIGI-SI (led by the University of Maribor) and SRC-EDIH.",
+      how: "Offer to work with a hub as an implementation expert. Their assessments end with a list of projects the company should do next." },
+    { id: "spirit", kind: "funding", name: "SPIRIT Slovenija", url: "https://www.spiritslovenia.si", regions: ["si", "dach", "adr"], skills: ALL4, speed: "slow", cost: "Free",
+      what: "Slovenia's export promotion agency. Organises business delegations and national stands at trade fairs abroad.",
+      how: "Join an IT delegation to Austria, Germany or the Balkans to meet buyers with a Slovenian introduction." },
+
+    // Events & communities
+    { id: "directions", kind: "events", name: "Directions EMEA", url: "https://www.directionsforpartners.com/emea2026", regions: ["eu"], skills: ["erp", "bi"], speed: "medium", cost: "Paid",
+      what: "The yearly gathering of Dynamics 365 Business Central partners. The 2026 edition is in Paris, 27–29 October.",
+      how: "Book meetings with DACH and Adriatic partners before you go. Many partners attend partly to find extra capacity." },
+    { id: "tplj", kind: "events", name: "Technology Park Ljubljana", url: "https://www.tp-lj.si", regions: ["si"], skills: ["crm", "bi", "dwh"], speed: "medium", cost: "Free",
+      what: "Home to a large community of tech companies and startups, with regular events.",
+      how: "Give a short talk on CRM or reporting for growing companies. Tenants refer each other." },
+    { id: "gzs", kind: "events", name: "GZS & ZIT", url: "https://www.gzs.si", regions: ["si"], skills: ALL4, speed: "slow", cost: "Membership",
+      what: "The Chamber of Commerce and Industry of Slovenia and its ICT association (Združenje za informatiko in telekomunikacije).",
+      how: "Go to the industry association events (manufacturing, logistics, retail), not the IT ones. That's where your buyers are." },
+    { id: "dsi", kind: "events", name: "Dnevi slovenske informatike", url: "https://www.drustvo-informatika.si", regions: ["si"], skills: ALL4, speed: "slow", cost: "Paid",
+      what: "Slovenia's main IT conference, held in Portorož each spring, with 300+ people from business, academia and the public sector.",
+      how: "Submit a talk on a real ERP or reporting project. Public-sector IT heads attend." },
+    { id: "ds-si", kind: "events", name: "Data Saturday Slovenia", url: "https://datasaturdays.com", regions: ["si"], skills: ["bi", "dwh"], speed: "slow", cost: "Free",
+      what: "Free community event for Microsoft data platform people in Ljubljana, usually in December (the 2025 edition was on 6 December).",
+      how: "Speak or volunteer. Attendees work at companies that hire Power BI and SQL contractors." },
+    { id: "ds-region", kind: "events", name: "Data Saturday Croatia & Data Community Day Austria", url: "https://datasaturdays.com", regions: ["adr", "dach"], skills: ["bi", "dwh"], speed: "slow", cost: "Free",
+      what: "Regional Microsoft data events: Zagreb in June (13 June 2026) and Vienna in January (22–23 January 2026).",
+      how: "Both are a short trip from Slovenia. Speaking at one makes you the known Power BI person in a new market." },
+    { id: "fabcon", kind: "events", name: "FabCon Europe", url: "https://www.sharepointeurope.com/european-microsoft-fabric-community-conference-tickets", regions: ["eu"], skills: ["bi", "dwh"], speed: "slow", cost: "Paid",
+      what: "Europe's Microsoft Fabric and Power BI conference. The 2026 edition ran in Barcelona from 28 September to 1 October.",
+      how: "Watch for the 2027 dates. Partner booths are a quick way to meet consultancies hiring Fabric contractors." },
+    { id: "podim", kind: "events", name: "Podim", url: "https://www.podim.org", regions: ["si", "adr", "cee"], skills: ["crm", "bi"], speed: "slow", cost: "Paid",
+      what: "Startup and scale-up conference in Maribor each spring.",
+      how: "Scale-ups need CRM and investor reporting set up properly. Offer a fixed-price package." },
+    { id: "dsag", kind: "events", name: "DSAG", url: "https://www.dsag.de", regions: ["dach"], skills: ["erp"], speed: "slow", cost: "Membership",
+      what: "The German-speaking SAP user group, with regional meetings and a large annual congress.",
+      how: "Relevant if you do SAP work. The S/4HANA transition dominates their agenda until 2027." },
+    { id: "odoo-exp", kind: "events", name: "Odoo Experience", url: "https://www.odoo.com", regions: ["eu"], skills: ["erp", "crm"], speed: "slow", cost: "Paid",
+      what: "Odoo's yearly partner and user conference in Belgium.",
+      how: "Meet Odoo partners who need help with data migration and reporting." }
+  ];
+
+  const MOVES = [
+    { title: "Offer overflow capacity to ten ERP and BI partners", when: "Weeks",
+      body: "Microsoft, SAP and Pantheon partners in Slovenia and Croatia already have the clients. Most of them are short of people, so you solve their staffing problem instead of trying to win end clients cold.",
+      ids: ["ms-partners", "pantheon", "sap-partners"] },
+    { title: "Answer job ads with a contractor offer", when: "Weeks",
+      body: "Companies hiring Power BI or ERP people this month have both budget and urgency. Offer to do the urgent work while they keep looking for a permanent hire.",
+      ids: ["jobs-signal", "adr-jobs"] },
+    { title: "Tell your network exactly what you do", when: "Weeks",
+      body: "Write to former colleagues, and partner with a few accounting firms. Name one kind of project, for example “Power BI reporting for companies on Pantheon”.",
+      ids: ["network", "accountants"] },
+    { title: "Build a 100-company list and lead with the 2028 deadline", when: "1–3 months",
+      body: "Every Slovenian business must issue structured e-invoices from 1 January 2028. That gives you a concrete reason to call finance heads at companies with 50–250 people.",
+      ids: ["bizi", "ajpes", "salesnav"] },
+    { title: "Open Europe through two brokers", when: "1–3 months",
+      body: "Use freelancermap for DACH, plus Malt or emagine for the rest. Remote contracts fill the gaps between local projects.",
+      ids: ["freelancermap", "malt", "emagine"] }
+  ];
+
+  const TRIGGERS = [
+    { date: "2026-01-01", label: "1 Jan 2026", cc: ["BE"], skills: ["erp"],
+      title: "Belgium: B2B e-invoicing via Peppol becomes mandatory",
+      offer: "Peppol connections and invoice-data clean-up for companies selling into Belgium." },
+    { date: "2026-01-01", label: "1 Jan 2026", cc: ["HR"], skills: ["erp"],
+      title: "Croatia: Fiscalization 2.0 makes B2B e-invoicing mandatory",
+      offer: "ERP updates for Croatian firms and for Slovenian groups with Croatian subsidiaries." },
+    { date: "2026-02-01", label: "1 Feb 2026", cc: ["PL"], skills: ["erp"],
+      title: "Poland: KSeF e-invoicing mandatory for large taxpayers, then for everyone else from 1 April 2026",
+      offer: "KSeF integration for groups with Polish entities." },
+    { date: "2026-03-18", label: "18 Mar 2026", cc: ["EU"], skills: ["dwh", "bi"],
+      title: "EU: CSRD Omnibus in force, narrowing sustainability reporting to companies with 1,000+ employees and €450M+ turnover from FY2027",
+      offer: "ESG data models and reporting, but only for the largest groups. Most mid-sized firms are no longer in scope." },
+    { date: "2026-09-01", label: "1 Sep 2026", cc: ["FR"], skills: ["erp"],
+      title: "France: every business must be able to receive e-invoices, and large and mid-size companies must issue them",
+      offer: "E-invoicing work for groups with French subsidiaries. Malt is strongest in France." },
+    { date: "2027-01-01", label: "1 Jan 2027", cc: ["DE"], skills: ["erp"],
+      title: "Germany: companies with turnover above €800k can no longer issue paper or PDF invoices",
+      offer: "XRechnung and ZUGFeRD output from the ERP, for German firms and for Austrian and Slovenian firms selling into Germany." },
+    { date: "2027-09-01", label: "1 Sep 2027", cc: ["FR"], skills: ["erp"],
+      title: "France: SMEs and micro-enterprises must issue e-invoices",
+      offer: "Smaller ERP projects across France." },
+    { date: "2027-12-31", label: "31 Dec 2027", cc: ["EU"], skills: ["erp", "dwh", "bi"],
+      title: "SAP ECC 6.0 mainstream maintenance ends; extended maintenance runs to 2030 at extra cost",
+      offer: "S/4HANA migration, data migration and rebuilding reports. SAP partners are short of people." },
+    { date: "2028-01-01", label: "1 Jan 2028", cc: ["SI"], skills: ["erp", "bi"], home: true,
+      title: "Slovenia: B2B e-invoicing mandatory for all domestic businesses. Invoices must be structured XML; PDFs no longer count",
+      offer: "Your home market. Sell e-invoicing readiness checks to Pantheon, NAV/Business Central and SAP users, then Power BI on the cleaner data." },
+    { date: "2028-01-01", label: "1 Jan 2028", cc: ["DE"], skills: ["erp"],
+      title: "Germany: all businesses must issue e-invoices",
+      offer: "The long tail of smaller German companies." },
+    { date: "2028-01-11", label: "11 Jan 2028", cc: ["EU"], skills: ["erp", "bi"],
+      title: "Dynamics NAV 2018 extended support ends",
+      offer: "NAV to Business Central upgrades. NAV was widely deployed across the Adriatic region." },
+    { date: "2030-07-01", label: "1 Jul 2030", cc: ["EU"], skills: ["erp", "dwh"],
+      title: "EU VAT in the Digital Age (ViDA): digital reporting for intra-EU B2B transactions",
+      offer: "Cross-border invoicing and VAT data projects for exporters." }
+  ];
+  const TRIGGER_CC = new Set(TRIGGERS.flatMap(t => t.cc).filter(c => c !== "EU"));
+
+  const KIT = [
+    { title: "Job ads that signal budget (LinkedIn Jobs, MojeDelo)",
+      code: "\"Power BI\" OR \"Business Intelligence\" OR \"BI analitik\" OR \"podatkovno skladišče\" OR \"data warehouse\"",
+      note: "Set the location to Slovenia, then repeat for Croatia and Austria. Each hit is a company with an open gap." },
+    { title: "Companies still on legacy ERP (LinkedIn people search)",
+      code: "\"Dynamics NAV\" OR Navision OR \"SAP ECC\" OR \"Pantheon\"",
+      note: "People listing these at their current employer tell you what that company runs. Filter by country and company size." },
+    { title: "Decision-makers (Sales Navigator, title filter)",
+      code: "CFO OR \"finance director\" OR \"finančni direktor\" OR controller OR \"vodja kontrolinga\" OR \"head of IT\" OR \"vodja informatike\"",
+      note: "Combine with company headcount 51–500 and the market you're working." },
+    { title: "Remote DACH contracts (Google)",
+      code: "site:freelancermap.de \"Power BI\" remote",
+      note: "Swap “Power BI” for “S/4HANA”, “Business Central” or “Data Warehouse”." },
+    { title: "CPV codes for tender alerts (TED, enarocanje.si)", cpv: [
+      ["48451000", "Enterprise resource planning software package", "erp"],
+      ["48445000", "Customer relation management software package", "crm"],
+      ["48482000", "Business intelligence software package", "bi"],
+      ["72316000", "Data analysis services", "bi"],
+      ["72322000", "Data management services", "dwh"],
+      ["72263000", "Software implementation services", "erp"],
+      ["72266000", "Software consultancy services", "erp"]
+    ], note: "Confirm each code in the portal's CPV picker; check-digit suffixes are omitted here." },
+    { title: "Bizi.si list recipe", recipe: [
+      "Napredno iskanje, then Dejavnost: SKD C (manufacturing), G (wholesale and retail), H (transport and storage).",
+      "Employees: 50 to 250.",
+      "Revenue: €5M to €50M.",
+      "Export, then check each company's latest annual report on AJPES before you call."
+    ], note: "This gives you the mid-market: big enough to pay, too small for an in-house BI team." }
+  ];
+
+  /* ---------- Outreach templates ---------- */
+  const TARGETS = {
+    cfo:       { label: "CFO or controller at a company", desc: "a CFO, finance director or controller at a mid-sized company (50–500 employees)" },
+    partner:   { label: "ERP / BI partner (subcontracting)", desc: "an ERP or BI implementation partner (Microsoft, SAP, Pantheon or Odoo partner) who may need a subcontractor" },
+    recruiter: { label: "Recruiter or IT broker", desc: "a recruiter at an IT contracting agency or broker in Europe" },
+    jobpost:   { label: "Company that just posted a job ad", desc: "the hiring manager at a company that has just advertised a BI/ERP role" }
+  };
+  const LANGS = { sl: "Slovenščina", en: "English", de: "Deutsch", hr: "Hrvatski" };
+  const FOCUS = {
+    en: {
+      erp: "ERP projects: implementation, data migration and e-invoicing readiness on Pantheon, Business Central and SAP",
+      crm: "CRM rollouts that sales teams actually use (Dynamics 365 Sales, HubSpot, Salesforce), connected to the ERP",
+      bi:  "Power BI reporting on top of their ERP, so month-end numbers stop living in Excel",
+      dwh: "data warehouses that bring ERP, CRM and spreadsheet data into one trusted reporting model"
+    },
+    hr: {
+      erp: "ERP projektima – uvođenju, migraciji podataka i pripremi za obvezne e-račune (Pantheon, Business Central, SAP)",
+      crm: "uvođenju CRM-a koji prodajni timovi stvarno koriste (Dynamics 365 Sales, HubSpot, Salesforce), povezanog s ERP-om",
+      bi:  "Power BI izvještavanju nad ERP-om, tako da mjesečni brojevi više ne žive u Excelu",
+      dwh: "izgradnji skladišta podataka koja objedinjuju podatke iz ERP-a, CRM-a i Excela u jedan pouzdan model"
+    },
+    de: {
+      erp: "ERP-Projekten: Einführung, Datenmigration und Vorbereitung auf die E-Rechnungspflicht (Pantheon, Business Central, SAP)",
+      crm: "CRM-Einführungen, die das Vertriebsteam wirklich nutzt (Dynamics 365 Sales, HubSpot, Salesforce), angebunden an das ERP",
+      bi:  "Power-BI-Berichten auf Basis des ERP, damit die Monatszahlen nicht mehr in Excel entstehen",
+      dwh: "Data Warehouses, die ERP-, CRM- und Excel-Daten in einem verlässlichen Datenmodell zusammenführen"
+    },
+    sl: {
+      erp: "ERP projektih – uvedbi, migraciji podatkov in pripravi na obvezne e-račune (Pantheon, Business Central, SAP)",
+      crm: "uvedbi CRM-ja, ki ga prodajne ekipe res uporabljajo (Dynamics 365 Sales, HubSpot, Salesforce), povezanega z ERP-jem",
+      bi:  "Power BI poročanju nad ERP-jem, da mesečne številke niso več v Excelu",
+      dwh: "gradnji podatkovnih skladišč, ki združijo podatke iz ERP-ja, CRM-ja in Excela v en zanesljiv model"
+    }
+  };
+  const SL_PROJ = { erp: "ERP projekte", crm: "CRM projekte", bi: "Power BI projekte", dwh: "projekte podatkovnih skladišč" };
+  const SL_AREA_GEN = { erp: "ERP", crm: "CRM", bi: "Power BI", dwh: "podatkovnih skladišč" };
+  const SL_AREA_NOM = { erp: "ERP", crm: "CRM", bi: "Power BI", dwh: "Podatkovna skladišča" };
+  const EN_AREA = { erp: "ERP", crm: "CRM", bi: "Power BI", dwh: "data warehouse" };
+  const HR_PROJ = { erp: "ERP projekte", crm: "CRM projekte", bi: "Power BI projekte", dwh: "projekte skladišta podataka" };
+  const HR_AREA = { erp: "ERP", crm: "CRM", bi: "Power BI", dwh: "skladišta podataka" };
+  const DE_AREA = { erp: "ERP", crm: "CRM", bi: "Power BI", dwh: "Data-Warehouse" };
+
+  function template(target, skill, lang) {
+    const f = (FOCUS[lang] || FOCUS.en)[skill];
+    // Croatian and German: formal address (Vi / Sie), no gendered first-person forms
+    if (lang === "hr") {
+      const T = {
+        cfo: `Predmet: [Tvrtka] – izvještaji bez Excel maratona\n\nPoštovani/Poštovana [ime],\n\npomažem tvrtkama u ${f}.\n\nNedavni rezultat: [jedna rečenica, npr. mjesečni izvještaj skraćen s 4 dana na 1].\n\nBi li Vam koristio razgovor od 30 minuta? Pošaljite mi jedan izvještaj koji tim svaki mjesec ručno slaže i pokazat ću Vam što je potrebno da se automatizira.\n\nSrdačan pozdrav,\n[Vaše ime]`,
+        partner: `Predmet: Dodatni kapacitet za Vaše ${HR_PROJ[skill]}\n\nPoštovani/Poštovana [ime],\n\nimam vlastitu tvrtku u Sloveniji i pomažem tvrtkama u ${f}.\n\nAko Vašem timu nedostaje kapaciteta, mogu preuzeti projektni rad pod Vašim imenom – kao podizvođač, na daljinu ili na lokaciji u Hrvatskoj, Sloveniji i Austriji [prilagodite]. Dnevna cijena i dostupnost na upit, reference su dostupne.\n\nBi li Vam odgovarao kratak poziv da provjerimo odgovaramo li jedni drugima?\n\nSrdačan pozdrav,\n[Vaše ime]`,
+        recruiter: `Predmet: ${HR_AREA[skill]} konzultant – dostupnost od [datum]\n\nPoštovani/Poštovana [ime],\n\nimam vlastitu tvrtku u Sloveniji (EU) i radim B2B. Pomažem tvrtkama u ${f}.\n\nDostupnost od [datum] za projekte na daljinu diljem Europe te na lokaciji u Hrvatskoj, Sloveniji i regiji DACH. Jezici: hrvatski, slovenski, engleski, [njemački].\n\nU privitku šaljem životopis. Rado ćemo razgovarati o aktualnim projektima.\n\nSrdačan pozdrav,\n[Vaše ime]`,
+        jobpost: `Predmet: Vaš oglas za posao – pomoć dok ne zaposlite\n\nPoštovani/Poštovana [ime],\n\nu Vašem oglasu vidim da tražite novu osobu za područje ${HR_AREA[skill]}. Dok ne pronađete pravu osobu, hitan posao mogu odraditi kao vanjski suradnik i uredno ga predati kada nova osoba počne.\n\nPomažem tvrtkama u ${f}.\n\nImate li ovaj tjedan 20 minuta za razgovor?\n\nSrdačan pozdrav,\n[Vaše ime]`
+      };
+      return T[target];
+    }
+    if (lang === "de") {
+      const a = DE_AREA[skill];
+      const T = {
+        cfo: `Betreff: [Unternehmen] – Berichte ohne Excel-Marathon\n\nSehr geehrte/r [Frau/Herr Name],\n\nich unterstütze Unternehmen bei ${f}.\n\nEin aktuelles Ergebnis: [ein Satz, z. B. Monatsbericht von 4 Tagen auf 1 Tag verkürzt].\n\nWäre ein Gespräch von 30 Minuten für Sie hilfreich? Schicken Sie mir einen Bericht, den Ihr Team jeden Monat von Hand erstellt, und ich zeige Ihnen, was nötig wäre, um ihn zu automatisieren.\n\nMit freundlichen Grüßen\n[Ihr Name]`,
+        partner: `Betreff: Zusätzliche Kapazität für Ihre ${a}-Projekte\n\nSehr geehrte/r [Frau/Herr Name],\n\nmit meinem eigenen Beratungsunternehmen in Slowenien unterstütze ich Unternehmen bei ${f}.\n\nWenn Ihr Team ausgelastet ist, übernehme ich Projektarbeit unter Ihrem Namen als Subunternehmer, remote oder vor Ort in Österreich, Slowenien und Kroatien [anpassen]. Tagessatz und Verfügbarkeit auf Anfrage, Referenzen vorhanden.\n\nWäre ein kurzes Telefonat sinnvoll, um zu sehen, ob es passt?\n\nMit freundlichen Grüßen\n[Ihr Name]`,
+        recruiter: `Betreff: ${a}-Berater verfügbar ab [Datum]\n\nSehr geehrte/r [Frau/Herr Name],\n\nich bin selbstständiger ${a}-Berater mit eigenem Unternehmen in Slowenien (EU, Abrechnung B2B) und unterstütze Unternehmen bei ${f}.\n\nAb [Datum] stehe ich für Remote-Projekte in ganz Europa und vor Ort in der DACH-Region und an der Adria zur Verfügung. Sprachen: Deutsch, Englisch, Slowenisch, [Kroatisch].\n\nMeinen Lebenslauf finden Sie im Anhang. Gerne spreche ich über aktuelle ${a}-Projekte.\n\nMit freundlichen Grüßen\n[Ihr Name]`,
+        jobpost: `Betreff: Ihre ${a}-Stelle: Unterstützung, bis sie besetzt ist\n\nSehr geehrte/r [Frau/Herr Name],\n\nich habe gesehen, dass Sie eine ${a}-Stelle besetzen möchten. Bis Sie die richtige Person gefunden haben, kann ich die dringenden Aufgaben als externer Berater übernehmen und sie beim Start sauber übergeben.\n\nIch unterstütze Unternehmen bei ${f}.\n\nHätten Sie diese Woche 20 Minuten für ein Gespräch?\n\nMit freundlichen Grüßen\n[Ihr Name]`
+      };
+      return T[target];
+    }
+    if (lang === "sl") {
+      const T = {
+        cfo: `Zadeva: [Podjetje] – poročila brez Excelovega maratona\n\nPozdravljeni, [ime],\n\npomagam podjetjem pri ${f}.\n\nNedavni rezultat: [en stavek, npr. mesečno poročilo skrajšano s 4 dni na 1].\n\nBi vam koristil 30-minutni pogovor? Pošljite mi eno poročilo, ki ga ekipa vsak mesec sestavlja ročno, in vam pokažem, kaj bi bilo potrebno za avtomatizacijo.\n\nLep pozdrav,\n[Vaše ime]`,
+        partner: `Zadeva: Dodatna kapaciteta za vaše ${SL_PROJ[skill]}\n\nPozdravljeni, [ime],\n\nz lastnim podjetjem v Sloveniji pomagam podjetjem pri ${f}.\n\nČe vaša ekipa nima dovolj kapacitet, lahko projektno delo prevzamem pod vašo blagovno znamko – kot podizvajalec, na daljavo ali na lokaciji v Sloveniji, na Hrvaškem in v Avstriji [prilagodite]. Dnevna postavka in razpoložljivost na zahtevo, reference so na voljo.\n\nBi bil primeren kratek klic, da preverimo, ali se ujemamo?\n\nLep pozdrav,\n[Vaše ime]`,
+        recruiter: `Zadeva: ${SL_AREA_NOM[skill]} – na voljo od [datum]\n\nPozdravljeni, [ime],\n\nimam lastno podjetje v Sloveniji (EU) in delam B2B. Pomagam podjetjem pri ${f}.\n\nNa voljo sem od [datum] za projekte na daljavo po Evropi in na lokaciji v Sloveniji, regiji Adria in DACH. Jeziki: slovenščina, angleščina, [nemščina/hrvaščina].\n\nV prilogi pošiljam CV. Z veseljem se pogovorim o aktualnih projektih.\n\nLep pozdrav,\n[Vaše ime]`,
+        jobpost: `Zadeva: Vaš zaposlitveni oglas – pomoč, dokler ne zaposlite\n\nPozdravljeni, [ime],\n\niz vašega oglasa vidim, da iščete novega sodelavca ali sodelavko za področje ${SL_AREA_GEN[skill]}. Dokler ne najdete prave osebe, lahko nujno delo opravim kot zunanji izvajalec in ga ob prihodu nove osebe čisto predam.\n\nPomagam podjetjem pri ${f}.\n\nBi si vzeli 20 minut za pogovor ta teden?\n\nLep pozdrav,\n[Vaše ime]`
+      };
+      return T[target];
+    }
+    const a = EN_AREA[skill];
+    const T = {
+      cfo: `Subject: [Company]: reporting without the Excel marathon\n\nHi [name],\n\nI help companies with ${f}.\n\nA recent result: [one line, e.g. month-end pack cut from 4 days to 1].\n\nWould a 30-minute call be useful? Send me one report your team rebuilds by hand every month and I'll show you what it would take to automate it.\n\nBest regards,\n[Your name]`,
+      partner: `Subject: Extra capacity for your ${a} projects\n\nHi [name],\n\nI run my own consultancy in Slovenia and help companies with ${f}.\n\nIf your team is stretched, I can take on project work under your brand as a subcontractor, remotely or on site in Slovenia, Croatia and Austria [edit to your area]. Day rate and availability on request; references available.\n\nWould a short call to check the fit be useful?\n\nBest regards,\n[Your name]`,
+      recruiter: `Subject: ${a} consultant available from [date]\n\nHi [name],\n\nI'm an independent ${a} consultant with my own company in Slovenia (EU, B2B invoicing). I help companies with ${f}.\n\nI'm available from [date] for remote contracts across Europe, and on site in DACH and the Adriatic region. Languages: Slovenian, English, [German/Croatian].\n\nMy CV is attached. I'd be glad to talk about any current ${a} roles.\n\nBest regards,\n[Your name]`,
+      jobpost: `Subject: Your ${a} opening: help while you hire\n\nHi [name],\n\nI saw you're hiring for a ${a} role. While you look for the right person, I can deliver the urgent work as an external consultant and hand it over cleanly when they start.\n\nI help companies with ${f}.\n\nWould a 20-minute call this week be useful?\n\nBest regards,\n[Your name]`
+    };
+    return T[target];
+  }
+
+  /* ---------- Small helpers ---------- */
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[ch]));
+  const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } };
+
+  /* ---------- Filters (per-viewer convenience) ---------- */
+  const saved = lsGet("atlas.filters", null) || {};
+  const F = {
+    skills: new Set(Array.isArray(saved.skills) ? saved.skills.filter(s => SKILLS[s]) : []),
+    region: REGIONS[saved.region] ? saved.region : "all",
+    kind: saved.kind === "all" || KINDS[saved.kind] ? saved.kind : "all",
+    status: saved.status || "all",
+    q: ""
+  };
+  const saveFilters = () => lsSet("atlas.filters", { skills: [...F.skills], region: F.region, kind: F.kind, status: F.status });
+
+  const skillMatch = c => F.skills.size === 0 || c.skills.some(s => F.skills.has(s));
+  const regionMatch = c => F.region === "all" || c.regions.includes(F.region) || c.regions.includes("eu");
+  const fold = t => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const textMatch = c => !F.q || fold([c.name, c.what, c.how, KINDS[c.kind], c.cost].join(" ")).includes(fold(F.q));
+
+  /* ---------- Progress store: db when available, browser otherwise ---------- */
+  // P.leads (added Oct 2026): copies saved before it existed simply have no leads; one that lacks them never clears them
+  const P = { status: {}, notes: {}, leads: [] };
+  const store = { mode: "local", ref: null, writing: false, again: false, noteTimer: null };
+  const local = lsGet("atlas.pipeline", null);
+  if (local) { P.status = Object.assign({}, local.status); P.notes = Object.assign({}, local.notes); P.leads = AtlasLeads.cleanList(local.leads); }
+
+  function setSavedLabel() {
+    const el = $("#saved");
+    if (store.mode === "db") { el.textContent = "Progress saved to your account"; el.classList.add("cloud"); }
+    else if (atlasSync && window.StratumSync && StratumSync.user()) { el.textContent = "Progress saved in your private cloud copy"; el.classList.add("cloud"); }
+    else { el.textContent = "Progress saved in this browser"; el.classList.remove("cloud"); }
+  }
+
+  async function writeDb() {
+    if (store.writing) { store.again = true; return; }
+    store.writing = true;
+    try {
+      do {
+        store.again = false;
+        await store.ref.set({ status: P.status, notes: P.notes, leads: P.leads, updatedAt: new Date().toISOString() });
+      } while (store.again);
+    } catch (e) {
+      if (e && (e.code === "invalid_argument" || e.code === "revoked" || e.code === "not_granted")) {
+        store.mode = "local"; setSavedLabel();
+      }
+    } finally {
+      store.writing = false;
+    }
+    lsSet("atlas.pipeline", P);
+  }
+  function persist() {
+    lsSet("atlas.pipeline", P);
+    if (store.mode === "db" && store.ref) writeDb();
+    else if (atlasSync) atlasSync.changed();
+  }
+
+  // Business Apps cloud sync (/_shared/stratum-sync.js): the same pipeline on the phone and the computer when the site
+  // has its sync server. A browser with no progress yet takes the cloud copy without asking.
+  let atlasSync = null;
+  function initStratumSync() {
+    if (!window.StratumSync || store.mode === "db") return;
+    try {
+      atlasSync = StratumSync.attach({
+        app: "client-atlas", label: "Client Atlas",
+        getSnapshot: () => Promise.resolve({ status: P.status, notes: P.notes, leads: P.leads }),
+        applySnapshot: d => {
+          if (!d || typeof d.status !== "object" || typeof d.notes !== "object") throw new Error("This is not Client Atlas data.");
+          P.status = Object.assign({}, d.status); P.notes = Object.assign({}, d.notes);
+          // a copy saved by a page from before the Leads tab has no "leads": keep this browser's leads and send them up again
+          const keepLeads = !Array.isArray(d.leads) && P.leads.length > 0;
+          if (!keepLeads) P.leads = AtlasLeads.cleanList(d.leads);
+          lsSet("atlas.pipeline", P); syncCards(); renderLeads();
+          if (keepLeads) setTimeout(() => { if (atlasSync) atlasSync.changed(); }, 0);
+        },
+        isEmpty: () => Promise.resolve(!Object.keys(P.status).length && !Object.keys(P.notes).length && !P.leads.length)
+      });
+      StratumSync.ready.then(setSavedLabel);
+    } catch (e) { atlasSync = null; }
+  }
+
+  async function initDb() {
+    if (!window.claude || typeof window.claude.use !== "function") return;
+    let db = null, user = null;
+    try { [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]); } catch (e) { return; }
+    if (!db || !user) return;
+    let uid = null;
+    try { uid = await user.id(); } catch (e) { uid = null; }
+    if (!uid) return;
+    try { store.ref = db.doc("data/users/" + uid + "/pipeline"); } catch (e) { return; }
+    store.mode = "db"; setSavedLabel();
+    let first = true;
+    store.ref.onSnapshot(snap => {
+      if (snap.metadata && snap.metadata.hasPendingWrites) return;
+      const d = snap.exists ? snap.data() : null;
+      if (d) {
+        P.status = Object.assign({}, d.status || {});
+        P.notes = Object.assign({}, d.notes || {});
+        if (Array.isArray(d.leads)) P.leads = AtlasLeads.cleanList(d.leads);
+        else if (P.leads.length) writeDb(); // an older copy without leads: keep them and save them
+        lsSet("atlas.pipeline", P);
+        syncCards(); renderLeads();
+      } else if (first && (Object.keys(P.status).length || Object.keys(P.notes).length)) {
+        writeDb(); // carry progress made in this browser into the account
+      }
+      first = false;
+    }, () => { store.mode = "local"; setSavedLabel(); });
+  }
+
+  /* ---------- Rail ---------- */
+  function renderRail() {
+    $("#skillchips").innerHTML = Object.entries(SKILLS).map(([k, s]) =>
+      `<button type="button" class="chip" data-skill="${k}" aria-pressed="${F.skills.has(k)}" style="--c:${s.c}"><span class="dot"></span>${s.label}</button>`
+    ).join("");
+    $("#region").innerHTML = Object.entries(REGIONS).map(([k, r]) => `<option value="${k}">${esc(r.name)}</option>`).join("");
+    $("#region").value = F.region;
+    $("#statusfilter").value = F.status;
+  }
+  $("#skillchips").addEventListener("click", e => {
+    const b = e.target.closest("[data-skill]"); if (!b) return;
+    const k = b.dataset.skill;
+    F.skills.has(k) ? F.skills.delete(k) : F.skills.add(k);
+    b.setAttribute("aria-pressed", F.skills.has(k));
+    saveFilters(); renderAll();
+  });
+  $("#region").addEventListener("change", e => { F.region = e.target.value; saveFilters(); renderAll(); });
+  $("#statusfilter").addEventListener("change", e => { F.status = e.target.value; saveFilters(); renderChannels(); });
+
+  /* ---------- Start list ---------- */
+  function renderMoves() {
+    $("#moves").innerHTML = MOVES.map(m => `
+      <li class="move">
+        <h3>${esc(m.title)}</h3>
+        <p>${esc(m.body)}</p>
+        <div class="meta"><span class="when">${esc(m.when)}</span>
+          ${m.ids.map(id => { const c = CHANNELS.find(x => x.id === id); return c ? `<button type="button" class="jump" data-jump="${id}">${esc(c.name)}</button>` : ""; }).join("")}
+        </div>
+      </li>`).join("");
+  }
+  $("#moves").addEventListener("click", e => {
+    const b = e.target.closest("[data-jump]"); if (!b) return;
+    jumpTo(b.dataset.jump);
+  });
+  function jumpTo(id) {
+    const c = CHANNELS.find(x => x.id === id); if (!c) return;
+    let changed = false;
+    if (F.kind !== "all" && F.kind !== c.kind) { F.kind = "all"; changed = true; }
+    if (!regionMatch(c)) { F.region = "all"; $("#region").value = "all"; changed = true; }
+    if (!skillMatch(c)) { F.skills.clear(); renderRail(); changed = true; }
+    if (F.status !== "all") { F.status = "all"; $("#statusfilter").value = "all"; changed = true; }
+    if (!textMatch(c)) { F.q = ""; $("#q").value = ""; changed = true; }
+    if (changed) { saveFilters(); renderAll(); }
+    const el = document.getElementById("ch-" + id);
+    if (el) {
+      el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+      el.animate && el.animate([{ boxShadow: "0 0 0 3px var(--accent)" }, { boxShadow: "0 0 0 0 transparent" }], { duration: 1400, easing: "ease-out" });
+    }
+  }
+
+  /* ---------- Map ---------- */
+  function regionCount(region) {
+    return CHANNELS.filter(c => c.regions.includes(region) && skillMatch(c)).length;
+  }
+  function level(n) { return n === 0 ? 0 : n <= 2 ? 1 : n <= 5 ? 2 : 3; }
+  function renderMap() {
+    const counts = {};
+    Object.keys(REGIONS).forEach(r => { if (r !== "all") counts[r] = regionCount(r); });
+    $("#tilemap").innerHTML = Object.entries(COUNTRIES).map(([cc, [name, reg, x, y]]) => {
+      const cls = ["tile"];
+      if (cc === "SI") cls.push("home");
+      if (F.region !== "all") cls.push(reg === F.region ? "sel" : "dim");
+      return `<button type="button" class="${cls.join(" ")}" data-cc="${cc}" data-l="${level(counts[reg])}" style="grid-column:${x + 1};grid-row:${y + 1}" aria-label="${esc(name)}, ${esc(REGIONS[reg].name)}" aria-pressed="${F.region === reg}">${cc}${TRIGGER_CC.has(cc) ? '<span class="trig"></span>' : ""}</button>`;
+    }).join("");
+    setCaption(null);
+  }
+  function setCaption(cc) {
+    const cap = $("#mapcap");
+    if (!cc) {
+      if (F.region === "all") {
+        cap.innerHTML = `<b>All of Europe</b> · ${CHANNELS.filter(c => skillMatch(c)).length} channels for your skills. Slovenia has the most local ones.`;
+      } else {
+        const n = CHANNELS.filter(c => skillMatch(c) && regionMatch(c)).length;
+        cap.innerHTML = `<b>${esc(REGIONS[F.region].name)}</b> · ${n} channels including Europe-wide ones. Tap again to clear.`;
+      }
+      return;
+    }
+    const [name, reg] = COUNTRIES[cc];
+    const local = regionCount(reg);
+    const t = TRIGGERS.filter(x => x.cc.includes(cc));
+    cap.innerHTML = `<b>${esc(name)}</b> · ${esc(REGIONS[reg].name)} · ${local} market-specific channel${local === 1 ? "" : "s"}` +
+      (t.length ? `<br>E-invoicing: ${t.map(x => esc(x.label)).join(", ")}` : "");
+  }
+  $("#tilemap").addEventListener("click", e => {
+    const t = e.target.closest("[data-cc]"); if (!t) return;
+    const reg = COUNTRIES[t.dataset.cc][1];
+    F.region = F.region === reg ? "all" : reg;
+    $("#region").value = F.region; saveFilters(); renderAll();
+    const again = $(`[data-cc="${t.dataset.cc}"]`); if (again) again.focus();
+  });
+  ["mouseover", "focusin"].forEach(ev => $("#tilemap").addEventListener(ev, e => {
+    const t = e.target.closest("[data-cc]"); if (t) setCaption(t.dataset.cc);
+  }));
+  $("#tilemap").addEventListener("mouseleave", () => setCaption(null));
+  $("#tilemap").addEventListener("focusout", e => { if (!$("#tilemap").contains(e.relatedTarget)) setCaption(null); });
+
+  /* ---------- Channels ---------- */
+  function statusMatch(c) {
+    const s = P.status[c.id] || "";
+    if (F.status === "all") return true;
+    if (F.status === "open") return s === "" || s === "next";
+    return s === F.status;
+  }
+  function baseList() { return CHANNELS.filter(c => skillMatch(c) && regionMatch(c) && statusMatch(c) && textMatch(c)); }
+
+  function renderTabs(base) {
+    const counts = { all: base.length };
+    base.forEach(c => { counts[c.kind] = (counts[c.kind] || 0) + 1; });
+    const tabs = [["all", "All"]].concat(Object.entries(KINDS));
+    $("#kindtabs").innerHTML = tabs.map(([k, label]) =>
+      `<button type="button" class="ktab" role="tab" data-kind="${k}" aria-selected="${F.kind === k}">${esc(k === "all" ? "All" : label.replace(/ to subcontract for$/, "").replace(/ & buying signals$/, ""))}<span class="n">${counts[k] || 0}</span></button>`
+    ).join("");
+  }
+
+  /* Spotlights: one tap applies a progress or market filter (tap again to clear) */
+  function renderSpots() {
+    const pool = CHANNELS.filter(c => skillMatch(c) && textMatch(c));
+    const inRegion = pool.filter(regionMatch);
+    const st = c => P.status[c.id] || "";
+    const spots = [
+      ["status", "open", inRegion.filter(c => st(c) === "" || st(c) === "next").length, "Not started or to try"],
+      ["status", "doing", inRegion.filter(c => st(c) === "doing").length, "In progress"],
+      ["status", "done", inRegion.filter(c => st(c) === "done").length, "Done"],
+      ["region", "si", pool.filter(c => c.regions.includes("si") || c.regions.includes("eu")).length, "For Slovenia"]
+    ];
+    $("#spots").innerHTML = spots.map(([f, v, n, label]) =>
+      `<button type="button" class="spot" data-spot="${f}" data-v="${v}" aria-pressed="${F[f] === v}"><b>${n}</b><span>${esc(label)}</span></button>`).join("");
+  }
+  $("#spots").addEventListener("click", e => {
+    const b = e.target.closest("[data-spot]"); if (!b) return;
+    const f = b.dataset.spot, v = b.dataset.v;
+    F[f] = F[f] === v ? "all" : v;
+    if (f === "region") $("#region").value = F.region; else $("#statusfilter").value = F.status;
+    saveFilters(); renderAll();
+  });
+  $("#kindtabs").addEventListener("click", e => {
+    const b = e.target.closest("[data-kind]"); if (!b) return;
+    F.kind = b.dataset.kind; saveFilters(); renderChannels();
+  });
+
+  const STOP = new Set(["&", "and", "the", "of", "in", "for", "with"]);
+  function initials(name) {
+    const w = name.replace(/[()]/g, "").split(/[\s,]+/).filter(x => x && !STOP.has(x.toLowerCase()));
+    if (w.length === 1) return w[0].slice(0, 2);
+    return (w[0][0] + w[1][0]).toUpperCase();
+  }
+  function cardHTML(c) {
+    const s = P.status[c.id] || "";
+    const skillTags = c.skills.map(k => `<span class="tag" style="--c:${SKILLS[k].c}"><span class="dot"></span>${SKILLS[k].label}</span>`).join("");
+    const nameHTML = c.url
+      ? `<a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">${esc(c.name)}<span class="ext" aria-hidden="true">↗</span></a>`
+      : esc(c.name);
+    const hasNote = (P.notes[c.id] || "").trim().length > 0;
+    const regionText = c.regions.map(r => r === "eu" ? "Europe-wide" : (r === "si" ? "Slovenia" : REGIONS[r].name.replace(/ \(.*\)$/, ""))).join(", ");
+    return `
+      <article class="card" id="ch-${c.id}" data-id="${c.id}" data-status="${s}">
+        <span class="av" data-k="${c.kind}" aria-hidden="true">${esc(initials(c.name))}</span>
+        <div class="ch-b">
+          <h3>${nameHTML}</h3>
+          <p class="ch-meta">${esc(KINDS[c.kind])} · ${esc(regionText)} · ${esc(c.cost)}</p>
+          <p class="st" title="Your progress, and the rough time to first paid work"><i></i><span class="st-l" aria-hidden="true"></span><span>· ${SPEED[c.speed]}</span></p>
+          <p class="what">${esc(c.what)}</p>
+          <p class="how"><b>How to use it:</b> ${esc(c.how)}</p>
+          <div class="tags">${skillTags}</div>
+        </div>
+        <div class="ch-act">
+          <select class="select stsel" id="st-${c.id}" data-status-for="${c.id}" aria-label="Your progress on ${esc(c.name)}">
+            <option value="">Not started</option>
+            <option value="next">To try</option>
+            <option value="doing">In progress</option>
+            <option value="done">Done</option>
+            <option value="skip">Not for me</option>
+          </select>
+        </div>
+        <div class="card-foot">
+          <button type="button" class="notebtn" data-note-for="${c.id}" aria-expanded="${hasNote}">${hasNote ? '<span class="has">● </span>Note' : "+ Add note"}</button>
+          <textarea class="note" id="note-${c.id}" data-note="${c.id}" placeholder="Who you contacted, when, what they said" ${hasNote ? "" : "hidden"}></textarea>
+        </div>
+      </article>`;
+  }
+
+  function renderChannels() {
+    const base = baseList();
+    renderTabs(base);
+    let list = base.filter(c => F.kind === "all" || c.kind === F.kind);
+    list = list.slice().sort((a, b) => {
+      if (F.region !== "all") {
+        const la = a.regions.includes(F.region) ? 0 : 1, lb = b.regions.includes(F.region) ? 0 : 1;
+        if (la !== lb) return la - lb;
+      }
+      return SPEED_ORDER[a.speed] - SPEED_ORDER[b.speed];
+    });
+    const grid = $("#grid");
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty">No channels match these filters. <button type="button" class="linkbtn" id="clearf">Clear filters</button></div>`;
+    } else {
+      grid.innerHTML = list.map(cardHTML).join("");
+      list.forEach(c => {
+        const sel = document.getElementById("st-" + c.id); if (sel) sel.value = P.status[c.id] || "";
+        const ta = document.getElementById("note-" + c.id); if (ta) ta.value = P.notes[c.id] || "";
+      });
+    }
+    renderSummary(list.length);
+    renderSpots();
+  }
+  function renderSummary(shown) {
+    const vals = Object.values(P.status);
+    const doing = vals.filter(v => v === "doing").length, done = vals.filter(v => v === "done").length, next = vals.filter(v => v === "next").length;
+    $("#summary").innerHTML = `Showing <b>${shown}</b> of ${CHANNELS.length} channels${F.q ? ` matching “${esc(F.q)}”` : ""} · <b>${next}</b> to try · <b>${doing}</b> in progress · <b>${done}</b> done`;
+    $("#tab-n").textContent = shown;
+    $("#chCount").textContent = `${shown} results`;
+  }
+  function syncCards() {
+    if (F.status !== "all") { renderChannels(); return; }
+    document.querySelectorAll("#grid .card").forEach(card => {
+      const id = card.dataset.id;
+      const s = P.status[id] || "";
+      card.dataset.status = s;
+      const sel = document.getElementById("st-" + id); if (sel && document.activeElement !== sel) sel.value = s;
+      const ta = document.getElementById("note-" + id);
+      if (ta && document.activeElement !== ta) {
+        ta.value = P.notes[id] || "";
+        const has = ta.value.trim().length > 0;
+        if (has) ta.hidden = false;
+        const btn = card.querySelector("[data-note-for]");
+        if (btn && has) btn.innerHTML = '<span class="has">● </span>Note';
+      }
+    });
+    renderSummary(document.querySelectorAll("#grid .card").length);
+    renderSpots();
+  }
+
+  $("#grid").addEventListener("change", e => {
+    const sel = e.target.closest("[data-status-for]"); if (!sel) return;
+    const id = sel.dataset.statusFor;
+    if (sel.value) P.status[id] = sel.value; else delete P.status[id];
+    const card = document.getElementById("ch-" + id); if (card) card.dataset.status = sel.value;
+    persist();
+    if (F.status !== "all") renderChannels(); else { renderSummary(document.querySelectorAll("#grid .card").length); renderSpots(); }
+  });
+  $("#grid").addEventListener("click", e => {
+    if (e.target.closest("#clearf")) {
+      F.skills.clear(); F.region = "all"; F.kind = "all"; F.status = "all"; F.q = ""; $("#q").value = "";
+      renderRail(); saveFilters(); renderAll(); return;
+    }
+    const b = e.target.closest("[data-note-for]"); if (!b) return;
+    const ta = document.getElementById("note-" + b.dataset.noteFor);
+    if (!ta) return;
+    ta.hidden = !ta.hidden; b.setAttribute("aria-expanded", String(!ta.hidden));
+    if (!ta.hidden) ta.focus();
+  });
+  $("#grid").addEventListener("input", e => {
+    const ta = e.target.closest("[data-note]"); if (!ta) return;
+    const id = ta.dataset.note;
+    if (ta.value.trim()) P.notes[id] = ta.value.slice(0, 2000); else delete P.notes[id];
+    clearTimeout(store.noteTimer);
+    store.noteTimer = setTimeout(flushNote, 900);
+  });
+  // A note typed just before leaving must not wait for the 900 ms timer: save it at once when the field loses focus
+  // or changes, and when the page is hidden or closed (tab switch, phone app switch, navigation).
+  function flushNote(leaving) {
+    if (store.noteTimer == null) return;
+    clearTimeout(store.noteTimer); store.noteTimer = null;
+    persist();
+    if (leaving === true && atlasSync && store.mode !== "db") { try { atlasSync.syncNow(); } catch (e) { /* the next visit uploads it */ } }
+  }
+  $("#grid").addEventListener("focusout", e => { if (e.target.closest && e.target.closest("[data-note]")) flushNote(); });
+  $("#grid").addEventListener("change", e => { if (e.target.closest && e.target.closest("[data-note]")) flushNote(); });
+  window.addEventListener("pagehide", () => flushNote(true));
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushNote(true); });
+
+  /* ---------- Deadlines ---------- */
+  function renderLedger() {
+    const now = new Date();
+    const regionCountries = F.region === "all" ? null : new Set(Object.entries(COUNTRIES).filter(([, v]) => v[1] === F.region).map(([k]) => k));
+    let html = "", placedNow = false;
+    const fmt = now.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    TRIGGERS.forEach(t => {
+      const d = new Date(t.date + "T00:00:00");
+      if (!placedNow && d > now) { html += `<li class="now" aria-label="Today">Today · ${esc(fmt)}</li>`; placedNow = true; }
+      const past = d <= now;
+      const inRegion = !regionCountries || t.cc.includes("EU") || t.cc.some(c => regionCountries.has(c));
+      const inSkill = F.skills.size === 0 || t.skills.some(s => F.skills.has(s));
+      const cls = ["lrow"]; if (past) cls.push("past"); if (t.home) cls.push("home-row"); if (!inRegion || !inSkill) cls.push("dimmed");
+      html += `<li class="${cls.join(" ")}" id="dl-${TRIGGERS.indexOf(t)}">
+        <span class="flag" aria-hidden="true">${CAL_ICON}</span>
+        <div>
+          <h3>${esc(t.title)}</h3>
+          <div class="meta-row">
+            <span class="date">${esc(t.label)}</span><span class="state">${past ? "In force" : "Upcoming"}</span>
+            <span class="cc">${t.cc.map(c => `<span class="${c === "SI" ? "home" : ""}" title="${c === "EU" ? "EU-wide or vendor deadline" : esc((COUNTRIES[c] || [c])[0])}">${c}</span>`).join("")}</span>
+            ${t.home ? '<span class="yours">Your market</span>' : ""}
+          </div>
+          <p class="offer"><b>What to offer:</b> ${esc(t.offer)}</p>
+          <div class="tags">${t.skills.map(k => `<span class="tag" style="--c:${SKILLS[k].c}"><span class="dot"></span>${SKILLS[k].label}</span>`).join("")}</div>
+        </div>
+      </li>`;
+    });
+    if (!placedNow) html += `<li class="now">Today · ${esc(fmt)}</li>`;
+    $("#ledger").innerHTML = html;
+    $("#dlCount").textContent = `${TRIGGERS.filter(t => new Date(t.date + "T00:00:00") > now).length} ahead`;
+  }
+
+  /* ---------- Alerts (top of the feed) and the bell ---------- */
+  const CAL_ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+  function monthsUntil(d, now) { return (d.getFullYear() - now.getFullYear()) * 12 + d.getMonth() - now.getMonth(); }
+  function renderAlerts() {
+    const now = new Date();
+    const ahead = TRIGGERS.map((t, i) => ({ t, i, d: new Date(t.date + "T00:00:00") })).filter(x => x.d > now);
+    const soon = ahead.filter(x => monthsUntil(x.d, now) <= 12);
+    $("#bellN").textContent = soon.length ? String(soon.length) : "";
+    $("#bell").setAttribute("aria-label", soon.length ? `Deadline alerts: ${soon.length} in the next 12 months` : "Deadline alerts");
+    const home = ahead.find(x => x.t.home);
+    const rest = ahead.filter(x => x !== home).slice(0, 3);
+    const m = home ? monthsUntil(home.d, now) : 0;
+    $("#alerts").innerHTML = `
+      <div class="pane-h"><h2 id="alertsTitle">Deadline alerts <small>· ${soon.length} in the next 12 months</small></h2><a href="#deadlines">See all</a></div>
+      ${home ? `<div class="al">
+        <span class="flag" aria-hidden="true">${CAL_ICON}</span>
+        <div><h3>${esc(home.t.title.split(".")[0].replace(/: B2B e-invoicing mandatory for all domestic businesses/, ": B2B e-invoicing mandatory"))}</h3>
+          <p class="meta">${esc(home.t.label)} · Home market · ${home.t.skills.map(k => SKILLS[k].label).join(", ")} · in ${m} months</p>
+          <p class="offer">${esc(home.t.offer.replace(/^Your home market\. /, ""))}</p></div>
+        <div class="al-acts"><button type="button" class="btn" id="alDraft">Draft outreach</button><button type="button" class="btn quiet" data-dl="${home.i}">See the deadline</button></div>
+      </div>` : ""}
+      <ul class="al-more">${rest.map(x => `<li><button type="button" data-dl="${x.i}"><span class="d">${esc(x.t.label)}</span><span class="t">${esc(x.t.title.split(":")[0])}: ${esc(x.t.title.split(":").slice(1).join(":").trim())}</span><span class="cc-s">${x.t.cc.join(" ")}</span></button></li>`).join("")}</ul>`;
+  }
+  $("#alerts").addEventListener("click", e => {
+    const d = e.target.closest("[data-dl]");
+    if (d) {
+      const row = document.getElementById("dl-" + d.dataset.dl);
+      if (row) { row.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }); row.animate && row.animate([{ boxShadow: "inset 0 0 0 2px var(--accent)" }, { boxShadow: "inset 0 0 0 0 transparent" }], { duration: 1600, easing: "ease-out" }); }
+      return;
+    }
+    if (e.target.closest("#alDraft")) {
+      $("#o-target").value = "cfo"; $("#o-skill").value = "erp"; saveDraftPrefs(); fillTemplate();
+      $("#outreach").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    }
+  });
+
+  /* ---------- Search kit ---------- */
+  function renderKit() {
+    $("#kitgrid").innerHTML = KIT.map((k, i) => {
+      let body = "";
+      if (k.code) body = `<div class="codebox"><span id="kit-${i}">${esc(k.code)}</span><button type="button" class="btn copy" data-copy="kit-${i}">Copy</button></div>`;
+      if (k.cpv) body = `<div style="overflow-x:auto"><table class="cpv"><tbody>${k.cpv.map(([code, label, sk]) =>
+        `<tr><td>${code}</td><td>${esc(label)}</td><td><span class="tag" style="--c:${SKILLS[sk].c}"><span class="dot"></span>${SKILLS[sk].label}</span></td></tr>`).join("")}</tbody></table></div>
+        <div class="codebox"><span id="kit-${i}">${k.cpv.map(r => r[0]).join(", ")}</span><button type="button" class="btn copy" data-copy="kit-${i}">Copy</button></div>`;
+      if (k.recipe) body = `<ol class="recipe">${k.recipe.map(r => `<li>${esc(r)}</li>`).join("")}</ol>`;
+      return `<div class="kitem"><h3>${esc(k.title)}</h3>${body}<p>${esc(k.note)}</p></div>`;
+    }).join("");
+  }
+  function copyText(text, btn, fallbackEl) {
+    const done = ok => {
+      const old = btn.textContent; btn.textContent = ok ? "Copied" : "Selected, press Ctrl+C";
+      setTimeout(() => { btn.textContent = old; }, 1600);
+    };
+    const select = () => {
+      if (!fallbackEl) return;
+      if (fallbackEl.select) { fallbackEl.focus(); fallbackEl.select(); return; }
+      const r = document.createRange(); r.selectNodeContents(fallbackEl);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    };
+    try {
+      navigator.clipboard.writeText(text).then(() => done(true), () => { select(); done(false); });
+    } catch (e) { select(); done(false); }
+  }
+  $("#kitgrid").addEventListener("click", e => {
+    const b = e.target.closest("[data-copy]"); if (!b) return;
+    const el = document.getElementById(b.dataset.copy);
+    copyText(el.textContent, b, el);
+  });
+
+  /* ---------- Outreach ---------- */
+  $("#o-target").innerHTML = Object.entries(TARGETS).map(([k, t]) => `<option value="${k}">${esc(t.label)}</option>`).join("");
+  $("#o-skill").innerHTML = Object.entries(SKILLS).map(([k, s]) => `<option value="${k}">${esc(s.label)}</option>`).join("");
+  $("#o-lang").innerHTML = Object.entries(LANGS).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("");
+  const draftPrefs = lsGet("atlas.draft", null) || {};
+  if (TARGETS[draftPrefs.target]) $("#o-target").value = draftPrefs.target;
+  if (SKILLS[draftPrefs.skill]) $("#o-skill").value = draftPrefs.skill; else $("#o-skill").value = "bi";
+  if (LANGS[draftPrefs.lang]) $("#o-lang").value = draftPrefs.lang; else $("#o-lang").value = "sl";
+  const saveDraftPrefs = () => lsSet("atlas.draft", { target: $("#o-target").value, skill: $("#o-skill").value, lang: $("#o-lang").value });
+
+  function fillTemplate() {
+    const lang = $("#o-lang").value;
+    $("#o-out").value = template($("#o-target").value, $("#o-skill").value, LANGS[lang] ? lang : "en");
+    $("#o-status").textContent = lang === "de"
+      ? "Template filled. Replace the [brackets] and pick Sehr geehrte Frau / Sehr geehrter Herr before sending."
+      : lang === "hr" ? "Template filled. Replace the [brackets] and keep Poštovani or Poštovana before sending."
+      : "Template filled. Replace the [brackets] before sending.";
+  }
+  ["o-target", "o-skill", "o-lang"].forEach(id => $("#" + id).addEventListener("change", () => { saveDraftPrefs(); fillTemplate(); }));
+  $("#o-tpl").addEventListener("click", fillTemplate);
+  $("#o-copy").addEventListener("click", e => copyText($("#o-out").value, e.currentTarget, $("#o-out")));
+  $("#oform").addEventListener("submit", e => e.preventDefault());
+
+  let sampleFn = null, ctl = null;
+  const HIDE_CODES = new Set(["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"]);
+  async function initSample() {
+    if (!window.claude || typeof window.claude.use !== "function") return;
+    try { sampleFn = await window.claude.use("sample"); } catch (e) { sampleFn = null; }
+    if (sampleFn) {
+      $("#o-ai").hidden = false; $("#o-notes-field").hidden = false;
+      $("#o-intro").textContent = "Pick who you're writing to. Fill the template instantly, or let Claude tailor it using your notes. Edit the result before sending.";
+    }
+  }
+  $("#o-ai").addEventListener("click", async () => {
+    if (!sampleFn) return;
+    const target = $("#o-target").value, skill = $("#o-skill").value, lang = $("#o-lang").value;
+    const base = template(target, skill, lang);
+    const notes = $("#o-notes").value.trim().slice(0, 2000);
+    const prompt =
+`Write a first-contact message for an independent ERP / CRM / Power BI / data warehouse consultant based in Slovenia.
+
+Recipient: ${TARGETS[target].desc}.
+Lead skill: ${SKILLS[skill].label}. What the consultant does: ${FOCUS.en[skill]}.
+Language: ${LANGS[lang]}. Write the entire message in this language.
+
+Facts from the consultant (use only these; where a fact is missing, leave a short placeholder in [square brackets]):
+${notes || "(none given)"}
+
+Rules:
+- At most 120 words, plus a subject line.
+- Plain and specific. No hype, buzzwords or flattery.
+- One concrete offer and one small next step.
+- In Slovenian, Croatian or German use the formal address (vi / Sie) and avoid gendered first-person verb forms where you can.
+
+Improve on this template and keep its structure:
+---
+${base}
+---
+
+Reply with only the message. First line "Subject: ..." translated into the target language, then the body.`;
+    ctl = new AbortController();
+    $("#o-ai").disabled = true; $("#o-tpl").disabled = true; $("#o-stop").hidden = false;
+    $("#o-status").textContent = "Thinking…";
+    try {
+      const res = await sampleFn(prompt, {
+        signal: ctl.signal, cache: false,
+        onText: ({ text }) => { $("#o-out").value = text; $("#o-status").textContent = "Writing…"; }
+      });
+      $("#o-out").value = res.text;
+      $("#o-status").textContent = res.truncated ? "Cut short. Shorten your notes and try again." : "Draft ready. Check the facts and fill any [brackets] before sending.";
+    } catch (e) {
+      const code = e && e.code;
+      if (e && e.text) $("#o-out").value = e.text;
+      if (code === "cancelled") $("#o-status").textContent = "Stopped.";
+      else if (HIDE_CODES.has(code)) { $("#o-ai").hidden = true; $("#o-notes-field").hidden = true; sampleFn = null; $("#o-status").textContent = "Claude drafting isn't available here. The template still works."; }
+      else if (code === "rate_limited") $("#o-status").textContent = "Too many requests right now. Try again in a minute.";
+      else if (code === "session_expired") $("#o-status").textContent = "Your session expired. Sign in again to use Claude.";
+      else if (code === "refused") { $("#o-out").value = ""; $("#o-status").textContent = "Claude couldn't write that one. Change your notes and try again."; }
+      else $("#o-status").textContent = "Couldn't finish the draft. Try again.";
+    } finally {
+      $("#o-ai").disabled = false; $("#o-tpl").disabled = false; $("#o-stop").hidden = true; ctl = null;
+    }
+  });
+  $("#o-stop").addEventListener("click", () => { if (ctl) ctl.abort(); });
+
+  /* ---------- Search ---------- */
+  let qTimer = null;
+  $("#q").addEventListener("input", e => {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(() => { F.q = e.target.value.trim().slice(0, 80); renderChannels(); }, 120);
+  });
+  $("#q").addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); F.q = e.target.value.trim().slice(0, 80); renderChannels(); $("#channels").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); }
+  });
+
+  /* ---------- Tabs follow the scroll ---------- */
+  function initTabs() {
+    const tabs = [...document.querySelectorAll("#tabs [data-tab]")];
+    const mark = id => tabs.forEach(a => { if (a.dataset.tab === id) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
+    tabs.forEach(a => a.addEventListener("click", () => mark(a.dataset.tab)));
+    if (!("IntersectionObserver" in window)) return;
+    const wide = matchMedia("(min-width: 1100px)");
+    const owner = { alerts: "top", start: "top", leads: "leads", markets: "markets", channels: "channels", deadlines: "deadlines", kit: "kit", outreach: "outreach" };
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        if (en.target.id === "markets" && wide.matches) return; // beside the feed on wide screens
+        mark(owner[en.target.id]);
+        const cur = tabs.find(a => a.getAttribute("aria-current")); if (cur && cur.scrollIntoView && !wide.matches) cur.parentNode.scrollTo({ left: cur.offsetLeft - 12, behavior: "smooth" });
+      });
+    }, { rootMargin: "-40% 0px -55% 0px" });
+    Object.keys(owner).forEach(id => { const el = document.getElementById(id); if (el) io.observe(el); });
+  }
+
+
+  /* ---------- Leads ---------- */
+  // The companies and people Simon is talking to. Saved with the channel progress (atlas.pipeline → the cloud copy).
+  const L = AtlasLeads;
+  const LF = { show: ["open", "due", "all"].includes(lsGet("atlas.leadsShow", "open")) ? lsGet("atlas.leadsShow", "open") : "open", editing: null };
+  const pad2 = n => String(n).padStart(2, "0");
+  const todayIso = () => { const d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); };
+  const channelName = id => { const c = CHANNELS.find(x => x.id === id); return c ? c.name : ""; };
+  function dueText(l, today) {
+    const d = L.due(l, today); if (!d) return "";
+    if (d === "overdue") { const n = Math.round((Date.parse(today) - Date.parse(l.next)) / 864e5); return n === 1 ? "1 day overdue" : n + " days overdue"; }
+    if (d === "today") return "Today";
+    const n = Math.round((Date.parse(l.next) - Date.parse(today)) / 864e5);
+    return n === 1 ? "Tomorrow" : "In " + n + " days";
+  }
+  function renderLeadChannels() {
+    const sel = $("#lf-channel"); if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">No channel / other</option>' + Object.entries(KINDS).map(([k, label]) =>
+      `<optgroup label="${esc(label)}">${CHANNELS.filter(c => c.kind === k).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("")}</optgroup>`).join("");
+    sel.value = cur;
+  }
+  function reportNeeds() {
+    try { if (window.StratumShell && StratumShell.needs) StratumShell.needs("client-atlas", L.needs(P.leads, todayIso())); } catch (e) { /* the home page is optional */ }
+  }
+  function renderLeads() {
+    const list = $("#leadList"); if (!list) return;
+    const today = todayIso(), all = L.sort(P.leads);
+    const open = all.filter(L.open), due = open.filter(l => { const d = L.due(l, today); return d === "overdue" || d === "today"; });
+    const shown = LF.show === "due" ? due : LF.show === "open" ? open : all;
+    $("#leadFilters").innerHTML = [["open", "Open", open.length], ["due", "Due today", due.length], ["all", "All", all.length]].map(([k, label, n]) =>
+      `<button type="button" class="spot" data-lshow="${k}" aria-pressed="${LF.show === k}"><b>${n}</b><span>${label}</span></button>`).join("");
+    $("#leadsCount").textContent = due.length ? `${due.length} due` : open.length ? `${open.length} open` : "";
+    $("#tab-leads").textContent = due.length ? String(due.length) : "";
+    list.innerHTML = shown.length ? shown.map(l => {
+      const d = L.due(l, today), ch = channelName(l.channel);
+      return `<li class="lead" data-id="${esc(l.id)}"${L.open(l) ? "" : " data-closed"}>
+        <div><h3>${esc(l.company || l.contact)}</h3><p class="meta">${esc([l.company ? l.contact : "", ch].filter(Boolean).join(" · "))}</p></div>
+        <div class="acts">${L.open(l) ? `<button type="button" class="btn quiet" data-lact="week" title="Move the follow-up to a week from today">+1 week</button>` : ""}<button type="button" class="btn" data-lact="edit" aria-label="Edit ${esc(l.company || l.contact)}">Edit</button></div>
+        <div class="row"><span class="st-tag" data-s="${l.status}">${esc(L.STATUS_NAME[l.status])}</span>${l.next ? `<span class="due" data-due="${d}">${esc(L.slDate(l.next))}${d ? " · " + esc(dueText(l, today)) : ""}</span>` : (L.open(l) ? '<span class="due">No follow-up date</span>' : "")}</div>
+        ${l.notes ? `<p class="notes">${esc(l.notes)}</p>` : ""}
+      </li>`;
+    }).join("") : `<li class="empty">${P.leads.length ? (LF.show === "due" ? "Nothing due today." : "No open leads.") + ' <button type="button" class="linkbtn" data-lshow="all">Show all</button>' : "No leads yet. Add the first company you are talking to."}</li>`;
+    reportNeeds();
+  }
+  function openLeadForm(l) {
+    LF.editing = l ? l.id : null;
+    const f = $("#leadForm"); f.hidden = false;
+    $("#lf-company").value = l ? l.company : ""; $("#lf-contact").value = l ? l.contact : "";
+    $("#lf-channel").value = l ? l.channel : ""; $("#lf-status").value = l ? l.status : "new";
+    $("#lf-next").value = l ? l.next : L.addDays(todayIso(), 3); $("#lf-notes").value = l ? l.notes : "";
+    $("#lf-del").hidden = !l; $("#lf-save").textContent = l ? "Save changes" : "Add lead"; $("#lf-msg").hidden = true;
+    f.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+    $("#lf-company").focus({ preventScroll: true });
+  }
+  function closeLeadForm() { LF.editing = null; $("#leadForm").hidden = true; }
+  function saveLeads(msg) { persist(); renderLeads(); if (msg) $("#saved").textContent = msg; setTimeout(setSavedLabel, 2500); }
+  function initLeads() {
+    $("#lf-status").innerHTML = L.STATUS.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("");
+    renderLeadChannels(); renderLeads();
+    $("#leadAdd").addEventListener("click", () => openLeadForm(null));
+    $("#lf-cancel").addEventListener("click", () => { const id = LF.editing; closeLeadForm(); const b = id && document.querySelector(`.lead[data-id="${CSS.escape(id)}"] [data-lact="edit"]`); (b || $("#leadAdd")).focus(); });
+    $("#leadForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const now = new Date().toISOString(), old = LF.editing ? P.leads.find(x => x.id === LF.editing) : null;
+      const l = L.clean({ id: old ? old.id : undefined, company: $("#lf-company").value, contact: $("#lf-contact").value, channel: $("#lf-channel").value,
+        status: $("#lf-status").value, next: $("#lf-next").value, notes: $("#lf-notes").value, created: old ? old.created : now, updated: now }, now);
+      if (!l) { const m = $("#lf-msg"); m.textContent = "Add a company or a contact."; m.hidden = false; $("#lf-company").focus(); return; }
+      if (old) P.leads[P.leads.indexOf(old)] = l; else P.leads.push(l);
+      closeLeadForm(); saveLeads(old ? "Lead saved" : "Lead added");
+      const b = document.querySelector(`.lead[data-id="${CSS.escape(l.id)}"] [data-lact="edit"]`); if (b) b.focus();
+    });
+    $("#lf-del").addEventListener("click", () => {
+      const old = P.leads.find(x => x.id === LF.editing); if (!old) return;
+      if (!confirm(`Delete the lead “${old.company || old.contact}” and its notes? This cannot be undone.`)) return;
+      P.leads.splice(P.leads.indexOf(old), 1); closeLeadForm(); saveLeads("Lead deleted"); $("#leadAdd").focus();
+    });
+    $("#leads").addEventListener("click", e => {
+      const s = e.target.closest("[data-lshow]");
+      if (s) { LF.show = s.dataset.lshow; lsSet("atlas.leadsShow", LF.show); renderLeads(); const again = $(`#leadFilters [data-lshow="${LF.show}"]`); if (again) again.focus(); return; }
+      const a = e.target.closest("[data-lact]"); if (!a) return;
+      const id = a.closest(".lead").dataset.id, l = P.leads.find(x => x.id === id); if (!l) return;
+      if (a.dataset.lact === "edit") openLeadForm(l);
+      if (a.dataset.lact === "week") {
+        l.next = L.addDays(todayIso(), 7); l.updated = new Date().toISOString(); if (l.status === "new") l.status = "contacted";
+        saveLeads("Follow-up moved to " + L.slDate(l.next));
+        const b = document.querySelector(`.lead[data-id="${CSS.escape(id)}"] [data-lact="edit"]`); if (b) b.focus();
+      }
+    });
+    $("#leadCsv").addEventListener("click", () => {
+      if (!P.leads.length) { $("#saved").textContent = "No leads to export yet"; setTimeout(setSavedLabel, 2500); return; }
+      const blob = new Blob([L.csv(P.leads, channelName)], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "leads-" + todayIso() + ".csv";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    });
+    // a new day (the page left open overnight, or shown again) moves follow-ups into "due"
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") renderLeads(); });
+  }
+
+  /* ---------- Boot ---------- */
+  function renderAll() { renderMap(); renderChannels(); renderLedger(); renderLeadChannels(); }
+  $("#checked").textContent = "Checked October 2026 · " + CHANNELS.length + " channels · " + TRIGGERS.length + " deadlines";
+  renderRail(); renderMoves(); renderKit(); renderAll(); renderAlerts(); fillTemplate(); setSavedLabel(); initTabs(); initLeads();
+  initDb(); initStratumSync(); initSample();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,245 @@
+/* Tokovi showcase: the Linear look (SH2). Active only on html[data-look="linear"], set by the Classic / Linear switch in
+   the nav (remembered in localStorage, or ?look=linear). Near-black page, a faint violet glow, a fading white headline,
+   a tilted "Ask your data" window, hairline grids, Inter. Dark by design: it ignores the light/dark setting. */
+:root[data-look=linear],:root[data-look=linear] .band{
+  --bg:#08090A;--bg2:#0B0C0D;--card:#0F1011;--ink:#F7F8F8;--ink2:#8A8F98;--ink3:#6B6F76;
+  --line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.11);--glass:rgba(8,9,10,.72);
+  --shadow:0 0 0 1px rgba(0,0,0,.25),0 24px 60px -24px rgba(0,0,0,.9);
+  --win:#0F1011;--win-bar:#0F1011;--soft:rgba(255,255,255,.035);
+  --accent:#7170FF;--accent2:#8FA4FF;--accent-soft:rgba(113,112,255,.13);--ok:#4CB782;--ok-bg:rgba(76,183,130,.12);--bad:#EB5757;
+  --grad:linear-gradient(180deg,#F7F8F8 30%,rgba(247,248,248,.55));
+  --btn:#F7F8F8;--btn-ink:#08090A;
+  --glow-a:rgba(113,112,255,.16);--glow-b:rgba(113,112,255,.08);--glow-c:rgba(94,106,210,.08);
+  --sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --kbd:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --hair:#17181A; /* opaque hairline for the grids (overlapping lines stay one shade) */
+  color-scheme:dark;
+}
+:root[data-look=linear] body{background:var(--bg);font-size:16px;letter-spacing:-.011em}
+:root[data-look=linear] ::selection{background:rgba(113,112,255,.35)}
+:root[data-look=linear] :focus-visible{outline-color:#7170FF}
+:root[data-look=linear] kbd{height:20px;min-width:20px;padding:0 5px;border-radius:4px;border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.04);font:500 11px/1 var(--kbd);color:var(--ink2)}
+:root[data-look=linear] .dim{color:var(--ink2)}
+:root[data-look=linear] .note{font:400 12.5px/1.45 var(--sans);color:var(--ink3)}
+:root[data-look=linear] .okpill{height:24px;border-radius:6px;font:500 12.5px/1 var(--sans)}
+
+/* labels: Inter, sentence case, no tracking (Linear has no shouty mono labels) */
+:root[data-look=linear] :is(.pv-h,.ptable th,.pv-match i,.mr-kpis i,.arch-h,.kpi4 i,.recon thead th,.dk i,.who,.brief legend,.brief label,.brief-head,.pal-list .sec-h,.app-grp,.sb-kpis i,.m-kpi i){text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px;font-weight:500;color:var(--ink3)}
+:root[data-look=linear] :is(.hbars b,.ptable td,.recon td,.prices b,.sb-list b,.kpi4 b,.dk b,.stat b,.pv-big,.calc-big b,.calc-facts b,.calc-f output,.mr-kpis b,.sb-kpis b){font-feature-settings:"tnum"}
+
+/* ── buttons: rounded rectangles, white primary ─────────────────────────────── */
+:root[data-look=linear] .btn{height:40px;padding:0 16px;border-radius:8px;font-size:14.5px;font-weight:500;letter-spacing:-.01em;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+:root[data-look=linear] .btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16)}
+:root[data-look=linear] .btn.primary{background:#F7F8F8;border-color:#F7F8F8;color:#08090A}
+:root[data-look=linear] .btn.primary:hover{background:#fff;opacity:1}
+:root[data-look=linear] .btn.lg{height:46px;padding:0 20px;font-size:15.5px}
+:root[data-look=linear] .btn.sm{height:32px;padding:0 12px;font-size:13.5px;border-radius:7px}
+:root[data-look=linear] .btn kbd{height:18px;font-size:10.5px}
+
+/* ── nav ─────────────────────────────────────────────────────────────────────── */
+:root[data-look=linear] .nav{background:rgba(8,9,10,.68);border-bottom-color:rgba(255,255,255,.06);backdrop-filter:saturate(140%) blur(18px);-webkit-backdrop-filter:saturate(140%) blur(18px)}
+:root[data-look=linear] .logo{font-size:15.5px;letter-spacing:-.015em}
+:root[data-look=linear] .logo svg rect:first-child{fill:transparent} /* the white bars alone, like the mockup's mark */
+:root[data-look=linear] .links a{color:var(--ink2);font-size:13.5px;border-radius:6px;padding:6px 11px}
+:root[data-look=linear] .links a:hover,:root[data-look=linear] .links a.on{color:var(--ink);background:none}
+:root[data-look=linear] .kbtn{height:32px;border-radius:8px;border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.03)}
+:root[data-look=linear] .menu-btn span{background:var(--ink2)}
+:root[data-look=linear] .mnav{background:rgba(8,9,10,.96)}
+:root[data-look=linear] .mnav a{font-size:18px;font-weight:500;letter-spacing:-.02em;color:#D0D6E0}
+:root[data-look=linear] .look{padding:2px;border-radius:9px;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+:root[data-look=linear] .look button{border-radius:7px;color:var(--ink2);font-family:var(--sans);font-size:12.5px}
+:root[data-look=linear] .look button[aria-pressed="true"]{background:rgba(255,255,255,.1);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+:root[data-look=linear] .look-bar .look-x{border-radius:8px}
+
+/* ── hero: left-aligned, fading white headline, faint violet glow, hairline grid ── */
+:root[data-look=linear] .hero{padding:148px 0 24px}
+:root[data-look=linear] .g1{width:1180px;height:620px;left:calc(50% - 590px);top:-380px;background:radial-gradient(50% 50% at 50% 50%,rgba(113,112,255,.34),rgba(113,112,255,0));filter:blur(40px);animation:none}
+:root[data-look=linear] .g2,:root[data-look=linear] .g3{display:none}
+:root[data-look=linear] .grid-bg{background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:80px 80px;background-position:center top;opacity:1;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 72%);-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 25%,transparent 72%)}
+:root[data-look=linear] .hero-in{text-align:left;align-items:flex-start}
+:root[data-look=linear] .tagline{height:30px;padding:0 12px 0 8px;gap:8px;border-color:rgba(255,255,255,.09);background:rgba(255,255,255,.03);font:500 13px/1 var(--sans);color:var(--ink2);margin-bottom:26px;backdrop-filter:none}
+:root[data-look=linear] .tagline:hover{color:var(--ink);border-color:rgba(255,255,255,.16)}
+:root[data-look=linear] .tagline>span:last-child{color:var(--ink)}
+:root[data-look=linear] .pulse{width:16px;height:16px;border-radius:5px;background:#5E6AD2;box-shadow:0 0 14px rgba(94,106,210,.7);animation:none;position:relative}
+:root[data-look=linear] .pulse::after{content:"";position:absolute;inset:5px;border-radius:2px;background:#F7F8F8}
+:root[data-look=linear] h1{font-size:clamp(44px,6.3vw,84px);font-weight:600;letter-spacing:-.045em;line-height:1.04;max-width:14ch;background:linear-gradient(180deg,#F7F8F8 35%,rgba(247,248,248,.5));-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-look=linear] h1 .grad{background:none;color:inherit;-webkit-background-clip:border-box;background-clip:border-box}
+:root[data-look=linear] .lead{color:var(--ink2);font-size:clamp(16px,1.45vw,19px);line-height:1.55;letter-spacing:-.012em}
+:root[data-look=linear] .hero .lead{margin:22px 0 0;max-width:600px}
+:root[data-look=linear] .ctas{justify-content:flex-start;gap:10px;margin-top:32px}
+
+/* the tilted "Ask your data" window; it flattens as you scroll (the --tilt the script already sets) */
+:root[data-look=linear] .window{border-radius:12px;border-color:rgba(255,255,255,.09);box-shadow:0 0 0 1px rgba(0,0,0,.35),0 30px 80px -24px rgba(0,0,0,.85)}
+:root[data-look=linear] .win-bar{height:38px;background:var(--win)}
+:root[data-look=linear] .win-bar i,:root[data-look=linear] .win-bar i:nth-child(2),:root[data-look=linear] .win-bar i:nth-child(3){width:10px;height:10px;background:rgba(255,255,255,.12)}
+:root[data-look=linear] .win-bar span{font:500 12.5px/1 var(--sans);color:var(--ink3)}
+:root[data-look=linear] .win-foot{font-family:var(--sans)}
+:root[data-look=linear] .hero-window{max-width:none;margin-top:72px;transform:perspective(1400px) rotateX(calc(var(--tilt,10deg) * 1.5)) scale(var(--tscale,.97));box-shadow:0 -14px 70px -16px rgba(113,112,255,.3),0 40px 100px -30px rgba(0,0,0,.9);-webkit-mask-image:linear-gradient(180deg,#000 58%,transparent 98%);mask-image:linear-gradient(180deg,#000 58%,transparent 98%)}
+:root[data-look=linear] .cmd-in{height:60px;font-size:18px;letter-spacing:-.015em}
+:root[data-look=linear] .caret{background:#7170FF}
+:root[data-look=linear] .cmd-list li{height:40px;border-radius:7px;font-size:14px;color:#D0D6E0}
+:root[data-look=linear] .cmd-list li.on{background:rgba(255,255,255,.06);color:var(--ink)}
+:root[data-look=linear] .cmd-list .ci{width:16px;height:16px;border-radius:4px;background:none;border:1px solid #62666D;color:transparent;font-size:0}
+:root[data-look=linear] .cmd-list li.on .ci{border-color:#7170FF;background:rgba(113,112,255,.25)}
+:root[data-look=linear] .cmd-list .cm{font-family:var(--sans);font-size:12px;color:var(--ink3)}
+:root[data-look=linear] .pv-big{font-size:32px;letter-spacing:-.035em}
+:root[data-look=linear] .hbars i{height:8px;border-radius:3px;background:linear-gradient(90deg,#5E6AD2,#8FA4FF)}
+:root[data-look=linear] .pv-match div,:root[data-look=linear] .pv-steps li span{border-radius:8px}
+:root[data-look=linear] .stack{margin-top:40px}
+:root[data-look=linear] .stack-track span{font:500 14px/1 var(--sans);color:#4F535A;letter-spacing:-.01em}
+
+/* ── numbers ────────────────────────────────────────────────────────────────── */
+:root[data-look=linear] .stats{padding:72px 0 48px;border-bottom-color:var(--line)}
+:root[data-look=linear] .stat b{font-size:clamp(34px,3.8vw,52px);letter-spacing:-.045em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-look=linear] .stat>span{font-size:15px;color:var(--ink2)}
+
+/* ── sections ───────────────────────────────────────────────────────────────── */
+:root[data-look=linear] .sec.alt{background:linear-gradient(180deg,rgba(255,255,255,.018),rgba(255,255,255,0) 40%),var(--bg);border-top:1px solid var(--line)}
+:root[data-look=linear] .band{border-top:1px solid var(--line)}
+:root[data-look=linear] .eyebrow{display:inline-flex;align-items:center;gap:10px;font:500 14.5px/1 var(--sans);letter-spacing:-.01em;text-transform:none;color:#D0D6E0;margin-bottom:22px}
+:root[data-look=linear] .eyebrow::before{content:"";width:8px;height:8px;border-radius:2px;background:#7170FF;box-shadow:0 0 12px rgba(113,112,255,.9)}
+:root[data-look=linear] .kicker{font:500 13px/1 var(--sans);letter-spacing:-.005em;text-transform:none;color:var(--ink2)}
+:root[data-look=linear] h2{font-size:clamp(36px,4.6vw,62px);font-weight:600;letter-spacing:-.042em;line-height:1.03}
+:root[data-look=linear] h3{font-weight:600;letter-spacing:-.022em}
+:root[data-look=linear] .g4{opacity:.7}
+:root[data-look=linear] .g5{opacity:.4}
+:root[data-look=linear] .g6{opacity:.9}
+
+/* services: one hairline grid instead of floating cards */
+:root[data-look=linear] .bento{gap:1px;border:1px solid var(--hair);border-radius:16px;overflow:hidden;margin-top:52px}
+:root[data-look=linear] .tile{border:0;border-radius:0;background:var(--bg);box-shadow:0 0 0 1px var(--hair);padding:30px}
+:root[data-look=linear] .tile:hover{transform:none;background:#0C0D0E;box-shadow:0 0 0 1px var(--hair)}
+:root[data-look=linear] .t-wh{background:radial-gradient(110% 70% at 100% 100%,rgba(113,112,255,.09),transparent 60%),var(--bg)}
+:root[data-look=linear] .tile h3{font-size:23px;letter-spacing:-.025em}
+:root[data-look=linear] .tile p{font-size:15px}
+:root[data-look=linear] .pipe-lines path{stroke:rgba(113,112,255,.6)}
+:root[data-look=linear] .pipe-src rect,:root[data-look=linear] .pipe-out rect{fill:rgba(255,255,255,.03);stroke:rgba(255,255,255,.1)}
+:root[data-look=linear] .pipe text{font-family:var(--sans);font-size:11.5px}
+:root[data-look=linear] .pipe-core rect{fill:#5E6AD2}
+:root[data-look=linear] .mini-report{background:var(--card);border-radius:10px}
+:root[data-look=linear] .spark .line{stroke:#7170FF}
+:root[data-look=linear] .app-grid i{border-radius:9px;background:#131416;color:#B4BCD0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+:root[data-look=linear] .tile:hover .app-grid i:nth-child(odd){transform:none}
+:root[data-look=linear] .tile:hover .app-grid i:nth-child(3n+1){color:#F7F8F8;background:#1A1B2E;box-shadow:inset 0 0 0 1px rgba(113,112,255,.4)}
+:root[data-look=linear] .flow span{border-radius:6px;font-family:var(--sans);font-size:12.5px;padding:6px 10px}
+:root[data-look=linear] .flow i{background:rgba(113,112,255,.6)}
+
+/* data platform */
+:root[data-look=linear] .node{height:40px;border-radius:8px;font-size:14.5px;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.09)}
+:root[data-look=linear] .node.out{background:rgba(113,112,255,.1);border-color:rgba(113,112,255,.28)}
+:root[data-look=linear] .arch-lines path{stroke:rgba(113,112,255,.55)}
+:root[data-look=linear] .arch-core{border-radius:14px;background:var(--card);border-color:rgba(255,255,255,.1);box-shadow:0 0 90px -24px rgba(113,112,255,.45)}
+:root[data-look=linear] .layer{border-radius:9px;background:rgba(255,255,255,.025)}
+:root[data-look=linear] .layer.hi{background:rgba(113,112,255,.12);border-color:rgba(113,112,255,.32)}
+:root[data-look=linear] .core-foot{font-family:var(--sans)}
+:root[data-look=linear] .feat3{gap:0;border-top:0;padding-top:0}
+:root[data-look=linear] .feat3>div{padding:28px 28px 0 0;border-top:1px solid var(--line)}
+:root[data-look=linear] .feat3>div+div{padding-left:28px;border-left:1px solid var(--line)}
+:root[data-look=linear] .feat3 h3{font-size:19px}
+:root[data-look=linear] .feat3 p{font-size:15px}
+
+/* tabs, KPI tiles, tables */
+:root[data-look=linear] .seg{padding:3px;border-radius:10px;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.08)}
+:root[data-look=linear] .seg button{height:32px;padding:0 14px;border-radius:7px;font-size:14px}
+:root[data-look=linear] .seg button.on{background:rgba(255,255,255,.09);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+:root[data-look=linear] .checks li{font-size:16px}
+:root[data-look=linear] .slicers span{border-radius:6px;font-family:var(--sans)}
+:root[data-look=linear] :is(.kpi4 div,.dk,.sb-kpis>div,.m-kpi){border-radius:10px}
+:root[data-look=linear] :is(.kpi4 em,.dk em,.pbi-legend,.mr-kpis i,.costbars text,.dc text,.fc text,.spark span,.ds li b,.prob b,.plist b,.prices b,.recon th,.recon td,.rls,.steps em,.m-rows em,.m-ok,.m-warn,.m-ph-top span,.sb-list em,.pv-match i){font-family:var(--sans)}
+:root[data-look=linear] .recon th:first-child,:root[data-look=linear] .recon tbody th{font-size:14px}
+:root[data-look=linear] .rls{border-radius:6px}
+:root[data-look=linear] .embed,:root[data-look=linear] .dc,:root[data-look=linear] .ds{border-radius:10px}
+:root[data-look=linear] .embed-nav span{border-radius:6px}
+:root[data-look=linear] .dc .ln,:root[data-look=linear] .pbi-line .line{stroke:#7170FF}
+
+/* cards */
+:root[data-look=linear] :is(.card,.app,.calc-in,.calc-out,.brief,.msg,.models article){border-radius:14px;background:var(--card);border-color:rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+:root[data-look=linear] .card h3{font-size:20px}
+:root[data-look=linear] .card p,:root[data-look=linear] .app p{font-size:15px}
+:root[data-look=linear] .msg.q{background:#F7F8F8;color:#08090A;border-color:#F7F8F8;border-bottom-right-radius:4px}
+:root[data-look=linear] .msg.a{border-bottom-left-radius:4px}
+:root[data-look=linear] .msg p{font-size:16px}
+:root[data-look=linear] .chat-chips span{border-radius:6px;font-size:13px}
+:root[data-look=linear] .app{padding:20px}
+:root[data-look=linear] .app:hover{transform:translateY(-2px);background:#121315;border-color:rgba(255,255,255,.12);box-shadow:0 20px 50px -30px rgba(0,0,0,.9)}
+:root[data-look=linear] .app .go{font-family:var(--sans);color:#8FA4FF}
+:root[data-look=linear] .models article.hl{background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(180deg,rgba(113,112,255,.7),rgba(113,112,255,.12)) border-box;border:1px solid transparent}
+
+/* chips (team filter, brief needs) */
+:root[data-look=linear] .chips button{height:34px;padding:0 13px;border-radius:8px;font-size:14px;background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.09)}
+:root[data-look=linear] .chips button:hover{color:var(--ink)}
+:root[data-look=linear] .chips button[aria-pressed="true"]{background:rgba(113,112,255,.16);border-color:rgba(113,112,255,.45);color:var(--ink)}
+:root[data-look=linear] .app-filter .n{font-family:var(--sans)}
+
+/* spreadsheet → app slider (the spreadsheet itself keeps looking like a spreadsheet) */
+:root[data-look=linear] .ba-stage,:root[data-look=linear] .ba-before{border-radius:12px}
+:root[data-look=linear] .ba-tag{border-radius:6px;font-family:var(--sans)}
+:root[data-look=linear] .ba-tag-l{background:#F7F8F8;color:#08090A}
+:root[data-look=linear] .ba-tag-r{background:#5E6AD2}
+:root[data-look=linear] .ba-cap code{font-family:var(--kbd)}
+:root[data-look=linear] :is(.sb-bar,.sb-meter,.m-bar)>span,:root[data-look=linear] .calc-bars div:last-child i{background:linear-gradient(90deg,#5E6AD2,#8FA4FF)}
+:root[data-look=linear] .m-split i{background:linear-gradient(90deg,#5E6AD2,#B4A6FF)}
+:root[data-look=linear] .m-cbars i{background:linear-gradient(180deg,#7170FF,rgba(113,112,255,.25))}
+
+/* a day with your data */
+:root[data-look=linear] .day-step time{font-family:var(--sans);font-weight:600;color:#8FA4FF}
+:root[data-look=linear] .day-clock b{font-family:var(--sans);letter-spacing:-.05em}
+:root[data-look=linear] .m-phone{border-radius:18px;background:var(--card)}
+:root[data-look=linear] .m-rows li,:root[data-look=linear] .m-seg,:root[data-look=linear] .m-alert{border-radius:10px}
+:root[data-look=linear] .m-btn{border-radius:8px}
+
+/* automation, calculator, process */
+:root[data-look=linear] .steps li{border-radius:10px}
+:root[data-look=linear] .steps li.active{background:rgba(255,255,255,.05)}
+:root[data-look=linear] .si{border-radius:9px}
+:root[data-look=linear] .calc-out{box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 0 80px -30px rgba(113,112,255,.35)}
+:root[data-look=linear] .calc-f input::-webkit-slider-thumb{border-color:#7170FF}
+:root[data-look=linear] .timeline .num{border-radius:8px;font-family:var(--sans);font-weight:600}
+:root[data-look=linear] .faq summary{font-size:19px;letter-spacing:-.02em}
+:root[data-look=linear] .faq summary::after{background:linear-gradient(var(--ink2),var(--ink2)) center/13px 1.5px no-repeat,linear-gradient(var(--ink2),var(--ink2)) center/1.5px 13px no-repeat}
+
+/* contact */
+:root[data-look=linear] .contact{text-align:left}
+:root[data-look=linear] .contact h2 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+:root[data-look=linear] .brief select,:root[data-look=linear] .brief textarea{border-radius:8px;background:#0B0C0D}
+:root[data-look=linear] .brief-out{border-radius:10px;background:#0B0C0D}
+:root[data-look=linear] .brief pre{font:400 13.5px/1.6 var(--kbd)}
+:root[data-look=linear] .status{font-family:var(--sans)}
+
+/* footer, ⌘K menu */
+:root[data-look=linear] .foot{background:var(--bg)}
+:root[data-look=linear] .palette-scrim{background:rgba(0,0,0,.6)}
+:root[data-look=linear] .palette{border-radius:12px;background:#111214;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 40px 100px -20px rgba(0,0,0,.9)}
+:root[data-look=linear] .pal-list .it{height:40px;border-radius:7px;font-size:14.5px}
+:root[data-look=linear] .pal-list .it.on{background:rgba(255,255,255,.06)}
+:root[data-look=linear] .pal-list .it i{width:20px;height:20px;border-radius:5px;background:rgba(255,255,255,.05);color:var(--ink2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+:root[data-look=linear] .pal-list .it span{font-family:var(--sans)}
+
+/* ── tablets and phones ─────────────────────────────────────────────────────── */
+@media (max-width:1080px){
+  :root[data-look=linear] .feat3>div,:root[data-look=linear] .feat3>div+div{padding:24px 0 0;border-left:0}
+}
+@media (max-width:720px){
+  :root[data-look=linear] body{font-size:15.5px}
+  :root[data-look=linear] .hero{padding:104px 0 16px}
+  :root[data-look=linear] .tagline{font-size:12.5px;padding:0 10px 0 6px;max-width:100%}
+  :root[data-look=linear] h1{font-size:clamp(38px,10.6vw,52px);line-height:1.05}
+  :root[data-look=linear] .hero .lead{font-size:15.5px;margin-top:16px}
+  :root[data-look=linear] .ctas{flex-wrap:nowrap;margin-top:24px}
+  :root[data-look=linear] .ctas .btn.lg{height:42px;padding:0 15px;font-size:14.5px}
+  :root[data-look=linear] .ctas .btn kbd{display:none}
+  :root[data-look=linear] .hero-window{margin-top:40px;max-height:360px;transform:perspective(760px) rotateX(calc(var(--tilt,10deg) * 1.35)) !important;-webkit-mask-image:linear-gradient(180deg,#000 45%,transparent 96%);mask-image:linear-gradient(180deg,#000 45%,transparent 96%)}
+  :root[data-look=linear] .cmd-in{height:50px;font-size:15px}
+  :root[data-look=linear] .cmd-list li{height:36px;font-size:13.5px}
+  :root[data-look=linear] .cmd-preview{padding:16px 18px}
+  :root[data-look=linear] .pv-big{font-size:26px}
+  :root[data-look=linear] .stats{padding:56px 0 36px}
+  :root[data-look=linear] .tile{padding:24px}
+  :root[data-look=linear] .bento{margin-top:40px}
+  :root[data-look=linear] .sec{padding:84px 0}
+  :root[data-look=linear] .look-bar button{height:26px;padding:0 8px;font-size:12px}
+}
+@media (max-width:374px){
+  :root[data-look=linear] .ctas{flex-wrap:wrap}
+}

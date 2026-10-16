@@ -1,0 +1,22 @@
+/* Public demo copies: the demo bar on top, and the parts of the apps that need the private site hidden.
+ * Loaded after each app's own styles (tools/build-public.mjs). */
+.sdb{position:relative;z-index:30;display:flex;align-items:center;gap:10px;min-height:40px;padding:6px 14px;
+  background:#16161A;color:#F2F2F4;font:500 13.5px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.sdb a{color:inherit}
+.sdb-home{font-weight:650;text-decoration:none;letter-spacing:-.01em;padding:4px 2px}
+.sdb b{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;background:#FFE7A3;color:#4A3300;font:700 10.5px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}
+.sdb-note{flex:1;min-width:0;color:#C9C9CF}
+.sdb-talk{flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 13px;border-radius:999px;background:#F2F2F4;color:#111114!important;font-weight:650;text-decoration:none}
+.sdb-talk:hover{opacity:.9}
+.sdb a:focus-visible{outline:2px solid #B1A4FF;outline-offset:2px;border-radius:999px}
+@media (max-width:560px){.sdb{font-size:12.5px;gap:8px;padding:6px 10px}.sdb-home{display:none}}
+@media print{.sdb{display:none}}
+
+/* sync is off on the public site: no "Cloud sync" panel or heading (all four apps) */
+#syncPanel,h3:has(+ #syncPanel),section:has(> #syncPanel){display:none!important}
+/* Data health check: the online VIES check needs the private site's /api/vies */
+.card.vies{display:none!important}
+/* Cash forecast: "Fill from Billing and Invoices" reads apps that are not on the public site */
+.dr-actions:has([data-act="owndata"]),p.sub:has(+ .dr-actions [data-act="owndata"]),h3:has(+ p.sub + .dr-actions [data-act="owndata"]){display:none!important}
+/* Collections team workspaces need the private site (ws-sync.js also stays off with the public meta) */
+#wsBox{display:none!important}

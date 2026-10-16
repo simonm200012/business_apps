@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Collections — Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=4">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+<link rel="stylesheet" href="ws.css?v=2">
+<link rel="stylesheet" href="upflow.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main" id="skipLink">Skip to content</a>
+<div class="app">
+  <aside class="side" id="side" aria-label="Collections navigation">
+    <div class="brand">
+      <a href="#/"><i aria-hidden="true"></i><span>Collections<small id="brandSub">Demo · receivables</small></span></a>
+      <button type="button" class="btn sm menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span id="menuLabel">Menu</span>
+      </button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <span class="demo-pill" id="demoPill" title="The company, customers, people, invoices, phone numbers and amounts are fictional demo data. Letters are never sent by the app: you print them or open them in your own mail app. Your changes and imports stay in this browser."><i aria-hidden="true"></i><span id="demoText">Demo data · saved in this browser only</span></span>
+      <div class="ws-box" id="wsBox" hidden></div>
+      <label class="lang-pick"><span id="langLabel">Language</span><select id="uiLang"><option value="en">English</option><option value="sl">Slovenščina</option><option value="hr">Hrvatski</option></select></label>
+      <a class="btn sm" href="#/settings" id="settingsLink">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Letterhead &amp; settings
+      </a>
+    </div>
+  </aside>
+  <main class="main" id="main" tabindex="-1"><div class="page"><p class="loading" role="status"><i aria-hidden="true"></i>Loading receivables…</p></div></main>
+</div>
+<div id="printArea"></div>
+<div id="layers"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAct" hidden></button></div>
+<input type="file" id="csvPick" accept=".csv,text/csv,text/plain,.txt" hidden>
+<input type="file" id="bankPick" accept=".xml,.csv,.txt,text/xml,application/xml,text/csv,text/plain" hidden>
+<script src="/_shared/stratum-sync.js"></script>
+<script src="engine.js?v=3"></script>
+<script src="data.js?v=2"></script>
+<script src="i18n.js?v=4"></script>
+<script src="bank.js?v=1"></script>
+<script src="outbox.js?v=3"></script>
+<script src="ws-ops.js?v=1"></script>
+<script src="ws-sync.js?v=3"></script>
+<script src="app.js?v=9"></script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+/* Home page look "odoo": everything is scoped to :root[data-look="odoo"] (see home-looks/README.md).
+   Odoo's home menu (17/18): a soft lavender wallpaper (dark slate in dark mode), a transparent navbar with the app's menu
+   sections on the left and the systray on the right, and a calm, centred grid of big app icons with their names. Plum
+   #714B67 for primary buttons, teal #017E84 for links, Odoo's greys, Roboto. The extra markup comes from odoo.js. */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root[data-look="odoo"]{
+--od-plum:#714B67;--od-plumH:#5F3F57;--od-plumFg:#714B67;--od-plumTint:rgba(113,75,103,.11);--od-teal:#017E84;--od-tealH:#01585C;
+--od-ink:#111827;--od-ink2:#374151;--od-ink3:#5F636F;--od-ink4:#7C7F89;--od-cap:#1F2937;
+--od-dd:#FFFFFF;--od-ddline:#D8DADD;--od-line:#E7E9ED;--od-hover:#F3F4F6;--od-sel:#E7E9ED;
+--od-ddsh:0 10px 22px -6px rgba(17,24,39,.22),0 2px 5px rgba(17,24,39,.07);
+--od-bar:rgba(237,234,242,.82);--od-sys:#374151;--od-sysH:rgba(17,24,39,.07);--od-tileF:rgba(255,255,255,.62);--od-tileFl:rgba(17,24,39,.08);
+--od-bad:#D23F3A;--od-warn:#9A6B01;--od-info:#017E84;--od-badge:#D23F3A;
+--od-base:#E6E2EC;
+--od-wall:linear-gradient(117deg,rgba(255,255,255,0) 0 41%,rgba(255,255,255,.34) 41% 56%,rgba(255,255,255,0) 56%),
+  linear-gradient(117deg,rgba(255,255,255,0) 0 63%,rgba(255,255,255,.2) 63% 83%,rgba(255,255,255,0) 83%),
+  linear-gradient(63deg,rgba(255,255,255,0) 0 70%,rgba(255,255,255,.16) 70%),
+  radial-gradient(90% 70% at 8% 0%,rgba(246,244,249,.95) 0%,rgba(246,244,249,0) 70%),
+  linear-gradient(165deg,#EEEBF3 0%,#E4DFEB 50%,#D9D3E4 100%);
+/* the page's own tokens, so its command bar, menus, Quick access and Install panel speak Odoo too */
+--bg:#E6E2EC;--bgHover:rgba(17,24,39,.07);--main:transparent;--mainHover:rgba(255,255,255,.5);--card:#FFFFFF;--pbg:#E6E2EC;
+--hover:#F3F4F6;--press:#E7E9ED;--sel:#E7E9ED;--chip:#E7E9ED;--chipH:#D8DADD;
+--ink:#111827;--ink2:#374151;--ink3:#5F636F;--ink4:#7C7F89;--line:#D8DADD;--line2:#D8DADD;--line3:#E7E9ED;
+--brand:#714B67;--brandH:#5F3F57;--brandP:#52374B;--brandFg:#714B67;--tint:#F2EDF1;--tint2:#E4D8E1;--tintLine:#CDB9C8;--tintFg:#714B67;--onBrand2:#EADFE7;
+--okFg:#008818;--okBg:#E9F7EC;--okLine:#A8DDB5;--warnFg:#9A6B01;--warnBg:#FFF6DF;--warnLine:#F3D58B;--warnBar:#E99D00;--badFg:#D23F3A;--badBg:#FBEAEA;--badLine:#F0B4B2;--badBar:#D23F3A;--infoBar:#017E84;
+--input:#FFFFFF;--inputLine:#D8DADD;--inputBottom:#9A9CA5;--focus:#017E84;--scrim:rgba(17,24,39,.45);--iconShade:rgba(17,24,39,.16);
+--sh2:0 1px 2px rgba(17,24,39,.08);--sh4:0 1px 3px rgba(17,24,39,.1);--sh8:0 4px 10px -2px rgba(17,24,39,.14);
+--sh16:var(--od-ddsh);--sh28:0 12px 28px -6px rgba(17,24,39,.28);--sh64:0 20px 48px -8px rgba(17,24,39,.35);
+--sans:'Roboto',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Arial,sans-serif;color-scheme:light}
+:root[data-look="odoo"][data-stratum-mode="dark"]{
+--od-plum:#7E5574;--od-plumH:#8F6385;--od-plumFg:#D7AECD;--od-plumTint:rgba(215,174,205,.13);--od-teal:#4CC0C6;--od-tealH:#7AD3D7;
+--od-ink:#EDEEF1;--od-ink2:#C9CCD2;--od-ink3:#9A9CA5;--od-ink4:#80838D;--od-cap:#E4E5E9;
+--od-dd:#2E3240;--od-ddline:#434757;--od-line:#3A3E4C;--od-hover:#363A48;--od-sel:#3E4252;
+--od-ddsh:0 12px 28px -6px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.35);
+--od-bar:rgba(36,39,50,.84);--od-sys:#C9CCD2;--od-sysH:rgba(255,255,255,.08);--od-tileF:rgba(255,255,255,.07);--od-tileFl:rgba(255,255,255,.1);
+--od-bad:#FF7F77;--od-warn:#EBB650;--od-info:#4CC0C6;--od-badge:#D23F3A;
+--od-base:#22252F;
+--od-wall:linear-gradient(117deg,rgba(255,255,255,0) 0 41%,rgba(255,255,255,.028) 41% 56%,rgba(255,255,255,0) 56%),
+  linear-gradient(117deg,rgba(255,255,255,0) 0 63%,rgba(255,255,255,.018) 63% 83%,rgba(255,255,255,0) 83%),
+  radial-gradient(90% 70% at 8% 0%,rgba(113,75,103,.16) 0%,rgba(113,75,103,0) 70%),
+  linear-gradient(165deg,#2B2F3C 0%,#262A36 45%,#1E2029 100%);
+--bg:#22252F;--bgHover:rgba(255,255,255,.08);--main:transparent;--mainHover:rgba(255,255,255,.05);--card:#2E3240;--pbg:#22252F;
+--hover:#363A48;--press:#3E4252;--sel:#3E4252;--chip:#363A48;--chipH:#434757;
+--ink:#EDEEF1;--ink2:#C9CCD2;--ink3:#9A9CA5;--ink4:#80838D;--line:#434757;--line2:#4A4E5E;--line3:#3A3E4C;
+--brand:#7E5574;--brandH:#8F6385;--brandP:#6A4762;--brandFg:#D7AECD;--tint:#3A3040;--tint2:#4A3A4F;--tintLine:#5E4A62;--tintFg:#D7AECD;--onBrand2:#EADFE7;
+--okFg:#5DD07A;--okBg:#1F3527;--okLine:#2F6B40;--warnFg:#EBB650;--warnBg:#3A3020;--warnLine:#6E5622;--warnBar:#E99D00;--badFg:#FF7F77;--badBg:#40262A;--badLine:#7A3A3A;--badBar:#E0574F;--infoBar:#4CC0C6;
+--input:#2E3240;--inputLine:#4A4E5E;--inputBottom:#80838D;--focus:#4CC0C6;--scrim:rgba(0,0,0,.6);--iconShade:rgba(0,0,0,.45);
+--sh2:0 1px 2px rgba(0,0,0,.3);--sh4:0 1px 3px rgba(0,0,0,.35);--sh8:0 4px 10px -2px rgba(0,0,0,.45);
+--sh28:0 12px 28px -6px rgba(0,0,0,.6);--sh64:0 20px 48px -8px rgba(0,0,0,.7);color-scheme:dark}
+
+/* the wallpaper */
+:root[data-look="odoo"] body{background:var(--od-base);color:var(--od-ink);font-family:var(--sans)}
+:root[data-look="odoo"] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--od-wall)}
+:root[data-look="odoo"] :focus-visible{outline-color:var(--od-teal)}
+
+/* what Odoo's home menu does not have: the icon rail, the bottom bar, the greeting, the pinned row, the Needs and All apps
+   sections (their content is in the grid, the Activities clock and the Recent dropdown) */
+:root[data-look="odoo"] :is(.rail,.bn,.waf,.find,#bell,.hello,.pins,.needs,.appsec,.psearch,.chips-top,#quick .qh,#quick .qsel){display:none!important}
+:root[data-look="odoo"] .main{margin-left:0;min-height:calc(100vh - 46px);background:transparent;border-radius:0;box-shadow:none}
+:root[data-look="odoo"] .mi{max-width:none;padding:0 24px 28px}
+
+/* navbar: transparent over the wallpaper, a soft frosted bar once the page scrolls */
+:root[data-look="odoo"] .tb{display:flex;align-items:center;gap:0;height:46px;min-height:0;padding:0 112px 0 6px;background:transparent;grid-template-columns:none}
+:root[data-look="odoo"] .tb::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--od-bar);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:0 1px 0 var(--od-tileFl);opacity:0;transition:opacity .18s}
+:root[data-look="odoo"].od-scrolled .tb::before,:root[data-look="odoo"].od-gp-open .tb::before{opacity:1}
+:root[data-look="odoo"] .tb-l{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:0;height:46px}
+:root[data-look="odoo"] .brand{order:1;height:46px;padding:0 14px 0 10px;gap:0;font:500 17px/46px var(--sans);letter-spacing:0;color:var(--od-ink)}
+:root[data-look="odoo"] .brand img{display:none}
+:root[data-look="odoo"] .brand:hover{background:var(--od-sysH)}
+/* the groups as Odoo menu sections */
+:root[data-look="odoo"] .od-secs{order:3;display:none;align-items:stretch;height:46px;min-width:0;overflow:hidden}
+:root[data-look="odoo"] .od-sec{position:relative;height:46px;padding:0 11px;border:0;background:transparent;color:var(--od-ink2);font:400 14px/46px var(--sans);white-space:nowrap;cursor:pointer}
+:root[data-look="odoo"] .od-sec:hover{background:var(--od-sysH);color:var(--od-ink)}
+:root[data-look="odoo"] .od-sec[aria-pressed="true"]{color:var(--od-ink);font-weight:500}
+:root[data-look="odoo"] .od-sec[aria-pressed="true"]::after{content:"";position:absolute;left:11px;right:11px;bottom:7px;height:2px;border-radius:1px;background:var(--od-plumFg)}
+:root[data-look="odoo"] .od-gtog{order:2;display:inline-flex;align-items:center;gap:6px;height:46px;padding:0 10px;border:0;background:transparent;color:var(--od-ink2);font:400 14px var(--sans);cursor:pointer;white-space:nowrap;flex:none}
+:root[data-look="odoo"] .od-gtog:hover,:root[data-look="odoo"] .od-gtog[aria-expanded="true"]{background:var(--od-sysH);color:var(--od-ink)}
+:root[data-look="odoo"] .od-gtog .od-bars{display:none}
+:root[data-look="odoo"] .od-gtog .od-caret{color:var(--od-ink3)}
+@media (min-width:1280px){:root[data-look="odoo"] .od-secs{display:flex}:root[data-look="odoo"] .od-gtog{display:none}}
+
+/* systray */
+:root[data-look="odoo"] .tb-r{flex:none;display:flex;align-items:center;gap:0;height:46px}
+:root[data-look="odoo"] .od-sq{order:1}:root[data-look="odoo"] .od-act{order:2}:root[data-look="odoo"] .od-rec{order:3}
+:root[data-look="odoo"] .tb-r .fbtn.sc{order:4}:root[data-look="odoo"] #look{order:5}:root[data-look="odoo"] #inst{order:6}
+:root[data-look="odoo"] .od-act{position:relative;height:46px}
+:root[data-look="odoo"] .od-sb{position:relative;display:grid;place-items:center;width:40px;height:46px;padding:0;border:0;border-radius:0;background:transparent;color:var(--od-sys);cursor:pointer;flex:none}
+:root[data-look="odoo"] .od-sb:hover,:root[data-look="odoo"] .od-sb[aria-expanded="true"]{background:var(--od-sysH);color:var(--od-ink)}
+:root[data-look="odoo"] .od-sb .i{stroke-width:1.9}
+:root[data-look="odoo"] .od-badge{position:absolute;top:6px;left:21px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--od-badge);color:#fff;font:500 11px/18px var(--sans);text-align:center;font-variant-numeric:tabular-nums}
+:root[data-look="odoo"] .tb-r .fbtn.sc{display:inline-flex;height:46px;padding:0 11px;border:0;border-radius:0;background:transparent;color:var(--od-ink2);font:400 14px var(--sans)}
+:root[data-look="odoo"] .tb-r .fbtn.sc:hover{background:var(--od-sysH);color:var(--od-ink)}
+:root[data-look="odoo"] .look{height:46px}
+:root[data-look="odoo"] .look-btn{height:46px;width:auto;padding:0 11px;border-radius:0;color:var(--od-sys);font:400 14px var(--sans);gap:7px}
+:root[data-look="odoo"] .look-btn:hover,:root[data-look="odoo"] .look-btn[aria-expanded="true"]{background:var(--od-sysH);color:var(--od-ink)}
+:root[data-look="odoo"] .inst{margin-left:6px}
+:root[data-look="odoo"] .inst-btn.fbtn.pri{height:30px;padding:0 11px;border:0;border-radius:4px;background:var(--od-plum);color:#fff;font:500 13.5px var(--sans);gap:6px;box-shadow:none}
+:root[data-look="odoo"] .inst-btn.fbtn.pri:hover{background:var(--od-plumH)}
+/* the shell's theme switch, as the last flat systray entry */
+:root[data-look="odoo"] stratum-shell{top:3px!important;right:10px!important;--s:transparent;--ln:transparent;--sh:none;--i:var(--od-sys);--i2:var(--od-sys);--fill:var(--od-sysH)}
+
+/* dropdowns: Odoo's white menus with a thin border */
+:root[data-look="odoo"] .od-dd,:root[data-look="odoo"] .look-menu,:root[data-look="odoo"] .od-gp,:root[data-look="odoo"] .inst-pop{background:var(--od-dd);color:var(--od-ink);border:1px solid var(--od-ddline);border-radius:4px;box-shadow:var(--od-ddsh)}
+:root[data-look="odoo"] .look-menu{top:100%;right:0;padding:4px 0;min-width:260px}
+:root[data-look="odoo"] .look-menu h3{margin:6px 16px 6px;color:var(--od-ink3);font-size:12px;font-weight:500}
+:root[data-look="odoo"] .look-menu button{border-radius:0;padding:8px 16px;color:var(--od-ink)}
+:root[data-look="odoo"] .look-menu button:hover,:root[data-look="odoo"] .look-menu button:focus-visible{background:var(--od-hover)}
+:root[data-look="odoo"] .look-menu button[aria-checked="true"]::after{color:var(--od-plumFg)}
+:root[data-look="odoo"] .look-menu small{color:var(--od-ink3)}
+:root[data-look="odoo"] .inst-pop{top:calc(100% + 9px)}
+:root[data-look="odoo"] .inst-pop .x{border-radius:4px}
+
+/* Activities (the clock) */
+:root[data-look="odoo"] .od-actdd{position:absolute;right:0;top:100%;z-index:45;width:380px;max-height:min(460px,calc(100vh - 64px));display:flex;flex-direction:column;overflow:hidden}
+:root[data-look="odoo"] .od-ddh{display:flex;align-items:baseline;gap:8px;padding:10px 14px 8px;border-bottom:1px solid var(--od-line);flex:none}
+:root[data-look="odoo"] .od-ddh b{font-size:14px;font-weight:500;color:var(--od-ink)}
+:root[data-look="odoo"] .od-ddh span{color:var(--od-ink4);font-size:12.5px}
+:root[data-look="odoo"] .od-agl{overflow-y:auto;overscroll-behavior:contain}
+:root[data-look="odoo"] .od-ag{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-bottom:1px solid var(--od-line);cursor:pointer}
+:root[data-look="odoo"] .od-ag:last-child{border-bottom:0}
+:root[data-look="odoo"] .od-ag:hover{background:var(--od-hover)}
+:root[data-look="odoo"] .od-ag>img{width:42px;height:42px;flex:none;filter:drop-shadow(0 1px 1px rgba(17,24,39,.12))}
+:root[data-look="odoo"] .od-agb{flex:1;min-width:0}
+:root[data-look="odoo"] .od-agt{display:flex;align-items:baseline;gap:8px;margin:1px 0 3px}
+:root[data-look="odoo"] .od-agn{flex:1;min-width:0;color:var(--od-ink);font-size:14.5px;font-weight:500;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="odoo"] .od-agt time{flex:none;color:var(--od-ink4);font-size:12px}
+:root[data-look="odoo"] .od-ais{display:flex;flex-direction:column}
+:root[data-look="odoo"] .od-ai{display:flex;align-items:baseline;gap:7px;padding:2px 0;color:var(--od-ink2);font-size:13.5px;line-height:19px;text-decoration:none}
+:root[data-look="odoo"] .od-ai:hover span{color:var(--od-teal);text-decoration:underline}
+:root[data-look="odoo"] .od-ai span{min-width:0}
+:root[data-look="odoo"] .od-n{flex:none;font-weight:500;font-variant-numeric:tabular-nums;color:var(--od-info)}
+:root[data-look="odoo"] .od-n.bad{color:var(--od-bad)}:root[data-look="odoo"] .od-n.warn{color:var(--od-warn)}
+:root[data-look="odoo"] .od-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--od-info);transform:translateY(-1px)}
+:root[data-look="odoo"] .od-dot.bad{background:var(--od-bad)}:root[data-look="odoo"] .od-dot.warn{background:var(--od-warn)}
+:root[data-look="odoo"] .od-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 24px 28px;color:var(--od-ink3);font-size:13.5px;text-align:center}
+:root[data-look="odoo"] .od-empty .i{color:var(--od-ink4);opacity:.6}
+
+/* Recent: the page's Quick access, as a systray dropdown (header tabs like Odoo's messaging menu) */
+:root[data-look="odoo"] #quick{display:none}
+:root[data-look="odoo"].od-qa-open #quick{display:flex;flex-direction:column;position:fixed;z-index:45;top:var(--od-qa-top,48px);right:var(--od-qa-right,12px);width:min(420px,calc(100vw - 16px));max-height:min(540px,calc(100vh - 64px));margin:0;overflow:hidden;background:var(--od-dd);border:1px solid var(--od-ddline);border-radius:4px;box-shadow:var(--od-ddsh)}
+:root[data-look="odoo"] #quick .qtabs{flex:none;height:42px;padding:0 6px;border-bottom:1px solid var(--od-line);overflow-x:auto;scrollbar-width:none}
+:root[data-look="odoo"] #quick .qtabs::-webkit-scrollbar{display:none}
+:root[data-look="odoo"] #quick .qtabs [role="tab"]{height:42px;padding:0 9px;color:var(--od-ink3);font:400 13.5px var(--sans)}
+:root[data-look="odoo"] #quick .qtabs [role="tab"]:hover{color:var(--od-ink)}
+:root[data-look="odoo"] #quick .qtabs [role="tab"][aria-selected="true"]{color:var(--od-ink);font-weight:500}
+:root[data-look="odoo"] #quick .qtabs [role="tab"] span::after{font-weight:500}
+:root[data-look="odoo"] #quick .qtabs [role="tab"][aria-selected="true"]::after{left:9px;right:9px;height:2px;border-radius:1px;background:var(--od-plumFg)}
+:root[data-look="odoo"] #qaPanel{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+:root[data-look="odoo"] #quick .qt,:root[data-look="odoo"] #quick .qt tbody{display:block}
+:root[data-look="odoo"] #quick .qt thead{display:none}
+:root[data-look="odoo"] #quick .qt tr{display:flex;align-items:center;min-height:56px;padding:0 6px 0 14px}
+:root[data-look="odoo"] #quick .qt tbody tr[data-app]:hover{background:var(--od-hover)}
+:root[data-look="odoo"] #quick .qt tbody tr[data-app]:hover td{background:transparent}
+:root[data-look="odoo"] #quick .qt td{display:none;height:auto;padding:0;border:0}
+:root[data-look="odoo"] #quick .qt td.c-nm{display:flex;flex:1;min-width:0;width:auto;align-self:stretch;align-items:center}
+:root[data-look="odoo"] #quick .qt td.c-pin{display:block;width:40px;padding:0}
+:root[data-look="odoo"] #quick .qt tbody tr+tr{border-top:1px solid var(--od-line)}
+:root[data-look="odoo"] #quick .ql{gap:12px;width:100%;padding:7px 0}
+:root[data-look="odoo"] #quick .ql img{width:36px;height:36px}
+:root[data-look="odoo"] #quick .ql .nm{font-size:14px;line-height:19px;font-weight:500;white-space:nowrap}
+:root[data-look="odoo"] #quick .qt tbody tr:hover .nm{text-decoration:none}
+:root[data-look="odoo"] #quick .ql .meta{display:block;color:var(--od-ink4);font-size:12.5px;line-height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="odoo"] #quick .qt .none td{display:block;padding:24px 18px;color:var(--od-ink3);white-space:normal;text-align:center}
+:root[data-look="odoo"] #quick .qfoot{flex:none;padding:4px 8px;border-top:1px solid var(--od-line)}
+:root[data-look="odoo"] .lnk{color:var(--od-teal);font-weight:500}
+:root[data-look="odoo"] .pin[aria-pressed="true"]{color:var(--od-plumFg)}
+:root[data-look="odoo"] .pill.new{background:var(--od-plumTint);border-color:transparent;color:var(--od-plumFg)}
+
+/* groups: a dropdown under "Group ▾" (the burger drawer on a phone) */
+:root[data-look="odoo"] .od-gp{position:fixed;z-index:70;left:var(--od-gx,8px);top:var(--od-gy,48px);width:280px;max-height:calc(100vh - 64px);overflow-y:auto;padding:4px 0}
+:root[data-look="odoo"] .od-gph{display:none}
+:root[data-look="odoo"] .od-gpm{display:none}
+:root[data-look="odoo"] .od-gpt{padding:8px 16px 4px;color:var(--od-ink4);font-size:12px;font-weight:500}
+:root[data-look="odoo"] .od-gi{display:flex;align-items:center;gap:12px;width:100%;min-height:38px;padding:0 16px;border:0;background:transparent;color:var(--od-ink);font:400 14px var(--sans);text-align:left;text-decoration:none;cursor:pointer}
+:root[data-look="odoo"] .od-gi:hover,:root[data-look="odoo"] .od-gi:focus-visible{background:var(--od-hover);outline:none}
+:root[data-look="odoo"] .od-gi .i{color:var(--od-ink3)}
+:root[data-look="odoo"] .od-gi small{margin-left:auto;color:var(--od-ink4);font-size:12px}
+:root[data-look="odoo"] .od-gi[aria-pressed="true"]{background:var(--od-plumTint);color:var(--od-plumFg);font-weight:500}
+:root[data-look="odoo"] .od-gi[aria-pressed="true"] .i{color:var(--od-plumFg)}
+:root[data-look="odoo"] .od-scrim{position:fixed;inset:0;z-index:69;background:var(--scrim)}
+
+/* the home menu: a centred grid of big icons, at most six to a row */
+:root[data-look="odoo"] .od-home{max-width:870px;margin:0 auto;padding:clamp(28px,7vh,72px) 0 0}
+:root[data-look="odoo"] .od-search{display:none;position:relative;align-items:center;max-width:620px;height:42px;margin:0 auto 30px;padding:0 6px 0 14px;border-radius:4px;background:var(--od-dd);border:1px solid var(--od-ddline);box-shadow:0 1px 2px rgba(17,24,39,.06)}
+:root[data-look="odoo"] .od-home.od-s .od-search{display:flex}
+:root[data-look="odoo"] .od-search:focus-within{border-color:var(--od-teal);box-shadow:0 0 0 1px var(--od-teal)}
+:root[data-look="odoo"] .od-search>.i{color:var(--od-ink3);flex:none}
+:root[data-look="odoo"] .od-search input{flex:1;min-width:0;height:100%;margin-left:10px;border:0;background:transparent;color:var(--od-ink);font:400 16px var(--sans);outline:none;-webkit-appearance:none;appearance:none}
+:root[data-look="odoo"] .od-search input::placeholder{color:var(--od-ink4)}
+:root[data-look="odoo"] .od-search input::-webkit-search-cancel-button{display:none}
+/* the active group, as an Odoo search facet (Backspace in the empty field or × removes it) */
+:root[data-look="odoo"] .od-facet{display:inline-flex;align-items:stretch;flex:none;max-width:48%;height:24px;margin-left:10px;border-radius:4px;background:var(--od-sel);color:var(--od-ink);overflow:hidden}
+:root[data-look="odoo"] .od-facet[hidden]{display:none!important}
+:root[data-look="odoo"] .od-fi{display:grid;place-items:center;width:24px;flex:none;background:var(--od-plum);color:#fff}
+:root[data-look="odoo"] .od-fl{padding:0 2px 0 7px;font-size:13px;line-height:24px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="odoo"] .od-fx{display:grid;place-items:center;width:24px;flex:none;padding:0;border:0;background:transparent;color:var(--od-ink3);cursor:pointer}
+:root[data-look="odoo"] .od-fx:hover{color:var(--od-bad)}
+:root[data-look="odoo"] .od-sx{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:4px;background:transparent;color:var(--od-ink3);cursor:pointer}
+:root[data-look="odoo"] .od-sx:hover{background:var(--od-hover);color:var(--od-ink)}
+:root[data-look="odoo"] .od-apps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px 0;justify-items:center;border-radius:8px;transition:outline-color .15s}
+:root[data-look="odoo"] .od-app{position:relative;width:100%;max-width:142px;display:flex;flex-direction:column;align-items:center;touch-action:manipulation}
+:root[data-look="odoo"] .od-link{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;padding:12px 6px 10px;border-radius:6px;color:var(--od-cap);text-decoration:none;-webkit-user-drag:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+:root[data-look="odoo"] .od-link img{display:block;width:76px;height:76px;filter:drop-shadow(0 1px 1.5px rgba(17,24,39,.14)) drop-shadow(0 3px 6px rgba(17,24,39,.05));transition:transform .2s ease,filter .2s ease;-webkit-user-drag:none}
+:root[data-look="odoo"][data-stratum-mode="dark"] .od-link img{filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.4)) drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+:root[data-look="odoo"] .od-link:hover img{transform:translateY(-2px);filter:drop-shadow(0 2px 2px rgba(17,24,39,.12)) drop-shadow(0 9px 12px rgba(17,24,39,.16))}
+:root[data-look="odoo"] .od-cap{max-width:100%;font-size:14.5px;line-height:18px;text-align:center;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+:root[data-look="odoo"] .od-link:focus-visible,:root[data-look="odoo"] .od-link.od-focus{outline:none;background:var(--od-tileF);box-shadow:inset 0 0 0 1px var(--od-tileFl)}
+:root[data-look="odoo"] .od-link:focus-visible{box-shadow:inset 0 0 0 2px var(--od-teal)}
+/* the pin star: always on pinned apps, on hover for the rest */
+:root[data-look="odoo"] .od-pin{position:absolute;top:6px;left:calc(50% + 25px);z-index:1;display:grid;place-items:center;width:22px;height:22px;margin:0;padding:0;border:0;border-radius:50%;background:var(--od-dd);color:var(--od-ink4);box-shadow:0 1px 3px rgba(17,24,39,.22);cursor:pointer;opacity:0;transition:opacity .12s}
+:root[data-look="odoo"] .od-pin .i{stroke-width:2}
+:root[data-look="odoo"] .od-app:hover .od-pin,:root[data-look="odoo"] .od-app:focus-within .od-pin,:root[data-look="odoo"] .od-pinned .od-pin,:root[data-look="odoo"] .od-arranging .od-pin{opacity:1}
+:root[data-look="odoo"] .od-pin:hover{color:var(--od-plumFg)}
+:root[data-look="odoo"] .od-pin[aria-pressed="true"]{color:var(--od-plumFg)}
+:root[data-look="odoo"] .od-pin[aria-pressed="true"] .i{fill:currentColor}
+:root[data-look="odoo"] .od-q .od-pin{display:none}
+/* Arrange mode: arrows under the pinned apps */
+:root[data-look="odoo"] .od-ed{display:none;gap:4px;margin:-4px 0 6px}
+:root[data-look="odoo"] .od-arranging .od-pinned .od-ed{display:flex}
+:root[data-look="odoo"] .od-mv{display:grid;place-items:center;width:30px;height:26px;padding:0;border:1px solid var(--od-ddline);border-radius:4px;background:var(--od-dd);color:var(--od-ink2);cursor:pointer}
+:root[data-look="odoo"] .od-mv:hover:not(:disabled){background:var(--od-hover);color:var(--od-ink)}
+:root[data-look="odoo"] .od-mv:disabled{opacity:.35;cursor:default}
+:root[data-look="odoo"] .od-arranging .od-apps{outline:1px dashed var(--od-ink4);outline-offset:8px}
+:root[data-look="odoo"] .od-arranging .od-link{cursor:default}
+:root[data-look="odoo"] .od-arranging .od-link:hover img{transform:none}
+:root[data-look="odoo"] .od-app[draggable="true"] .od-link{cursor:pointer}
+:root[data-look="odoo"] .od-dragging{opacity:.3}
+:root[data-look="odoo"] .od-dnd .od-link:hover img{transform:none}
+:root[data-look="odoo"] .od-db::before,:root[data-look="odoo"] .od-da::after{content:"";position:absolute;top:12px;width:3px;height:76px;border-radius:2px;background:var(--od-plumFg)}
+:root[data-look="odoo"] .od-db::before{left:-2px}:root[data-look="odoo"] .od-da::after{right:-2px}
+/* search results: "App / Screen" rows under the icons */
+:root[data-look="odoo"] .od-menus{max-width:620px;margin:22px auto 0;padding:6px 0;border-radius:4px;background:var(--od-dd);border:1px solid var(--od-ddline);box-shadow:var(--sh4)}
+:root[data-look="odoo"] .od-mi{display:flex;align-items:center;gap:12px;width:100%;min-height:40px;padding:6px 16px;border:0;background:transparent;color:var(--od-ink2);font:400 14.5px/20px var(--sans);text-align:left;text-decoration:none;cursor:pointer}
+:root[data-look="odoo"] .od-mi img{width:22px;height:22px;flex:none}
+:root[data-look="odoo"] .od-mi>.i{flex:none;width:22px;color:var(--od-ink3)}
+:root[data-look="odoo"] .od-mt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="odoo"] .od-mt b{color:var(--od-ink);font-weight:700}
+:root[data-look="odoo"] .od-mt i{font-style:normal;color:var(--od-ink4)}
+:root[data-look="odoo"] .od-mt small{display:block;color:var(--od-ink4);font-size:12px;line-height:16px}
+:root[data-look="odoo"] .od-mi.od-focus,:root[data-look="odoo"] .od-mi:hover{background:var(--od-sel);color:var(--od-ink)}
+:root[data-look="odoo"] .od-mcmd{border-top:1px solid var(--od-line);margin-top:4px}
+:root[data-look="odoo"] .od-mcmd kbd{flex:none;padding:0 6px;border:1px solid var(--od-ddline);border-bottom-width:2px;border-radius:4px;color:var(--od-ink3);font:500 11px/18px var(--sans)}
+:root[data-look="odoo"] .od-none{margin:8px 0 0;color:var(--od-ink3);text-align:center;font-size:15px}
+:root[data-look="odoo"] .od-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;margin:30px 0 0;color:var(--od-ink4);font-size:12.5px}
+:root[data-look="odoo"] .od-arr{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:0;border-radius:4px;background:transparent;color:var(--od-teal);font:500 13px var(--sans);cursor:pointer}
+:root[data-look="odoo"] .od-arr:hover{background:var(--od-tileF)}
+:root[data-look="odoo"] .od-arr[aria-pressed="true"]{background:var(--od-plum);color:#fff}
+:root[data-look="odoo"] .od-q .od-foot{display:none}
+
+/* footer: one quiet line */
+:root[data-look="odoo"] .foot{justify-content:center;gap:2px 14px;margin:26px auto 0;padding:14px 0 0;max-width:870px;border-top:0;color:var(--od-ink4);font-size:12px;text-align:center}
+:root[data-look="odoo"] .foot .fb,:root[data-look="odoo"] .foot nav{display:none}
+:root[data-look="odoo"] .foot p{flex:0 1 auto}
+:root[data-look="odoo"] .foot a{color:var(--od-teal)}
+
+/* the command bar (⌘K, "/"): Odoo's command palette */
+:root[data-look="odoo"] .cmdk{padding-top:9vh}
+:root[data-look="odoo"] .cmdk-back{background:rgba(17,24,39,.5)}
+:root[data-look="odoo"] .cmdk-box{width:min(660px,100%);border-radius:4px;border:1px solid var(--od-ddline);background:var(--od-dd)}
+:root[data-look="odoo"] .cx-in{height:50px;padding:0 10px 0 18px;border-bottom-color:var(--od-line)}
+:root[data-look="odoo"] .cx-list{padding:2px 0 6px}
+:root[data-look="odoo"] .cx-h{padding:10px 18px 4px;color:var(--od-ink3);font-size:12px;font-weight:700}
+:root[data-look="odoo"] .cx-o{min-height:42px;padding:5px 18px;border-radius:0}
+:root[data-look="odoo"] .cx-o.on{background:var(--od-sel)}
+:root[data-look="odoo"] .cx-o.on::before{display:none}
+:root[data-look="odoo"] .cx-ic,:root[data-look="odoo"] .cx-ic img{width:24px;height:24px}
+:root[data-look="odoo"] .cx-tt mark{color:var(--od-plumFg)}
+:root[data-look="odoo"] .cx-r .i{color:var(--od-plumFg)}
+:root[data-look="odoo"] .cx-foot{background:var(--od-hover);border-top-color:var(--od-line)}
+:root[data-look="odoo"] .cx-cancel{color:var(--od-teal)}
+
+/* medium screens: four or five to a row */
+@media (max-width:991px){:root[data-look="odoo"] .od-apps{grid-template-columns:repeat(5,minmax(0,1fr))}:root[data-look="odoo"] .od-home{max-width:720px}}
+@media (max-width:900px){:root[data-look="odoo"] #instLbl{display:none}:root[data-look="odoo"] .inst-btn.fbtn.pri{width:34px;padding:0}}
+@media (max-width:820px){:root[data-look="odoo"] .od-apps{grid-template-columns:repeat(4,minmax(0,1fr))}:root[data-look="odoo"] .od-home{max-width:600px}}
+
+/* phone: Odoo's mobile home: the burger, the systray, a search field and four icons to a row */
+@media (max-width:700px){
+  :root[data-look="odoo"] body{background:var(--od-base)}
+  :root[data-look="odoo"] .tb{height:auto;min-height:calc(46px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 52px 0 0;background:transparent}
+  :root[data-look="odoo"] stratum-shell{top:calc(3px + env(safe-area-inset-top,0px))!important;right:6px!important}
+  :root[data-look="odoo"] .tb-l{flex:1}
+  :root[data-look="odoo"] .od-gtog{order:0;width:46px;padding:0;justify-content:center}
+  :root[data-look="odoo"] .od-gtog .od-bars{display:grid}
+  :root[data-look="odoo"] .od-gtog .od-gl,:root[data-look="odoo"] .od-gtog .od-caret{display:none}
+  :root[data-look="odoo"] .brand{padding:0 6px 0 2px;font-size:17px;line-height:46px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  :root[data-look="odoo"] .brand span{overflow:hidden;text-overflow:ellipsis}
+  :root[data-look="odoo"] .od-sq,:root[data-look="odoo"] .tb-r .fbtn.sc,:root[data-look="odoo"] #inst .inst-btn{display:none}
+  :root[data-look="odoo"] .od-sb{width:40px}
+  :root[data-look="odoo"] .look-btn{width:40px;padding:0;justify-content:center}
+  :root[data-look="odoo"] .od-actdd{position:fixed;left:8px;right:8px;top:calc(48px + env(safe-area-inset-top,0px));width:auto;max-height:calc(100vh - 64px - env(safe-area-inset-top,0px))}
+  :root[data-look="odoo"].od-qa-open #quick{left:8px;right:8px;top:calc(48px + env(safe-area-inset-top,0px));width:auto}
+  :root[data-look="odoo"] .look-menu{position:fixed;left:8px;right:8px;top:calc(48px + env(safe-area-inset-top,0px));min-width:0;border-radius:4px;box-shadow:var(--od-ddsh)}
+  :root[data-look="odoo"] .inst-pop{left:12px;right:12px;top:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));border-radius:6px;box-shadow:var(--sh28),0 0 0 100vmax var(--scrim)}
+  /* the burger drawer */
+  :root[data-look="odoo"] .od-gp{left:0;top:0;bottom:0;width:min(310px,86vw);max-height:none;padding:0 0 calc(16px + env(safe-area-inset-bottom,0px));border:0;border-radius:0;box-shadow:var(--sh28);animation:od-in .18s ease-out}
+  :root[data-look="odoo"] .od-gph{display:flex;align-items:center;justify-content:space-between;gap:8px;height:calc(52px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) 6px 0 18px;background:var(--od-plum);color:#fff;font-size:17px}
+  :root[data-look="odoo"] .od-gph b{font-weight:500}
+  :root[data-look="odoo"] .od-gpx{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:4px;background:transparent;color:#fff;cursor:pointer}
+  :root[data-look="odoo"] .od-gpm{display:block;margin-top:6px;padding-top:6px;border-top:1px solid var(--od-line)}
+  :root[data-look="odoo"] .od-gpt{padding:12px 18px 6px}
+  :root[data-look="odoo"] .od-gi{min-height:46px;padding:0 18px;font-size:15px}
+  :root[data-look="odoo"] .mi{padding:0 0 calc(24px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="odoo"] .od-home{max-width:none;padding:6px 10px 0}
+  :root[data-look="odoo"] .od-search{display:flex;height:42px;margin:0 2px 14px}
+  :root[data-look="odoo"] .od-apps{grid-template-columns:repeat(4,minmax(0,1fr));gap:2px 0}
+  :root[data-look="odoo"] .od-link{gap:7px;padding:9px 2px 8px}
+  :root[data-look="odoo"] .od-link img{width:60px;height:60px}
+  :root[data-look="odoo"] .od-cap{font-size:12.5px;line-height:15px}
+  :root[data-look="odoo"] .od-pin{top:3px;left:calc(50% + 18px);width:20px;height:20px}
+  :root[data-look="odoo"] .od-app:hover .od-pin{opacity:0}
+  :root[data-look="odoo"] .od-pinned .od-pin,:root[data-look="odoo"] .od-arranging .od-pin{opacity:1!important}
+  :root[data-look="odoo"] .od-db::before,:root[data-look="odoo"] .od-da::after{height:60px;top:9px}
+  :root[data-look="odoo"] .od-menus{margin:16px 2px 0}
+  :root[data-look="odoo"] .od-mcmd kbd{display:none}
+  :root[data-look="odoo"] .od-foot{margin-top:22px;padding:0 12px}
+  :root[data-look="odoo"] .od-arranging .od-apps{outline-offset:4px}
+  :root[data-look="odoo"] .foot{margin:18px 16px 0;padding-top:10px}
+}
+@media (max-width:360px){:root[data-look="odoo"] .od-apps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@keyframes od-in{from{transform:translateX(-100%)}}
+@media (prefers-reduced-motion:reduce){:root[data-look="odoo"] .od-gp{animation:none}:root[data-look="odoo"] .od-link img{transition:none}}
+@media print{:root[data-look="odoo"] :is(.od-search,.od-foot,.od-pin,.od-ed){display:none!important}}

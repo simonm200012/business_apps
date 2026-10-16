@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fiktiven vzorec e-računa e-SLOG 1.6 za demo Pisarne DMS. Podatki so izmišljeni. -->
+<IzdaniRacunEnostavni xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <Racun Id="data">
+    <GlavaRacuna>
+      <VrstaRacuna>380</VrstaRacuna>
+      <StevilkaRacuna>KC-26-1187</StevilkaRacuna>
+      <FunkcijaRacuna>9</FunkcijaRacuna>
+      <NacinPlacila>0</NacinPlacila>
+    </GlavaRacuna>
+    <DatumiRacuna><VrstaDatuma>137</VrstaDatuma><DatumRacuna>2026-10-08T00:00:00</DatumRacuna></DatumiRacuna>
+    <DatumiRacuna><VrstaDatuma>35</VrstaDatuma><DatumRacuna>2026-10-07T00:00:00</DatumRacuna></DatumiRacuna>
+    <Valuta><VrstaValuteRacuna>2</VrstaValuteRacuna><KodaValute>EUR</KodaValute></Valuta>
+    <PodatkiPodjetja>
+      <NazivNaslovPodjetja>
+        <VrstaPartnerja>II</VrstaPartnerja>
+        <NazivPartnerja><NazivPartnerja1>Kava in Čaj d.o.o.</NazivPartnerja1></NazivPartnerja>
+        <Ulica><Ulica1>Pristaniška ulica 2</Ulica1></Ulica>
+        <Kraj>Koper</Kraj>
+        <NazivDrzave>Slovenija</NazivDrzave>
+        <PostnaStevilka>6000</PostnaStevilka>
+        <KodaDrzave>SI</KodaDrzave>
+      </NazivNaslovPodjetja>
+      <FinancniPodatkiPodjetja><BancniRacun><StevilkaBancnegaRacuna>SI00 0000 0000 7654 321</StevilkaBancnegaRacuna><BIC>BAKOSI2X</BIC></BancniRacun></FinancniPodatkiPodjetja>
+      <ReferencniPodatkiPodjetja><VrstaPodatkaPodjetja>VA</VrstaPodatkaPodjetja><PodatekPodjetja>SI00000116</PodatekPodjetja></ReferencniPodatkiPodjetja>
+    </PodatkiPodjetja>
+    <PodatkiPodjetja>
+      <NazivNaslovPodjetja>
+        <VrstaPartnerja>BY</VrstaPartnerja>
+        <NazivPartnerja><NazivPartnerja1>LIPNIK d.o.o.</NazivPartnerja1></NazivPartnerja>
+        <Ulica><Ulica1>Gozdna pot 6</Ulica1></Ulica>
+        <Kraj>Ljubljana</Kraj>
+        <PostnaStevilka>1000</PostnaStevilka>
+        <KodaDrzave>SI</KodaDrzave>
+      </NazivNaslovPodjetja>
+      <ReferencniPodatkiPodjetja><VrstaPodatkaPodjetja>VA</VrstaPodatkaPodjetja><PodatekPodjetja>SI00000017</PodatekPodjetja></ReferencniPodatkiPodjetja>
+    </PodatkiPodjetja>
+    <PlacilniPogoji>
+      <PodatkiORokih><VrstaPogoja>3</VrstaPogoja></PodatkiORokih>
+      <PlacilniRoki><VrstaDatumaPlacilnegaRoka>13</VrstaDatumaPlacilnegaRoka><Datum>2026-10-23T00:00:00</Datum></PlacilniRoki>
+    </PlacilniPogoji>
+    <PostavkeRacuna>
+      <Postavka><StevilkaVrstice>1</StevilkaVrstice></Postavka>
+      <OpisiArtiklov><OpisArtikla><OpisArtikla1>Kava v zrnu, 1 kg</OpisArtikla1></OpisArtikla></OpisiArtiklov>
+      <KolicinaArtikla><VrstaKolicine>47</VrstaKolicine><Kolicina>6</Kolicina><EnotaMere>KGM</EnotaMere></KolicinaArtikla>
+      <ZneskiPostavke><VrstaZneskaPostavke>203</VrstaZneskaPostavke><ZnesekPostavke>108.00</ZnesekPostavke></ZneskiPostavke>
+      <CenaPostavke><Cena>18.00</Cena></CenaPostavke>
+      <DavkiPostavke><DavkiNaPostavki><VrstaDavkaPostavke>VAT</VrstaDavkaPostavke><OdstotekDavkaPostavke>9.5</OdstotekDavkaPostavke></DavkiNaPostavki></DavkiPostavke>
+    </PostavkeRacuna>
+    <PostavkeRacuna>
+      <Postavka><StevilkaVrstice>2</StevilkaVrstice></Postavka>
+      <OpisiArtiklov><OpisArtikla><OpisArtikla1>Najem aparata za kavo (oktober)</OpisArtikla1></OpisArtikla></OpisiArtiklov>
+      <KolicinaArtikla><VrstaKolicine>47</VrstaKolicine><Kolicina>1</Kolicina><EnotaMere>C62</EnotaMere></KolicinaArtikla>
+      <ZneskiPostavke><VrstaZneskaPostavke>203</VrstaZneskaPostavke><ZnesekPostavke>40.00</ZnesekPostavke></ZneskiPostavke>
+      <CenaPostavke><Cena>40.00</Cena></CenaPostavke>
+      <DavkiPostavke><DavkiNaPostavki><VrstaDavkaPostavke>VAT</VrstaDavkaPostavke><OdstotekDavkaPostavke>22</OdstotekDavkaPostavke></DavkiNaPostavki></DavkiPostavke>
+    </PostavkeRacuna>
+    <PovzetekDavkovRacuna>
+      <DavkiRacuna><VrstaDavka>VAT</VrstaDavka><OdstotekDavka>9.5</OdstotekDavka></DavkiRacuna>
+      <ZneskiDavkov><VrstaZneskaDavka>125</VrstaZneskaDavka><ZnesekDavka>108.00</ZnesekDavka></ZneskiDavkov>
+      <ZneskiDavkov><VrstaZneskaDavka>124</VrstaZneskaDavka><ZnesekDavka>10.26</ZnesekDavka></ZneskiDavkov>
+    </PovzetekDavkovRacuna>
+    <PovzetekDavkovRacuna>
+      <DavkiRacuna><VrstaDavka>VAT</VrstaDavka><OdstotekDavka>22</OdstotekDavka></DavkiRacuna>
+      <ZneskiDavkov><VrstaZneskaDavka>125</VrstaZneskaDavka><ZnesekDavka>40.00</ZnesekDavka></ZneskiDavkov>
+      <ZneskiDavkov><VrstaZneskaDavka>124</VrstaZneskaDavka><ZnesekDavka>8.80</ZnesekDavka></ZneskiDavkov>
+    </PovzetekDavkovRacuna>
+    <PovzetekZneskovRacuna>
+      <ZneskiRacuna><VrstaZneska>79</VrstaZneska><ZnesekRacuna>148.00</ZnesekRacuna></ZneskiRacuna>
+      <ZneskiRacuna><VrstaZneska>176</VrstaZneska><ZnesekRacuna>19.06</ZnesekRacuna></ZneskiRacuna>
+      <ZneskiRacuna><VrstaZneska>9</VrstaZneska><ZnesekRacuna>167.06</ZnesekRacuna></ZneskiRacuna>
+      <SklicZaPlacilo><SklicPlacila>PQ</SklicPlacila><StevilkaSklica>SI00 261187</StevilkaSklica></SklicZaPlacilo>
+    </PovzetekZneskovRacuna>
+  </Racun>
+</IzdaniRacunEnostavni>

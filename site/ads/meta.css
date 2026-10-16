@@ -1,0 +1,242 @@
+/* Ads & Return in the Meta Ads Manager look: pale grey canvas, white 10px cards, Meta blue, Figtree, pill chips, an
+   "amount spent" card with a line and three results, campaign rows with a status dot and four figures, and a bottom
+   tab bar on phones. Loaded after style.css; it re-maps the tokens and restyles the same markup.
+   Dark mode: the shell always sets html[data-stratum-mode]; :root[data-stratum-mode="dark"] matches the specificity of
+   style.css's own dark rules and, coming later, wins (Ads Manager's own dark palette). */
+:root{
+  --ground:#F0F2F5;--surface:#FFFFFF;--sunken:#F5F6F7;--fill:#E4E6EB;--line:#DADDE1;--hair:#E4E6EB;
+  --ink:#1C2B33;--ink2:#465A69;--ink3:#65676B;--inv:#1C2B33;--inv-ink:#FFFFFF;--inv-ink3:#B0B3B8;
+  --dash:#CED0D4;--track:#E4E6EB;--shadow:0 1px 2px rgba(0,0,0,.08);
+  --blue:#0866FF;--blue-hover:#0759E0;--blue-t:#E7F0FF;--blue-k:#0558D8;
+  --good:#1E8E3E;--good-bg:#E3F4E6;--good-dot:#31A24C;--bad:#D3133A;--bad-bg:#FDE7EB;--bad-dot:#E41E3F;
+  --warn:#8A5A00;--warn-bg:#FFF2D1;--scrim:rgba(0,0,0,.45);--accent:#0866FF;--focus:#0866FF;
+  --google:#1C2B33;--meta:#0866FF;--rev:#31A24C;
+  color-scheme:light;
+}
+:root[data-stratum-mode="dark"]{
+  --ground:#18191A;--surface:#242526;--sunken:#2C2D2F;--fill:#3A3B3C;--line:#3E4042;--hair:#333436;
+  --ink:#E4E6EB;--ink2:#C2C5CA;--ink3:#B0B3B8;--inv:#E4E6EB;--inv-ink:#18191A;--inv-ink3:#65676B;
+  --dash:#4E4F50;--track:#3A3B3C;--shadow:0 1px 2px rgba(0,0,0,.5);
+  --blue:#4599FF;--blue-hover:#5AA5FF;--blue-t:#263951;--blue-k:#7CB7FF;
+  --good:#5BC775;--good-bg:#1F3326;--good-dot:#45BD62;--bad:#FF6B81;--bad-bg:#3F1F26;--bad-dot:#F3425F;
+  --warn:#F7C35C;--warn-bg:#3A2F14;--scrim:rgba(0,0,0,.66);--accent:#4599FF;--focus:#4599FF;
+  --google:#B0C4D4;--meta:#4599FF;--rev:#45BD62;
+  color-scheme:dark;
+}
+body{font-family:'Figtree',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;background:var(--ground);color:var(--ink)}
+.mono,th,.field label,.field .lbl,.delta,.chart text{font-family:'Figtree',ui-sans-serif,system-ui,sans-serif;letter-spacing:0}
+.sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ── Sidebar (desktop) ───────────────────────────────────────────── */
+aside.side{background:var(--surface);border-right:1px solid var(--line);padding:16px 10px 16px 12px;gap:18px;flex:0 0 248px}
+.brand{gap:10px;padding:0 4px}
+.brand-tile{width:36px;height:36px;border-radius:10px;background:var(--blue);color:#fff}
+.brand b{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.brand span{font-size:12px;font-weight:500;color:var(--ink3)}
+.chip-user{background:var(--sunken);box-shadow:none;border-radius:10px;padding:8px 10px}
+.avatar{background:var(--blue)}
+.chip-user b{font-size:13px;font-weight:600}
+.chip-user span{font-size:11.5px}
+nav.main{gap:10px}
+.navgroup{gap:2px}
+.navitem{min-height:40px;padding:0 10px;border-radius:8px;font-size:14.5px;font-weight:600;color:var(--ink)}
+.navitem svg{color:var(--ink3)}
+.navitem:hover{background:var(--sunken);color:var(--ink)}
+.navitem[aria-current="page"]{background:var(--blue-t);color:var(--blue-k);box-shadow:none}
+.navitem[aria-current="page"] svg{color:var(--blue)}
+.navitem .ns{display:none}
+.side-foot{font-size:11.5px}
+
+/* ── Content header and filters ──────────────────────────────────── */
+main.content{padding:20px 28px 96px;gap:14px;flex:1 1 560px}
+h1.title{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+h1.title i{display:none}
+.lede{margin-top:4px;font-size:13.5px;color:var(--ink3);max-width:860px}
+.filters{gap:8px}
+.seg{padding:0;border:0;background:transparent;gap:6px;border-radius:0}
+.seg button{min-height:32px;padding:0 12px;border-radius:16px;background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;box-shadow:inset 0 0 0 1px var(--line)}
+.seg button:hover{background:var(--sunken)}
+.seg button[aria-pressed="true"]{background:var(--blue-t);color:var(--blue-k);box-shadow:none}
+.filters input[type=date]{min-height:32px;border-radius:16px;border:1px solid var(--line);font-size:13px}
+.filters .mono.small{font-size:12.5px;color:var(--ink3)}
+.btn{min-height:36px;padding:0 14px;border-radius:6px;border:0;background:var(--fill);color:var(--ink);font-size:14px;font-weight:600}
+.btn:hover{background:var(--dash);border:0}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--blue-hover)}
+.btn.small{min-height:30px;font-size:13px}
+.search input{border-radius:18px;border:1px solid var(--line);background:var(--surface)}
+.search input:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.banner{border-radius:10px;box-shadow:var(--shadow)}
+.banner .dot{background:var(--blue)}
+
+/* ── Cards and tiles ─────────────────────────────────────────────── */
+.grid2{gap:12px}
+.card{border-radius:10px;box-shadow:var(--shadow);padding:14px 16px}
+.card h3{font-size:15px;font-weight:700}
+.card .sub{font-size:12.5px;font-weight:500;color:var(--ink3);margin:1px 0 12px}
+.tiles{gap:0;border-top:1px solid var(--hair);margin:0 -16px -14px;align-items:stretch}
+.tile{background:transparent;border-radius:0;min-height:0;padding:10px 14px 12px;gap:3px;justify-content:flex-start;border-right:1px solid var(--hair)}
+.tile:last-child{border-right:0}
+.tile .k{font-size:12px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink3)}
+.tile .v{font-size:clamp(16px,1.5vw,21px);font-weight:700;letter-spacing:-.01em}
+.tile .s{font-size:12px}
+.tile.inv{background:var(--blue-t);color:var(--ink)}
+.tile.inv .k{color:var(--blue-k)}
+.tile.inv .v{color:var(--blue-k)}
+.tile.inv .delta.up{color:var(--good)}.tile.inv .delta.down{color:var(--bad)}
+html[data-stratum-mode="dark"] .tile.inv .delta.up{color:var(--good)}html[data-stratum-mode="dark"] .tile.inv .delta.down{color:var(--bad)}
+.op{align-self:center;margin:0 -12px;position:relative;z-index:1;width:22px;height:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--hair);font-size:12px;font-weight:700;color:var(--ink3)}
+.delta{font-size:12px;font-weight:600}
+.delta.up{color:var(--good)}.delta.down{color:var(--bad)}
+
+/* Amount spent */
+.spent{padding:12px 16px 0}
+.spent-h{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--ink3)}
+.spent-v{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:2px 0 6px}
+.spent-v b{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.spent-v .delta{font-size:13px}
+.spent-v .muted{font-size:12.5px;font-weight:500}
+.spent-c{position:relative;padding-bottom:16px}
+.spent-c svg{display:block;width:100%;height:84px;overflow:visible}
+.spent-c .ln{fill:none;stroke:var(--blue);stroke-width:2.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.spent-c .fill{fill:var(--blue);opacity:.09}
+.spent-c .base{stroke:var(--hair);stroke-width:1;vector-effect:non-scaling-stroke}
+.spent-x{position:absolute;left:0;right:0;bottom:0;height:14px;font-size:11px;font-weight:500;color:var(--ink3)}
+.spent-x span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.spent-x span.a{transform:none}.spent-x span.c{transform:translateX(-100%)}
+.spent-m{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair);margin:8px -16px 0}
+.spent-m div{padding:8px 14px 10px;border-right:1px solid var(--hair);line-height:1.25;min-width:0}
+.spent-m div:last-child{border-right:0}
+.spent-m small{display:block;font-size:12px;font-weight:500;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spent-m b{display:block;font-size:17px;font-weight:700;margin:2px 0 1px;white-space:nowrap}
+.spent-m .delta{font-size:11.5px}
+
+/* Daily chart */
+.chart text{font-size:10.5px;fill:var(--ink3)}
+.chart .grid{stroke:var(--hair)}
+.chart .g{fill:var(--google)}.chart .m{fill:var(--meta)}
+.chart .rev{stroke:var(--rev);stroke-width:2.2}.chart .appt{stroke:var(--rev);stroke-width:2.2}
+.legend{font-size:12.5px;font-weight:500}
+.legend i{border-radius:50%;background:var(--google)}
+.legend i.m{background:var(--meta)}.legend i.rev,.legend i.appt{background:var(--rev)}
+
+/* ── Tables (Ads Manager grid) ───────────────────────────────────── */
+.table-card{padding:0}
+.table-head{padding:12px 16px}
+.table-head h3{font-size:15px}
+th{font-size:12.5px;font-weight:700;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--sunken);padding:9px 12px;border-bottom:1px solid var(--line)}
+th.sort:hover{color:var(--blue-k)}
+td{padding:10px 12px;border-bottom:1px solid var(--hair);font-size:13.5px}
+td b{font-weight:600}
+tr.click:hover td{background:var(--blue-t)}
+tr.total td{font-weight:700;background:var(--sunken)}
+.tag{border-radius:4px;font-size:11.5px;font-weight:600;padding:1px 6px;background:var(--fill);color:var(--ink2)}
+.tag.g{background:var(--inv);color:var(--inv-ink)}
+.tag.m{background:var(--blue-t);color:var(--blue-k)}
+.tag.warn{background:var(--warn-bg);color:var(--warn)}
+.kv dt{font-weight:600;color:var(--ink)}
+.kv dd{color:var(--ink2)}
+
+/* Campaign rows (phones; the table stays on wider screens) */
+.clist{display:none;list-style:none;margin:0;padding:0}
+.clist li{padding:9px 14px 8px;border-top:1px solid var(--hair)}
+.cl-n{display:flex;align-items:center;gap:10px;min-width:0}
+.cl-n>div{min-width:0;line-height:1.25}
+.cl-n b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-n small{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-t{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;flex:none;font-weight:700;font-size:13px;background:var(--fill);color:var(--ink)}
+.cl-t.m{background:var(--blue-t);color:var(--blue-k)}
+.cl-dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--ink3)}
+.cl-dot.on{background:var(--good-dot)}.cl-dot.aw{background:#F7B928}
+.cl-m{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:6px 0 0 44px;line-height:1.2}
+.cl-m b{display:block;font-size:13px;font-weight:700;white-space:nowrap}
+.cl-m small{font-size:11px;color:var(--ink3);white-space:nowrap}
+
+/* Dialogs, toast, gate */
+dialog{border-radius:12px}
+.toast{background:#1C2B33;color:#fff;border-radius:8px;font-weight:600}
+html[data-stratum-mode="dark"] .toast{background:#E4E6EB;color:#18191A}
+.gate{border-radius:10px}
+
+/* ── Phones: Ads Manager app header, chip rows, bottom tab bar ─────── */
+@media (max-width:760px){
+  .app{display:block}
+  aside.side{position:sticky;top:0;z-index:30;flex-basis:auto;max-width:none;padding:10px 14px 10px!important;gap:0!important;border-right:0;border-bottom:1px solid var(--line)}
+  .brand-tile{width:34px;height:34px}
+  .brand b{font-size:18px}
+  aside.side .chip-user{display:none}
+  aside.side > nav.main{position:fixed;z-index:31;left:0;right:0;bottom:0;margin:0!important;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))!important;background:var(--surface);border-top:1px solid var(--line);display:flex}
+  aside.side > nav.main .navgroup{gap:0!important;flex-wrap:nowrap}
+  aside.side > nav.main .navitem{flex:0 0 68px!important;flex-direction:column;justify-content:center;gap:3px;min-height:50px!important;padding:0 2px!important;border-radius:8px;font-size:10.5px;font-weight:600;color:var(--ink3);background:transparent}
+  aside.side > nav.main .navitem svg{width:23px;height:23px;color:inherit}
+  aside.side > nav.main .navitem[aria-current="page"]{background:transparent;color:var(--blue)}
+  .navitem .grow{flex:none}
+  .navitem .nl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .navitem .ns{display:block;white-space:nowrap;line-height:1.1}
+  stratum-shell{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
+  .toast{bottom:calc(132px + env(safe-area-inset-bottom,0px))!important}
+  main.content{padding:12px 8px 96px;gap:10px}
+  .head-row{padding:0 6px}
+  h1.title{font-size:20px}
+  .lede{font-size:13px}
+  .filters{flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:6px}
+  .filters>.seg{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -8px;padding:0 14px}
+  .filters>.seg::-webkit-scrollbar{display:none}
+  .filters>.seg button{flex:none;min-height:32px}
+  .filters>.mono.small{padding:0 6px}
+  .filters .search{flex:1 1 auto!important;max-width:none}
+  .card{padding:12px 14px}
+  .tiles{margin:0 -14px -12px;flex-wrap:wrap}
+  .tile{flex:1 1 45%;border-bottom:1px solid var(--hair)}
+  .op{display:none}
+  .spent{padding:10px 14px 0}
+  .spent-m{margin:8px -14px 0}
+  .spent-m div{padding:8px 10px 10px}
+  .spent-m b{font-size:15.5px}
+  .table-card .tw:has(+ .clist){display:none}
+  .clist{display:block}
+}
+@media (max-width:760px){#stratum-demo-badge{bottom:calc(78px + env(safe-area-inset-bottom,0px))!important}}
+@media (min-width:761px){.spent-c svg{height:110px}}
+@media (max-width:760px){td{white-space:nowrap}}
+@media (min-width:761px){.side-foot{padding-bottom:40px}} /* room for the shared DEMO DATA badge in the corner */
+/* lagging days in the daily chart (bookings not in yet): shaded, the line stops instead of dropping to zero */
+.chart .pend{fill:var(--ink3);fill-opacity:.1}
+.chart .pend-t{font-size:10px;fill:var(--ink3)}
+.chart circle.dot{fill:var(--rev);stroke:none}
+
+/* ── More (phones): four pages in the tab bar, the rest in a menu above it ── */
+.navitem.nmore,.moremenu{display:none!important}
+@media (max-width:760px){
+  aside.side > nav.main .navgroup{flex:1 1 auto;width:100%}
+  aside.side > nav.main .navitem{flex:1 1 0!important;min-width:0}
+  aside.side > nav.main .navitem.mx{display:none!important}
+  aside.side > nav.main .navitem.nmore{display:flex!important;border:0;font-family:inherit;cursor:pointer}
+  aside.side > nav.main .navitem.nmore.on{color:var(--blue)}
+  aside.side > nav.main .navitem .ns{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .moremenu:not([hidden]){display:block!important;position:fixed;z-index:40;right:8px;bottom:calc(70px + env(safe-area-inset-bottom,0px));width:min(260px,calc(100vw - 16px));padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18)}
+  .moremenu .mm-h{padding:6px 10px 4px;font-size:12px;font-weight:600;color:var(--ink3)}
+  .moremenu a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px;border-radius:8px;color:var(--ink);text-decoration:none;font-size:15px;font-weight:600}
+  .moremenu a svg{color:var(--ink3)}
+  .moremenu a[aria-current="page"]{background:var(--blue-t);color:var(--blue-k)}
+}
+
+/* ── Campaigns: compact grid so GA4 ROAS stays in view at 1440 px ── */
+.camps th,.camps td{padding-left:9px;padding-right:9px}
+.camps td.cname{min-width:220px;max-width:340px}
+.camps td small .delta{font-size:11px}
+
+/* ── Budget pacing ── */
+.pacing td{vertical-align:middle}
+.pacing input.bud{width:96px;min-height:32px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:600 13.5px/1 'Figtree',system-ui,sans-serif;text-align:right;font-variant-numeric:tabular-nums}
+.pacing input.bud:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.pacing input.bud.demo{border-style:dashed;color:var(--ink2)}
+.pacing .eu{margin-left:4px;color:var(--ink3)}
+.pbar{position:relative;display:block;width:120px;height:8px;border-radius:4px;background:var(--track);overflow:visible;margin:2px 0 3px}
+.pbar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--good-dot)}
+.pbar.hot i{background:var(--bad-dot)}
+.pbar.cool i{background:var(--ink3)}
+.pbar b{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink)}
+.pbar-t{font-size:11.5px}
+.tag.ok{background:var(--good-bg);color:var(--good)}
+.tag.bad{background:var(--bad-bg);color:var(--bad)}

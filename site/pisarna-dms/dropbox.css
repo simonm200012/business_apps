@@ -1,0 +1,259 @@
+/* Pisarna DMS gets the Dropbox look (PD3): a warm off-white ground with black type, Space Grotesk titles over
+   Hanken Grotesk text, flat white panels with thin warm borders, outlined pill buttons with one blue primary, a file
+   list with status dots, blue folders, and the bold yellow and lime cards for documents (yellow while
+   waiting, lime once approved). On phones the left rail becomes a bottom tab bar. Applies to the app's own modern theme
+   (body.theme-modern); the classic theme stays as it is. Loaded after the inline styles. */
+
+:root{
+  --m-ground:#F7F5F2;--m-surface:#FFFFFF;--m-surface-2:#F1EEEA;--m-surface-3:#E5E1DC;
+  --m-ink:#1E1919;--m-ink-2:#4F4843;--m-ink-3:#736C64;
+  --m-accent:#0061FE;--m-accent-soft:rgba(0,97,254,.08);--m-accent-ink:#FFFFFF;
+  --m-rule:#E5E1DC;--m-rule-soft:#EEEAE6;--m-scrim:rgba(247,245,242,.76);
+  --m-lift:0 0 0 1px #E5E1DC;--m-dialog:0 0 0 1px rgba(30,25,25,.08),0 28px 64px -28px rgba(30,25,25,.42);
+  --m-page:0 1px 2px rgba(30,25,25,.12),0 0 0 1px rgba(30,25,25,.06);--m-canvas:#EBE9E6;
+  --m-prism:#1E1919;
+  --m-ok:#1F7A4D;--m-ok-soft:rgba(31,122,77,.1);--m-warn:#A3540B;--m-warn-soft:rgba(250,85,30,.1);
+  --m-bad:#C8102E;--m-bad-soft:rgba(200,16,46,.08);--m-info:#0061FE;--m-info-soft:rgba(0,97,254,.08);
+  --m-star:#E8A913;--m-rose:#FAD24B;
+  --m-font:'Hanken Grotesk',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --m-mono:'Hanken Grotesk',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --m-title:'Space Grotesk','Hanken Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --m-r:12px;--m-r-s:10px;--m-r-xs:8px;
+  --db-border:#D3CEC9;--db-btn-line:#BBB5AE;--db-hover:#F1EEEA;--db-sel-node:#EBE9E6;
+  --db-yellow:#FAD24B;--db-lime:#B4DC19;--db-on-color:#1E1919;
+  --dot-prejet:#FA551E;--dot-potrjen:#0061FE;--dot-kontroliran:#9B0032;--dot-prenesen:#6E9A00;--dot-zavrnjen:#E0262E;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --m-ground:#141211;--m-surface:#1E1B1A;--m-surface-2:#292524;--m-surface-3:#36312F;
+    --m-ink:#F7F5F2;--m-ink-2:#D2CCC5;--m-ink-3:#A39B92;
+    --m-accent:#3D8BFF;--m-accent-soft:rgba(61,139,255,.16);--m-accent-ink:#FFFFFF;
+    --m-rule:#36312F;--m-rule-soft:#2C2827;--m-scrim:rgba(10,9,9,.72);
+    --m-lift:0 0 0 1px #36312F;--m-dialog:0 0 0 1px rgba(247,245,242,.08),0 30px 70px -26px rgba(0,0,0,.85);
+    --m-page:0 0 0 1px rgba(0,0,0,.4);--m-canvas:#292524;--m-prism:#F7F5F2;
+    --m-ok:#6FD39C;--m-ok-soft:rgba(111,211,156,.14);--m-warn:#FFA36B;--m-warn-soft:rgba(255,122,77,.14);
+    --m-bad:#FF6B7F;--m-bad-soft:rgba(255,107,127,.13);--m-info:#7AB0FF;--m-info-soft:rgba(61,139,255,.16);
+    --db-border:#45403D;--db-btn-line:#5A5450;--db-hover:#292524;--db-sel-node:#2F2B29;
+    --dot-prejet:#FF7A4D;--dot-potrjen:#5B9BFF;--dot-kontroliran:#F0587F;--dot-prenesen:#B4DC19;--dot-zavrnjen:#FF6161;
+  }
+}
+:root[data-theme="dark"]{
+  --m-ground:#141211;--m-surface:#1E1B1A;--m-surface-2:#292524;--m-surface-3:#36312F;
+  --m-ink:#F7F5F2;--m-ink-2:#D2CCC5;--m-ink-3:#A39B92;
+  --m-accent:#3D8BFF;--m-accent-soft:rgba(61,139,255,.16);--m-accent-ink:#FFFFFF;
+  --m-rule:#36312F;--m-rule-soft:#2C2827;--m-scrim:rgba(10,9,9,.72);
+  --m-lift:0 0 0 1px #36312F;--m-dialog:0 0 0 1px rgba(247,245,242,.08),0 30px 70px -26px rgba(0,0,0,.85);
+  --m-page:0 0 0 1px rgba(0,0,0,.4);--m-canvas:#292524;--m-prism:#F7F5F2;
+  --m-ok:#6FD39C;--m-ok-soft:rgba(111,211,156,.14);--m-warn:#FFA36B;--m-warn-soft:rgba(255,122,77,.14);
+  --m-bad:#FF6B7F;--m-bad-soft:rgba(255,107,127,.13);--m-info:#7AB0FF;--m-info-soft:rgba(61,139,255,.16);
+  --db-border:#45403D;--db-btn-line:#5A5450;--db-hover:#292524;--db-sel-node:#2F2B29;
+  --dot-prejet:#FF7A4D;--dot-potrjen:#5B9BFF;--dot-kontroliran:#F0587F;--dot-prenesen:#B4DC19;--dot-zavrnjen:#FF6161;
+}
+
+body.theme-modern{font:14px/1.45 var(--m-font);letter-spacing:0}
+.theme-modern ::selection{background:rgba(0,97,254,.18)}
+.theme-modern :focus-visible{outline:2px solid var(--m-accent);outline-offset:2px}
+
+/* ── Menu bar: quiet text links, the wordmark in black Space Grotesk ─────── */
+.theme-modern .menubar{height:36px;padding:0 14px}
+.theme-modern .menubar .mi{height:28px;line-height:28px;border-radius:6px;padding:0 9px;font-size:13px;color:var(--m-ink-3)}
+.theme-modern .menubar .mi:hover:not(.disabled),.theme-modern .menubar .mi.open{background:var(--db-sel-node);color:var(--m-ink)}
+.theme-modern .wordmark{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--m-ink);font:700 19px/1 var(--m-title);letter-spacing:-.04em}
+
+/* ── Top bar: big page title, a search field, a black avatar ─────────────── */
+.theme-modern .modstrip{height:64px;padding:0 20px;gap:12px}
+.theme-modern .modtab{height:40px;padding:0 6px;border-radius:0;color:var(--m-ink-3);font:600 16px var(--m-font);background:none;box-shadow:none}
+.theme-modern .modtab:hover:not(.active){background:none;color:var(--m-ink)}
+.theme-modern .modtab.active{background:none;box-shadow:none;color:var(--m-ink);font:700 30px/1 var(--m-title);letter-spacing:-.035em}
+.theme-modern .modtab svg{display:none}
+.theme-modern .modright{gap:14px}
+.theme-modern .cmdk{height:42px;min-width:380px;padding:0 10px 0 14px;border-radius:8px;border:1px solid var(--db-border);background:var(--m-surface);box-shadow:none;color:var(--m-ink-3);font:400 14.5px var(--m-font)}
+.theme-modern .cmdk:hover{border-color:var(--m-ink-3);color:var(--m-ink-2)}
+.theme-modern .cmdk kbd{border-radius:5px;background:var(--m-surface-2);font:500 11px var(--m-font)}
+.theme-modern .userchip{height:40px;padding:0 4px;background:none;box-shadow:none;gap:10px;font-weight:600}
+.theme-modern .userchip:hover{background:none;text-decoration:underline}
+.theme-modern .userchip .av{width:34px;height:34px;background:var(--m-ink);color:var(--m-ground);font:600 12.5px/34px var(--m-font)}
+
+/* ── Action buttons: outlined pills, the main one blue ───────────────────── */
+.theme-modern .toolbar{height:56px;padding:0 20px;gap:8px}
+.theme-modern .tb{height:36px;padding:0 15px 0 12px;border-radius:18px;border:1px solid var(--db-btn-line);background:transparent;box-shadow:none;color:var(--m-ink);font:600 13.5px var(--m-font)}
+.theme-modern .tb:hover:not(:disabled){background:var(--db-hover);border-color:var(--m-ink-3)}
+.theme-modern .tb:active:not(:disabled){background:var(--m-surface-3)}
+.theme-modern .tb:disabled{opacity:.42;background:transparent;border-color:var(--db-btn-line)}
+.theme-modern .tb[data-a="sendrecv"]{background:var(--m-accent);border-color:var(--m-accent);color:#fff}
+.theme-modern .tb[data-a="sendrecv"]:hover:not(:disabled){background:#0057E5;border-color:#0057E5}
+.theme-modern .tb[data-a="sendrecv"] .dd{color:rgba(255,255,255,.8)}
+.theme-modern .tb[data-a="initial"]:not(:disabled),.theme-modern .tb.primary{background:var(--m-ink);border-color:var(--m-ink);color:var(--m-ground)}
+.theme-modern .tsep{width:4px}
+.theme-modern select.win,.theme-modern input.win,.theme-modern textarea.win{height:36px;border:1px solid var(--db-border);border-radius:8px;background:var(--m-surface);color:var(--m-ink)}
+.theme-modern select.win:focus,.theme-modern input.win:focus,.theme-modern textarea.win:focus{border-color:var(--m-accent);box-shadow:0 0 0 3px var(--m-accent-soft)}
+.theme-modern input.win:disabled,.theme-modern select.win:disabled,.theme-modern textarea.win:disabled{background:var(--m-surface-2)}
+.theme-modern .company-select{border-radius:18px;background:transparent;box-shadow:none;border-color:var(--db-btn-line);font-weight:600}
+.theme-modern input[type="checkbox"],.theme-modern input[type="radio"]{accent-color:var(--m-accent)}
+
+/* ── Left rail, folder tree, the file list ───────────────────────────────── */
+.theme-modern .body{padding:0 20px 0 0}
+.theme-modern .rail{width:84px;gap:2px;padding-top:4px}
+.theme-modern .rail .it{margin:0 10px;padding:9px 0 7px;border-radius:10px;color:var(--m-ink-3);font:600 11.5px var(--m-font)}
+.theme-modern .rail .it.active{background:var(--db-sel-node);box-shadow:none;color:var(--m-ink)}
+.theme-modern .rail .it.active .mi-ic{color:var(--m-ink)}
+.theme-modern .rail .it:hover:not(.active){background:var(--db-hover);color:var(--m-ink)}
+.theme-modern .pane{background:transparent;box-shadow:none;border-radius:0;margin-right:14px}
+.theme-modern .tree{padding:4px 2px}
+.theme-modern .tree .node{height:34px;border-radius:8px;font-weight:500}
+.theme-modern .tree .node.head{height:30px;margin-top:10px}
+.theme-modern .tree .node.head .lbl{font:700 11.5px var(--m-font);letter-spacing:.06em;color:var(--m-ink-3)}
+.theme-modern .tree .node.view .lbl{color:var(--m-ink-2);font-weight:500}
+.theme-modern .tree .node .ficon{color:var(--m-accent)}
+.theme-modern .tree .node.selected{background:var(--db-sel-node);color:var(--m-ink)}
+.theme-modern .tree .node.selected .lbl{color:var(--m-ink);font-weight:700}
+.theme-modern .tree .node.selected .ficon{color:var(--m-accent)}
+.theme-modern .tree .node:hover:not(.selected){background:var(--db-hover)}
+.theme-modern .badge,.theme-modern .tree .node.selected .badge{background:var(--m-accent);color:#fff;font:700 11px/19px var(--m-font);min-width:22px}
+.theme-modern .pane-foot{border-top:1px solid var(--m-rule);padding:12px 2px}
+.theme-modern .pane-foot select{border-radius:8px}
+.theme-modern .content{background:var(--m-surface);border:1px solid var(--m-rule);border-radius:12px;box-shadow:none}
+.theme-modern .splitter{margin-left:-16px;margin-right:12px}
+.theme-modern .pane:has(.crit,.intake){background:var(--m-surface);border:1px solid var(--m-rule);border-radius:12px;overflow:hidden}
+
+.theme-modern table.grid{font-size:13.5px}
+.theme-modern table.grid thead th{color:var(--m-ink-3)}
+.theme-modern table.grid thead tr.f th{height:18px;padding:4px 6px 0}
+.theme-modern table.grid thead tr.h th{top:18px;height:36px;font:600 12.5px var(--m-font);letter-spacing:0;text-transform:none;color:var(--m-ink-3);border-bottom:1px solid var(--m-rule)}
+.theme-modern table.grid thead tr.h th:hover{background:var(--db-hover)}
+.theme-modern table.grid tbody tr{height:48px}
+.theme-modern table.grid tbody td,.theme-modern table.grid tbody tr:nth-child(even) td{height:48px;border-bottom:1px solid var(--m-rule-soft)}
+.theme-modern table.grid tbody tr:hover td{background:var(--db-hover)}
+.theme-modern table.grid tbody tr.sel td,.theme-modern .gridwrap:focus table.grid tbody tr.sel td{background:var(--m-accent-soft)}
+.theme-modern table.grid tbody tr.unread td{font-weight:700}
+.theme-modern table.grid tbody tr.unread td:first-child{box-shadow:inset 3px 0 0 var(--m-accent)}
+.theme-modern table.grid td.num{font-family:var(--m-font);font-size:13.5px}
+.theme-modern .gridicons span{background:var(--m-surface);box-shadow:0 0 0 1px var(--m-rule)}
+.theme-modern .gridicons span:hover{color:var(--m-accent)}
+
+/* status as a coloured dot and plain black text */
+.theme-modern .pill{height:auto;padding:0;background:none!important;color:var(--m-ink)!important;font:600 13px var(--m-font);gap:7px}
+.theme-modern .pill::before{width:8px;height:8px;background:var(--dot,var(--m-ink-3))}
+.theme-modern .pill.st-prejet{--dot:var(--dot-prejet)}
+.theme-modern .pill.st-potrjen,.theme-modern .pill.st-potrjen-vodja-oddelka{--dot:var(--dot-potrjen)}
+.theme-modern .pill.st-kontroliran{--dot:var(--dot-kontroliran)}
+.theme-modern .pill.st-prenesen-v-pantheon{--dot:var(--dot-prenesen)}
+.theme-modern .pill.st-zavrnjen{--dot:var(--dot-zavrnjen)}
+.theme-modern tr.muted .pill{opacity:1;color:var(--m-ink-2)!important}
+
+/* ── Preview: the page on a bold yellow card (lime once approved) ────────── */
+.theme-modern .preview{width:380px;border-left:1px solid var(--m-rule)}
+.theme-modern .preview .pv-scroll{padding:20px 20px 10px;gap:18px}
+.theme-modern .preview .pv-eyebrow{font:600 12.5px var(--m-font);letter-spacing:0;text-transform:none;color:var(--m-ink-3)}
+.theme-modern .preview h3{font:700 19px/1.25 var(--m-title);letter-spacing:-.025em}
+.theme-modern .preview .pv-amount{font:700 30px/1.05 var(--m-title);letter-spacing:-.035em}
+.theme-modern .preview .pv-amount small{font:600 12.5px var(--m-font);color:var(--m-ink-3)}
+.theme-modern .preview .pv-thumb,.theme-modern .preview .pv-page{flex:none;background:var(--db-yellow);border-radius:10px;padding:22px 22px 0;align-items:flex-end;overflow:hidden}
+.theme-modern .preview:has(.pill.st-potrjen,.pill.st-potrjen-vodja-oddelka,.pill.st-prenesen-v-pantheon) :is(.pv-thumb,.pv-page){background:var(--db-lime)}
+.theme-modern .preview .pv-thumb img{height:210px;border-radius:2px 2px 0 0;box-shadow:0 -1px 8px rgba(30,25,25,.16)}
+.theme-modern .preview dt{color:var(--m-ink-3);font-size:12.5px}
+.theme-modern .preview dd{font-weight:500}
+.theme-modern .preview .pv-h{font:700 13px var(--m-font);letter-spacing:0;text-transform:none;color:var(--m-ink)}
+.theme-modern .preview .pv-tl{border-left-color:var(--m-rule)}
+.theme-modern .preview .pv-tl div::before{box-shadow:inset 0 0 0 2px var(--m-ink)}
+.theme-modern .preview .pv-actions{border-top:1px solid var(--m-rule);padding:14px 20px 18px}
+.theme-modern .preview .pv-empty .mi-ic{color:var(--m-surface-3)}
+
+/* ── Buttons, dialogs, forms ──────────────────────────────────────────────── */
+.theme-modern .btn{height:38px;border-radius:19px;border:1px solid var(--db-btn-line);background:transparent;color:var(--m-ink);font-weight:600}
+.theme-modern .btn:hover:not(:disabled){background:var(--db-hover);border:1px solid var(--m-ink-3)}
+.theme-modern .btn.primary{background:var(--m-accent);border-color:var(--m-accent);color:#fff}
+.theme-modern .btn.primary:hover:not(:disabled){background:#0057E5;border-color:#0057E5}
+.theme-modern .btn.accent,.theme-modern .btn[data-p="initial"]{background:var(--db-yellow);border-color:var(--db-yellow);color:var(--db-on-color)}
+.theme-modern .btn.accent:hover:not(:disabled){background:#F5C524;border-color:#F5C524}
+.theme-modern .btn[data-p="claim"]{background:var(--db-lime);border-color:var(--db-lime);color:var(--db-on-color)}
+.theme-modern .btn[data-p="claim"]:hover:not(:disabled){background:#A6CF0C;border-color:#A6CF0C}
+.theme-modern .dlg{border-radius:14px;box-shadow:var(--m-dialog)}
+.theme-modern .dlg .tbar .t{font:700 17px var(--m-title);letter-spacing:-.02em}
+.theme-modern .fieldset{background:var(--m-surface-2);border-radius:10px}
+.theme-modern .fieldset>legend,.theme-modern .cover .sep,.theme-modern .evs .filter legend,.theme-modern .bgroup,.theme-modern .gscan-h,.theme-modern .crit .band,.theme-modern table.plain th,.theme-modern table.dataview th,.theme-modern .cover table.sub th,.theme-modern .cmdp .grp{font-family:var(--m-font)!important;font-weight:700!important;letter-spacing:.02em!important;text-transform:none!important}
+.theme-modern .catdlg .panel h2{font:700 21px var(--m-title);letter-spacing:-.025em}
+.theme-modern .catdlg .cats .it.active{background:var(--db-sel-node);box-shadow:none}
+.theme-modern .catdlg .cats .it.active .mi-ic{color:var(--m-ink)}
+.theme-modern .menu{border-radius:12px}
+.theme-modern .menu .row{border-radius:6px}
+.theme-modern .menu .row:hover:not(.disabled),.theme-modern .menu .row.active:not(.disabled){background:var(--db-hover)}
+.theme-modern .vfilter .foot span:hover,.theme-modern .vfilter .foot span.active{background:var(--m-ink);color:var(--m-ground)}
+.theme-modern .toast{background:var(--m-ink);color:var(--m-ground);border-radius:10px}
+.theme-modern .tip{background:var(--m-ink);color:var(--m-ground);border-radius:6px}
+.theme-modern .graybar{border-radius:10px}
+.theme-modern .graybar .tb{border-color:transparent}
+.cmdp .box{border-radius:14px;font-family:var(--m-font)}
+.cmdp .it{border-radius:8px}
+
+/* scan batches: bold yellow and lime cards */
+.theme-modern .pane .gscan-h{background:transparent!important}
+.theme-modern .card{background:var(--db-yellow);border-radius:10px;color:var(--db-on-color)}
+.theme-modern .cards .card:nth-child(even){background:var(--db-lime)}
+.theme-modern .card .meta{color:var(--db-on-color)}
+.theme-modern .card .pg{box-shadow:0 -1px 6px rgba(30,25,25,.14);border-radius:2px}
+.theme-modern .card.sel{outline:2px solid var(--m-ink);outline-offset:2px}
+.theme-modern .bstamp{font-weight:700}
+
+/* document window */
+.theme-modern .dms-back-btn{flex:none;white-space:nowrap;height:36px;border-radius:18px;border-color:var(--db-btn-line);box-shadow:none;background:transparent;font:600 13.5px var(--m-font)}
+.theme-modern .dms-back-t{font:400 12.5px var(--m-font)}
+.theme-modern .vtabs .t.active,.theme-modern .rtabs .rt.active{background:var(--m-ink);color:var(--m-ground)}
+.theme-modern .thumb.sel{outline-color:var(--m-accent)}
+.theme-modern .center,.theme-modern .thumbs,.theme-modern .side{border:1px solid var(--m-rule);box-shadow:none}
+.theme-modern .side .sh{font:700 16px var(--m-title);letter-spacing:-.02em}
+.theme-modern .sigcard h4{font-family:var(--m-font);font-weight:700}
+
+/* status bar */
+.theme-modern .statusbar{font:500 12px var(--m-font);color:var(--m-ink-3);padding:0 22px}
+.theme-modern .statusbar .led{background:var(--m-ok);box-shadow:0 0 0 3px var(--m-ok-soft)}
+.theme-modern .statusbar .led+.led{background:var(--m-accent);box-shadow:0 0 0 3px var(--m-accent-soft)}
+
+/* sign-in: a yellow tile instead of the gradient badge, a blue sign-in button */
+.theme-modern .login{background:var(--m-ground)}
+.theme-modern .login .dlg{width:440px;border:1px solid var(--m-rule);box-shadow:0 30px 70px -40px rgba(30,25,25,.4)}
+.theme-modern .login .about .emb,.theme-modern .about .emb{background:var(--db-yellow);color:var(--db-on-color);border-radius:14px;font:700 19px var(--m-title);letter-spacing:-.04em}
+.theme-modern .login .dbody>div:first-child>div>b{font:700 22px var(--m-title)!important;letter-spacing:-.03em}
+.theme-modern .login input.win{height:46px;border-radius:8px;font-size:15px}
+.theme-modern .login .dfoot .btn{height:48px;border-radius:24px;font-size:15px}
+.theme-modern .about h1{font:700 26px var(--m-title);letter-spacing:-.035em}
+
+@media (max-width:1500px){.theme-modern .preview{width:330px}}
+@media (max-width:900px){
+  .theme-modern .cmdk{min-width:0;width:42px;padding:0;justify-content:center}
+  .theme-modern .modtab.active{font-size:26px}
+}
+/* phones: the rail is a bottom tab bar (leaving room for the shell's corner buttons on the right) */
+@media (max-width:760px){
+  .theme-modern .menubar{padding:0 6px}
+  .theme-modern .modstrip{height:58px;padding:0 12px}
+  .theme-modern .toolbar{padding:0 12px}
+  .theme-modern .toolbar .tb{padding:0 11px}
+  .theme-modern .body{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;padding:0 10px 0 0}
+  .theme-modern .rail{grid-column:1/-1;grid-row:2;width:auto;flex-direction:row;align-items:center;justify-content:flex-start;gap:4px;padding:4px 112px 4px 10px;border-top:1px solid var(--m-rule);background:var(--m-surface);margin-top:8px}
+  .theme-modern .rail .it{flex:1;margin:0;padding:6px 0 5px;max-width:96px}
+  .theme-modern .rail .it span{font-size:11px}
+  .theme-modern .pane{grid-column:1;grid-row:1;width:132px!important;margin:0 8px 0 0;padding-left:8px}
+  .theme-modern .splitter{display:none}
+  .theme-modern .content{grid-column:2;grid-row:1;min-height:0}
+  .theme-modern .tree .node .ficon{display:none}
+  .theme-modern .statusbar{padding:0 12px}
+  .theme-modern .login .dlg{width:auto}
+}
+@media (max-width:600px){
+  .theme-modern .body{padding-right:8px}
+  .theme-modern .pane{width:124px!important}
+}
+
+/* login: one-click demo users and "Ostani prijavljen" (Pisarna DMS, 15. 10. 2026) */
+.login .stay-in{display:flex;align-items:center;gap:8px;margin:2px 0 10px;font-size:13px}
+.login .demo-users-h{font-size:12px;color:var(--m-ink-3,#555);margin:4px 0 6px}
+.login .demo-users{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.login .demo-user{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;height:auto!important;min-height:44px;padding:6px 10px!important;text-align:left;border-radius:10px!important;white-space:normal;line-height:1.2}
+.login .demo-user b{font-size:13px;font-weight:600}
+.login .demo-user span{font-size:11.5px;color:var(--m-ink-3,#666)}
+.login .demo-user:first-child{grid-column:1/-1;border-color:var(--db-blue,#0061fe)}
+@media (max-width:600px){
+  .login{align-items:flex-start;overflow:auto;padding:16px 0}
+  .login .dlg{width:calc(100vw - 32px)!important;max-width:440px}
+}

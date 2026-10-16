@@ -1,0 +1,138 @@
+/* Branch Manager, "Fresha" look (BM1). One layer for every page of the app: Main.dc.html and the .dc.html views that
+ * import it, Login.dc.html (on top of login-dark.css) and Bookings.html. White pages, bold black type in Plus Jakarta
+ * Sans, Fresha violet #6950F3, hairline-ringed rounded cards, black pill buttons, pill tabs with a black active pill.
+ * Dark mode is a matching near-black counterpart. Main renders with inline styles, so rules there use the tokens it
+ * reads (re-pointed below with a more specific selector) plus a few !important overrides keyed on classes added to
+ * the template (fr-*) or on ARIA state. */
+
+/* ══ Main app (.app) ══════════════════════════════════════════════════════ */
+html body .app{
+  --ground:#FFFFFF;--surface:#FFFFFF;--sunken:#F5F5F6;--fill:#F2F2F3;--line:#E5E5E7;--hair:#F0F0F1;
+  --ink:#0D1619;--ink2:#3F3F46;--ink3:#71717A;--inv:#0D1619;--inv-ink:#FFFFFF;--inv-ink3:#A1A1AA;--dash:#D4D4D8;--track:#F0EDFE;
+  --shadow:0 0 0 1px #EAEAEA,0 1px 2px rgba(13,22,25,.03);
+  --good:#0F7B4A;--good-bg:#E3F6EC;--good-dot:#12A15E;--bad:#C4320A;--bad-dot:#E5484D;--scrim:rgba(13,22,25,.4);--weekend:#C9BFFB;
+  --fr-v:#6950F3;--fr-v-t:#F0EDFE;--fr-v-k:#4B36C9;--fr-hatch-a:#C9BFFB;--fr-hatch-b:#E4DEFD;
+  font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif!important;font-size:14.5px!important;
+  -webkit-font-smoothing:antialiased}
+html body .app[data-theme="dark"]{
+  --ground:#0B0B0E;--surface:#151519;--sunken:#1D1D22;--fill:#222228;--line:#2A2A31;--hair:#212127;
+  --ink:#F5F5F7;--ink2:#C9C9D1;--ink3:#8E8E99;--inv:#F5F5F7;--inv-ink:#0B0B0E;--inv-ink3:#55555E;--dash:#3A3A42;--track:#24203E;
+  --shadow:0 0 0 1px #26262D;
+  --good:#6FD3A0;--good-bg:#12291E;--good-dot:#2FBF7A;--bad:#FF8A70;--bad-dot:#FF6B5E;--scrim:rgba(0,0,0,.65);--weekend:#4A3F8F;
+  --fr-v:#8B7BFF;--fr-v-t:#241F45;--fr-v-k:#C4BAFF;--fr-hatch-a:#4A3F8F;--fr-hatch-b:#2C2654}
+body:has(.app){background:#FFFFFF}
+body:has(.app[data-theme="dark"]){background:#0B0B0E}
+.app ::selection{background:var(--fr-v-t)}
+
+/* one typeface: no mono, sentence-case labels, bold headings and figures */
+.app [style*="Geist Mono"]{font-family:inherit!important}
+.app [style*="text-transform: uppercase"]{text-transform:none!important;letter-spacing:0!important;font-weight:600!important;font-size:12px!important}
+.app [style*="font-weight: 500"]{font-weight:600!important}
+.app h1{font-weight:800!important;letter-spacing:-.03em!important}
+.app h1[style*="font-size: 64px"]{font-size:clamp(32px,3.6vw,44px)!important;line-height:1.05!important}
+.app h2{font-weight:800!important;letter-spacing:-.02em!important}
+.app h2[style*="font-size: 30px"]{font-size:24px!important}
+.app h3{font-weight:700!important;letter-spacing:-.01em!important}
+.app [style*="letter-spacing: -0.035em"],.app [style*="letter-spacing: -0.04em"],.app [style*="letter-spacing: -0.03em"],.app [style*="letter-spacing: -0.045em"]{font-weight:800!important;letter-spacing:-.02em!important}
+.app [style*="border-radius: 20px"],.app [style*="border-radius: 18px"]{border-radius:16px!important}
+.app input[type="search"],.app input[type="text"],.app input[type="email"],.app input[type="tel"],.app select,.app textarea{border-color:var(--line)!important}
+.app button:focus-visible,.app a:focus-visible,.app input:focus-visible,.app select:focus-visible,.app textarea:focus-visible{outline-color:var(--fr-v)!important}
+
+/* sidebar: white with a hairline, violet monogram, bold items, violet-tinted current page */
+.app .fr-side{border-right:1px solid var(--line);gap:24px!important}
+.app .fr-side>div:first-child>div:first-child{background:var(--fr-v)!important;color:#fff!important;border-radius:50%!important}
+.app .fr-side>div:nth-child(2){box-shadow:none!important;background:var(--sunken)!important;border-radius:14px!important}
+.app .fr-side nav button,.app .fr-side nav a{font-weight:600!important;color:var(--ink2)!important;border-radius:12px!important}
+.app .fr-side nav button:hover,.app .fr-side nav a:hover{background:var(--sunken)!important;color:var(--ink)!important}
+.app .fr-side nav button[aria-current="page"]{background:var(--fr-v-t)!important;color:var(--fr-v-k)!important;box-shadow:none!important;font-weight:700!important}
+.app .fr-side nav [style*="border-radius: 999px"]{background:var(--fr-v-t)!important;color:var(--fr-v-k)!important;font-weight:700!important;font-size:10.5px!important}
+.app .fr-side nav button[aria-current="page"] [style*="border-radius: 999px"]{background:var(--surface)!important}
+
+/* pill tabs and toggles: separate rounded pills, the chosen one solid black */
+.app [role="group"]:has(> button[aria-pressed]){background:transparent!important;padding:0!important;gap:8px!important;box-shadow:none!important}
+.app [role="group"] > button[aria-pressed]{border:1px solid var(--line)!important;background:var(--surface)!important;color:var(--ink)!important;box-shadow:none!important;font-weight:700!important;min-height:38px!important}
+.app [role="group"] > button[aria-pressed="true"]{background:var(--inv)!important;border-color:var(--inv)!important;color:var(--inv-ink)!important}
+
+/* lifetime figures: the total as the big number, the parts as small rounded cards under it */
+.app .fr-eq{gap:8px!important}
+.app .fr-op{display:none!important}
+.app .fr-total{order:-1;flex:1 1 100%!important;min-height:0!important;padding:0 0 2px!important;background:transparent!important;color:var(--ink)!important;gap:0!important;border-radius:0!important}
+.app .fr-total>span:first-child{display:none!important}
+.app .fr-total>span:last-child{margin-top:0!important;font-size:40px!important;line-height:1.05!important;font-weight:800!important;letter-spacing:-.025em!important}
+.app .fr-term{flex:1 1 130px!important;min-height:0!important;padding:11px 13px!important;border-radius:14px!important;background:var(--surface)!important;box-shadow:0 0 0 1px var(--line);gap:6px!important}
+.app .fr-term>span:first-child{font-size:12px!important;color:var(--ink3)!important}
+.app .fr-term>span:last-child{margin-top:2px!important;font-size:20px!important;line-height:1.1!important;font-weight:800!important}
+.app .fr-term [style*="dashed"]{border-top-style:solid!important;border-top-color:var(--hair)!important;padding:4px 0!important;font-size:12px!important}
+.app .fr-card{gap:14px!important;padding:20px!important}
+.app .fr-card h3{font-size:15px!important}
+.app .fr-card h3+p{font-size:12.5px!important;color:var(--ink3)!important}
+.app .fr-months button:hover>span:nth-child(2){filter:brightness(1.08)}
+.app .fr-months button:focus-visible{outline:2px solid var(--fr-v);outline-offset:4px;border-radius:8px}
+
+/* primary buttons stay black pills; the round icon buttons get a hairline */
+.app button[style*="background: var(--inv)"],.app a[style*="background: var(--inv)"]{font-weight:700!important}
+.app [aria-label="Dark mode"]{border-color:var(--line)!important}
+
+/* Main on a phone (phone.css turns the sidebar into a row of pills) */
+@media (max-width:760px){
+  .app .fr-side{border-right:0;border-bottom:1px solid var(--line);padding-bottom:4px!important}
+  .app .fr-side>div:first-child>div:first-child{width:34px!important;height:34px!important}
+  .app .fr-side nav button[aria-current="page"]{background:var(--inv)!important;color:var(--inv-ink)!important}
+  .app .fr-side nav button,.app .fr-side nav a{border:1px solid var(--line)!important;border-radius:999px!important;min-height:38px!important}
+  .app .fr-side nav button[aria-current="page"]{border-color:var(--inv)!important}
+  .app .fr-total>span:last-child{font-size:34px!important}
+  .app .fr-term>span:last-child{font-size:16px!important}
+  .app .fr-term{flex-basis:100px!important}
+  .app .fr-card{padding:16px!important}
+  .app h1[style*="font-size: 64px"]{font-size:32px!important}
+  .app .fr-main{gap:20px!important}
+}
+
+/* ══ Login.dc.html ═══════════════════════════════════════════════════════ */
+.fr-login,.fr-login button,.fr-login input,.fr-login select{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif!important}
+.fr-login [style*="Geist Mono"]{font-family:inherit!important;font-weight:600}
+.fr-login [style*="text-transform: uppercase"]{text-transform:none!important;letter-spacing:0!important}
+.fr-login h1{font-weight:800!important;letter-spacing:-.035em!important}
+.fr-login [style*="font-weight: 500"]{font-weight:700!important}
+html:not([data-stratum-mode="dark"]) .fr-login{background:#FFFFFF!important}
+html:not([data-stratum-mode="dark"]) body:has(.fr-login){background:#FFFFFF}
+html:not([data-stratum-mode="dark"]) .fr-login form{box-shadow:0 0 0 1px #EAEAEA,0 18px 40px -28px rgba(13,22,25,.25)!important;border-radius:16px!important}
+html:not([data-stratum-mode="dark"]) .fr-login input,html:not([data-stratum-mode="dark"]) .fr-login select{background:#F7F7F8!important;border-color:#E5E5E7!important}
+.fr-login header>div>div:first-child{background:#6950F3!important;color:#fff!important;border-radius:50%!important}
+html[data-stratum-mode="dark"] .fr-login a[style*="background: rgb(12, 12, 13)"]{background:#F5F5F7!important;color:#0B0B0E!important}
+html[data-stratum-mode="dark"] .fr-login form{box-shadow:0 0 0 1px #26262D!important;border-radius:16px!important}
+
+/* ══ Bookings.html ═══════════════════════════════════════════════════════ */
+:root{--fr-font:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif}
+body:has(> .wrap > .head){
+  --ground:#FFFFFF;--surface:#FFFFFF;--sunken:#F5F5F6;--fill:#F2F2F3;--line:#E5E5E7;--hair:#F0F0F1;--ink:#0D1619;--ink2:#3F3F46;--ink3:#71717A;
+  --inv:#0D1619;--inv-ink:#FFFFFF;--dash:#D4D4D8;--track:#F0EDFE;--shadow:0 1px 2px rgba(13,22,25,.03);--accent:#6950F3;--now:#E5484D;
+  --good:#0F7B4A;--good-bg:#E3F6EC;--bad:#C4320A;--bad-bg:#FDECEA;--hatch:rgba(13,22,25,.04);
+  --font:var(--fr-font);--mono:var(--fr-font)}
+html[data-stratum-mode="dark"] body:has(> .wrap > .head){
+  --ground:#0B0B0E;--surface:#151519;--sunken:#1D1D22;--fill:#222228;--line:#2A2A31;--hair:#212127;--ink:#F5F5F7;--ink2:#C9C9D1;--ink3:#8E8E99;
+  --inv:#F5F5F7;--inv-ink:#0B0B0E;--dash:#3A3A42;--track:#24203E;--shadow:none;--accent:#8B7BFF;--now:#FF6B5E;
+  --good:#6FD3A0;--good-bg:#12291E;--bad:#FF8A70;--bad-bg:#3A1A14;--hatch:rgba(245,245,247,.04)}
+body:has(> .wrap > .head) h1{font-weight:800;letter-spacing:-.03em}
+body:has(> .wrap > .head) .crumb,body:has(> .wrap > .head) .label,body:has(> .wrap > .head) .kv div>span{text-transform:none;letter-spacing:0;font-weight:600;font-size:12.5px}
+body:has(> .wrap > .head) .proto{font-weight:600;background:var(--fr-v-t,#F0EDFE);color:#4B36C9}
+html[data-stratum-mode="dark"] body:has(> .wrap > .head) .proto{background:#241F45;color:#C4BAFF}
+body:has(> .wrap > .head) .btn{font-weight:700}
+body:has(> .wrap > .head) .seg,body:has(> .wrap > .head) .tabs{background:transparent;padding:0;gap:6px}
+body:has(> .wrap > .head) .seg button,body:has(> .wrap > .head) .tabs button{border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;min-height:38px;padding:0 15px}
+body:has(> .wrap > .head) .seg button[aria-pressed="true"],body:has(> .wrap > .head) .tabs button[aria-selected="true"]{background:var(--inv);border-color:var(--inv);color:var(--inv-ink);box-shadow:none}
+body:has(> .wrap > .head) .chip{font-weight:600}
+body:has(> .wrap > .head) .panel{border-radius:16px;box-shadow:none}
+body:has(> .wrap > .head) .stats b,body:has(> .wrap > .head) .bk b,body:has(> .wrap > .head) .ag-who b,body:has(> .wrap > .head) .hday{font-weight:700}
+body:has(> .wrap > .head) .bk{border-radius:8px}
+body:has(> .wrap > .head) .ag-item{border-radius:14px}
+body:has(> .wrap > .head) .ag-time{font-weight:700}
+body:has(> .wrap > .head) .dr-head h2,body:has(> .wrap > .head) .md-head h2{font-weight:800;letter-spacing:-.02em}
+body:has(> .wrap > .head) .modal{border-radius:18px}
+body:has(> .wrap > .head) .in,body:has(> .wrap > .head) .search{background:var(--surface)}
+body:has(> .wrap > .head) .md .n.today b{background:var(--accent)}
+body:has(> .wrap > .head) .slot[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+body:has(> .wrap > .head) .toast{font-weight:600}
+
+/* drawer statistics (same figure layout as the overview) */
+.app .fr-mini{box-shadow:0 0 0 1px var(--line)}

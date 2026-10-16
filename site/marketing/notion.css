@@ -1,0 +1,330 @@
+/* Marketing calendar — the Notion Calendar look (MK3). Loaded after style.css: re-tokens the app and restyles its
+   components. Dark is the main theme (html[data-stratum-mode="dark"]); light mode is Notion Calendar's white
+   counterpart. Inter, dense 13–14px type, hairline grids, 4–8px corners, red "today", blue primary. */
+:root{--font:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--mono:var(--font);--code:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --ground:#FFFFFF;--surface:#FFFFFF;--side:#F7F7F5;--sunken:#F7F7F5;--fill:#EFEFED;--line:#E3E2E0;--hair:#EDEDEC;--ink:#37352F;--ink2:#5F5E5B;--ink3:#787774;
+  --inv:#37352F;--inv-ink:#FFFFFF;--inv-ink3:#C4C3C0;--dash:#D3D1CB;--track:#EDEDEC;--colbg:#F7F7F5;--weekend:#FBFBFA;
+  --shadow:none;--shadow-sm:0 1px 2px rgba(15,15,15,.08);--pop-shadow:0 0 0 1px rgba(15,15,15,.05),0 3px 6px rgba(15,15,15,.1),0 9px 24px rgba(15,15,15,.2);
+  --good:#2F6B4A;--good-bg:#DBEDDB;--good-dot:#4DAB6F;--bad:#B23A35;--bad-bg:#FFE2DD;--bad-dot:#EB5757;--scrim:rgba(15,15,15,.4);
+  --accent:#2383E2;--accent-soft:rgba(35,131,226,.12);--focus:#2383E2;--blue:#2383E2;--blue-h:#0077D4;--today:#EB5757;--hh:44px;
+  --c-violet:#9065B0;--t-violet:#EFE7F4;--k-violet:#5A3A80;--c-blue:#337EA9;--t-blue:#E1EEF6;--k-blue:#1F5A80;--c-teal:#2E8C80;--t-teal:#DDF0EC;--k-teal:#1E6158;
+  --c-clay:#D9730D;--t-clay:#FAEBDD;--k-clay:#8A4A0B;--c-green:#448361;--t-green:#E3F0E3;--k-green:#2B5A40;--c-grey:#9B9A97;--t-grey:#EDEDEC;--k-grey:#5F5E5B}
+html[data-stratum-mode="dark"]{--ground:#191919;--surface:#202020;--side:#202020;--sunken:#252525;--fill:#2C2C2C;--line:#373737;--hair:#2A2A2A;--ink:#E6E6E5;--ink2:#ABABAA;--ink3:#8C8C8B;
+  --inv:#373737;--inv-ink:#F1F1EF;--inv-ink3:#A5A5A4;--dash:#454545;--track:#2F2F2F;--colbg:#202020;--weekend:#1C1C1C;
+  --shadow:none;--shadow-sm:0 1px 2px rgba(0,0,0,.5);--pop-shadow:0 0 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.6);
+  --good:#8FE3AE;--good-bg:#2B593F;--good-dot:#4DAB9A;--bad:#FF9C94;--bad-bg:#4F2A27;--bad-dot:#EB5757;--scrim:rgba(0,0,0,.6);
+  --accent:#529CCA;--accent-soft:rgba(35,131,226,.2);--focus:#2383E2;
+  --c-violet:#9A6DD7;--t-violet:rgba(154,109,215,.24);--k-violet:#D2B9F2;--c-blue:#529CCA;--t-blue:rgba(82,156,202,.24);--k-blue:#A9CDF0;--c-teal:#4DAB9A;--t-teal:rgba(77,171,154,.24);--k-teal:#9FDACB;
+  --c-clay:#E59457;--t-clay:rgba(229,148,87,.22);--k-clay:#F0B795;--c-green:#6BB36F;--t-green:rgba(107,179,111,.22);--k-green:#A6DBA8;--c-grey:#979A9B;--t-grey:rgba(151,154,155,.2);--k-grey:#C7C7C6}
+
+body{font:14px/1.5 var(--font);letter-spacing:-.003em}
+.mono,.code,.rules code,kbd,.utm-url,.urlcell{font-family:var(--code)}
+.label,.crumb,.brand small,.kv span.k,.tbl th,.cmp thead th,.wkdays div,.g-grp .g-lab,.datebox small,.loading,.weekposts h3{text-transform:none;letter-spacing:0}
+.label{font:500 12px var(--font);color:var(--ink3)}
+.hint,.saved,.prog,.calhint,.linkbtn,.thread .when,.file .fm small,.dcard .meta,.col-foot{font-family:var(--font)}
+::selection{background:rgba(35,131,226,.28)}
+
+/* ── Shell: Notion sidebar + slim top bar ── */
+@media (min-width:960px){.app{grid-template-columns:240px minmax(0,1fr)}}
+.side{background:var(--side);border-right:1px solid var(--hair);padding:14px 8px 14px;gap:14px}
+.brand{padding:2px 8px;gap:9px}
+.brand i{width:18px;height:18px;border-radius:5px;background:var(--today);position:relative;box-shadow:inset 0 5px 0 rgba(0,0,0,.18)}
+.brand b{font-size:14.5px;font-weight:600;letter-spacing:-.01em}
+.brand small{font:400 12px var(--font);color:var(--ink3);margin-top:1px}
+.nav{gap:1px}
+.nav a{min-height:30px;padding:0 8px;border-radius:6px;gap:10px;font-size:14px;font-weight:500;color:var(--ink2)}
+.nav a .ic{width:17px;height:17px;color:var(--ink3)}
+.nav a:hover{background:var(--fill);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--fill);color:var(--ink);font-weight:600}
+.nav a[aria-current="page"] .ic{color:var(--ink)}
+.nav a .cnt{font:500 12px var(--font);opacity:1;color:var(--ink3)}
+.nav a .cnt.bad,.nav a[aria-current="page"] .cnt.bad{color:var(--today)}
+.side-foot{gap:8px;padding:0}
+.demo-pill{border-radius:6px;background:transparent;border:1px solid var(--hair);font:400 12px/1.4 var(--font);color:var(--ink3);padding:8px 10px}
+.demo-pill i{background:var(--today)}
+.modebox{border-radius:8px;background:var(--surface);border-color:var(--hair)}
+html[data-stratum-mode="dark"] .modebox{background:var(--sunken)}
+.sync-side .as-card{border-radius:8px;background:var(--surface)}
+.top{min-height:48px;padding:8px 20px;background:var(--ground);border-bottom:1px solid var(--hair);gap:8px}
+.searchbtn{min-height:32px;border-radius:6px;background:var(--sunken);border-color:var(--hair);font-size:13.5px;padding:0 8px 0 10px;gap:8px}
+html[data-stratum-mode="dark"] .searchbtn{background:var(--sunken)}
+.searchbtn:hover{border-color:var(--line);background:var(--fill)}
+kbd{font:500 11px var(--code);border-radius:4px;padding:1px 5px;background:var(--surface);border-color:var(--line)}
+.modepill{border-radius:6px;min-height:28px;font:500 12.5px/1 var(--font)}
+main{padding:20px 24px 110px}
+
+/* ── Type ── */
+.head{margin-bottom:14px;gap:10px 20px}
+.crumb{font:500 13px var(--font);color:var(--ink3)}
+h1{margin:4px 0 4px;font-size:clamp(24px,2.4vw,30px);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+h1 .dot{display:none}
+.sub{font-size:13.5px;color:var(--ink3);gap:4px 12px}
+.sub b{font-weight:600;color:var(--ink)}
+h2,h3{font-weight:600}
+
+/* ── Controls ── */
+.btn{min-height:32px;padding:0 12px;border-radius:6px;border-color:var(--line);background:transparent;font-size:14px;font-weight:500;gap:6px}
+.btn:hover{background:var(--fill);border-color:var(--line)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.pri:hover{background:var(--blue-h);border-color:var(--blue-h);color:#fff;opacity:1}
+.btn.ghost{border-color:transparent}
+.btn.icon{width:32px}
+.btn.sm{min-height:28px;padding:0 9px;font-size:13px;border-radius:6px}
+.btn.sm.icon{width:28px}
+.btn svg{width:15px;height:15px}
+.btn.danger{background:var(--today);border-color:var(--today);color:#fff}
+.seg{padding:2px;border-radius:7px;background:transparent;border:1px solid var(--line);gap:1px}
+.seg button,.seg a{min-height:26px;padding:0 10px;border-radius:5px;font-size:13px;color:var(--ink3)}
+.seg [aria-pressed="true"],.seg [aria-current="page"]{background:var(--fill);box-shadow:none;color:var(--ink);font-weight:600}
+.select{min-height:32px;border-radius:6px;background-color:transparent;font-size:13.5px;font-weight:500;padding:0 30px 0 10px;background-position:right 10px center;border-color:var(--line)}
+.select:hover{background-color:var(--fill);border-color:var(--line)}
+.select.sm{min-height:28px;font-size:13px;padding-left:9px}
+.select option{background:var(--surface);color:var(--ink)}
+.search,.in,.qs-in{border-radius:6px;background-color:var(--sunken);border-color:var(--line);min-height:34px;font-size:14px}
+html[data-stratum-mode="dark"] .search,html[data-stratum-mode="dark"] .in{background-color:var(--sunken)}
+.in:focus,.search:focus,.qs-in:focus{outline:none;border-color:var(--focus);box-shadow:0 0 0 3px rgba(35,131,226,.22)}
+select.in{background-color:var(--sunken)}
+textarea.in{padding:8px 10px}
+.filters .select{min-height:28px;font-size:13px;max-width:210px}
+.chk,.check input,.pills input{accent-color:var(--blue)}
+.pills label{border-radius:6px;min-height:30px;font-size:13px}
+.pills label:has(input:checked){background:var(--fill);color:var(--ink);border-color:var(--ink3)}
+
+/* ── Cards, tags ── */
+.card{border-radius:8px;border-color:var(--hair);background:var(--surface);box-shadow:none}
+html[data-stratum-mode="dark"] .card{border-color:var(--line)}
+.card-h{padding:12px 16px 8px}
+.card-h h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.card-b{padding:4px 16px 14px}
+.kpis{gap:10px}
+.kpi{padding:12px 14px;gap:3px}
+.kpi .v{font-size:24px;font-weight:600;letter-spacing:-.025em}
+.kpi .s{font-size:12.5px;color:var(--ink3)}
+.chip{min-height:20px;padding:0 6px;border-radius:4px;font-size:12px;font-weight:500;gap:5px}
+.chip .d,.sdot{width:6px;height:6px}
+.chip.out{border-color:var(--line)}
+.av{width:22px;height:22px;font:600 9.5px var(--font);letter-spacing:0}
+.banner{border-radius:6px;font-size:13.5px;padding:10px 12px}
+.minibar{height:4px;border-radius:2px}
+.minibar i{border-radius:2px;background:var(--c-teal)}
+.empty.box{border-radius:6px}
+.datebox{border-radius:6px;width:40px;height:40px;background:var(--sunken);border:1px solid var(--hair)}
+.datebox b{font-weight:600;font-size:15px}
+.datebox small{font-size:10.5px}
+
+/* tables & lists */
+.tbl{font-size:13.5px}
+.tbl th{font:500 12px var(--font);color:var(--ink3);padding:8px 12px;background:var(--surface);border-bottom-color:var(--line)}
+.tbl td{padding:8px 12px;border-top-color:var(--hair)}
+.tbl tbody tr:hover td,html[data-stratum-mode="dark"] .tbl tbody tr:hover td{background:var(--fill)}
+.tbl td:first-child,.tbl th:first-child{padding-left:16px}
+.tbl td:last-child,.tbl th:last-child{padding-right:16px}
+.tbl .t1{font-weight:600}
+.rows>li{padding:8px 16px;border-top-color:var(--hair)}
+.rows .main a,.rows .main .t{font-weight:600}
+.rows .meta{font-size:12.5px}
+.rows li.warn{box-shadow:inset 3px 0 0 var(--today)}
+.cmp thead th{font:500 12px var(--font)}
+
+/* Notion-style property list (campaign overview) */
+.kv{display:flex;flex-direction:column;gap:0;padding:2px 16px 12px}
+.kv>div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 14px;align-items:baseline;padding:6px 0;border-top:1px solid var(--hair)}
+.kv>div:first-child{border-top:0}
+.kv span.k{font:400 13px var(--font);color:var(--ink3);margin:0}
+.kv p{font-size:14px}
+.kv .minibar{max-width:180px}
+
+/* charts */
+.chart text{font:400 11px var(--font);fill:var(--ink3)}
+.chart .s-rev{fill:var(--c-teal)}
+.chart .l-rev{stroke:var(--c-teal)}
+.chart .a-rev{fill:var(--c-teal);opacity:.16}
+.chart .s-spend,.legend i.spend{fill:var(--c-clay)}
+.legend i.rev{background:var(--c-teal)}
+.chart .s-fc,.legend i.fc{fill:var(--c-teal);background:var(--c-teal)}
+.chart .tday{stroke:var(--today)}
+.tip,.dragtip{border-radius:6px;font-size:12.5px}
+.hbar .tr{height:8px;border-radius:2px}
+.hbar .tr i{border-radius:2px}
+.hbar .vv{font:500 12px var(--font)}
+
+/* ── Calendar ── */
+.page>.card:has(.calbar){overflow:hidden}
+.calbar{padding:8px 12px;border-bottom-color:var(--hair);gap:8px}
+.calnav{gap:4px}
+.caltitle{font-size:20px;font-weight:600;letter-spacing:-.02em;margin:0 8px;min-width:0}
+.caltitle .yr{color:var(--ink3);font-weight:500}
+.calhint{padding:6px 12px;border-bottom-color:var(--hair);font:400 12px var(--font);color:var(--ink3)}
+.legendrow{font-size:12.5px;padding:8px 12px;border-top-color:var(--hair);gap:4px 14px}
+.legendrow .label{font-size:12px}
+.legendrow .sw{width:12px;height:10px;border-radius:2px}
+.wkdays{border-bottom-color:var(--hair)}
+.wkdays div{font:500 11.5px var(--font);color:var(--ink3);padding:7px 8px 5px}
+.wkdays div.today{color:var(--today)}
+.wk{border-top-color:var(--hair);min-height:112px}
+.wk .bg{border-left-color:var(--hair)}
+.wk .bg.weekend{background:var(--weekend)}
+.wk .bg.out{background:transparent}
+.wk .bg.drop{background:var(--accent-soft)}
+.wk .dh{padding:4px 4px 2px}
+.wk .dn{font:500 12px var(--font);min-width:22px;height:22px;color:var(--ink)}
+.wk .dh.out .dn{color:var(--ink3);opacity:.6}
+.wk .dh.today .dn,html[data-stratum-mode="dark"] .wk .dh.today .dn{background:var(--today);color:#fff;font-weight:600}
+.weeks[data-view="week"] .wk .dn{font-size:15px;font-weight:600;height:26px;min-width:26px}
+.weeks[data-view="week"] .wk{min-height:0;padding-bottom:4px}
+.kd{font:500 10.5px/1.3 var(--font);border-radius:3px;padding:1px 4px}
+.ctx{font:500 10.5px/16px var(--font);border-radius:3px;height:17px}
+.bar{height:20px;margin:1px 2px;padding:0 6px 0 6px;border-left-width:3px;border-radius:4px;font:500 11.5px/1 var(--font);letter-spacing:-.005em}
+.bar.cl{border-left-style:solid;border-left-color:transparent}
+.bar:hover,html[data-stratum-mode="dark"] .bar:hover{filter:none;background:color-mix(in srgb,var(--c) 34%,transparent);box-shadow:none}
+.bar.sel{outline-color:var(--focus)}
+.bar.st-live .nm::before{width:5px;height:5px}
+.bar-more,.ad-more{font:500 11px/20px var(--font);color:var(--ink3);border-radius:4px}
+.adbar{border-radius:3px;font:500 10.5px/15px var(--font)}
+.dragtip{background:var(--inv);font:500 12.5px var(--font)}
+.g-lab{font-size:13px;border-right-color:var(--hair)}
+.g-grp .g-lab{font:600 12px var(--font);color:var(--ink3)}
+.g-head{border-bottom-color:var(--hair)}
+.g-row{border-top-color:var(--hair)}
+.g-months span{font-size:13px;font-weight:600;border-left-color:var(--hair)}
+.g-days span{font:400 10.5px var(--font)}
+.g-days span.today{color:var(--today);font-weight:600}
+.g-cols i.ms{border-left-color:var(--line)}
+.g-cols i.now{border-left:2px solid var(--today)}
+.g-cols i.now::before{content:"";position:absolute;top:-3px;left:-5px;width:8px;height:8px;border-radius:50%;background:var(--today)}
+
+/* Week: posts by the hour; one time gutter on the left for the all-day bars and the hours */
+.wkv{--gut:52px;position:relative}
+.wkv .wkdays,.wkv .weeks{margin-left:var(--gut)}
+.wkv .weeks{position:relative;border-left:1px solid var(--hair)}
+.wkv .weeks::before{content:"all-day";position:absolute;left:calc(-1 * var(--gut));width:calc(var(--gut) - 8px);top:40px;text-align:right;font:500 10.5px var(--font);color:var(--ink3)}
+.wkv .wkdays{border-left:1px solid var(--hair)}
+.tgrid{border-top:1px solid var(--hair)}
+.tg-head,.tg-body{display:grid;grid-template-columns:var(--gut) repeat(7,minmax(0,1fr))}
+.tg-head{border-bottom:1px solid var(--hair)}
+.tg-dh{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:4px 4px 4px 8px;border-left:1px solid var(--hair);min-width:0}
+.tg-n{font:500 11.5px var(--font);color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg-dh.today .tg-n{color:var(--today)}
+.tg-add.btn.sm{min-height:24px;padding:0 6px;font-size:12px;color:var(--ink3);gap:3px}
+.tg-add svg{width:13px;height:13px}
+.tg-body{position:relative;height:calc(var(--hh) * var(--nh))}
+.tg-body>.tg-gut{position:relative}
+.tg-body>.tg-gut span{position:absolute;right:8px;transform:translateY(-50%);font:500 10.5px var(--font);color:var(--ink3);white-space:nowrap}
+.tg-col{position:relative;border-left:1px solid var(--hair);background-image:linear-gradient(var(--hair) 1px,transparent 1px);background-size:100% var(--hh);min-width:0}
+.tg-col.weekend{background-color:var(--weekend)}
+.post.tg-post{position:absolute;height:calc(var(--hh) * .75 - 2px);padding:3px 5px 3px 7px;border:0;border-left:3px solid var(--c);border-radius:4px;background:var(--t);color:var(--k);gap:0;justify-content:flex-start;overflow:hidden;line-height:1.2;z-index:1}
+.post.tg-post:hover{border-left-color:var(--c);background:color-mix(in srgb,var(--c) 34%,transparent)}
+.post.tg-post b{font:600 11.5px/1.25 var(--font);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.post.tg-post small{font:500 10.5px/1.3 var(--font);color:var(--k);opacity:.9}
+.tg-now{position:absolute;left:-1px;right:0;height:2px;background:var(--today);z-index:2;pointer-events:none}
+.tg-now::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--today)}
+
+/* ── Content board ── */
+.board{gap:10px}
+.col{border-radius:8px;background:var(--colbg);border-color:var(--hair)}
+html[data-stratum-mode="dark"] .col{background:#1D1D1D}
+.col-h{padding:10px 12px 8px;border-bottom-color:var(--hair)}
+.col-h .t{font-size:14px;font-weight:600}
+.col-h .t .n{font:500 11.5px var(--font);border-radius:4px}
+.col-b{padding:8px;gap:6px}
+.dcard{border-radius:6px;border-color:var(--hair);box-shadow:var(--shadow-sm);padding:8px 10px;gap:4px}
+html[data-stratum-mode="dark"] .dcard{background:#252525;border-color:#303030}
+.dcard .tt{font-size:13.5px;font-weight:600}
+.dcard .meta{font-size:11.5px}
+.dcard .cap{font-size:12.5px}
+.grip{border-radius:5px}
+.mv{border-radius:6px;min-height:26px;font-size:12px}
+.col-empty{border-radius:6px}
+.bulkbar{border-radius:8px}
+.post{border-radius:6px}
+
+/* ── Overlays ── */
+.pop{border-radius:8px;padding:4px;border-color:var(--line);background:var(--surface)}
+html[data-stratum-mode="dark"] .pop{background:#252525}
+.pop button{border-radius:4px;padding:6px 10px;font-size:14px}
+.modal{border-radius:10px;border-color:var(--line);box-shadow:var(--pop-shadow)}
+html[data-stratum-mode="dark"] .modal{background:#252525}
+.md-head{padding:14px 18px 6px}
+.md-head h2{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.md-body{padding:6px 18px 14px;gap:12px}
+.md-foot{padding:10px 18px 14px;border-top-color:var(--hair)}
+.field>label,.field>.lab,.field>legend{font:500 12.5px var(--font);color:var(--ink3)}
+.toast{border-radius:8px;padding:9px 10px 9px 14px;font-size:13.5px;box-shadow:var(--pop-shadow)}
+.toast button{border-radius:5px;padding:3px 9px;background:transparent;color:#529CCA;font-weight:600}
+.qs-opt{border-radius:6px}
+.lk-row,.aon-row{border-radius:6px}
+.file{border-radius:8px}
+.drop-zone{border-radius:6px}
+.utm-url{border-radius:6px}
+
+/* Peek sheet (a calendar bar's detail): right-hand panel on desktop, bottom sheet on phones */
+.modal.peek{width:min(440px,calc(100% - 24px))}
+.peek .md-head h2{display:flex;align-items:center;gap:9px}
+.peek .md-head h2::before{content:"";flex:none;width:12px;height:12px;border-radius:3px;background:var(--c)}
+.pk-props{display:flex;flex-direction:column}
+.pk-row{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;align-items:center;min-height:32px;padding:3px 0;font-size:13.5px}
+.pk-k{display:flex;align-items:center;gap:7px;color:var(--ink3);font-size:13px}
+.pk-k svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pk-v{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-width:0}
+.pk-v b{font-weight:600}
+.pk-v .minibar{width:72px;min-width:72px;display:inline-block}
+.pk-spark{border-top:1px solid var(--hair);padding-top:10px}
+.pk-sh{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--ink3);margin-bottom:6px}
+.pk-sh b{color:var(--ink);font-weight:600}
+.pk-spark svg{display:block;width:100%;height:46px}
+.pk-spark rect{fill:var(--c-teal)}
+.peek .md-foot a.btn svg{order:2}
+
+@media (min-width:960px){
+  .modal.peek{left:auto;right:16px;top:64px;bottom:16px;transform:none;max-height:none;width:400px}
+}
+@media (max-width:959px){
+  .side{background:var(--side)}
+  .top{padding:8px 12px}
+  main{padding:14px 12px 100px}
+}
+@media (max-width:640px){
+  h1{font-size:24px}
+  .head{margin-bottom:10px}
+  .head .actions .btn{min-height:32px;font-size:13.5px}
+  .top .btn.icon,.top .newbtn{width:36px;min-height:36px}
+  .searchbtn{min-height:36px}
+  /* the calendar runs edge to edge like a phone calendar */
+  .page>.card:has(.calbar){margin:0 -12px;border-radius:0;border-left:0;border-right:0}
+  .calbar{padding:8px 10px}
+  .caltitle{font-size:17px;margin:0 4px;flex-basis:100%;order:-1;margin-bottom:2px}
+  .calbar .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px;max-width:calc(100% + 20px)}
+  .calbar .filters::-webkit-scrollbar{display:none}
+  .calbar .filters .select{flex:none;max-width:none}
+  .calhint{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .wkdays div{padding:5px 2px 4px;text-align:center;font-size:10.5px}
+  .wkv .wkdays div{text-align:left;padding-left:8px}
+  .wk .dh{align-items:center}
+  .bar{height:19px;font-size:10.5px;padding:0 3px 0 4px;margin:1px;border-left-width:2px}
+  /* the week scrolls sideways like a phone calendar (about 3½ days on screen); the hours stay put */
+  .wkv{--gut:40px;--hh:42px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+  .wkv::-webkit-scrollbar{display:none}
+  .wkv-in{min-width:calc(var(--gut) + 7 * 92px)}
+  .wkv .weeks::before{top:36px;font-size:9.5px;width:calc(var(--gut) - 4px)}
+  .tg-head>.tg-gut,.tg-body>.tg-gut{position:sticky;left:0;z-index:4;background:var(--surface)}
+  .tg-add span{display:none}
+  .tg-add.btn.sm{min-height:22px;width:24px;padding:0}
+  .tg-body>.tg-gut span{right:5px;font-size:9.5px}
+  .post.tg-post{padding:2px 3px 2px 5px}
+  .post.tg-post small{font-size:9.5px}
+  .post.tg-post b{font-size:10.5px}
+  /* bar names stay readable while the week scrolls under them */
+  .wkv .bar{overflow:visible;clip-path:inset(0 round 4px)}
+  .wkv .bar>span.nm{position:sticky;left:6px;flex:0 1 auto}
+  .calbar .calnav+.calnav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px 2px;max-width:calc(100% + 20px)}
+  .calbar .calnav+.calnav::-webkit-scrollbar{display:none}
+  .calbar .calnav+.calnav>*{flex:none}
+  .kv>div{grid-template-columns:112px minmax(0,1fr)}
+  .modal.peek{left:0;right:0;bottom:0;top:auto;transform:none;width:100%;max-height:82vh;border-radius:14px 14px 0 0;border-bottom:0}
+  .modal.peek::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--dash);margin:8px auto 0}
+  .modal.peek .md-foot{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+}
+@media print{:root,html[data-stratum-mode="dark"]{--ground:#fff;--surface:#fff}}
+/* "What worked": the reason for each verdict, under the chip */
+.tbl td.verdict{min-width:150px}
+.tbl td.verdict small{display:block;margin-top:4px;max-width:280px;font:400 11.5px/1.35 var(--font);color:var(--ink3);white-space:normal}

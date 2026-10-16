@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Joiners &amp; leavers — Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="rippling.css?v=1">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="app">
+  <aside class="side" id="side" aria-label="Joiners and leavers">
+    <div class="brand">
+      <a href="#/"><i aria-hidden="true"></i><span>Joiners &amp; leavers<small>Demo · HR · IT · managers</small></span></a>
+      <button type="button" class="btn sm menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
+      </button>
+      <form class="top-search" id="topSearch" role="search">
+        <label class="sr" for="topQ">Search people, cases and devices</label>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <input id="topQ" type="search" placeholder="Search people, cases, devices…" autocomplete="off" enterkeyhint="search">
+      </form>
+      <a class="bell" id="bellBtn" href="#/tasks" aria-label="My tasks"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><i id="bellN" hidden></i></a>
+      <button type="button" class="me-av" id="meAv" aria-label="Acting as: change person"></button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <div class="field actor">
+        <label for="actorSel">Acting as (no real login)</label>
+        <select class="select" id="actorSel" data-chg="actor"></select>
+      </div>
+      <div id="syncPanel" class="sync-panel"></div>
+      <span class="demo-pill" title="Fictional demo people and equipment. Nothing is sent, disabled or changed in Microsoft 365. Changes stay in this browser, plus a private cloud copy when you sign in to sync."><i aria-hidden="true"></i>Demo data · saved in this browser, plus your private cloud copy when you sign in to sync</span>
+      <button type="button" class="btn sm" id="resetBtn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/></svg>Reset demo data
+      </button>
+    </div>
+  </aside>
+  <main class="main" id="main" tabindex="-1"><div class="page"><p class="loading" role="status"><i aria-hidden="true"></i>Loading checklists…</p></div></main>
+</div>
+<div id="layers"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/_shared/stratum-sync.js"></script>
+<script src="data.js?v=3"></script>
+<script src="letter-m365.js?v=1"></script>
+<script src="app.js?v=6"></script>
+</body>
+</html>

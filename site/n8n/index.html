@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>n8n Runs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ground:#F4F3EF;--surface:#FFFFFF;--sunken:#F4F3EF;--fill:#EAE8E3;--line:#E0DDD6;--hair:#ECEAE4;--ink:#0C0C0D;--ink2:#55544F;--ink3:#6B6964;--inv:#0C0C0D;--inv-ink:#F4F3EF;--track:#EFEDE8;--shadow:0 1px 2px rgba(12,12,13,.04),0 16px 40px -24px rgba(12,12,13,.18);--accent:#5B3FE0;--ok:#3F7D58;--ok-ink:#24553A;--ok-bg:#DCEBE0;--bad:#C2410C;--bad-ink:#9A3412;--bad-bg:#F6E3D6;--miss:#9A6700;--miss-ink:#6B4407;--miss-bg:#F7ECD2;--run:#3E5BA9;--run-ink:#2A4180;--run-bg:#DFE5F4;--scrim:rgba(12,12,13,.32);--font:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;color-scheme:light}
+html[data-stratum-mode="dark"]{--ground:#0C0C0D;--surface:#161618;--sunken:#1F1F22;--fill:#26262A;--line:#2E2E33;--hair:#232327;--ink:#F4F3EF;--ink2:#BAB7AF;--ink3:#8F8C85;--inv:#F4F3EF;--inv-ink:#0C0C0D;--track:#26262A;--shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7);--accent:#9B88F5;--ok:#5FAF7A;--ok-ink:#93CFA3;--ok-bg:#1D3426;--bad:#E0703F;--bad-ink:#F3A47E;--bad-bg:#3A2418;--miss:#E2C27A;--miss-ink:#E2C27A;--miss-bg:#33270E;--run:#7D95DE;--run-ink:#9DB0EA;--run-bg:#1E2640;--scrim:rgba(0,0,0,.62);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #7B66F0;outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;padding:24px 16px 80px}
+@media (min-width:800px){.wrap{padding:32px 28px 88px}}
+.eyebrow{font:400 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3)}
+.eyebrow a{color:inherit;text-decoration:none}.eyebrow a:hover{color:var(--ink)}
+.head{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:22px}
+h1{margin:10px 0 8px;font-size:clamp(34px,5vw,52px);line-height:1;font-weight:500;letter-spacing:-.045em}
+h1 span{color:var(--accent)}
+.lede{margin:0;max-width:680px;color:var(--ink2)}
+.sync{font:400 12px/1.6 var(--mono);color:var(--ink3);text-align:right}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer}
+.btn:hover{border-color:var(--ink3)}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px 18px}
+.kpi .l{font:400 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.kpi .v{margin-top:8px;font-size:30px;line-height:1.1;font-weight:500;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.kpi .d{margin-top:6px;font-size:13px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
+.ph{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--hair)}
+.ph h2{margin:0;font-size:17px;font-weight:500;letter-spacing:-.015em}
+.ph p{margin:2px 0 0;font-size:13px;color:var(--ink2)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.chart{padding:14px 16px 10px}
+.chart svg{display:block;width:100%;height:auto}
+.axis{font:400 10px var(--mono);fill:var(--ink3)}
+.bar-hit{cursor:pointer}
+.bar-hit:hover rect{opacity:.85}
+.tip{position:fixed;z-index:30;pointer-events:none;background:var(--inv);color:var(--inv-ink);padding:8px 12px;border-radius:12px;font-size:12.5px;line-height:1.45;box-shadow:0 12px 30px -12px rgba(0,0,0,.4)}
+.tabs{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:var(--fill)}
+.tabs button{border:0;background:transparent;color:var(--ink2);min-height:34px;padding:0 15px;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(12,12,13,.12)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.search{min-height:38px;width:min(280px,100%);padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--sunken)}
+.select{min-height:38px;padding:0 32px 0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6964' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;font-size:14px;cursor:pointer}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font:400 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:10px 12px;border-bottom:1px solid var(--hair);white-space:nowrap;background:var(--surface);position:sticky;top:0}
+th button{all:unset;cursor:pointer}
+th button:hover{color:var(--ink)}
+th[aria-sort] button::after{content:" ↓"}th[aria-sort="ascending"] button::after{content:" ↑"}
+td{padding:11px 12px;border-bottom:1px solid var(--hair);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td:first-child,th:first-child{padding-left:20px}td:last-child,th:last-child{padding-right:20px}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:var(--sunken)}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:12.5px}
+.muted{color:var(--ink3)}
+.name{font-weight:500}
+.name small{display:block;font:400 11.5px var(--mono);color:var(--ink3);font-weight:400}
+.badge{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font:500 12px var(--font);white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-ok{background:var(--ok-bg);color:var(--ok-ink)}.b-bad{background:var(--bad-bg);color:var(--bad-ink)}
+.b-miss{background:var(--miss-bg);color:var(--miss-ink)}.b-run{background:var(--run-bg);color:var(--run-ink)}
+.b-off{background:var(--fill);color:var(--ink2)}
+.num-bad{color:var(--bad-ink);font-weight:500}.num-miss{color:var(--miss-ink);font-weight:500}
+.empty{padding:36px 20px;text-align:center;color:var(--ink3)}
+.daygroup td{background:var(--sunken);font:500 12px var(--mono);color:var(--ink2);padding-top:8px;padding-bottom:8px}
+.new{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--accent);color:#fff;font:500 10px var(--mono);vertical-align:middle}
+.err{margin:0 0 20px;padding:14px 18px;border-radius:14px;background:var(--bad-bg);color:var(--bad-ink)}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:41;width:min(620px,100%);background:var(--surface);box-shadow:-30px 0 80px -30px rgba(0,0,0,.4);display:flex;flex-direction:column}
+.dh{display:flex;justify-content:space-between;gap:12px;padding:22px 24px 14px;border-bottom:1px solid var(--hair)}
+.dh h2{margin:4px 0 0;font-size:24px;line-height:1.15;font-weight:500;letter-spacing:-.03em}
+.db{flex:1;overflow:auto;padding:16px 24px 96px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+.facts span{display:block;font:400 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+.strip{display:flex;gap:3px;flex-wrap:wrap;margin:6px 0 18px}
+.strip i{width:12px;height:22px;border-radius:4px;background:var(--fill)}
+.strip i.s{background:var(--ok)}.strip i.e{background:var(--bad)}.strip i.m{background:var(--miss)}.strip i.p{background:var(--run)}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:var(--sunken);display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.note{font:400 12px/1.5 var(--mono);color:var(--ink3);margin:0;padding:12px 20px;border-top:1px solid var(--hair)}
+[hidden]{display:none!important}
+/* Oct 2026: retry (demo), alert rules, run-time trend */
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);opacity:0;z-index:60;max-width:min(92vw,520px);padding:11px 16px;border-radius:12px;background:var(--inv);color:var(--inv-ink);font-size:14px;transition:transform .2s,opacity .2s;pointer-events:none}
+.toast.on{transform:translate(-50%,0);opacity:1}
+@media (max-width:760px){.toast{bottom:calc(150px + env(safe-area-inset-bottom,0px))}}
+.btn.xs{min-height:26px;padding:0 10px;font-size:12px;margin-left:6px}
+.btn.ghost{background:transparent}
+.trend{font:600 11.5px var(--mono);margin-left:4px;white-space:nowrap}
+.trend.up{color:var(--miss-ink)} .trend.down{color:var(--ok-ink)}
+.alerts-demo{padding:14px 20px 4px}
+.anote{margin:0 0 12px;font-size:13px;color:var(--ink2)}
+.rules{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:8px}
+.rule{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.rule.off{opacity:.65}
+.rule .rbody{flex:1;min-width:0}
+.rule .rbody b{display:block;font-weight:500;margin-bottom:6px}
+.rctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.select.sm{min-height:32px;font-size:13px;max-width:100%}
+.nlab{font-size:12.5px;color:var(--ink2);display:inline-flex;align-items:center;gap:4px}
+.nin{width:64px;min-height:32px;padding:0 8px}
+.rcount{font:600 12px var(--mono);color:var(--ink3);white-space:nowrap;padding-top:2px}
+.rcount.hot{color:var(--bad-ink)}
+.sw input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.ah{margin:0 0 6px;font-size:15px;font-weight:500}
+.tsum{margin:2px 0 6px;font-size:13.5px;color:var(--ink2)}
+.tchart{margin:0 0 16px}
+.tchart svg{display:block;width:100%;height:auto}
+@media (max-width:760px){.rule{flex-wrap:wrap}.rcount{order:-1;margin-left:auto}.rctl .select.sm{flex:1 1 140px}}
+</style>
+<link rel="stylesheet" href="betterstack.css?v=1">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <span class="eyebrow"><a href="../">Business Apps</a> · Data pipelines</span>
+      <h1>n8n runs<span>.</span></h1>
+      <p class="lede">Every n8n workflow, when it last changed, and whether its scheduled runs happened. Missed runs show up too, because each schedule is checked against what actually ran.</p>
+    </div>
+    <div class="sync" id="sync">Loading…</div>
+  </header>
+
+  <div class="err" id="err" role="alert" hidden></div>
+  <div class="incident" id="incident" role="status" hidden></div>
+  <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+  <section class="panel">
+    <div class="ph"><div><h2>Scheduled runs per day</h2><p>Last 30 days, Europe/Ljubljana. Each bar is every run that was due that day.</p></div>
+      <div class="legend"><span><i class="dot" style="background:var(--ok)"></i>Succeeded</span><span><i class="dot" style="background:var(--bad)"></i>Failed</span><span><i class="dot" style="background:var(--miss)"></i>Missed</span><span><i class="dot" style="background:var(--run)"></i>Running / due</span></div></div>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <section class="panel">
+    <div class="ph">
+      <div class="tabs" role="tablist" id="tabs">
+        <button type="button" role="tab" data-tab="workflows" aria-selected="true"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 5 12 2.5-6H21"/></svg><span>Workflows</span></button>
+        <button type="button" role="tab" data-tab="runs" aria-selected="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l11-7z"/></svg><span>Runs</span></button>
+        <button type="button" role="tab" data-tab="problems" aria-selected="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.5 20h19zM12 10v4.5M12 17.5h.01"/></svg><span>Problems</span><i class="tbadge" id="probN" hidden></i></button>
+        <button type="button" role="tab" data-tab="alerts" aria-selected="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg><span>Alerts</span></button>
+        <button type="button" role="tab" data-tab="deploys" aria-selected="false"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><span><span class="tl-long">Deployments</span><span class="tl-short">Deploys</span></span></button>
+      </div>
+      <div class="tools" id="tools"></div>
+    </div>
+    <div id="tab"></div>
+    <p class="note" id="tabnote"></p>
+  </section>
+</div>
+<div id="layer"></div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/_shared/demo-api.js"></script>
+<script src="demo-api.js?v=3"></script>
+<script src="alerts.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var TZ = 'Europe/Ljubljana';
+  var $ = function (id) { return document.getElementById(id); };
+  var data = { workflows: [], days: [], runs: [], meta: {} };
+  var ui = { tab: 'workflows', q: '', filter: 'all', mode: 'all', sort: 'health', dir: 1 };
+  try { var saved = JSON.parse(localStorage.getItem('n8n-ui') || '{}'); if (saved.tab) ui.tab = saved.tab; } catch (e) {}
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function d(v) { return v ? new Date(String(v).replace(' ', 'T') + (/[zZ]|[+-]\d\d:?\d\d$/.test(v) ? '' : 'Z')) : null; }
+  var fmtDT = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  var fmtDay = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, weekday: 'short', day: '2-digit', month: '2-digit' });
+  var fmtDate = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+  function dt(v) { var x = d(v); return x ? fmtDT.format(x).replace(',', '') : '—'; }
+  function localDay(v) { var x = d(v); return x ? fmtDate.format(x) : ''; }
+  function ago(v) {
+    var x = d(v); if (!x) return '—';
+    var s = (Date.now() - x) / 1000, a = Math.abs(s), f = s < 0 ? 'in ' : '', b = s < 0 ? '' : ' ago';
+    if (a < 90) return 'just now';
+    if (a < 5400) return f + Math.round(a / 60) + ' min' + b;
+    if (a < 129600) return f + Math.round(a / 3600) + ' h' + b;
+    return f + Math.round(a / 86400) + ' days' + b;
+  }
+  function dur(s) { if (s == null) return '—'; s = +s; if (s < 1) return '<1 s'; if (s < 90) return Math.round(s) + ' s'; if (s < 5400) return (s / 60).toFixed(s < 600 ? 1 : 0) + ' min'; return (s / 3600).toFixed(1) + ' h'; }
+  function n(v) { return (+v || 0).toLocaleString('en-GB'); }
+  var fmtTime = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });
+  function hm(v) { var x = d(v); return x ? fmtTime.format(x) : '—'; }
+  function toast(msg) { var t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { t.classList.remove('on'); }, 3600); }
+  function lsJson(k, def) { try { var v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? def : v; } catch (e) { return def; } }
+  function lsPut(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
+  var AL = window.N8nAlerts;
+  // demo retries and alert rules: this browser only; nothing is sent to n8n, e-mail or Teams
+  var retries = lsJson('n8n-retries', {}), rules = lsJson('n8n-alert-rules', null);
+  if (!Array.isArray(rules)) rules = AL ? AL.DEFAULT_RULES.map(function (r) { return Object.assign({}, r); }) : [];
+  function runKey(r) { return r.workflow_id + '|' + (r.started_at || r.expected_at); }
+
+  var HEALTH = { 'FAILED': ['b-bad', 'Failed', 0], 'MISSED': ['b-miss', 'Missed', 1], 'IN PROGRESS': ['b-run', 'Running', 2], 'OK': ['b-ok', 'OK', 3] };
+  function healthOf(w) {
+    if (!w.active) return ['b-off', 'Inactive', 5];
+    if (w.health && HEALTH[w.health]) return HEALTH[w.health];
+    return ['b-off', w.trigger_kind === 'schedule' ? 'No runs yet' : 'On demand', 4];
+  }
+  function statusBadge(r) {
+    var s = r.status;
+    if (s === 'success') return '<span class="badge b-ok">Success</span>';
+    if (s === 'error' || s === 'crashed') return '<span class="badge b-bad">' + (s === 'crashed' ? 'Crashed' : 'Failed') + '</span>';
+    if (s === 'missed') return '<span class="badge b-miss">Missed</span>';
+    if (s === 'due') return '<span class="badge b-run">Due</span>';
+    if (s === 'running' || s === 'waiting' || s === 'new') return '<span class="badge b-run">Running</span>';
+    return '<span class="badge b-off">' + esc(s || '—') + '</span>';
+  }
+  var MODES = { trigger: 'Schedule / trigger', manual: 'Manual', cli: 'Command line', webhook: 'Webhook', integrated: 'Sub-workflow', schedule: 'Schedule', retry: 'Retry' };
+
+  // ── data ────────────────────────────────────────────────────────────────
+  function get(path) { return fetch('/api/n8n/' + path, { headers: { Accept: 'application/json' } }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); }); }
+  function load() {
+    return Promise.all([get('workflows'), get('daily?days=30'), get('runs?days=14'), get('meta')]).then(function (res) {
+      data.workflows = res[0].workflows; data.days = res[1].days; data.runs = res[2].runs; data.meta = res[3];
+      $('err').hidden = true; render();
+    }).catch(function (e) {
+      $('err').hidden = false;
+      $('err').textContent = 'Could not load the n8n tracker data (' + e.message + '). It refreshes hourly at :20; try again in a moment.';
+      $('sync').textContent = '';
+    });
+  }
+
+  // ── KPIs ────────────────────────────────────────────────────────────────
+  function renderKpis() {
+    var act = data.workflows.filter(function (w) { return w.active; });
+    var sched = act.filter(function (w) { return w.health; });
+    var bad = sched.filter(function (w) { return w.health === 'FAILED' || w.health === 'MISSED'; }).length;
+    var last14 = data.days.slice(-14), exp = 0, ok = 0, missed = 0, failed = 0;
+    last14.forEach(function (x) { exp += +x.expected; ok += +x.success; missed += +x.missed; failed += +x.failed; });
+    var day = Date.now() - 864e5, runs24 = data.runs.filter(function (r) { return r.kind === 'run' && d(r.started_at) >= day; });
+    var fail24 = runs24.filter(function (r) { return r.status === 'error' || r.status === 'crashed'; }).length;
+    var changed7 = data.workflows.filter(function (w) { return d(w.updated_at) >= Date.now() - 7 * 864e5; }).length;
+    var rate = exp ? ok / exp * 100 : null;
+    var k = [
+      ['On time · 14 d', rate == null ? '—' : rate.toFixed(1) + '%', n(ok) + ' of ' + n(exp) + ' scheduled runs', rate == null ? '' : rate >= 95 ? 'g' : rate >= 90 ? 'a' : 'r', 'main'],
+      ['Missed · 14 d', n(missed), missed ? 'nothing started within 45 min' : 'every slot ran', missed ? 'a' : 'g', 'main'],
+      ['Failed · 14 d', n(failed), failed ? 'scheduled runs that errored' : 'no scheduled run failed', failed ? 'r' : 'g', 'main'],
+      ['Active workflows', n(act.length), n(data.workflows.length - act.length) + ' inactive · ' + n(sched.length) + ' scheduled', '', ''],
+      ['Need attention', n(bad), bad ? 'last run failed or missed' : 'every schedule is healthy', bad ? 'r' : 'g', ''],
+      ['Runs · 24 h', n(runs24.length), fail24 ? n(fail24) + ' failed' : 'none failed', '', ''],
+      ['Changed · 7 d', n(changed7), 'workflows deployed or edited', 'i', '']
+    ];
+    $('kpis').innerHTML = k.map(function (x) { return '<div class="kpi' + (x[4] ? ' ' + x[4] : '') + '"><div class="l">' + x[0] + '</div><div class="v' + (x[3] ? ' t-' + x[3] : '') + '">' + x[1] + '</div><div class="d">' + esc(x[2]) + '</div></div>'; }).join('');
+    // the time the runs were loaded, so it matches the newest run in the lists (the tracker loads them hourly at :20)
+    $('sync').innerHTML = '<button type="button" class="btn pri" id="reload"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/></svg>Refresh</button><span class="synct" title="' + esc('Loaded ' + dt(data.meta.executions_loaded_at) + (data.meta.next_load_at ? ' · next load about ' + hm(data.meta.next_load_at) : '')) + '">Runs loaded at ' + esc(hm(data.meta.executions_loaded_at)) + ' (' + esc(ago(data.meta.executions_loaded_at)) + ') · schedules checked ' + esc(ago(data.meta.status_checked_at)) + '</span>';
+    // incident banner: the workflow that has failed (or missed) the most runs in a row
+    var hot = act.filter(function (w) { return w.health === 'FAILED'; }), kind = 'failing';
+    if (!hot.length) { hot = act.filter(function (w) { return w.health === 'MISSED'; }); kind = 'missing runs'; }
+    hot.sort(function (a, b) { return (+b.problems_since_last_success || 0) - (+a.problems_since_last_success || 0); });
+    var inc = $('incident');
+    if (hot.length) {
+      var w0 = hot[0], streak = +w0.problems_since_last_success || 1;
+      inc.className = 'incident ' + (kind === 'failing' ? 'is-down' : 'is-late');
+      inc.innerHTML = '<button type="button" data-wf="' + esc(w0.workflow_id) + '"><i class="pulse" aria-hidden="true"></i><span><b>' + esc(w0.name) + ' is ' + kind + '</b><small>' +
+        n(streak) + ' ' + (kind === 'failing' ? 'failed' : 'missed or failed') + ' run' + (streak === 1 ? '' : 's') + ' in a row · last ' + esc(ago(w0.last_started_at)) + (bad > 1 ? ' · ' + n(bad - 1) + ' more need' + (bad - 1 === 1 ? 's' : '') + ' attention' : '') + '</small></span></button>';
+    } else {
+      inc.className = 'incident is-up';
+      inc.innerHTML = '<div><i class="pulse" aria-hidden="true"></i><span><b>All scheduled workflows are healthy</b><small>' + n(sched.length) + ' schedules checked ' + esc(ago(data.meta.status_checked_at)) + '</small></span></div>';
+    }
+    inc.hidden = false;
+    var pn = $('probN'); pn.textContent = bad; pn.hidden = !bad;
+    // "things that need you today" for the home page: schedules whose last run failed / was missed
+    try { if (window.StratumShell && StratumShell.needs) StratumShell.needs('n8n', [
+      { text: 'Workflows failing', count: sched.filter(function (w) { return w.health === 'FAILED'; }).length, href: '/n8n/', tone: 'bad' },
+      { text: 'Workflows missing runs', count: sched.filter(function (w) { return w.health === 'MISSED'; }).length, href: '/n8n/', tone: 'warn' }
+    ]); } catch (e) {}
+    $('reload').onclick = function () { this.disabled = true; this.lastChild.textContent = 'Loading…'; load(); };
+    inc.onclick = function (e) { var b = e.target.closest('[data-wf]'); if (b) openWorkflow(b.dataset.wf); };
+  }
+
+  // ── chart ───────────────────────────────────────────────────────────────
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function dayLabel(ds) { ds = String(ds); return (+ds.slice(8, 10)) + ' ' + MON[+ds.slice(5, 7) - 1]; }
+  function renderChart() {
+    var cw = $('chart').clientWidth || 1000, small = cw < 600;
+    var days = data.days, W = Math.max(300, Math.round(cw - (small ? 24 : 32))), H = small ? 150 : 220, L = small ? 26 : 34, B = 22, T = 10;
+    if (!days.length) { $('chart').innerHTML = '<div class="empty">No scheduled runs in this period.</div>'; return; }
+    var max = Math.max.apply(null, days.map(function (x) { return +x.expected; }).concat([10]));
+    var step = Math.pow(10, Math.floor(Math.log10(max))) * (max / Math.pow(10, Math.floor(Math.log10(max))) > 5 ? 2 : 1);
+    var top = Math.ceil(max / step) * step, gw = (W - L) / days.length, bw = Math.max(4, Math.min(22, gw * .7));
+    var y = function (v) { return T + (H - T - B) * (1 - v / top); };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Scheduled runs per day, last 30 days">';
+    for (var v = 0; v <= top; v += step) s += '<line x1="' + L + '" x2="' + W + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--hair)"/><text class="axis" x="' + (L - 6) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + v + '</text>';
+    days.forEach(function (x, i) {
+      var cx = L + gw * i + gw / 2, x0 = cx - bw / 2, acc = 0;
+      var parts = [['success', 'var(--ok)'], ['failed', 'var(--bad)'], ['missed', 'var(--miss)'], ['in_progress', 'var(--run)']];
+      s += '<g class="bar-hit" data-i="' + i + '"><rect x="' + (L + gw * i) + '" y="' + T + '" width="' + gw + '" height="' + (H - T - B) + '" fill="transparent"/>';
+      parts.forEach(function (p) { var val = +x[p[0]] || 0; if (!val) return; s += '<rect x="' + x0 + '" y="' + y(acc + val) + '" width="' + bw + '" height="' + (y(acc) - y(acc + val)) + '" rx="2" fill="' + p[1] + '"/>'; acc += val; });
+      s += '</g>';
+      var every = Math.ceil(days.length / Math.max(3, Math.floor(W / 90))), last = i === days.length - 1;
+      if ((i % every === 0 && days.length - 1 - i >= every / 2) || last) s += '<text class="axis" x="' + (last ? W : i === 0 ? L + gw * i : cx) + '" y="' + (H - 6) + '" text-anchor="' + (last ? 'end' : i === 0 ? 'start' : 'middle') + '">' + esc(last ? 'Today' : dayLabel(x.expected_date)) + '</text>';
+    });
+    $('chart').innerHTML = s + '</svg>';
+    var tip = $('tip');
+    $('chart').onmousemove = function (e) {
+      var g = e.target.closest('.bar-hit'); if (!g) { tip.hidden = true; return; }
+      var x = days[+g.dataset.i];
+      tip.innerHTML = '<b>' + esc(x.expected_date) + '</b><br>' + n(x.expected) + ' due · ' + n(x.success) + ' ok' + (+x.failed ? ' · ' + n(x.failed) + ' failed' : '') + (+x.missed ? ' · ' + n(x.missed) + ' missed' : '') + (+x.in_progress ? ' · ' + n(x.in_progress) + ' running' : '');
+      tip.hidden = false; tip.style.left = Math.min(window.innerWidth - 240, e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 14) + 'px';
+    };
+    $('chart').onmouseleave = function () { tip.hidden = true; };
+    $('chart').onclick = function (e) { var g = e.target.closest('.bar-hit'); if (!g) return; ui.tab = 'runs'; ui.q = days[+g.dataset.i].expected_date; renderTab(); };
+  }
+
+  // ── tabs ────────────────────────────────────────────────────────────────
+  function tools(html) { $('tools').innerHTML = html; }
+  function search(ph) { return '<input type="search" class="search" id="q" placeholder="' + ph + '" aria-label="Search" value="' + esc(ui.q) + '">'; }
+  function wireSearch() { var q = $('q'); if (q) q.oninput = function () { ui.q = q.value; var pos = q.selectionStart; renderTab(true); var q2 = $('q'); q2.focus(); q2.setSelectionRange(pos, pos); }; }
+  function match(text) { var q = ui.q.trim().toLowerCase(); return !q || text.toLowerCase().indexOf(q) >= 0; }
+
+  // one cell per day for the last 14 days: red if any run failed, amber if a slot was missed, green if runs succeeded
+  var stripCache = null;
+  function dayStrips() {
+    if (stripCache && stripCache.runs === data.runs) return stripCache.map;
+    var days = data.days.slice(-14).map(function (x) { return String(x.expected_date); }), idx = {}, map = {};
+    days.forEach(function (ds, i) { idx[ds] = i; });
+    var RANK = { s: 1, p: 2, m: 3, e: 4 };
+    data.runs.forEach(function (r) {
+      var i = idx[localDay(r.started_at || r.expected_at)]; if (i == null) return;
+      var c = r.status === 'success' ? 's' : (r.status === 'error' || r.status === 'crashed') ? 'e' : r.status === 'missed' ? 'm' : 'p';
+      var row = map[r.workflow_id] || (map[r.workflow_id] = days.map(function () { return ''; }));
+      if (!row[i] || RANK[c] > RANK[row[i]]) row[i] = c;
+    });
+    map._days = days;
+    stripCache = { runs: data.runs, map: map };
+    return map;
+  }
+  var STRIP_T = { s: 'all runs ok', e: 'a run failed', m: 'a run was missed', p: 'running / due', '': 'no runs' };
+  function dayStrip(id) {
+    var m = dayStrips(), row = m[id] || m._days.map(function () { return ''; });
+    return '<span class="dstrip" aria-hidden="true">' + row.map(function (c, i) { return '<i class="' + (c || 'n') + '" title="' + esc(dayLabel(m._days[i]) + ': ' + STRIP_T[c]) + '"></i>'; }).join('') + '</span>';
+  }
+  var HDOT = { 'b-bad': 'down', 'b-miss': 'late', 'b-run': 'run', 'b-ok': 'up', 'b-off': 'off' };
+
+  function renderWorkflows() {
+    tools(search('Search workflows…') + '<select class="select" id="flt" aria-label="Show"><option value="all">All workflows</option><option value="attention">Need attention</option><option value="ok">Healthy</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="ondemand">On demand (no schedule)</option></select>');
+    $('flt').value = ui.filter;
+    $('flt').onchange = function () { ui.filter = this.value; renderTab(); };
+    var rows = data.workflows.filter(function (w) {
+      var h = healthOf(w)[1];
+      if (ui.filter === 'attention' && !(h === 'Failed' || h === 'Missed')) return false;
+      if (ui.filter === 'ok' && h !== 'OK') return false;
+      if (ui.filter === 'active' && !w.active) return false;
+      if (ui.filter === 'inactive' && w.active) return false;
+      if (ui.filter === 'ondemand' && w.schedule_expr) return false;
+      return match(w.name + ' ' + (w.schedule_desc || '') + ' ' + w.workflow_id);
+    });
+    var key = {
+      health: function (w) { return healthOf(w)[2] * 1e6 - (+w.problems_since_last_success || 0); },
+      name: function (w) { return w.name.toLowerCase(); },
+      last: function (w) { return -(d(w.last_started_at) || 0); },
+      dur: function (w) { return -(+w.last_duration_s || 0); },
+      runs: function (w) { return -(+w.runs_14d || 0); },
+      fails: function (w) { return -((+w.failed_14d || 0) + (+w.missed_14d || 0)); },
+      deployed: function (w) { return -(d(w.updated_at) || 0); }
+    }[ui.sort];
+    rows.sort(function (a, b) { var x = key(a), y = key(b); return (x < y ? -1 : x > y ? 1 : 0) * ui.dir || a.name.localeCompare(b.name); });
+    var th = function (k, label, cls) { return '<th' + (cls ? ' class="' + cls + '"' : '') + (ui.sort === k ? ' aria-sort="' + (ui.dir > 0 ? 'descending' : 'ascending') + '"' : '') + '><button type="button" data-sort="' + k + '">' + label + '</button></th>'; };
+    var trends = wfTrends();
+    var html = '<div class="tablewrap"><table class="t-wf"><thead><tr>' + th('name', 'Workflow') + th('health', 'Status') + '<th>Schedule</th>' + th('last', 'Last run') + th('dur', 'Duration', 'r') + th('runs', 'Runs 14 d', 'r') + th('fails', 'Failed / missed', 'r') + th('deployed', 'Last deployed') + '<th class="c-strip">Last 14 days</th></tr></thead><tbody>';
+    if (!rows.length) html += '<tr><td colspan="9" class="empty">No workflows match.</td></tr>';
+    rows.forEach(function (w) {
+      var h = healthOf(w), probs = (+w.failed_14d || 0), miss = (+w.missed_14d || 0);
+      html += '<tr class="click wf" data-wf="' + esc(w.workflow_id) + '" tabindex="0"><td class="name"><i class="hdot ' + HDOT[h[0]] + '" aria-hidden="true"></i>' + esc(w.name) + '<small>' + esc(w.workflow_id) + '</small></td>' +
+        '<td><span class="badge ' + h[0] + '">' + h[1] + '</span>' + (+w.problems_since_last_success > 1 ? ' <span class="mono muted">×' + w.problems_since_last_success + '</span>' : '') + '</td>' +
+        '<td>' + (w.schedule_desc ? esc(w.schedule_desc) : '<span class="muted">' + esc(w.trigger_kind || 'manual') + '</span>') + '</td>' +
+        '<td title="' + esc(dt(w.last_started_at)) + '">' + esc(ago(w.last_started_at)) + '</td>' +
+        '<td class="r">' + esc(dur(w.last_duration_s)) + trendTag(trends[w.workflow_id]) + '</td><td class="r">' + n(w.runs_14d) + '</td>' +
+        '<td class="r">' + (probs ? '<span class="num-bad">' + probs + '</span>' : '0') + ' / ' + (miss ? '<span class="num-miss">' + miss + '</span>' : '0') + '</td>' +
+        '<td class="c-dep" title="' + esc(dt(w.updated_at)) + '">' + esc(dt(w.updated_at)) + (d(w.updated_at) >= Date.now() - 2 * 864e5 ? '<span class="new">NEW</span>' : '') + '</td><td class="c-strip">' + dayStrip(w.workflow_id) + '</td></tr>';
+    });
+    $('tab').innerHTML = html + '</tbody></table></div>';
+    $('tabnote').textContent = rows.length + ' of ' + data.workflows.length + ' workflows. Click a row for its run history and run-time trend. The arrows compare this week’s typical run time with the week before. Error details stay in n8n.';
+  }
+  // run-time trend per workflow from the last 14 days of runs (this week vs the week before)
+  var trendCache = null;
+  function wfTrends() {
+    if (trendCache && trendCache.runs === data.runs) return trendCache.map;
+    var by = {}, map = {};
+    data.runs.forEach(function (r) { (by[r.workflow_id] = by[r.workflow_id] || []).push(r); });
+    Object.keys(by).forEach(function (k) { map[k] = AL ? AL.trend(by[k], data.meta.executions_loaded_at, localDay) : null; });
+    trendCache = { runs: data.runs, map: map };
+    return map;
+  }
+  function trendTag(tr) {
+    if (!tr || tr.change == null || Math.abs(tr.change) < 0.25 || tr.week == null || Math.abs(tr.week - tr.prevWeek) < 2) return '';
+    var up = tr.change > 0;
+    return ' <span class="trend ' + (up ? 'up' : 'down') + '" title="' + esc('Typical run time ' + dur(tr.week) + ' this week, ' + dur(tr.prevWeek) + ' the week before') + '">' + (up ? '↑' : '↓') + Math.round(Math.abs(tr.change) * 100) + ' %</span>';
+  }
+
+  function runRows(list, groupByDay) {
+    var html = '<div class="tablewrap"><table class="t-runs"><thead><tr><th>Time</th><th>Workflow</th><th>Status</th><th>How it ran</th><th class="r">Duration</th><th>Failed at node</th></tr></thead><tbody>';
+    if (!list.length) html += '<tr><td colspan="6" class="empty">Nothing here.</td></tr>';
+    var last = '';
+    list.forEach(function (r) {
+      var t = r.started_at || r.expected_at, day = localDay(t);
+      if (groupByDay && day !== last) { html += '<tr class="daygroup"><td colspan="6">' + esc(fmtDay.format(d(t))) + '</td></tr>'; last = day; }
+      html += '<tr class="click" data-wf="' + esc(r.workflow_id) + '"><td class="mono" title="' + esc(r.kind === 'slot' ? 'Was due at this time' : 'Started') + '">' + esc(dt(t)) + (r.kind === 'slot' ? ' <span class="muted">due</span>' : '') + '</td>' +
+        '<td class="name">' + esc(r.workflow_name) + '</td><td>' + statusBadge(r) + '</td><td class="muted">' + esc(MODES[r.mode] || r.mode || '') + '</td>' +
+        '<td class="r">' + esc(r.kind === 'slot' ? '—' : dur(r.duration_s)) + '</td><td class="mono">' + esc(r.error_node || '') + retryCell(r) + '</td></tr>';
+    });
+    return html + '</tbody></table></div>';
+  }
+
+  function renderRuns() {
+    tools(search('Search workflow or date (2026-10-06)…') + '<select class="select" id="flt" aria-label="Status"><option value="all">All statuses</option><option value="success">Success</option><option value="failed">Failed</option><option value="missed">Missed</option><option value="running">Running / due</option></select><select class="select" id="mode" aria-label="How it ran"><option value="all">Any trigger</option><option value="trigger">Schedule / trigger</option><option value="manual">Manual</option><option value="other">Other</option></select>');
+    $('flt').value = ['all', 'success', 'failed', 'missed', 'running'].indexOf(ui.filter) >= 0 ? ui.filter : 'all';
+    $('mode').value = ui.mode;
+    $('flt').onchange = function () { ui.filter = this.value; renderTab(); };
+    $('mode').onchange = function () { ui.mode = this.value; renderTab(); };
+    var list = data.runs.filter(function (r) {
+      var f = ui.filter;
+      if (f === 'success' && r.status !== 'success') return false;
+      if (f === 'failed' && !(r.status === 'error' || r.status === 'crashed')) return false;
+      if (f === 'missed' && r.status !== 'missed') return false;
+      if (f === 'running' && !(r.status === 'running' || r.status === 'due' || r.status === 'waiting' || r.status === 'new')) return false;
+      if (ui.mode === 'trigger' && !(r.mode === 'trigger' || r.mode === 'schedule')) return false;
+      if (ui.mode === 'manual' && r.mode !== 'manual') return false;
+      if (ui.mode === 'other' && ['trigger', 'schedule', 'manual'].indexOf(r.mode) >= 0) return false;
+      return match(r.workflow_name + ' ' + localDay(r.started_at || r.expected_at) + ' ' + (r.error_node || ''));
+    });
+    $('tab').innerHTML = runRows(list.slice(0, 600), true);
+    $('tabnote').textContent = (list.length > 600 ? 'Showing the newest 600 of ' : '') + list.length + ' runs and missed slots in the last 14 days.';
+  }
+
+  // ── retry (demo): a connected version would call n8n's POST /executions/{id}/retry ──────────────────────
+  function retryCell(r) {
+    if (r.kind !== 'run' || !(r.status === 'error' || r.status === 'crashed')) return '';
+    var x = retries[runKey(r)];
+    if (!x) return ' <button type="button" class="btn xs retry" data-retry="' + esc(runKey(r)) + '" title="Demo: shows what a retry looks like; nothing is sent to n8n">Retry</button>';
+    if (x.status === 'running') return ' <span class="badge b-run">Retrying…</span>';
+    return ' <span class="badge ' + (x.status === 'success' ? 'b-ok' : 'b-bad') + '" title="' + esc('Retried ' + dt(x.at) + ' (demo)') + '">Retry ' + (x.status === 'success' ? 'ok' : 'failed') + ' · ' + esc(hm(x.at)) + '</span>';
+  }
+  function doRetry(key) {
+    if (retries[key]) return;
+    var wf = key.split('|')[0], w = data.workflows.filter(function (x) { return x.workflow_id === wf; })[0];
+    retries[key] = { status: 'running', at: new Date().toISOString() }; lsPut('n8n-retries', retries);
+    refreshRuns();
+    setTimeout(function () {
+      var h = 0; for (var i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+      retries[key] = { status: h % 10 < 8 ? 'success' : 'error', at: new Date().toISOString() }; lsPut('n8n-retries', retries);
+      refreshRuns();
+      toast((retries[key].status === 'success' ? 'Retry succeeded: ' : 'Retry failed again: ') + (w ? w.name : 'workflow') + ' (demo: nothing was sent to n8n)');
+    }, 1500);
+  }
+  function refreshRuns() { if (ui.tab === 'runs' || ui.tab === 'problems') renderTab(); var l = $('layer').querySelector('.drawer'); if (l && l.dataset.wf) openWorkflow(l.dataset.wf, true); }
+
+  // ── alert rules (demo): which alerts the rules would have raised in the last 14 days ─────────────────────
+  var NOTIFY = { email: 'E-mail', teams: 'Teams' };
+  function renderAlerts() {
+    tools('<button type="button" class="btn" data-addrule>+ Add rule</button>');
+    var names = {}; data.workflows.forEach(function (w) { names[w.workflow_id] = w.name; });
+    var hits = AL ? AL.evaluate(rules, data.runs) : [], per = {};
+    hits.forEach(function (a) { per[a.rule] = (per[a.rule] || 0) + 1; });
+    var wfOpts = function (sel) { return '<option value="">Any workflow</option>' + data.workflows.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).map(function (w) { return '<option value="' + esc(w.workflow_id) + '"' + (w.workflow_id === sel ? ' selected' : '') + '>' + esc(w.name) + '</option>'; }).join(''); };
+    var html = '<div class="alerts-demo"><p class="anote"><b>Demo:</b> rules are kept in this browser and nothing is sent. A connected version would post each alert to a Teams channel or send an e-mail. The counts show what these rules would have raised in the last 14 days.</p><ul class="rules">';
+    rules.forEach(function (r, i) {
+      html += '<li class="rule' + (r.on === false ? ' off' : '') + '"><label class="sw"><input type="checkbox" data-rk="on" data-ri="' + i + '"' + (r.on === false ? '' : ' checked') + '><span class="sr">Rule on</span></label>' +
+        '<div class="rbody"><b>' + esc(AL ? AL.describeRule(r, names) : r.kind) + '</b><div class="rctl">' +
+        '<select class="select sm" data-rk="kind" data-ri="' + i + '" aria-label="When">' + Object.keys(AL ? AL.KINDS : {}).map(function (k) { return '<option value="' + k + '"' + (k === r.kind ? ' selected' : '') + '>' + esc(AL.KINDS[k].charAt(0).toUpperCase() + AL.KINDS[k].slice(1)) + '</option>'; }).join('') + '</select>' +
+        (r.kind === 'streak' || r.kind === 'slow' ? '<label class="nlab">' + (r.kind === 'streak' ? 'In a row' : 'Times usual') + ' <input class="search nin" type="number" min="2" max="20" step="1" data-rk="n" data-ri="' + i + '" value="' + esc(r.n || (r.kind === 'streak' ? 3 : 2)) + '"></label>' : '') +
+        '<select class="select sm" data-rk="workflow" data-ri="' + i + '" aria-label="Workflow">' + wfOpts(r.workflow) + '</select>' +
+        '<select class="select sm" data-rk="notify" data-ri="' + i + '" aria-label="Send to">' + Object.keys(NOTIFY).map(function (k) { return '<option value="' + k + '"' + (k === r.notify ? ' selected' : '') + '>' + NOTIFY[k] + '</option>'; }).join('') + '</select>' +
+        '<button type="button" class="btn xs ghost" data-delrule="' + i + '" aria-label="Delete this rule">Delete</button></div></div>' +
+        '<span class="rcount' + (per[r.id] && r.on !== false ? ' hot' : '') + '">' + (r.on === false ? 'off' : n(per[r.id] || 0) + ' in 14 d') + '</span></li>';
+    });
+    html += '</ul>';
+    var shown = hits.slice(0, 60);
+    html += '<h3 class="ah">Alerts these rules would have sent' + (hits.length ? ' · ' + n(hits.length) : '') + '</h3>' + (shown.length ? '<div class="tablewrap"><table><thead><tr><th>When</th><th>Workflow</th><th>Alert</th><th>Sent to</th></tr></thead><tbody>' + shown.map(function (a) {
+      var rule = rules.filter(function (x) { return x.id === a.rule; })[0] || {};
+      return '<tr class="click" data-wf="' + esc(a.workflow_id) + '"><td class="mono">' + esc(dt(a.at)) + '</td><td class="name">' + esc(a.workflow_name) + '</td><td>' + esc(a.text) + '</td><td class="muted">' + esc(NOTIFY[rule.notify] || '') + '</td></tr>';
+    }).join('') + '</tbody></table></div>' : '<div class="empty">No alerts in the last 14 days with these rules.</div>') + '</div>';
+    $('tab').innerHTML = html;
+    $('tabnote').textContent = rules.length + ' rules · ' + n(hits.length) + ' alerts in the last 14 days' + (hits.length > 60 ? ' (newest 60 shown)' : '') + '.';
+  }
+  function saveRules() { lsPut('n8n-alert-rules', rules); renderTab(); }
+  $('tab').addEventListener('change', function (e) {
+    var el = e.target.closest('[data-rk]'); if (!el) return;
+    var r = rules[+el.dataset.ri]; if (!r) return;
+    var k = el.dataset.rk;
+    if (k === 'on') r.on = el.checked; else if (k === 'n') { var v = Math.round(+el.value); if (v >= 2 && v <= 20) r.n = v; } else r[k] = el.value;
+    if (k === 'kind' && (r.kind === 'streak' || r.kind === 'slow') && !(r.n >= 2)) r.n = r.kind === 'streak' ? 3 : 2;
+    saveRules();
+  });
+  $('tools').addEventListener('click', function (e) {
+    if (!e.target.closest('[data-addrule]')) return;
+    rules.push({ id: 'r' + Date.now().toString(36), workflow: '', kind: 'fail', n: 0, on: true, notify: 'teams' });
+    saveRules(); toast('Rule added: change what it watches below');
+  });
+
+  function renderProblems() {
+    tools(search('Search workflow…'));
+    var list = data.runs.filter(function (r) { return (r.status === 'error' || r.status === 'crashed' || r.status === 'missed') && match(r.workflow_name + ' ' + (r.error_node || '')); });
+    $('tab').innerHTML = list.length ? runRows(list, true) : '<div class="empty">No failed or missed runs in the last 14 days.</div>';
+    $('tabnote').textContent = list.length + ' failed or missed runs in the last 14 days. A missed run means nothing started within 45 minutes of its scheduled time.';
+  }
+
+  function renderDeploys() {
+    tools(search('Search workflows…'));
+    var rows = data.workflows.filter(function (w) { return match(w.name + ' ' + w.workflow_id); }).slice().sort(function (a, b) { return (d(b.updated_at) || 0) - (d(a.updated_at) || 0); });
+    var html = '<div class="tablewrap"><table class="t-dep"><thead><tr><th>Last deployed / edited</th><th>Workflow</th><th>State</th><th>Schedule</th><th class="r">Nodes</th><th>Runs since</th></tr></thead><tbody>';
+    var last = '';
+    rows.forEach(function (w) {
+      var day = localDay(w.updated_at);
+      if (day !== last) { html += '<tr class="daygroup"><td colspan="6">' + esc(w.updated_at ? fmtDay.format(d(w.updated_at)) : 'Unknown') + '</td></tr>'; last = day; }
+      var since = data.runs.filter(function (r) { return r.kind === 'run' && r.workflow_id === w.workflow_id && d(r.started_at) >= d(w.updated_at); });
+      var sinceBad = since.filter(function (r) { return r.status === 'error' || r.status === 'crashed'; }).length;
+      html += '<tr class="click" data-wf="' + esc(w.workflow_id) + '"><td class="mono">' + esc(dt(w.updated_at)) + '</td><td class="name">' + esc(w.name) + '<small>' + esc(w.workflow_id) + '</small></td>' +
+        '<td>' + (w.active ? '<span class="badge b-ok">Active</span>' : '<span class="badge b-off">Inactive</span>') + '</td><td>' + esc(w.schedule_desc || w.trigger_kind || '') + '</td><td class="r">' + n(w.node_count) + '</td>' +
+        '<td>' + (since.length ? n(since.length) + (sinceBad ? ' · <span class="num-bad">' + sinceBad + ' failed</span>' : ' · all ok') : '<span class="muted">none yet</span>') + '</td></tr>';
+    });
+    $('tab').innerHTML = html + '</tbody></table></div>';
+    $('tabnote').textContent = 'n8n keeps the time of each workflow’s latest save or import, so this is when every workflow was last deployed or edited (not a full history). "Runs since" counts runs in the last 14 days after that change.';
+  }
+
+  function renderTab(fromSearch) {
+    document.querySelectorAll('#tabs [data-tab]').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === ui.tab)); });
+    try { localStorage.setItem('n8n-ui', JSON.stringify({ tab: ui.tab })); } catch (e) {}
+    (({ workflows: renderWorkflows, runs: renderRuns, problems: renderProblems, alerts: renderAlerts, deploys: renderDeploys })[ui.tab] || renderWorkflows)();
+    if (!fromSearch || !$('q')) wireSearch(); else wireSearch();
+  }
+  $('tabs').onclick = function (e) {
+    var b = e.target.closest('[data-tab]'); if (!b) return; ui.tab = b.dataset.tab; ui.q = ''; ui.filter = 'all'; ui.mode = 'all'; renderTab();
+    if (window.matchMedia('(max-width: 760px)').matches) { var p = $('tab').closest('.panel'); if (p.getBoundingClientRect().top < 0 || p.getBoundingClientRect().top > window.innerHeight * .6) p.scrollIntoView({ block: 'start' }); }
+  };
+  $('tab').addEventListener('click', function (e) {
+    var rt = e.target.closest('[data-retry]'); if (rt) { e.stopPropagation(); doRetry(rt.dataset.retry); return; }
+    var dr = e.target.closest('[data-delrule]'); if (dr) { rules.splice(+dr.dataset.delrule, 1); saveRules(); toast('Rule deleted'); return; }
+    if (e.target.closest('select,input,label')) return;
+    var s = e.target.closest('[data-sort]');
+    if (s) { var k = s.dataset.sort; if (ui.sort === k) ui.dir = -ui.dir; else { ui.sort = k; ui.dir = 1; } return renderTab(); }
+    var r = e.target.closest('[data-wf]'); if (r) openWorkflow(r.dataset.wf);
+  });
+  $('tab').addEventListener('keydown', function (e) { var r = e.target.closest('[data-wf]'); if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openWorkflow(r.dataset.wf); } });
+
+  // ── workflow drawer ─────────────────────────────────────────────────────
+  function closeDrawer() { $('layer').innerHTML = ''; document.removeEventListener('keydown', escKey); }
+  function escKey(e) { if (e.key === 'Escape') closeDrawer(); }
+  function openWorkflow(id, keep) {
+    var w = data.workflows.filter(function (x) { return x.workflow_id === id; })[0] || { workflow_id: id, name: id };
+    var h = healthOf(w), sc = keep && $('layer').querySelector('.db') ? $('layer').querySelector('.db').scrollTop : 0;
+    $('layer').innerHTML = '<div class="scrim" data-close></div><aside class="drawer" data-wf="' + esc(id) + '" role="dialog" aria-modal="true" aria-label="' + esc(w.name) + '"><div class="dh"><div><span class="eyebrow">' + esc(w.workflow_id) + '</span><h2>' + esc(w.name) + '</h2><span class="badge ' + h[0] + '" style="margin-top:8px">' + h[1] + '</span></div>' +
+      '<button type="button" class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="db">' +
+      '<div class="facts"><div><span>Schedule</span>' + esc(w.schedule_desc || w.trigger_kind || '—') + '</div><div><span>Expected per day</span>' + (w.expected_runs_per_day != null ? n(Math.round(w.expected_runs_per_day * 10) / 10) : '—') + '</div>' +
+      '<div><span>Last run</span>' + esc(dt(w.last_started_at)) + '</div><div><span>Last success</span>' + esc(dt(w.last_success_at)) + '</div><div><span>Last deployed</span>' + esc(dt(w.updated_at)) + '</div><div><span>Nodes</span>' + n(w.node_count) + '</div></div>' +
+      '<span class="eyebrow">Last 30 days, oldest → newest</span><div class="strip" id="strip"><span class="muted">Loading…</span></div><div id="wftrend"></div><div id="wfruns"><div class="empty">Loading runs…</div></div></div></aside>';
+    document.addEventListener('keydown', escKey);
+    $('layer').onclick = function (e) {
+      if (e.target.closest('[data-close]')) { closeDrawer(); return; }
+      var rt = e.target.closest('[data-retry]'); if (rt) doRetry(rt.dataset.retry);
+    };
+    if (!keep) $('layer').querySelector('.iconbtn').focus();
+    get('runs?days=30&workflow=' + encodeURIComponent(id)).then(function (j) {
+      var runs = j.runs;
+      $('wftrend').innerHTML = trendChart(AL ? AL.trend(runs, data.meta.executions_loaded_at, localDay) : null);
+      if (keep) { var db = $('layer').querySelector('.db'); if (db) db.scrollTop = sc; }
+      $('strip').innerHTML = runs.slice().reverse().map(function (r) {
+        var c = r.status === 'success' ? 's' : (r.status === 'error' || r.status === 'crashed') ? 'e' : r.status === 'missed' ? 'm' : 'p';
+        return '<i class="' + c + '" title="' + esc(dt(r.started_at || r.expected_at) + ' · ' + r.status) + '"></i>';
+      }).join('') || '<span class="muted">No runs in 30 days.</span>';
+      $('wfruns').innerHTML = runRows(runs.slice(0, 200), true);
+    }).catch(function () { $('wfruns').innerHTML = '<div class="empty">Could not load this workflow’s runs.</div>'; $('strip').innerHTML = ''; });
+  }
+
+  // run time of successful runs per day (median, with the slowest run as a dot), last 30 days
+  function trendChart(tr) {
+    if (!tr || tr.series.length < 3) return '';
+    var s = tr.series, W = 560, H = 150, L = 40, R = 8, T = 10, B = 22, max = 0;
+    s.forEach(function (x) { max = Math.max(max, x.max); });
+    var step = max > 600 ? 300 : max > 120 ? 60 : max > 30 ? 15 : 5, top = Math.max(step, Math.ceil(max / step) * step);
+    var x = function (i) { return L + (W - L - R) * (s.length === 1 ? 0.5 : i / (s.length - 1)); }, y = function (v) { return T + (H - T - B) * (1 - v / top); };
+    var g = '';
+    for (var v = 0; v <= top; v += step) g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="var(--hair)"/><text class="axis" x="' + (L - 6) + '" y="' + (y(v) + 3).toFixed(1) + '" text-anchor="end">' + esc(dur(v)) + '</text>';
+    g += '<path d="' + s.map(function (p, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.median).toFixed(1); }).join('') + '" fill="none" stroke="var(--accent)" stroke-width="2"/>';
+    s.forEach(function (p, i) { if (p.max > p.median * 1.2) g += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.max).toFixed(1) + '" r="2.5" fill="var(--miss)"><title>' + esc(dayLabel(p.day) + ': slowest ' + dur(p.max)) + '</title></circle>'; });
+    [0, s.length - 1].forEach(function (i) { g += '<text class="axis" x="' + x(i).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="' + (i ? 'end' : 'start') + '">' + esc(dayLabel(s[i].day)) + '</text>'; });
+    var ch = tr.change == null ? '' : ' This week ' + dur(tr.week) + ', ' + (Math.abs(tr.change) < 0.05 ? 'about the same as' : Math.round(Math.abs(tr.change) * 100) + ' % ' + (tr.change > 0 ? 'slower than' : 'faster than')) + ' the week before.';
+    return '<span class="eyebrow">Run time, successful runs</span><p class="tsum">Usually ' + esc(dur(tr.median)) + ' (95 % within ' + esc(dur(tr.p95)) + ').' + esc(ch) + '</p>' +
+      '<div class="tchart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc('Typical run time per day over the last 30 days, ' + dur(tr.median) + ' usually') + '">' + g + '</svg></div>';
+  }
+  function render() { trendCache = null; renderKpis(); renderChart(); renderTab(); }
+  window.addEventListener('stratum-theme', function () { if (data.days.length) renderChart(); });
+  var lastW = 0, rT = null;
+  window.addEventListener('resize', function () { clearTimeout(rT); rT = setTimeout(function () { var w = $('chart').clientWidth; if (data.days.length && Math.abs(w - lastW) > 8) { lastW = w; renderChart(); } }, 150); });
+  load();
+  setInterval(function () { if (!document.hidden) load(); }, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>

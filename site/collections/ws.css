@@ -1,0 +1,51 @@
+/* Collections team workspaces (ws-sync.js): the workspace switch in the side bar, the Team page, the read-only screen
+ * for viewers. Tokens only, so the Upflow look (upflow.css, loaded after this file) and dark mode apply. */
+.ws-box{display:flex;flex-direction:column;gap:4px}
+.ws-box[hidden]{display:none}
+.ws-l{font:400 11.5px var(--mono);color:var(--ink3)}
+.ws-pick{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;min-height:44px;padding:7px 28px 7px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ws-pick:hover{border-color:var(--dash)}
+.ws-pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ws-pick::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;margin-top:-5px;border-right:1.6px solid var(--ink3);border-bottom:1.6px solid var(--ink3);transform:rotate(45deg)}
+.ws-n{font-weight:600;font-size:13.5px;line-height:1.25;overflow-wrap:anywhere}
+.ws-pick small{font-size:11.5px;color:var(--ink3)}
+.ws-dot{position:absolute;right:30px;top:12px;width:7px;height:7px;border-radius:50%;background:var(--ink3)}
+.ws-dot.good{background:var(--good-dot)}
+.ws-dot.bad{background:var(--bad-dot)}
+.ws-list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ws-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ws-opt:hover{border-color:var(--dash)}
+.ws-opt[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.ws-opt small{color:var(--ink3);font-size:12.5px}
+.ws-seed{border:0;margin:14px 0 0;padding:0;min-width:0}
+.ws-seed legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:500;color:var(--ink2)}
+.choices.one{grid-template-columns:minmax(0,1fr)}
+.choices.one label{min-height:44px;padding:8px 12px;line-height:1.35}
+.ws-status{margin-bottom:14px}
+.ws-status .split{align-items:center;flex-wrap:wrap;gap:10px}
+.ws-st{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:14px;color:var(--ink)}
+.ws-st i{width:8px;height:8px;border-radius:50%;background:var(--ink3);flex:none}
+.ws-st.good i{background:var(--good-dot)}
+.ws-st.bad{color:var(--bad)}
+.ws-st.bad i{background:var(--bad-dot)}
+.ws-members td{vertical-align:middle}
+.ws-members .name{overflow-wrap:anywhere}
+.ws-members select.in{min-height:36px;padding:0 30px 0 10px;width:auto;min-width:112px;max-width:100%}
+.ws-members select.in:disabled{opacity:.6}
+.ws-add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,150px) auto;gap:10px;align-items:end;margin-top:14px}
+.ws-act .what small{overflow-wrap:anywhere}
+.ws-ro-note{margin-bottom:16px}
+@media (max-width:640px){
+  .ws-add{grid-template-columns:minmax(0,1fr)}
+  .ws-members .hide-s,.ws-members thead{display:none}
+  .ws-members tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:10px 0;border-bottom:1px solid var(--hair)}
+  .ws-members td{padding:0!important;border:0!important}
+  .ws-members td.name{grid-column:1/-1}
+}
+/* viewers: the controls that change data are not offered (the app and the Worker refuse such changes anyway) */
+.ws-ro [data-act="out"],.ws-ro [data-act="log"],.ws-ro [data-act="promise"],.ws-ro [data-act="plannew"],.ws-ro [data-act="hold"],
+.ws-ro [data-act="editcust"],.ws-ro [data-act="statement"],.ws-ro [data-act="bulkdisp"],.ws-ro [data-act="bulkundisp"],.ws-ro [data-act="bulkpay"],
+.ws-ro [data-act="bulkwo"],.ws-ro [data-act="remsent"],.ws-ro [data-act="lsent"],.ws-ro [data-act="planpay"],.ws-ro [data-act="plancancel"],
+.ws-ro [data-act="impgo"],.ws-ro [data-act="imppick"],.ws-ro [data-act="imppaste"],.ws-ro [data-act="bankapply"],.ws-ro [data-act="bankpick"],
+.ws-ro [data-act="rateadd"],.ws-ro [data-act="ratedel"],.ws-ro [data-act="ratereset"],.ws-ro #main form:not(.ws-add) [type="submit"],
+.ws-ro #dropZone,.ws-ro #bankDrop,.ws-ro .bulkbar,.ws-mode [data-act="reset"]{display:none!important}

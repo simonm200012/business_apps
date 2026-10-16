@@ -1,0 +1,4 @@
+.wrangler/
+.claude/
+.dev.vars
+node_modules/

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cash forecast — Business Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=6">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+<link rel="stylesheet" href="agicap.css?v=1">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="app">
+  <aside class="side" id="side" aria-label="Cash forecast navigation">
+    <div class="brand">
+      <a href="#/"><i aria-hidden="true"></i><span>Cash forecast<small id="brandSub">Demo · 13 weeks</small></span></a>
+      <button type="button" class="btn sm menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
+      </button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <div class="side-foot">
+      <span class="demo-pill" title="The company, customers, suppliers, invoices and amounts are fictional demo data. Nothing is ever sent to customers or banks; your changes and imports are saved in this browser and your private cloud copy."><i aria-hidden="true"></i>Demo data · saved in this browser only</span>
+      <a class="btn sm" href="#/settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Balances &amp; settings
+      </a>
+    </div>
+  </aside>
+  <nav class="tabbar" id="tabbar" aria-label="Main pages"></nav>
+  <main class="main" id="main" tabindex="-1"><div class="page"><p class="loading" role="status"><i aria-hidden="true"></i>Building the forecast…</p></div></main>
+</div>
+<div id="layers"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="csvPick" accept=".csv,.txt,.tsv,text/csv,text/plain,text/tab-separated-values" hidden>
+<input type="file" id="bankPick" accept=".xml,.csv,.txt,application/xml,text/xml,text/csv,text/plain" hidden>
+<input type="file" id="restorePick" accept=".json,application/json" hidden>
+<script src="/_shared/stratum-sync.js"></script>
+<script src="engine.js?v=4"></script>
+<!-- Collections' demo engine and data, read only: the demo receivables are the same invoices as in Collections -->
+<script src="/collections/engine.js?v=3"></script>
+<script src="/collections/data.js?v=2"></script>
+<script src="data.js?v=5"></script>
+<script src="importers.js?v=2"></script>
+<script src="app.js?v=9"></script>
+</body>
+</html>

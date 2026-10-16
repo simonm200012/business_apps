@@ -1,0 +1,536 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+/* Home page look "raycast": everything is scoped to :root[data-look="raycast"] (see home-looks/README.md).
+   The whole home is one command window on a near-black page with red diagonal stripes: the top bar's search field is
+   the window's top edge, the main panel its body (pinned apps as a row of tiles, then a list on the left with Recently
+   opened, Needs you today and every group's apps, and a detail pane on the right for the highlighted app), and an
+   action bar closes it at the bottom. raycast.js adds the detail pane, the action bar and the group dropdown.
+   Raycast's own dark theme, and its light theme when the shell is in light mode. */
+
+:root[data-look="raycast"]{
+  --rc-max:1240px; --rc-gut:max(24px, calc((100% - var(--rc-max)) / 2)); --rc-head:56px; --rc-find:54px; --rc-barH:44px; --rc-det:clamp(340px, 41%, 500px);
+  --rc-bg:#07080a; --rc-win:rgba(14,15,16,.9); --rc-winS:#0e0f10; --rc-bar:rgba(11,12,13,.97); --rc-barP:#0b0c0d; --rc-pop:#151617; --rc-field:#101112;
+  --rc-ink:#f4f5f7; --rc-ink2:#c2c7ca; --rc-ink3:#7d7e83; --rc-ink4:#636469;
+  --rc-line:#262a2c; --rc-line2:#1b1e20;
+  --rc-sel:rgba(255,255,255,.075); --rc-selL:rgba(255,255,255,.06); --rc-hov:rgba(255,255,255,.04); --rc-fill:rgba(255,255,255,.06); --rc-fill2:rgba(255,255,255,.1);
+  --rc-tile:rgba(255,255,255,.025); --rc-gridSel:rgba(255,255,255,.34);
+  --rc-red:#FF6363; --rc-redT:#FF6363; --rc-redBg:rgba(255,99,99,.15);
+  --rc-blue:#56C2FF; --rc-blueBg:rgba(86,194,255,.13); --rc-green:#59D499; --rc-greenBg:rgba(89,212,153,.13); --rc-orange:#FFA94D; --rc-orangeBg:rgba(255,169,77,.14);
+  --rc-kbd:linear-gradient(#1d1e20,#131415); --rc-kbdL:#2c2f32; --rc-kbdS:inset 0 -1px 0 rgba(0,0,0,.6);
+  --rc-cta:rgba(255,255,255,.88); --rc-ctaH:#ffffff; --rc-ctaInk:#151617;
+  --rc-shadow:0 24px 60px -12px rgba(0,0,0,.75),0 0 0 1px rgba(0,0,0,.4);
+  --rc-glow:radial-gradient(ellipse 640px 360px at calc(100% - 210px) -30px, rgba(7,8,10,.42) 0%, rgba(7,8,10,.46) 14%, rgba(7,8,10,.86) 62%, #07080a 100%);
+  --rc-stripes:repeating-linear-gradient(118deg,#ff5757 0 16px,#a1131a 16px 34px);
+  --rc-sans:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --rc-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* the page's own tokens, so whatever is not restyled below follows the look */
+  --bg:var(--rc-bg); --bgHover:var(--rc-fill); --main:transparent; --mainHover:var(--rc-fill); --card:var(--rc-pop); --pbg:var(--rc-bg);
+  --hover:var(--rc-fill); --press:var(--rc-fill2); --sel:var(--rc-sel); --chip:var(--rc-fill); --chipH:var(--rc-fill2);
+  --ink:var(--rc-ink); --ink2:var(--rc-ink2); --ink3:var(--rc-ink3); --ink4:var(--rc-ink4); --line:var(--rc-line); --line2:var(--rc-line); --line3:var(--rc-line2);
+  --brand:var(--rc-red); --brandH:#ff7a7a; --brandP:#e55353; --brandFg:var(--rc-redT); --tint:var(--rc-redBg); --tint2:var(--rc-redBg); --tintLine:transparent; --tintFg:var(--rc-redT); --onBrand2:rgba(255,255,255,.8);
+  --okFg:var(--rc-green); --okBg:var(--rc-greenBg); --okLine:transparent; --warnFg:var(--rc-orange); --warnBg:var(--rc-orangeBg); --warnLine:transparent; --warnBar:var(--rc-orange);
+  --badFg:var(--rc-redT); --badBg:var(--rc-redBg); --badLine:transparent; --badBar:var(--rc-red); --infoBar:var(--rc-blue);
+  --input:transparent; --inputLine:var(--rc-line); --inputBottom:var(--rc-line); --focus:var(--rc-red); --scrim:rgba(0,0,0,.55); --iconShade:rgba(0,0,0,.35);
+  --sh2:none; --sh4:none; --sh8:none; --sh16:var(--rc-shadow); --sh28:var(--rc-shadow); --sh64:var(--rc-shadow);
+  --sans:var(--rc-sans);
+  color-scheme:dark;
+  scroll-padding-top:calc(var(--rc-head) + var(--rc-find) + 10px); scroll-padding-bottom:calc(var(--rc-barH) + 26px);
+}
+/* Raycast's light theme */
+:root[data-look="raycast"][data-stratum-mode="light"]{
+  --rc-bg:#e9e9eb; --rc-win:rgba(255,255,255,.93); --rc-winS:#ffffff; --rc-bar:rgba(247,247,248,.98); --rc-barP:#f7f7f8; --rc-pop:#ffffff; --rc-field:#ffffff;
+  --rc-ink:#1c1c1e; --rc-ink2:#4a4b50; --rc-ink3:#7f8085; --rc-ink4:#97989d;
+  --rc-line:#dadadd; --rc-line2:#ebebed;
+  --rc-sel:rgba(0,0,0,.06); --rc-selL:rgba(0,0,0,.035); --rc-hov:rgba(0,0,0,.035); --rc-fill:rgba(0,0,0,.05); --rc-fill2:rgba(0,0,0,.085);
+  --rc-tile:rgba(0,0,0,.018); --rc-gridSel:rgba(0,0,0,.3);
+  --rc-redT:#E0383E; --rc-redBg:rgba(255,99,99,.14);
+  --rc-blue:#1A7BCB; --rc-blueBg:rgba(26,123,203,.1); --rc-green:#16834F; --rc-greenBg:rgba(22,131,79,.1); --rc-orange:#BF5F06; --rc-orangeBg:rgba(232,128,20,.13);
+  --rc-kbd:linear-gradient(#ffffff,#f0f0f2); --rc-kbdL:#d6d6d9; --rc-kbdS:inset 0 -1px 0 rgba(0,0,0,.07);
+  --rc-cta:#1c1c1e; --rc-ctaH:#000000; --rc-ctaInk:#ffffff;
+  --rc-shadow:0 24px 60px -16px rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.05);
+  --rc-glow:radial-gradient(ellipse 640px 360px at calc(100% - 210px) -30px, rgba(233,233,235,.3) 0%, rgba(233,233,235,.36) 14%, rgba(233,233,235,.84) 62%, #e9e9eb 100%);
+  --rc-stripes:repeating-linear-gradient(118deg,#ff7a7a 0 16px,#ffc4c4 16px 34px);
+  --brandH:#f05555; --brandP:#d94a4a; --onBrand2:rgba(255,255,255,.85); --scrim:rgba(24,24,28,.22); --iconShade:rgba(0,0,0,.12);
+  color-scheme:light;
+}
+
+:root[data-look="raycast"][data-stratum-mode="light"] :is(.pl img,.ql img,.card .ai,.need header img,.rc-dhead>img,.cx-ic img,.rc-cur img,.foot .fb img){filter:drop-shadow(0 0 .5px rgba(0,0,0,.28)) drop-shadow(0 1px 1.5px rgba(0,0,0,.1))}
+
+/* page: near-black, Raycast's red stripes glowing from the top right */
+:root[data-look="raycast"] body{background:var(--rc-glow) fixed,var(--rc-stripes) fixed,var(--rc-bg);color:var(--rc-ink);font:400 14px/20px var(--rc-sans);letter-spacing:-.003em}
+:root[data-look="raycast"] :focus-visible{outline:2px solid var(--rc-red);outline-offset:1px}
+:root[data-look="raycast"] .skip{background:var(--rc-red);color:#fff;border-radius:8px}
+:root[data-look="raycast"] kbd{font-family:var(--rc-mono)}
+
+/* ── header: brand, sections, actions; under it the search field = the window's top edge ───────────────────────── */
+:root[data-look="raycast"] stratum-shell{top:8px!important;right:var(--rc-gut)!important}
+:root[data-look="raycast"] .tb{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:var(--rc-head) auto;align-items:center;gap:0;height:auto;padding:0 var(--rc-gut);background:var(--rc-glow) fixed,var(--rc-stripes) fixed,var(--rc-bg)}
+:root[data-look="raycast"] .tb-l{grid-area:1/1;gap:0}
+:root[data-look="raycast"] .waf{display:none}
+:root[data-look="raycast"] .brand{padding:0 6px 0 0;gap:10px;font:600 15px/22px var(--rc-sans);letter-spacing:-.015em;color:var(--rc-ink)}
+:root[data-look="raycast"] .brand img{display:block;width:24px;height:24px;filter:none}
+:root[data-look="raycast"] .tb-r{grid-area:1/3;gap:4px;margin-right:calc(var(--rc-shell,104px) + 10px)}
+:root[data-look="raycast"] .ib{width:32px;height:32px;border-radius:8px;color:var(--rc-ink2)}
+:root[data-look="raycast"] .ib:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .ib b{background:var(--rc-red);color:#fff;font:600 10px/16px var(--rc-sans);box-shadow:0 0 0 2px var(--rc-bg)}
+:root[data-look="raycast"] .look-btn{width:auto;padding:0 9px;font:500 13px/1 var(--rc-sans)}
+:root[data-look="raycast"] .tb-r .fbtn.sc{height:30px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--rc-ink2);font:500 13px/1 var(--rc-sans)}
+:root[data-look="raycast"] .tb-r .fbtn.sc:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .tb .inst-btn{height:30px;padding:0 12px;margin-left:4px;border:0;border-radius:8px;background:var(--rc-cta);color:var(--rc-ctaInk);font:600 13px/1 var(--rc-sans)}
+:root[data-look="raycast"] .tb .inst-btn:hover{background:var(--rc-ctaH)}
+:root[data-look="raycast"] .tb .inst-btn .i{stroke-width:2.2}
+
+/* the sections (the page's icon rail) become text links in the header */
+:root[data-look="raycast"] .rail{position:fixed;top:0;bottom:auto;left:calc(var(--rc-gut) + 172px);z-index:31;width:auto;height:var(--rc-head);flex-direction:row;align-items:center;gap:2px;padding:0}
+:root[data-look="raycast"] .rail a,:root[data-look="raycast"] .rail button{width:auto;height:30px;flex-direction:row;gap:7px;padding:0 10px;border-radius:8px;font:500 13px/1 var(--rc-sans);color:var(--rc-ink2)}
+:root[data-look="raycast"] .rail .i{display:none}
+:root[data-look="raycast"] .rail a:hover,:root[data-look="raycast"] .rail button:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .rail .on,:root[data-look="raycast"] .rail .on:hover{background:transparent;box-shadow:none;color:var(--rc-ink);font-weight:600}
+:root[data-look="raycast"] .rail .on::before{display:none}
+:root[data-look="raycast"] .rail .low{display:none}
+
+/* the search field: the top edge of the window */
+:root[data-look="raycast"] .find{grid-area:2/1/3/-1;display:flex;align-items:center;gap:10px;width:auto;height:var(--rc-find);padding:0 10px 0 18px;background:var(--rc-win);border:1px solid var(--rc-line);border-bottom-color:var(--rc-line2);border-radius:12px 12px 0 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+:root[data-look="raycast"] .find .i{position:static;color:var(--rc-ink3)}
+:root[data-look="raycast"] .find input{flex:1;min-width:0;height:100%;padding:0;border:0;border-radius:0;background:transparent;color:var(--rc-ink);font:400 16px var(--rc-sans);letter-spacing:-.01em;box-shadow:none;caret-color:var(--rc-red)}
+:root[data-look="raycast"] .find input::placeholder{color:var(--rc-ink3)}
+:root[data-look="raycast"] .find input:hover{border:0}
+:root[data-look="raycast"] .find input:focus,:root[data-look="raycast"] .find input:focus-visible{outline:none;box-shadow:none}
+:root[data-look="raycast"] .find .k{display:none}
+:root[data-look="raycast"] .find .clr{position:static;flex:none;width:28px;height:28px;border-radius:7px;color:var(--rc-ink3)}
+:root[data-look="raycast"] .find .clr:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .rc-grp{flex:none;display:inline-flex;align-items:center;gap:6px;max-width:200px;height:30px;padding:0 8px 0 11px;border:1px solid var(--rc-line);border-radius:8px;background:var(--rc-fill);color:var(--rc-ink2);font:500 12.5px/1 var(--rc-sans);cursor:pointer}
+:root[data-look="raycast"] .rc-grp:hover,:root[data-look="raycast"] .rc-grp[aria-expanded="true"]{background:var(--rc-fill2);color:var(--rc-ink)}
+:root[data-look="raycast"] .rc-grp-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="raycast"] .rc-grp .i{color:var(--rc-ink3)}
+
+/* ── the window body ────────────────────────────────────────────────────────────────────────────────────────── */
+:root[data-look="raycast"] .main{width:min(var(--rc-max),calc(100% - 48px));min-height:calc(100vh - var(--rc-head) - var(--rc-find));margin:0 auto;background:var(--rc-win);border:1px solid var(--rc-line);border-top:0;border-bottom:0;border-radius:0;box-shadow:none}
+:root[data-look="raycast"] .mi{max-width:none;margin:0;padding:0 0 calc(var(--rc-barH) + 34px);display:grid;grid-template-columns:minmax(0,1fr) var(--rc-det);grid-template-rows:auto auto auto auto auto 1fr;
+  grid-template-areas:"pins pins" "quick det" "needs det" "apps det" "foot det" ". det";align-items:start}
+:root[data-look="raycast"] .hello{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:root[data-look="raycast"] .pins{grid-area:pins}
+:root[data-look="raycast"] .qa{grid-area:quick}
+:root[data-look="raycast"] .needs{grid-area:needs}
+:root[data-look="raycast"] .appsec{grid-area:apps}
+:root[data-look="raycast"] .foot{grid-area:foot}
+:root[data-look="raycast"] .rc-det{grid-area:det}
+
+/* section headers, Raycast's small grey titles */
+:root[data-look="raycast"] .sh{min-height:0;margin:0;padding:10px 10px 5px;gap:2px 8px}
+:root[data-look="raycast"] .sh h2{font:500 12px/18px var(--rc-sans);color:var(--rc-ink3);letter-spacing:0}
+:root[data-look="raycast"] .sh .sub{font-size:12px;line-height:18px;color:var(--rc-ink4)}
+:root[data-look="raycast"] .sh .sub .i{color:var(--rc-red);vertical-align:-3px}
+:root[data-look="raycast"] .lnk{height:24px;padding:0 7px;border-radius:6px;color:var(--rc-redT);font:500 12px/1 var(--rc-sans)}
+:root[data-look="raycast"] .lnk:hover{background:var(--rc-fill);text-decoration:none}
+
+/* tags (pills) */
+:root[data-look="raycast"] .pill{height:20px;padding:0 7px;border:0;border-radius:5px;background:var(--rc-fill);color:var(--rc-ink2);font:500 11px/20px var(--rc-sans)}
+:root[data-look="raycast"] .pill.new{background:var(--rc-redBg);color:var(--rc-redT);font-weight:600}
+:root[data-look="raycast"] .pill.kind{background:transparent;color:var(--rc-ink3);padding:0;font-size:12px;font-weight:400}
+:root[data-look="raycast"] .pill.yours{background:var(--rc-greenBg);color:var(--rc-green)}
+
+/* the pin star */
+:root[data-look="raycast"] .pin{width:26px;height:26px;border-radius:6px;color:var(--rc-ink4)}
+:root[data-look="raycast"] .pin .i{width:15px;height:15px}
+:root[data-look="raycast"] .pin:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .pin[aria-pressed="true"]{color:var(--rc-red)}
+
+/* ── pinned apps: a row of tiles across the top of the window ──────────────────────────────────────────────── */
+:root[data-look="raycast"] .pins{margin:0;padding:4px 10px 14px;border-bottom:1px solid var(--rc-line2)}
+:root[data-look="raycast"] .pins .sh{padding:10px 4px 6px}
+:root[data-look="raycast"] #pinEdit{height:24px;padding:0 8px;gap:5px;border:0;border-radius:6px;background:transparent;color:var(--rc-redT);font:500 12px/1 var(--rc-sans)}
+:root[data-look="raycast"] #pinEdit:hover{background:var(--rc-fill)}
+:root[data-look="raycast"] #pinEdit.pri{background:var(--rc-redBg)}
+:root[data-look="raycast"] #pinEdit .i{width:14px;height:14px}
+:root[data-look="raycast"] .prow{margin:0;padding:2px;gap:8px;border-radius:12px}
+:root[data-look="raycast"] .pt{width:94px}
+:root[data-look="raycast"] .pl{gap:8px;padding:13px 6px 10px;border-radius:12px;background:var(--rc-tile);box-shadow:inset 0 0 0 1px var(--rc-line);color:var(--rc-ink2);font:500 11.5px/15px var(--rc-sans)}
+:root[data-look="raycast"] .pl:hover{background:var(--rc-sel);color:var(--rc-ink)}
+:root[data-look="raycast"] .pl img{width:36px;height:36px;filter:none}
+:root[data-look="raycast"] .pt.all .ring{width:36px;height:36px;border:1px solid var(--rc-line);background:var(--rc-fill);color:var(--rc-ink2)}
+:root[data-look="raycast"] .editing .pt[data-app] .pl{background:var(--rc-fill);box-shadow:inset 0 0 0 1px var(--rc-line)}
+:root[data-look="raycast"] .pt.drop-before::before,:root[data-look="raycast"] .pt.drop-after::after{background:var(--rc-red)}
+:root[data-look="raycast"] .pins.drop-ok .prow{outline:1px dashed var(--rc-red);outline-offset:3px}
+:root[data-look="raycast"] .pe{gap:3px;margin-top:5px}
+:root[data-look="raycast"] .pe button{width:26px;height:22px;border:1px solid var(--rc-kbdL);border-radius:5px;background:var(--rc-kbd);box-shadow:var(--rc-kbdS);color:var(--rc-ink2)}
+:root[data-look="raycast"] .pe button:hover:not(:disabled){background:var(--rc-fill2);color:var(--rc-ink)}
+
+/* ── the list (left) ────────────────────────────────────────────────────────────────────────────────────────── */
+:root[data-look="raycast"] .qa,:root[data-look="raycast"] .needs,:root[data-look="raycast"] .appsec{margin:0;padding:4px 8px 6px}
+:root[data-look="raycast"] .qa{background:none;border-radius:0;box-shadow:none;overflow:visible}
+
+/* recently opened (Quick access): its tabs are the section title, its rows list rows */
+:root[data-look="raycast"] .mi .qh{display:none}
+:root[data-look="raycast"] .qtabs{height:auto;margin:0;padding:8px 6px 4px;gap:4px;border:0;overflow:visible}
+:root[data-look="raycast"] .qtabs .tlist{gap:2px;height:auto}
+:root[data-look="raycast"] .qtabs [role="tab"]{height:24px;padding:0 8px;border-radius:6px;color:var(--rc-ink3);font:500 12px/1 var(--rc-sans)}
+:root[data-look="raycast"] .qtabs [role="tab"]:hover{color:var(--rc-ink2);background:var(--rc-hov)}
+:root[data-look="raycast"] .qtabs [role="tab"][aria-selected="true"]{color:var(--rc-ink);background:var(--rc-fill);font-weight:500}
+:root[data-look="raycast"] .qtabs [role="tab"] span::after{font-weight:500}
+:root[data-look="raycast"] .qtabs [role="tab"][aria-selected="true"]::after{display:none}
+:root[data-look="raycast"] .qsel{display:none}
+:root[data-look="raycast"] .qt,:root[data-look="raycast"] .qt tbody{display:block;font-size:13px}
+:root[data-look="raycast"] .qt thead{display:none}
+:root[data-look="raycast"] .qt tr{display:flex;align-items:center;gap:10px;height:34px;padding:0 4px 0 10px;border-radius:8px}
+:root[data-look="raycast"] .qt td{display:block;height:auto;padding:0;border:0;background:transparent;color:var(--rc-ink3);font-size:12.5px;white-space:nowrap}
+:root[data-look="raycast"] .qt tbody tr[data-app]:hover td{background:transparent}
+:root[data-look="raycast"] .qt td.c-nm{flex:0 1 auto;min-width:0;width:auto}
+:root[data-look="raycast"] .qt td:nth-child(2){flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="raycast"] .qt td:nth-child(3){order:2;color:var(--rc-ink3)}
+:root[data-look="raycast"] .qt td:nth-child(4){display:none}
+:root[data-look="raycast"] .qt td:nth-child(5){order:1;font-size:12px;color:var(--rc-ink4)}
+:root[data-look="raycast"] .qt td.c-pin{order:3;width:auto;padding:0;text-align:right}
+:root[data-look="raycast"] .ql{gap:10px;color:var(--rc-ink);font-weight:500}
+:root[data-look="raycast"] .ql img{width:20px;height:20px;filter:none}
+:root[data-look="raycast"] .ql .qn{gap:7px}
+:root[data-look="raycast"] .qt tbody tr:hover .nm{text-decoration:none}
+:root[data-look="raycast"] .qt .none{height:auto}
+:root[data-look="raycast"] .qt .none td{display:block;flex:1;height:auto;padding:12px 10px 14px;text-align:left;color:var(--rc-ink3);font-size:12.5px;white-space:normal}
+:root[data-look="raycast"] .qfoot{padding:2px 2px 0;border:0}
+
+/* needs you today: one block per app, its items as rows with coloured counts */
+:root[data-look="raycast"] .nlist{display:block;padding:0;overflow:visible}
+:root[data-look="raycast"] .need{width:auto;margin:0 0 2px;padding:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+:root[data-look="raycast"] .need::before{display:none}
+:root[data-look="raycast"] .need header{height:32px;margin:0;padding:0 10px;gap:10px}
+:root[data-look="raycast"] .need header img{width:20px;height:20px;filter:none}
+:root[data-look="raycast"] .need header b{font-size:13px;font-weight:500}
+:root[data-look="raycast"] .need header a:hover{text-decoration:none;color:var(--rc-ink)}
+:root[data-look="raycast"] .need time{font-size:12px;color:var(--rc-ink4)}
+:root[data-look="raycast"] .need li a{min-height:32px;margin:0;padding:4px 10px 4px 40px;gap:10px;border-radius:8px;color:var(--rc-ink2);font-size:13px;line-height:18px}
+:root[data-look="raycast"] .need li a:hover{background:transparent}
+:root[data-look="raycast"] .need li a .i{color:var(--rc-ink4)}
+:root[data-look="raycast"] .cnt{min-width:24px;height:20px;padding:0 6px;border-radius:5px;background:var(--rc-blueBg);color:var(--rc-blue);font:600 11.5px/20px var(--rc-sans)}
+:root[data-look="raycast"] .cnt.warn{background:var(--rc-orangeBg);color:var(--rc-orange)}
+:root[data-look="raycast"] .cnt.bad{background:var(--rc-redBg);color:var(--rc-redT)}
+:root[data-look="raycast"] .cnt.dot{min-width:0;width:7px;height:7px;padding:0;margin:0 9px;background:var(--rc-blue)}
+:root[data-look="raycast"] .cnt.dot.warn{background:var(--rc-orange)}
+:root[data-look="raycast"] .cnt.dot.bad{background:var(--rc-red)}
+:root[data-look="raycast"] .nempty{margin:0;padding:6px 10px 8px;gap:10px;border-radius:8px;background:none;box-shadow:none;color:var(--rc-ink3);font-size:12.5px}
+:root[data-look="raycast"] .nempty .i{width:16px;height:16px;color:var(--rc-ink4)}
+
+/* all apps: a toolbar (title, group chips, Grid/List), then each group as a section */
+:root[data-look="raycast"] .ah{flex-wrap:wrap;gap:8px;margin:0;padding:12px 6px 4px;border-top:1px solid var(--rc-line2)}
+:root[data-look="raycast"] .ah .chips{order:3;flex:1 0 100%;margin:0 -6px;padding:0 6px 2px}
+:root[data-look="raycast"] body.searching .ah{border-top:0}
+:root[data-look="raycast"] .ah h2{font:600 13px/20px var(--rc-sans);color:var(--rc-ink);white-space:nowrap}
+:root[data-look="raycast"] .ah .n{font-size:12px;color:var(--rc-ink3);white-space:nowrap}
+:root[data-look="raycast"] .chips{gap:4px}
+:root[data-look="raycast"] .chips button{height:26px;padding:0 9px;gap:5px;border-radius:7px;background:transparent;box-shadow:inset 0 0 0 1px var(--rc-line);color:var(--rc-ink2);font:500 12px/1 var(--rc-sans)}
+:root[data-look="raycast"] .chips button span{color:var(--rc-ink4);font-size:11px}
+:root[data-look="raycast"] .chips button:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .chips button[aria-pressed="true"]{background:var(--rc-redBg);box-shadow:none;color:var(--rc-redT);font-weight:600}
+:root[data-look="raycast"] .chips button[aria-pressed="true"] span{color:var(--rc-redT);opacity:.75;font-weight:500}
+:root[data-look="raycast"] .view{border:1px solid var(--rc-line);border-radius:7px;background:transparent}
+:root[data-look="raycast"] .view button{width:30px;height:24px;color:var(--rc-ink3)}
+:root[data-look="raycast"] .view button+button{border-left:1px solid var(--rc-line)}
+:root[data-look="raycast"] .view button:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .view button[aria-pressed="true"]{background:var(--rc-fill2);color:var(--rc-ink)}
+:root[data-look="raycast"] .view .i{width:14px;height:14px}
+:root[data-look="raycast"] .status{margin:0;padding:2px 10px 0;min-height:0;font-size:12px;color:var(--rc-ink3)}
+:root[data-look="raycast"] .status:empty{display:none}
+:root[data-look="raycast"] .group{margin:4px 0 0;scroll-margin-top:0}
+:root[data-look="raycast"] .ghead{flex-wrap:nowrap;align-items:baseline;gap:6px;margin:0;padding:10px 10px 6px}
+:root[data-look="raycast"] .ghead h2{font:500 12px/16px var(--rc-sans);color:var(--rc-ink3);white-space:nowrap}
+:root[data-look="raycast"] .gcount{font-size:12px;color:var(--rc-ink4);white-space:nowrap}
+:root[data-look="raycast"] .gcount::before{content:"· "}
+:root[data-look="raycast"] .ghead p{display:block;margin:0 0 0 auto;min-width:0;font-size:12px;color:var(--rc-ink4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="raycast"] .empty{margin:14px 6px;padding:28px 16px;border:1px dashed var(--rc-line);border-radius:10px;color:var(--rc-ink3);font-size:13px}
+
+/* Cards = Raycast's grid: square tiles */
+:root[data-look="raycast"] .grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;padding:2px 2px 6px}
+:root[data-look="raycast"] .card{align-items:center;gap:0;min-height:112px;padding:16px 8px 12px;border-radius:12px;background:var(--rc-tile);box-shadow:inset 0 0 0 1px var(--rc-line);text-align:center;transition:none}
+:root[data-look="raycast"] .card .top{flex-direction:column;align-items:center;gap:10px;width:100%}
+:root[data-look="raycast"] .card .ai{width:44px;height:44px;filter:none}
+:root[data-look="raycast"] .card .ttl{align-items:center;width:100%;padding:0;gap:0}
+:root[data-look="raycast"] .card h3{width:100%;font:500 12.5px/16px var(--rc-sans);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+:root[data-look="raycast"] .card h3 a{color:var(--rc-ink)}
+:root[data-look="raycast"] .card:hover h3 a{text-decoration:none}
+:root[data-look="raycast"] .card h3 a::after{border-radius:12px}
+:root[data-look="raycast"] .card h3 a:focus-visible::after{outline:2px solid var(--rc-red);outline-offset:1px}
+:root[data-look="raycast"] .card .tags{position:absolute;top:7px;left:7px;gap:0}
+:root[data-look="raycast"] .card .tags .pill:not(.new){display:none}
+:root[data-look="raycast"] .card .tags .pill.new{height:17px;padding:0 5px;font-size:10px;line-height:17px;border-radius:4px}
+:root[data-look="raycast"] .card p,:root[data-look="raycast"] .card .screens{display:none}
+:root[data-look="raycast"] .card .pin{position:absolute;top:4px;right:4px;margin:0}
+:root[data-look="raycast"] .card.rc-on{background:var(--rc-sel);box-shadow:inset 0 0 0 2px var(--rc-gridSel)}
+
+/* List = Raycast's list: one row per app, accessories on the right */
+:root[data-look="raycast"] .list .grid{display:block;padding:0 0 4px;border-radius:0;background:none;box-shadow:none;overflow:visible}
+:root[data-look="raycast"] .list .card{display:grid;grid-template-columns:20px auto minmax(0,1fr) auto 26px;grid-template-areas:"ic t d tg pin";column-gap:10px;row-gap:0;align-items:center;min-height:0;height:34px;padding:0 4px 0 10px;border:0;border-radius:8px;background:transparent;box-shadow:none;text-align:left}
+:root[data-look="raycast"] .list .card .top,:root[data-look="raycast"] .list .card .ttl{display:contents}
+:root[data-look="raycast"] .list .card .ai{grid-area:ic;width:20px;height:20px}
+:root[data-look="raycast"] .list .card h3{grid-area:t;display:block;width:auto;font:500 13px/18px var(--rc-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:none}
+:root[data-look="raycast"] .list .card h3 a::after{border-radius:8px}
+:root[data-look="raycast"] .list .card p{grid-area:d;display:block;margin:0;font-size:12.5px;line-height:18px;color:var(--rc-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-look="raycast"] .list .card .tags{grid-area:tg;position:static;display:flex;align-items:center;gap:8px}
+:root[data-look="raycast"] .list .card .tags .pill.kind{display:inline-flex}
+:root[data-look="raycast"] .list .card[data-new] .tags .pill.kind{display:none}
+:root[data-look="raycast"] .list .card .tags .pill.new{height:20px;padding:0 7px;font-size:11px;line-height:20px;border-radius:5px}
+:root[data-look="raycast"] .list .card .pin{grid-area:pin;position:relative;top:auto;right:auto}
+:root[data-look="raycast"] .list .card.rc-on{background:var(--rc-sel);box-shadow:inset 0 0 0 1px var(--rc-selL)}
+
+/* the highlighted row (raycast.js moves it with the mouse and ↑ ↓) */
+:root[data-look="raycast"] .qt tr.rc-on,:root[data-look="raycast"] .need li a.rc-on{background:var(--rc-sel);box-shadow:inset 0 0 0 1px var(--rc-selL)}
+:root[data-look="raycast"] .need li a.rc-on{color:var(--rc-ink)}
+/* stars show on the highlighted row, on hover and when pinned */
+:root[data-look="raycast"] .card .pin,:root[data-look="raycast"] .qt .pin{opacity:0}
+:root[data-look="raycast"] .card:hover .pin,:root[data-look="raycast"] .card.rc-on .pin,:root[data-look="raycast"] .qt tr:hover .pin,:root[data-look="raycast"] .qt tr.rc-on .pin,
+:root[data-look="raycast"] .card .pin:focus-visible,:root[data-look="raycast"] .qt .pin:focus-visible,:root[data-look="raycast"] .card .pin[aria-pressed="true"],:root[data-look="raycast"] .qt .pin[aria-pressed="true"]{opacity:1}
+@media (hover:none){:root[data-look="raycast"] .card .pin,:root[data-look="raycast"] .qt .pin{opacity:1}}
+
+/* page footer: the end of the list */
+:root[data-look="raycast"] .foot{margin:22px 16px 0;padding:14px 2px 6px;gap:6px 20px;border-top:1px solid var(--rc-line2);color:var(--rc-ink3);font-size:12px;line-height:18px}
+:root[data-look="raycast"] .foot .fb{color:var(--rc-ink2);font-weight:600}
+:root[data-look="raycast"] .foot .fb img{width:18px;height:18px}
+:root[data-look="raycast"] .foot a{color:var(--rc-ink2)}
+:root[data-look="raycast"] .foot a:hover{color:var(--rc-ink);text-decoration:none}
+
+/* ── the detail pane (right) ────────────────────────────────────────────────────────────────────────────────── */
+:root[data-look="raycast"] .rc-det{position:sticky;top:calc(var(--rc-head) + var(--rc-find));align-self:start;max-height:calc(100vh - var(--rc-head) - var(--rc-find) - var(--rc-barH) - 14px);overflow:auto;overscroll-behavior:contain;padding:18px 22px 24px 23px;scrollbar-width:thin}
+/* the line between list and detail runs the whole height of the split */
+:root[data-look="raycast"] .mi::before{content:"";grid-area:det;align-self:stretch;border-left:1px solid var(--rc-line2)}
+:root[data-look="raycast"] .rc-dhead{display:flex;align-items:center;gap:14px}
+:root[data-look="raycast"] .rc-dhead>img{width:60px;height:60px;flex:none}
+:root[data-look="raycast"] .rc-dtt{flex:1;min-width:0}
+:root[data-look="raycast"] .rc-dtt h2{margin:0;font:600 20px/26px var(--rc-sans);letter-spacing:-.02em;color:var(--rc-ink)}
+:root[data-look="raycast"] .rc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+:root[data-look="raycast"] .rc-tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:5px;background:var(--rc-fill);color:var(--rc-ink2);font:500 11px/1 var(--rc-sans)}
+:root[data-look="raycast"] .rc-tag.red{background:var(--rc-redBg);color:var(--rc-redT);font-weight:600}
+:root[data-look="raycast"] .rc-tag.blue{background:var(--rc-blueBg);color:var(--rc-blue)}
+:root[data-look="raycast"] .rc-tag.green{background:var(--rc-greenBg);color:var(--rc-green)}
+:root[data-look="raycast"] .rc-dpin{flex:none;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--rc-line);border-radius:8px;background:transparent;color:var(--rc-ink2);font:500 12.5px/1 var(--rc-sans);cursor:pointer}
+:root[data-look="raycast"] .rc-dpin:hover{background:var(--rc-fill);color:var(--rc-ink)}
+:root[data-look="raycast"] .rc-dpin .on,:root[data-look="raycast"] .rc-dpin[aria-pressed="true"] .off{display:none}
+:root[data-look="raycast"] .rc-dpin[aria-pressed="true"] .on{display:inline}
+:root[data-look="raycast"] .rc-dpin[aria-pressed="true"]{border-color:transparent;background:var(--rc-redBg);color:var(--rc-redT)}
+:root[data-look="raycast"] .rc-dpin[aria-pressed="true"] .i{fill:currentColor}
+:root[data-look="raycast"] .rc-ddesc{margin:14px 0 16px;color:var(--rc-ink2);font-size:13px;line-height:1.55}
+:root[data-look="raycast"] .rc-dl{margin:0 0 2px;color:var(--rc-ink3);font-size:11.5px;font-weight:500}
+:root[data-look="raycast"] .rc-scr{list-style:none;margin:0 0 18px;padding:0}
+:root[data-look="raycast"] .rc-scr li{border-bottom:1px solid var(--rc-line2)}
+:root[data-look="raycast"] .rc-scr a{display:flex;align-items:center;justify-content:space-between;gap:12px;height:32px;margin:0 -8px;padding:0 8px;border-radius:7px;color:var(--rc-ink);font-size:13px;text-decoration:none}
+:root[data-look="raycast"] .rc-scr a:hover{background:var(--rc-hov)}
+:root[data-look="raycast"] .rc-scr a>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-look="raycast"] .rc-keys{display:inline-flex;gap:3px;flex:none}
+:root[data-look="raycast"] .rc-k,:root[data-look="raycast"] .rc-keys kbd,:root[data-look="raycast"] .rc-bar kbd{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border:1px solid var(--rc-kbdL);border-radius:5px;background:var(--rc-kbd);box-shadow:var(--rc-kbdS);color:var(--rc-ink2);font:500 11px/1 var(--rc-mono)}
+:root[data-look="raycast"] kbd.sym{font:500 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI Symbol",system-ui,sans-serif}
+:root[data-look="raycast"] .rc-meta{margin:0;padding:0}
+:root[data-look="raycast"] .rc-meta div{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:30px;border-bottom:1px solid var(--rc-line2);font-size:12.5px}
+:root[data-look="raycast"] .rc-meta dt{color:var(--rc-ink3)}
+:root[data-look="raycast"] .rc-meta dd{margin:0;color:var(--rc-ink);font-weight:500;text-align:right}
+:root[data-look="raycast"] .rc-meta dd a{color:inherit;text-decoration:none}
+:root[data-look="raycast"] .rc-meta dd a:hover{color:var(--rc-redT)}
+:root[data-look="raycast"] .rc-dempty{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--rc-ink3);font-size:13px;text-align:center}
+:root[data-look="raycast"] .rc-dempty .i{width:28px;height:28px;color:var(--rc-ink4)}
+
+/* ── the action bar: the bottom edge of the window ──────────────────────────────────────────────────────────── */
+:root[data-look="raycast"] .rc-foot{position:fixed;left:0;right:0;bottom:0;z-index:29;padding:0 var(--rc-gut) 14px;background:var(--rc-glow) fixed,var(--rc-stripes) fixed,var(--rc-bg)}
+:root[data-look="raycast"] .rc-bar{display:flex;align-items:center;gap:6px;height:var(--rc-barH);padding:0 7px 0 14px;background:var(--rc-bar);border:1px solid var(--rc-line);border-top-color:var(--rc-line2);border-radius:0 0 12px 12px;color:var(--rc-ink2);font:400 12.5px/1 var(--rc-sans)}
+:root[data-look="raycast"] .rc-hello{display:flex;align-items:center;gap:9px;min-width:0;white-space:nowrap}
+:root[data-look="raycast"] .rc-hello img{width:18px;height:18px;flex:none}
+:root[data-look="raycast"] .rc-hello b{color:var(--rc-ink);font-weight:500}
+:root[data-look="raycast"] .rc-hello span{color:var(--rc-ink3);overflow:hidden;text-overflow:ellipsis}
+:root[data-look="raycast"] .rc-cur{display:none}
+:root[data-look="raycast"] .rc-sp{flex:1}
+:root[data-look="raycast"] .rc-open,:root[data-look="raycast"] .rc-act{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 6px 0 10px;border:0;border-radius:7px;background:transparent;color:var(--rc-ink);font:600 12.5px/1 var(--rc-sans);text-decoration:none;white-space:nowrap;cursor:pointer;min-width:0}
+:root[data-look="raycast"] .rc-open span{overflow:hidden;text-overflow:ellipsis}
+:root[data-look="raycast"] .rc-act{color:var(--rc-ink2);font-weight:500;gap:6px}
+:root[data-look="raycast"] .rc-act kbd:first-of-type{margin-left:2px}
+:root[data-look="raycast"] .rc-act kbd+kbd{margin-left:-3px}
+:root[data-look="raycast"] .rc-open:hover,:root[data-look="raycast"] .rc-act:hover{background:var(--rc-fill)}
+:root[data-look="raycast"] .rc-sep{flex:none;width:1px;height:16px;margin:0 2px;background:var(--rc-line)}
+:root[data-look="raycast"] .rc-open[hidden]+.rc-sep{display:none}
+
+/* ── popovers: the groups menu, the Style menu, Install's steps ─────────────────────────────────────────────── */
+:root[data-look="raycast"] .menu,:root[data-look="raycast"] .look-menu,:root[data-look="raycast"] .inst-pop{background:var(--rc-pop);border:1px solid var(--rc-line);border-radius:10px;box-shadow:var(--rc-shadow);color:var(--rc-ink)}
+:root[data-look="raycast"] .menu{padding:5px}
+:root[data-look="raycast"] .menu .mh{padding:7px 9px 4px;font-size:11.5px;font-weight:500;color:var(--rc-ink3)}
+:root[data-look="raycast"] .menu button{height:32px;padding:0 9px;border-radius:6px;font:400 13px var(--rc-sans);color:var(--rc-ink)}
+:root[data-look="raycast"] .menu button:hover,:root[data-look="raycast"] .menu button:focus-visible{background:var(--rc-sel)}
+:root[data-look="raycast"] .menu button:focus-visible{box-shadow:inset 0 0 0 1px var(--rc-selL)}
+:root[data-look="raycast"] .menu button .i{color:var(--rc-ink3)}
+:root[data-look="raycast"] .menu button span{color:var(--rc-ink4)}
+:root[data-look="raycast"] .menu button[aria-checked="true"]{color:var(--rc-ink);font-weight:600}
+:root[data-look="raycast"] .menu button[aria-checked="true"] .i{color:var(--rc-red)}
+:root[data-look="raycast"] .look-menu{padding:5px}
+:root[data-look="raycast"] .look-menu h3{margin:4px 8px 6px;font-size:11.5px;font-weight:500;color:var(--rc-ink3)}
+:root[data-look="raycast"] .look-menu button{padding:7px 8px;border-radius:6px;font:400 13px/18px var(--rc-sans);color:var(--rc-ink)}
+:root[data-look="raycast"] .look-menu button:hover,:root[data-look="raycast"] .look-menu button:focus-visible{background:var(--rc-sel)}
+:root[data-look="raycast"] .look-menu button[aria-checked="true"]{font-weight:600}
+:root[data-look="raycast"] .look-menu button[aria-checked="true"]::after{color:var(--rc-red)}
+:root[data-look="raycast"] .look-menu small{color:var(--rc-ink3)}
+:root[data-look="raycast"] .look-menu .sw{box-shadow:inset 0 0 0 1px var(--rc-line)}
+:root[data-look="raycast"] .inst-pop{padding:18px 18px 16px}
+:root[data-look="raycast"] .inst-pop h2{font:600 15px/22px var(--rc-sans)}
+:root[data-look="raycast"] .inst-pop p,:root[data-look="raycast"] .inst-pop ol{font-size:13px;color:var(--rc-ink2)}
+:root[data-look="raycast"] .inst-pop .note{font-size:12px;color:var(--rc-ink3)}
+:root[data-look="raycast"] .inst-pop kbd{border:1px solid var(--rc-kbdL);border-radius:5px;background:var(--rc-kbd);box-shadow:var(--rc-kbdS);color:var(--rc-ink);font:500 11px/18px var(--rc-mono);padding:0 5px}
+:root[data-look="raycast"] .inst-pop .x{border-radius:7px}
+
+/* ── ⌘K: Raycast's own window ───────────────────────────────────────────────────────────────────────────────── */
+:root[data-look="raycast"] .cmdk{padding:13vh 16px 16px}
+:root[data-look="raycast"] .cmdk-back{background:rgba(0,0,0,.5)}
+:root[data-look="raycast"][data-stratum-mode="light"] .cmdk-back{background:rgba(24,24,28,.2)}
+:root[data-look="raycast"] .cmdk-box{width:min(720px,100%);max-height:min(560px,76vh);border:1px solid var(--rc-line);border-radius:12px;background:var(--rc-winS);box-shadow:0 30px 90px -10px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.04)}
+:root[data-look="raycast"][data-stratum-mode="light"] .cmdk-box{box-shadow:0 30px 90px -10px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.04)}
+:root[data-look="raycast"] .cx-in{height:56px;padding:0 12px 0 18px;border-bottom:1px solid var(--rc-line2)}
+:root[data-look="raycast"] .cx-in .i{color:var(--rc-ink3)}
+:root[data-look="raycast"] .cx-in input{font:400 16px var(--rc-sans);letter-spacing:-.01em;color:var(--rc-ink);caret-color:var(--rc-red)}
+:root[data-look="raycast"] .cx-in input::placeholder{color:var(--rc-ink3)}
+:root[data-look="raycast"] .cx-esc{height:22px;padding:0 6px;border:1px solid var(--rc-kbdL);border-radius:5px;background:var(--rc-kbd);box-shadow:var(--rc-kbdS);color:var(--rc-ink2);font:500 11px/20px var(--rc-mono)}
+:root[data-look="raycast"] .cx-cancel{color:var(--rc-redT);font-family:var(--rc-sans)}
+:root[data-look="raycast"] .cx-list{padding:4px 8px 8px}
+:root[data-look="raycast"] .cx-h{padding:10px 10px 4px;font-size:11.5px;font-weight:500;color:var(--rc-ink3)}
+:root[data-look="raycast"] .cx-o{min-height:40px;padding:4px 10px;gap:12px;border-radius:8px}
+:root[data-look="raycast"] .cx-o.on{background:var(--rc-sel);box-shadow:inset 0 0 0 1px var(--rc-selL)}
+:root[data-look="raycast"] .cx-o.on::before{display:none}
+:root[data-look="raycast"] .cx-ic,:root[data-look="raycast"] .cx-ic img{width:22px;height:22px;filter:none}
+:root[data-look="raycast"] .cx-ic.sym{border-radius:6px;background:var(--rc-fill);color:var(--rc-ink2)}
+:root[data-look="raycast"] .cx-ic.sym .i{width:14px;height:14px}
+:root[data-look="raycast"] .cx-t{flex-direction:row;align-items:baseline;gap:10px}
+:root[data-look="raycast"] .cx-tt{flex:0 1 auto;font-size:13.5px;font-weight:500;color:var(--rc-ink)}
+:root[data-look="raycast"] .cx-t small{flex:1 1 0;min-width:0;font-size:12.5px;color:var(--rc-ink3)}
+:root[data-look="raycast"] .cx-tt mark{color:var(--rc-redT);font-weight:600}
+:root[data-look="raycast"] .cx-r{color:var(--rc-ink3)}
+:root[data-look="raycast"] .cx-r .i{color:var(--rc-red)}
+:root[data-look="raycast"] .cx-r kbd,:root[data-look="raycast"] .cx-foot kbd{min-width:20px;height:20px;padding:0 5px;border:1px solid var(--rc-kbdL);border-radius:5px;background:var(--rc-kbd);box-shadow:var(--rc-kbdS);color:var(--rc-ink2);font:500 11.5px/18px -apple-system,BlinkMacSystemFont,"Segoe UI Symbol",var(--rc-sans)}
+:root[data-look="raycast"] .cx-none{color:var(--rc-ink3);font-size:13px}
+:root[data-look="raycast"] .cx-foot{height:42px;align-items:center;gap:6px 18px;padding:0 14px;background:var(--rc-bar);border-top:1px solid var(--rc-line2);color:var(--rc-ink3);font-size:12px}
+
+/* ── narrower windows ───────────────────────────────────────────────────────────────────────────────────────── */
+@media (max-width:1000px){
+  :root[data-look="raycast"] .rail{left:calc(var(--rc-gut) + 160px)}
+  :root[data-look="raycast"] .rail a,:root[data-look="raycast"] .rail button{width:34px;padding:0;justify-content:center;font-size:0}
+  :root[data-look="raycast"] .rail .i{display:block;width:18px;height:18px}
+  :root[data-look="raycast"] .rail .on{background:var(--rc-fill)}
+}
+@media (max-width:899px){
+  :root[data-look="raycast"] .mi{display:flex;flex-direction:column;align-items:stretch}
+  :root[data-look="raycast"] .pins{order:1}
+  :root[data-look="raycast"] .qa{order:2}
+  :root[data-look="raycast"] .needs{order:3}
+  :root[data-look="raycast"] .appsec{order:4}
+  :root[data-look="raycast"] .foot{order:5}
+  :root[data-look="raycast"] .rc-det,:root[data-look="raycast"] .mi::before{display:none}
+}
+
+/* ── phone: the window fills the screen; search under the header, action bar above the tab bar ─────────────── */
+@media (max-width:700px){
+  :root[data-look="raycast"]{--rc-head:56px;--rc-find:56px;--rc-barH:52px;
+    --rc-glow:radial-gradient(ellipse 330px 190px at calc(100% - 40px) -20px, rgba(7,8,10,.4) 0%, rgba(7,8,10,.46) 16%, rgba(7,8,10,.9) 70%, #07080a 100%);scroll-padding-top:calc(var(--rc-head) + var(--rc-find) + 10px + env(safe-area-inset-top,0px));scroll-padding-bottom:calc(var(--rc-barH) + 66px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="raycast"][data-stratum-mode="light"]{--rc-glow:radial-gradient(ellipse 330px 190px at calc(100% - 40px) -20px, rgba(233,233,235,.32) 0%, rgba(233,233,235,.4) 16%, rgba(233,233,235,.9) 70%, #e9e9eb 100%)}
+  :root[data-look="raycast"] .pl{background:var(--rc-winS)}
+  :root[data-look="raycast"] stratum-shell{top:calc(8px + env(safe-area-inset-top,0px))!important;right:16px!important}
+  :root[data-look="raycast"] .tb{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:var(--rc-head) auto;min-height:0;padding:env(safe-area-inset-top,0px) 16px 0}
+  :root[data-look="raycast"] .tb-l{flex:none;min-width:0}
+  :root[data-look="raycast"] .brand{font-size:17px;letter-spacing:-.02em}
+  :root[data-look="raycast"] .brand img{width:28px;height:28px}
+  :root[data-look="raycast"] .tb-r{grid-area:1/2;gap:2px;margin-right:calc(var(--rc-shell,44px) + 8px)}
+  :root[data-look="raycast"] .tb .find{display:flex;grid-area:2/1/3/-1;height:46px;margin:0 0 10px;padding:0 6px 0 14px;border:1px solid var(--rc-line);border-radius:11px;background:var(--rc-field);box-shadow:none}
+  :root[data-look="raycast"] .find input{font-size:16px}
+  :root[data-look="raycast"] .rc-grp{height:32px;padding:0 8px 0 10px;font-size:13px;max-width:150px}
+  :root[data-look="raycast"] .main{width:auto;min-height:0;margin:0;border:0;background:transparent}
+  :root[data-look="raycast"] .mi{padding:0 0 calc(var(--rc-barH) + 76px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="raycast"] .psearch,:root[data-look="raycast"] .mi .chips-top{display:none}
+  :root[data-look="raycast"] .sh{padding:12px 20px 6px}
+  :root[data-look="raycast"] .sh h2{font-size:12.5px}
+
+  :root[data-look="raycast"] .pins{margin:0;padding:0 0 4px;border:0}
+  :root[data-look="raycast"] .pins .sh{padding:8px 20px 8px}
+  :root[data-look="raycast"] .prow{flex-wrap:nowrap;overflow-x:auto;gap:8px;margin:0;padding:2px 16px 4px;border-radius:0}
+  :root[data-look="raycast"] .pt{width:calc((100% - 24px) / 4);flex:none}
+  :root[data-look="raycast"] .pins.editing .pt{width:104px}
+  :root[data-look="raycast"] .pl{height:84px;justify-content:center;padding:8px 4px;gap:7px;font-size:11px}
+  :root[data-look="raycast"] .pl img,:root[data-look="raycast"] .pt.all .ring{width:38px;height:38px}
+  :root[data-look="raycast"] .editing .pt[data-app] .pl{height:auto}
+  :root[data-look="raycast"] .pe button{width:30px;height:28px}
+
+  :root[data-look="raycast"] .qa,:root[data-look="raycast"] .needs,:root[data-look="raycast"] .appsec{padding:2px 10px 4px}
+  :root[data-look="raycast"] .needs{margin:6px 0 0}
+  :root[data-look="raycast"] .qa{margin:8px 0 0}
+  :root[data-look="raycast"] .qtabs{height:auto;margin:0;padding:6px 10px 6px;overflow-x:auto;border:0}
+  :root[data-look="raycast"] .qtabs [role="tab"]{height:28px;padding:0 10px;font-size:12.5px}
+  :root[data-look="raycast"] .qt tr{min-height:52px;height:auto;padding:0 4px 0 10px;gap:12px}
+  :root[data-look="raycast"] .qt td{display:none}
+  :root[data-look="raycast"] .qt td.c-nm{display:flex;flex:1;align-self:stretch;align-items:center;border:0}
+  :root[data-look="raycast"] .qt td:nth-child(3){display:block}
+  :root[data-look="raycast"] .qt td.c-pin{display:block;width:auto}
+  :root[data-look="raycast"] .qt tbody tr:last-child td.c-nm{border:0}
+  :root[data-look="raycast"] .ql{gap:12px;width:100%;padding:6px 0}
+  :root[data-look="raycast"] .ql img{width:32px;height:32px}
+  :root[data-look="raycast"] .ql .nm{font-size:14.5px;line-height:19px;font-weight:500}
+  :root[data-look="raycast"] .ql .meta{color:var(--rc-ink3);font-size:12px;line-height:16px;font-weight:400}
+  :root[data-look="raycast"] .qt .pin{width:34px;height:34px}
+  :root[data-look="raycast"] .qt .none td{display:block}
+
+  :root[data-look="raycast"] .nlist{display:block;padding:0}
+  :root[data-look="raycast"] .need{width:auto}
+  :root[data-look="raycast"] .need header{height:40px}
+  :root[data-look="raycast"] .need header img{width:24px;height:24px}
+  :root[data-look="raycast"] .need header b{font-size:14px}
+  :root[data-look="raycast"] .need li a{min-height:42px;padding-left:44px;font-size:13.5px}
+  :root[data-look="raycast"] .nempty{margin:0}
+
+  :root[data-look="raycast"] .appsec{margin-top:10px}
+  :root[data-look="raycast"] .ah{flex-wrap:wrap;padding:14px 10px 4px}
+  :root[data-look="raycast"] .ah .chips{display:flex;order:3;flex:1 0 100%;margin:4px -20px 0;padding:0 20px}
+  :root[data-look="raycast"] .chips button{height:30px;padding:0 11px;font-size:12.5px}
+  :root[data-look="raycast"] .view button{width:36px;height:28px}
+  :root[data-look="raycast"] .status{padding:4px 10px 0}
+  :root[data-look="raycast"] .groups-wrap{padding:0}
+  :root[data-look="raycast"] .group{margin-top:8px}
+  :root[data-look="raycast"] .ghead{padding:10px 10px 8px}
+  :root[data-look="raycast"] .ghead h2{font-size:12.5px}
+  :root[data-look="raycast"] .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:0}
+  :root[data-look="raycast"] .card{min-height:88px;padding:12px 4px 8px}
+  :root[data-look="raycast"] .card .top{gap:7px}
+  :root[data-look="raycast"] .card .ai{width:38px;height:38px}
+  :root[data-look="raycast"] .card h3{font-size:11px;line-height:14px;font-weight:500}
+  :root[data-look="raycast"] .card .pin{top:1px;right:1px;width:28px;height:28px}
+  :root[data-look="raycast"] .card .pin:not([aria-pressed="true"]){color:var(--rc-ink4)}
+  :root[data-look="raycast"] .card .pin .i{width:13px;height:13px}
+  :root[data-look="raycast"] .card .tags{top:4px;left:4px}
+  :root[data-look="raycast"] .list .grid{display:block}
+  :root[data-look="raycast"] .list .card{grid-template-columns:32px minmax(0,1fr) auto 34px;grid-template-areas:"ic t tg pin" "ic d tg pin";column-gap:12px;height:auto;min-height:54px;padding:6px 2px 6px 10px}
+  :root[data-look="raycast"] .list .card .ai{width:32px;height:32px}
+  :root[data-look="raycast"] .list .card h3{font-size:14.5px;line-height:19px}
+  :root[data-look="raycast"] .list .card p{font-size:12px;line-height:16px}
+  :root[data-look="raycast"] .list .card .pin{width:34px;height:34px}
+  :root[data-look="raycast"] .list .card .pin .i{width:16px;height:16px}
+  :root[data-look="raycast"] .foot{margin:28px 20px 0}
+
+  /* the action bar sits above the tab bar */
+  :root[data-look="raycast"] .rc-foot{bottom:calc(56px + env(safe-area-inset-bottom,0px));padding:0;background:var(--rc-barP)}
+  :root[data-look="raycast"] .rc-bar{height:var(--rc-barH);gap:8px;padding:0 12px 0 16px;border:0;border-top:1px solid var(--rc-line2);border-radius:0;background:var(--rc-barP);font-size:13.5px}
+  :root[data-look="raycast"] .rc-hello,:root[data-look="raycast"] .rc-sep,:root[data-look="raycast"] .rc-open kbd,:root[data-look="raycast"] .rc-open b{display:none}
+  :root[data-look="raycast"] .rc-cur{display:flex;align-items:center;gap:10px;min-width:0;color:var(--rc-ink);font-weight:600;text-decoration:none}
+  :root[data-look="raycast"] .rc-cur img{width:22px;height:22px;flex:none}
+  :root[data-look="raycast"] .rc-cur span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  :root[data-look="raycast"] .rc-act{order:2;height:34px;padding:0 7px 0 12px;border:1px solid var(--rc-line);border-radius:9px;background:var(--rc-fill);color:var(--rc-ink);font-size:13.5px}
+  :root[data-look="raycast"] .rc-act kbd{height:20px;min-width:0;padding:0 5px;font-size:10.5px}
+  :root[data-look="raycast"] .rc-open{order:3;height:34px;padding:0 15px;border-radius:9px;background:var(--rc-cta);color:var(--rc-ctaInk);font-size:13.5px}
+  :root[data-look="raycast"] .rc-open:hover{background:var(--rc-ctaH)}
+
+  /* the tab bar */
+  :root[data-look="raycast"] .bn{height:calc(56px + env(safe-area-inset-bottom,0px));padding:3px 8px env(safe-area-inset-bottom,0px);background:var(--rc-barP);border-top:1px solid var(--rc-line2)}
+  :root[data-look="raycast"] .bn a,:root[data-look="raycast"] .bn button{gap:3px;border-radius:8px;color:var(--rc-ink3);font:500 10.5px/13px var(--rc-sans)}
+  :root[data-look="raycast"] .bn .on{color:var(--rc-ink);font-weight:600}
+  :root[data-look="raycast"] .bn .i{width:22px;height:22px}
+  :root[data-look="raycast"] .rail .on .i,:root[data-look="raycast"] .bn .on .i{fill:none}
+
+  :root[data-look="raycast"] .menu,:root[data-look="raycast"] .inst-pop{border-radius:14px;box-shadow:var(--rc-shadow),0 0 0 100vmax var(--scrim)}
+  :root[data-look="raycast"] .menu{bottom:calc(var(--rc-barH) + 66px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="raycast"] .inst-pop{bottom:calc(var(--rc-barH) + 66px + env(safe-area-inset-bottom,0px))}
+  :root[data-look="raycast"] .menu button{height:44px;font-size:15px}
+  :root[data-look="raycast"] .cmdk{padding:0}
+  :root[data-look="raycast"] .cmdk-box{width:100%;height:100%;max-height:none;border:0;border-radius:0}
+  :root[data-look="raycast"] .cx-in{height:58px;padding:0 8px 0 16px}
+  :root[data-look="raycast"] .cx-o{min-height:50px}
+  :root[data-look="raycast"] .cx-t{flex-direction:column;align-items:stretch;gap:0}
+  :root[data-look="raycast"] .cx-t small{flex:none}
+  :root[data-look="raycast"] .cx-tt{font-size:15px}
+  :root[data-look="raycast"] .cx-ic,:root[data-look="raycast"] .cx-ic img{width:28px;height:28px}
+}
+@media (max-width:360px){:root[data-look="raycast"] .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media print{:root[data-look="raycast"] .rc-foot,:root[data-look="raycast"] .rc-det{display:none}:root[data-look="raycast"] body{background:#fff}}
