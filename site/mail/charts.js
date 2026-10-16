@@ -1,4 +1,4 @@
-/* Tokovi Mail — hand-made SVG charts (bars, stacked bars, lines). Colours come from CSS variables;
+/* Clearfigure Mail — hand-made SVG charts (bars, stacked bars, lines). Colours come from CSS variables;
  * every drawn chart is re-rendered on 'stratum-theme' and on resize. */
 (function () {
   'use strict';

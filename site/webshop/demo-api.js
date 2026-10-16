@@ -25,9 +25,9 @@
   // base = sessions per day (all devices); convF = conversion factor; sless = sessionless orders per tracked desktop order;
   // neg = refunds sent as purchases; dup = duplicate purchase rows; infl/inflU = inflated desktop item views (views, users per session)
   var SHOPS = [
-    { shop: 'si.shop.example', label: 'Tokovi Optika SI', market: 'SI', fam: 'eye', base: 2600, convF: 1.05, aov: 96, sless: 0.10, neg: 0.01, dup: 0.012, mism: 1 },
-    { shop: 'hr.shop.example', label: 'Tokovi Optika HR', market: 'HR', fam: 'eye', base: 1500, convF: 0.92, aov: 88, sless: 0.22, neg: 0.02, dup: 0.004, mism: 0, infl: 9, inflU: 1.6 },
-    { shop: 'it.shop.example', label: 'Tokovi Lenses IT', market: 'IT', fam: 'lens', base: 1200, convF: 1.0, aov: 56, sless: 0.05, neg: 0, dup: 0, mism: 0, spike: true },
+    { shop: 'si.shop.example', label: 'Clearfigure Optika SI', market: 'SI', fam: 'eye', base: 2600, convF: 1.05, aov: 96, sless: 0.10, neg: 0.01, dup: 0.012, mism: 1 },
+    { shop: 'hr.shop.example', label: 'Clearfigure Optika HR', market: 'HR', fam: 'eye', base: 1500, convF: 0.92, aov: 88, sless: 0.22, neg: 0.02, dup: 0.004, mism: 0, infl: 9, inflU: 1.6 },
+    { shop: 'it.shop.example', label: 'Clearfigure Lenses IT', market: 'IT', fam: 'lens', base: 1200, convF: 1.0, aov: 56, sless: 0.05, neg: 0, dup: 0, mism: 0, spike: true },
   ];
 
   // ── dates ───────────────────────────────────────────────────────────────
@@ -476,7 +476,7 @@
   D.register('/api/webshop/', function (path, params) {
     path = String(path || '').replace(/^\/+|\/+$/g, '');
     switch (path) {
-      case 'session': return { signedIn: true, allowed: true, email: 'demo@tokovi.example' };
+      case 'session': return { signedIn: true, allowed: true, email: 'demo@clearfigure.example' };
       case 'meta': return routeMeta();
       case 'overview': return routeOverview(params);
       case 'quality': return routeQuality(params);

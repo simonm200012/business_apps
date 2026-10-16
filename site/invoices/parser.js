@@ -708,7 +708,7 @@
 
   function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-  // the words of a company name that identify it ("TOKOVI, trgovina in storitve, d.o.o." → "stratum")
+  // the words of a company name that identify it ("CLEARFIGURE, trgovina in storitve, d.o.o." → "stratum")
   function companyNeedles(c) {
     var out = [];
     [c.name].concat(c.variants || []).forEach(function (v) {

@@ -115,7 +115,7 @@
     if (!t || !t.due) throw new Error('Set a due date first.');
     var day = t.due.replace(/-/g, ''), end = addDays(t.due, 1).replace(/-/g, '');
     var lines = [
-      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Tokovi//Desk//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Clearfigure//Desk//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
       'BEGIN:VEVENT',
       'UID:' + icsText(t.id || 'task') + '@desk.stratum',
       'DTSTAMP:' + stampOf(opts.now || new Date()),

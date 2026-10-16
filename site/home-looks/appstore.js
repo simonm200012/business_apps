@@ -72,7 +72,7 @@
         return '<button type="button" data-as-g="' + esc(g.id) + '" aria-pressed="false">' + svg(P[g.id] ? g.id : 'folder', 18) + '<span>' + esc(g.name) + '</span><i>' + g.apps.length + '</i></button>';
       }).join('') + '</nav>' +
       '<div class="as-foot"><div class="as-inst-slot" aria-hidden="true"></div>' +
-        '<a class="as-me" href="showcase/" data-app="showcase"><img src="/icons/apps/launcher.png" alt="" width="30" height="30"><span><b>Business Apps</b><small>Made by Tokovi</small></span></a></div>';
+        '<a class="as-me" href="showcase/" data-app="showcase"><img src="/icons/apps/launcher.png" alt="" width="30" height="30"><span><b>Business Apps</b><small>Made by Clearfigure</small></span></a></div>';
     var rail = doc.querySelector('.rail');
     rail.parentNode.insertBefore(side, rail);
     made.push(side);

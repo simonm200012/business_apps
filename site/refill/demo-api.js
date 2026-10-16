@@ -6,12 +6,12 @@
   var D = window.StratumDemo;
   if (!D) return;
 
-  var EMAIL = 'demo@tokovi.example';
+  var EMAIL = 'demo@clearfigure.example';
   var MARKETS = ['SI', 'HR', 'IT'];
   var MKT = {
-    SI: { scale: 1.0, consent: 0.6, vper: 110, shops: [['Tokovi Optika SI', 1.0]] },
-    HR: { scale: 0.7, consent: 0.55, vper: 104, shops: [['Tokovi Optika HR', 1.0]] },
-    IT: { scale: 0.85, consent: 0.5, vper: 118, shops: [['Tokovi Lenses IT', 1.0]] }
+    SI: { scale: 1.0, consent: 0.6, vper: 110, shops: [['Clearfigure Optika SI', 1.0]] },
+    HR: { scale: 0.7, consent: 0.55, vper: 104, shops: [['Clearfigure Optika HR', 1.0]] },
+    IT: { scale: 0.85, consent: 0.5, vper: 118, shops: [['Clearfigure Lenses IT', 1.0]] }
   };
   var A_REFILL = 'Refill reminder', A_INC = 'Reminder + small incentive', A_WIN = 'Win-back offer', A_LOW = 'Low-cost win-back (email only)', A_NONE = 'No contact';
   var ACTIONS = [A_REFILL, A_INC, A_WIN, A_LOW, A_NONE];

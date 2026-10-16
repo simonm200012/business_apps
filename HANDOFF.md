@@ -26,7 +26,7 @@ Every app that keeps your data now has the same data on the phone and the comput
   `u/<hash of the e-mail>/`.
   - It refuses anything without a valid Access token for `OWNER_EMAIL`. That also covers addresses Access does not
     front, such as version preview URLs.
-  - Every change must carry the `X-Tokovi-Apps` header the apps send.
+  - Every change must carry the `X-Stratum-Apps` header the apps send.
   - **Version history:** before an upload replaces `u/<hash>/<app>.json`, the Worker copies the copy it replaces (bytes
     and its generation/time, never parsed) to `u/<hash>/<app>/versions/<generation>.json` and keeps the newest 30.
     `GET /api/sync/:app/versions` lists them (newest first), `GET /api/sync/:app/versions/:generation` returns one.
@@ -93,9 +93,9 @@ Several people of one customer company work in the same Collections data, with r
 - **Local test:** `wrangler dev` with `DEV_BYPASS=1`: on localhost the cookie `stratum_dev_as=<e-mail>` acts as that
   person in `/api/ws` (never on any other host). Tests: `node tools/tests/collections-workspaces.test.js`.
 
-## Rename to Tokovi (14 Oct 2026)
+## Rename to Clearfigure (14 Oct 2026)
 
-Everything that carried the suite's former name now says Tokovi: the shared scripts (`stratum-shell.js`,
+Everything that carried the suite's former name now says Clearfigure: the shared scripts (`stratum-shell.js`,
 `stratum-sync.js`, `stratum-bus.js`), every app's saved-data names (`stratum-…`), the sync header and the cloud folder.
 - `stratum-shell.js` starts with a one-time move: it renames what a browser saved under the former name (localStorage keys
   and IndexedDB databases, copied record for record) before any app opens its data. Remove that block after 2026-12-31.
@@ -118,7 +118,7 @@ header bands, new overview cards). Light and dark both follow the shell's `data-
 | Recon | Ledge (`ledge.css`; `recon/new/` unchanged) | Desk | Superhuman (`superhuman.css`) |
 | Contracts | Ironclad (`ironclad.css`) | Pisarna DMS | Dropbox (`dropbox.css`) |
 | CRM | Pipedrive (`pipedrive.css`) | Time & leave | Timetastic (`timetastic.css`) |
-| Tokovi Mail | Klaviyo (`klaviyo.css`) | Team Tasks | Asana (`asana.css`) |
+| Clearfigure Mail | Klaviyo (`klaviyo.css`) | Team Tasks | Asana (`asana.css`) |
 | Marketing | Notion Calendar (`notion.css`) | Joiners & leavers | Rippling (`rippling.css`) |
 | Refill | Klaviyo (`klaviyo.css`) | Portal usage | Google Cloud (`googlecloud.css`) |
 | Postbench | Canva (`canva.css`) | n8n Runs | Better Stack (`betterstack.css`) |
@@ -127,7 +127,7 @@ header bands, new overview cards). Light and dark both follow the shell's `data-
 | Ads & Return | Meta Ads Manager (`meta.css`) | CS quality | Intercom (`intercom.css`) |
 | Client Atlas | Sales Navigator (inline) | Design Comparison | Dribbble (inline) |
 
-Tokovi (`showcase/`) keeps its own design; a Classic / Linear switch in its nav turns on `linear.css`
+Clearfigure (`showcase/`) keeps its own design; a Classic / Linear switch in its nav turns on `linear.css`
 (`?look=linear`, remembered in localStorage).
 
 **Home page styles:** the Style menu in the top bar (also `?look=…` and "Style: …" in ⌘K) switches the whole home page

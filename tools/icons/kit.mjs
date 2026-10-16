@@ -53,7 +53,7 @@
  *      That keeps overlaps crisp at 60 px, where shadows blur away. A fill inside its own track (a progress or
  *      budget column) uses the thinner K.seam = 14. Small parts (binder rings, tabs) may use gap: 20.
  *   5. Tile. White → cool white (#FFFFFF → #F1F3F7) with a 9 % ink hairline. The dark tile is the launcher's alone
- *      (every app, Tokovi included, sits on white, so the brand owns its tile). Dark tiles (tile: 'dark'): #1D1B26 →
+ *      (every app, Clearfigure included, sits on white, so the brand owns its tile). Dark tiles (tile: 'dark'): #1D1B26 →
  *      #0C0C0D with a soft bloom of the app colour behind the mark, a slight top lift and a machined edge light
  *      (white 34 % at the top → 5 % at the bottom) so they hold their edge on dark wallpapers.
  *   6. Colour. One ramp per app (+ an accent ramp only for a status plate, a check, or a threshold line printed
@@ -100,7 +100,7 @@
  *           [K.R, K.r, 2 * K.R, K.r, K.R]) },                                      // the pocket, shallow V top
  *     ];
  *   });
- *   // spec: { id: 'mail', name: 'Tokovi Mail', group: 'Sales & marketing', hue: 'blue', mark: 'openMail' }
+ *   // spec: { id: 'mail', name: 'Clearfigure Mail', group: 'Sales & marketing', hue: 'blue', mark: 'openMail' }
  *   // (Mail ships a paper plane leaving the envelope instead, 'sendMail' in tools/icons/specs.mjs: a card rising
  *   //  out of a pocket was shared by three apps, so it no longer told them apart)
  *   // then: node tools/icons/build.mjs my-specs.mjs out/   and look at out/sheet.png at 60 px on both wallpapers;
@@ -129,7 +129,7 @@ export const mix = (a, b, t) => { const A = hex2rgb(a), B = hex2rgb(b); return r
 export const RAMPS = {
   blue:     ['#9CCBFF', '#4E9BF2', '#1F6FDC', '#1552B4', '#0C3580'],   // Billing (Finance), Mail (Sales), Team Tasks (People & IT)
   cyan:     ['#A0E4FA', '#45BCE8', '#1496CC', '#0D74A6', '#074F75'],   // Cash forecast, Refill
-  teal:     ['#8EE2E2', '#30BFC6', '#0D98A4', '#0A7483', '#06505D'],   // Time & leave, CS quality, Tokovi
+  teal:     ['#8EE2E2', '#30BFC6', '#0D98A4', '#0A7483', '#06505D'],   // Time & leave, CS quality, Clearfigure
   emerald:  ['#8BE3BE', '#36C08C', '#0F9C6C', '#0A7A55', '#05543A'],   // Budget, Stores, Portal usage, Client Atlas; Recon's and Data check's accent
   olive:    ['#D5E39B', '#A6C24F', '#7E9C27', '#5F7A18', '#3F530C'],   // ERP, n8n Runs
   amber:    ['#FFD073', '#FDB12E', '#F2960B', '#D57605', '#A85A03'],   // Invoices, Service jobs, Analytics (golden, never brown)
@@ -509,7 +509,7 @@ export const hand = (cx, cy, deg, len, w = K.wi) => {
   return capsule([cx, cy], [cx + len * Math.cos(a), cy + len * Math.sin(a)], w);
 };
 
-/** Tokovi (launcher) — the suite's "Peak" Λ: two legs (128 thick, between W and Wb so the Λ holds at 60 px) crossing in a flat apex, no crossbar, no white. The
+/** Clearfigure (launcher) — the suite's "Peak" Λ: two legs (128 thick, between W and Wb so the Λ holds at 60 px) crossing in a flat apex, no crossbar, no white. The
  *  deep brand-violet leg folds over the light lavender one and casts its shadow only where it crosses.
  *  (Not Azure's ribbon A, not Agicap's white broken-leg A, not Meta Ads' white arrowhead.) */
 addMark('peak', ({ top = 212, base = 800, slope = 0.38, wt = 128, rO = 36, rI = K.r } = {}) => {

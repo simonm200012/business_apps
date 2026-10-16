@@ -1,4 +1,4 @@
-/* Tokovi Analytics: the monthly report in English, Slovenian and Croatian, as text, as an A4 PDF (pdfmake) and as a
+/* Clearfigure Analytics: the monthly report in English, Slovenian and Croatian, as text, as an A4 PDF (pdfmake) and as a
  * ready-to-send e-mail (.eml with the PDF attached). app.js builds the report model (plain numbers and names);
  * everything that depends on the language lives here, so Node tests can check it (tools/tests/analytics-report.test.js).
  * Numbers and dates use Slovenian formats in every language: "1.234 €", "12,3 %", "15. 10. 2026".
@@ -69,7 +69,7 @@
 
   const T = {
     en: {
-      brand: 'Tokovi · management report · demo data', title: 'Monthly report', mtd: '(month to date)', sameDays: ' (same days)',
+      brand: 'Clearfigure · management report · demo data', title: 'Monthly report', mtd: '(month to date)', sameDays: ' (same days)',
       compared: (a, b) => 'compared with ' + a + ' and ' + b, lyNone: 'last year (no data)', generated: 'Generated',
       summary: 'Summary', key: 'Key figures', top: 'Top locations', bottom: 'Bottom locations', cats: 'Category mix', mk: 'Marketing efficiency', alerts: 'Notable alerts',
       noEshop: 'No e-shop in the current filter.', noAlerts: 'No unusual days or weeks were detected.',
@@ -80,12 +80,12 @@
       allLocs: 'All locations', SI: 'Slovenia', HR: 'Croatia', allIn: c => c + ' · all locations', nLocs: n => n + ' locations', allCh: 'All channels', allCats: 'All categories',
       sev: { high: 'High', medium: 'Medium', low: 'Low', info: 'Expected' }, pp: 'pp', page: (i, n) => 'Page ' + i + ' of ' + n,
       email: {
-        subject: (mon) => 'Monthly report – ' + mon + ' (Tokovi)', hello: 'Hello,', intro: (mon, r, mtd) => 'attached is the management report for ' + mon + ' (' + r + (mtd ? ', month to date' : '') + ').',
-        sumLabel: 'Summary:', bye: 'Best regards', note: 'The figures are fictional demo data.', file: 'Tokovi-monthly-report'
+        subject: (mon) => 'Monthly report – ' + mon + ' (Clearfigure)', hello: 'Hello,', intro: (mon, r, mtd) => 'attached is the management report for ' + mon + ' (' + r + (mtd ? ', month to date' : '') + ').',
+        sumLabel: 'Summary:', bye: 'Best regards', note: 'The figures are fictional demo data.', file: 'Clearfigure-monthly-report'
       }
     },
     sl: {
-      brand: 'Tokovi · poslovno poročilo · demo podatki', title: 'Mesečno poročilo', mtd: '(od začetka meseca do danes)', sameDays: ' (enako število dni)',
+      brand: 'Clearfigure · poslovno poročilo · demo podatki', title: 'Mesečno poročilo', mtd: '(od začetka meseca do danes)', sameDays: ' (enako število dni)',
       compared: (a, b) => 'primerjava: ' + a + ' in ' + b, lyNone: 'lani (ni podatkov)', generated: 'Pripravljeno',
       summary: 'Povzetek', key: 'Ključni podatki', top: 'Najboljše lokacije', bottom: 'Najšibkejše lokacije', cats: 'Prodaja po kategorijah', mk: 'Učinkovitost oglaševanja', alerts: 'Opazna odstopanja',
       noEshop: 'V izbranem filtru ni spletne trgovine.', noAlerts: 'Ni bilo neobičajnih dni ali tednov.',
@@ -96,12 +96,12 @@
       allLocs: 'Vse lokacije', SI: 'Slovenija', HR: 'Hrvaška', allIn: c => c + ' · vse lokacije', nLocs: n => 'Lokacije: ' + n, allCh: 'Vsi kanali', allCats: 'Vse kategorije',
       sev: { high: 'Visoka', medium: 'Srednja', low: 'Nizka', info: 'Pričakovano' }, pp: 'o. t.', page: (i, n) => 'Stran ' + i + ' od ' + n,
       email: {
-        subject: (mon) => 'Mesečno poročilo – ' + mon + ' (Tokovi)', hello: 'Pozdravljeni,', intro: (mon, r, mtd) => 'v prilogi je mesečno poslovno poročilo za ' + mon + ' (' + r + (mtd ? ', od začetka meseca do danes' : '') + ').',
-        sumLabel: 'Povzetek:', bye: 'Lep pozdrav', note: 'Številke so izmišljeni demo podatki.', file: 'Tokovi-mesecno-porocilo'
+        subject: (mon) => 'Mesečno poročilo – ' + mon + ' (Clearfigure)', hello: 'Pozdravljeni,', intro: (mon, r, mtd) => 'v prilogi je mesečno poslovno poročilo za ' + mon + ' (' + r + (mtd ? ', od začetka meseca do danes' : '') + ').',
+        sumLabel: 'Povzetek:', bye: 'Lep pozdrav', note: 'Številke so izmišljeni demo podatki.', file: 'Clearfigure-mesecno-porocilo'
       }
     },
     hr: {
-      brand: 'Tokovi · upravljačko izvješće · demo podaci', title: 'Mjesečno izvješće', mtd: '(od početka mjeseca do danas)', sameDays: ' (isti broj dana)',
+      brand: 'Clearfigure · upravljačko izvješće · demo podaci', title: 'Mjesečno izvješće', mtd: '(od početka mjeseca do danas)', sameDays: ' (isti broj dana)',
       compared: (a, b) => 'usporedba: ' + a + ' i ' + b, lyNone: 'prošla godina (nema podataka)', generated: 'Izrađeno',
       summary: 'Sažetak', key: 'Ključni pokazatelji', top: 'Najbolje lokacije', bottom: 'Najslabije lokacije', cats: 'Prodaja po kategorijama', mk: 'Učinkovitost oglašavanja', alerts: 'Značajna odstupanja',
       noEshop: 'U odabranom filtru nema web-trgovine.', noAlerts: 'Nije bilo neuobičajenih dana ni tjedana.',
@@ -112,8 +112,8 @@
       allLocs: 'Sve lokacije', SI: 'Slovenija', HR: 'Hrvatska', allIn: c => c + ' · sve lokacije', nLocs: n => 'Lokacije: ' + n, allCh: 'Svi kanali', allCats: 'Sve kategorije',
       sev: { high: 'Visoka', medium: 'Srednja', low: 'Niska', info: 'Očekivano' }, pp: 'p. b.', page: (i, n) => 'Stranica ' + i + ' od ' + n,
       email: {
-        subject: (mon) => 'Mjesečno izvješće – ' + mon + ' (Tokovi)', hello: 'Poštovani,', intro: (mon, r, mtd) => 'u privitku je mjesečno upravljačko izvješće za ' + mon + ' (' + r + (mtd ? ', od početka mjeseca do danas' : '') + ').',
-        sumLabel: 'Sažetak:', bye: 'Lijep pozdrav', note: 'Brojke su izmišljeni demo podaci.', file: 'Tokovi-mjesecno-izvjesce'
+        subject: (mon) => 'Mjesečno izvješće – ' + mon + ' (Clearfigure)', hello: 'Poštovani,', intro: (mon, r, mtd) => 'u privitku je mjesečno upravljačko izvješće za ' + mon + ' (' + r + (mtd ? ', od početka mjeseca do danas' : '') + ').',
+        sumLabel: 'Sažetak:', bye: 'Lijep pozdrav', note: 'Brojke su izmišljeni demo podaci.', file: 'Clearfigure-mjesecno-izvjesce'
       }
     }
   };
@@ -287,7 +287,7 @@
       : { text: L.noAlerts, color: C.muted };
     return {
       pageSize: 'A4', pageMargins: [40, 44, 40, 48],
-      info: { title: L.title + ' – ' + monthName(l, m.y, m.m), author: 'Tokovi', subject: L.brand },
+      info: { title: L.title + ' – ' + monthName(l, m.y, m.m), author: 'Clearfigure', subject: L.brand },
       defaultStyle: { font: 'Roboto', fontSize: 8.8, color: C.ink, lineHeight: 1.2 },
       footer: (i, n) => ({ columns: [{ text: L.foot(F.num1(m.growth).replace(/,0$/, '')), fontSize: 7, color: C.muted }, { text: L.page(i, n), alignment: 'right', fontSize: 7, color: C.muted, width: 90 }], margin: [40, 12, 40, 0] }),
       content: [

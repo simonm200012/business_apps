@@ -11,11 +11,11 @@
   var D = window.ContractDates;
 
   var COMPANIES = [
-    { id: 'RSI', name: 'Tokovi Retail SI (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' },
-    { id: 'RHR', name: 'Tokovi Retail HR (demo)', country: 'HR', address: 'Demo ulica 1', city: '10000 Zagreb', vat: 'HR00000000000' },
-    { id: 'ECOM', name: 'Tokovi E-commerce (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' },
-    { id: 'LOG', name: 'Tokovi Logistics (demo)', country: 'SI', address: 'Demo cesta 5', city: '1230 Domžale', vat: 'SI00000000' },
-    { id: 'HOLD', name: 'Tokovi Group Holding (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' }
+    { id: 'RSI', name: 'Clearfigure Retail SI (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' },
+    { id: 'RHR', name: 'Clearfigure Retail HR (demo)', country: 'HR', address: 'Demo ulica 1', city: '10000 Zagreb', vat: 'HR00000000000' },
+    { id: 'ECOM', name: 'Clearfigure E-commerce (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' },
+    { id: 'LOG', name: 'Clearfigure Logistics (demo)', country: 'SI', address: 'Demo cesta 5', city: '1230 Domžale', vat: 'SI00000000' },
+    { id: 'HOLD', name: 'Clearfigure Group Holding (demo)', country: 'SI', address: 'Demo cesta 1', city: '1000 Ljubljana', vat: 'SI00000000' }
   ];
   var LOCATIONS = [
     { id: 'HQ', name: 'Head office Ljubljana', country: 'SI' },

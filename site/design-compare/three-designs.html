@@ -478,7 +478,7 @@ textarea:focus{outline:none;background:var(--card);border-color:var(--accent);bo
       <p class="by"><a href="../">Business Apps</a> · <a href="./">Pick your look</a> · Earlier internal decision</p>
     </div>
   </div>
-  <p class="lede">The same sample Tokovi dashboard in Branch Manager, Photon and Studio. Compare them side by side, read the differences, then record your pick.</p>
+  <p class="lede">The same sample Clearfigure dashboard in Branch Manager, Photon and Studio. Compare them side by side, read the differences, then record your pick.</p>
 
   <section class="view" id="view-side" aria-label="Side by side" hidden>
     <div class="compare" id="compare"></div>
@@ -597,7 +597,7 @@ textarea:focus{outline:none;background:var(--card);border-color:var(--accent);bo
   }
 
   function sidebar(k) {
-    var brand = '<div class="s-brand"><span class="s-mark">S</span><span><b>Business Apps</b><small>' + (k === 'bm' ? 'Tokovi Optika' : 'Tokovi d.o.o.') + '</small></span></div>';
+    var brand = '<div class="s-brand"><span class="s-mark">S</span><span><b>Business Apps</b><small>' + (k === 'bm' ? 'Clearfigure Optika' : 'Clearfigure d.o.o.') + '</small></span></div>';
     if (k === 'bm') {
       var items = NAV.map(function (n, i) {
         return '<button type="button" class="s-nav' + (i === 0 ? ' cur' : '') + '" tabindex="-1">' + icon(n[1], 's-icon') + '<span>' + n[0] + '</span></button>';
@@ -914,7 +914,7 @@ textarea:focus{outline:none;background:var(--card);border-color:var(--accent);bo
 
   // ── Decide ────────────────────────────────────────────────────────────────
   var CRIT = [
-    ['look', 'First impression', 'Which feels most like Tokovi?'],
+    ['look', 'First impression', 'Which feels most like Clearfigure?'],
     ['nav', 'Navigation', 'Sidebar with icons, pill sidebar, or top bar'],
     ['kpi', 'Dashboards and KPIs', 'Reading the numbers at a glance'],
     ['tables', 'Tables and forms', 'Long lists, filters and data entry'],

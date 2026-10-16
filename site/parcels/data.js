@@ -227,7 +227,7 @@
     function simulate(p, c, shop, created) {
       var ev = p.events, pm = c.pm;
       function add(ts, k, t, loc) { if (ev.length && ts <= ev[ev.length - 1].ts) ts = tsOf(ms(ev[ev.length - 1].ts) + int(4, 25) * 60000); ev.push({ ts: ts, k: k, t: t, loc: loc || '' }); return ts; }
-      var day = created.slice(0, 10), from = shop.web ? (p.country === 'HR' ? 'Tokovi warehouse Zagreb' : 'Tokovi warehouse Domžale') : shop.name;
+      var day = created.slice(0, 10), from = shop.web ? (p.country === 'HR' ? 'Clearfigure warehouse Zagreb' : 'Clearfigure warehouse Domžale') : shop.name;
       add(created, 'label', 'Label created · shipment data sent to ' + c.name, shop.name);
       var pd = isWork(day) && +created.slice(11, 13) < 14 ? day : nextWork(day);
       var pickTs = add(T(pd, int(15, 17), int(0, 59)), 'pickup', 'Picked up by courier', from);
@@ -258,7 +258,7 @@
         var rd = nextWork(dayX);
         add(T(rd, int(8, 11), int(0, 59)), 'return', why, '');
         add(T(nextWork(rd), int(3, 6), int(0, 59)), 'returning', 'In transit back to sender', '');
-        add(T(addWork(rd, int(2, 4)), int(9, 15), int(0, 59)), 'returned', 'Delivered back to sender', p.shop.indexOf('WEB') === 0 ? 'Tokovi warehouse' : shop.name);
+        add(T(addWork(rd, int(2, 4)), int(9, 15), int(0, 59)), 'returned', 'Delivered back to sender', p.shop.indexOf('WEB') === 0 ? 'Clearfigure warehouse' : shop.name);
       }
       if (c.locker) {
         var lockTs = add(T(dd, int(9, 16), int(0, 59)), 'locker', 'Placed in locker ' + p.locker.replace('BOX NOW ', '') + ' · PIN sent to customer', p.locker);

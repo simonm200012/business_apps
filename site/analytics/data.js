@@ -1,4 +1,4 @@
-/* Tokovi Analytics: deterministic demo-data generator.
+/* Clearfigure Analytics: deterministic demo-data generator.
  * Everything here is FICTIONAL. Values depend only on the calendar date and a fixed seed,
  * so the same day always produces the same numbers, whatever "today" is.
  *

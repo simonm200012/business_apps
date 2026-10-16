@@ -1,4 +1,4 @@
-/* Tokovi ERP demo: deterministic, entirely fictional demo dataset.
+/* Clearfigure ERP demo: deterministic, entirely fictional demo dataset.
  * window.ERPData.generate(todayYmd) builds ~12 months of history by simulating day by day:
  * opening stock -> sales (stores, e-shop, B2B) -> replenishment transfers -> purchase orders and
  * receipts -> invoices and payments. Every stock change is a movement, so the final stock equals the
@@ -13,7 +13,7 @@
   // ten shops with the same ids, names, cities and opening days, and the ERP posts each store's daily till total
   // (tillDay) from the same generator: revenue per store is on the same scale in both apps.
   var SD = typeof window !== 'undefined' ? window.StoresData : null;
-  if (!SD || !SD.STORES) throw new Error('Tokovi ERP: /stores/data.js (StoresData) must be loaded before erp/data.js');
+  if (!SD || !SD.STORES) throw new Error('Clearfigure ERP: /stores/data.js (StoresData) must be loaded before erp/data.js');
   var LOCATIONS = [
     { id: 'WH', name: 'Central warehouse', short: 'Central WH', city: 'Domžale', country: 'SI', kind: 'warehouse' },
     { id: 'ESHOP', name: 'E-shop', short: 'E-shop', city: 'Ljubljana', country: 'SI', kind: 'eshop' }
@@ -29,10 +29,10 @@
   // Standard rates in the EU member states (2026 defaults: check before relying on them).
   var EU_VAT = { AT: 20, BE: 21, BG: 20, CY: 19, CZ: 21, DE: 19, DK: 25, EE: 24, ES: 21, FI: 25.5, FR: 20, GR: 24, HR: 25, HU: 27, IE: 23, IT: 22,
     LT: 21, LU: 17, LV: 21, MT: 18, NL: 21, PL: 23, PT: 23, RO: 21, SE: 25, SI: 22, SK: 23 };
-  // The two (fictional) Tokovi companies: Slovenian locations sell as the Slovenian one, Croatian stores as the Croatian one.
+  // The two (fictional) Clearfigure companies: Slovenian locations sell as the Slovenian one, Croatian stores as the Croatian one.
   var COMPANIES = {
-    SI: { country: 'SI', name: 'Tokovi demo company d.o.o.', address: 'Demo cesta 1, 1000 Ljubljana, Slovenia', street: 'Demo cesta 1', postalCity: '1000 Ljubljana', vatId: 'SI00000000', iban: 'SI00 0000 0000 0000 000', bic: '' },
-    HR: { country: 'HR', name: 'Tokovi Optika Hrvatska d.o.o.', address: 'Demo ulica 1, 10000 Zagreb, Croatia', street: 'Demo ulica 1', postalCity: '10000 Zagreb', vatId: 'HR00000000000', oib: '00000000000', iban: 'HR00 0000 0000 0000 0000 0', bic: '' }
+    SI: { country: 'SI', name: 'Clearfigure demo company d.o.o.', address: 'Demo cesta 1, 1000 Ljubljana, Slovenia', street: 'Demo cesta 1', postalCity: '1000 Ljubljana', vatId: 'SI00000000', iban: 'SI00 0000 0000 0000 000', bic: '' },
+    HR: { country: 'HR', name: 'Clearfigure Optika Hrvatska d.o.o.', address: 'Demo ulica 1, 10000 Zagreb, Croatia', street: 'Demo ulica 1', postalCity: '10000 Zagreb', vatId: 'HR00000000000', oib: '00000000000', iban: 'HR00 0000 0000 0000 0000 0', bic: '' }
   };
   var RC_NOTE = {
     SI: 'Obrnjena davčna obveznost / reverse charge, čl. 196 Direktive 2006/112/ES',

@@ -147,7 +147,7 @@
   function defaultSettings() {
     var req = {};
     E.TYPES.forEach(function (t) { req[t.id] = { required: E.DEFAULT_REQ[t.id].required.slice(), recommended: E.DEFAULT_REQ[t.id].recommended.slice() }; });
-    return { req: req, dupThreshold: 85, home: 'SI', vatRates: { SI: [22, 9.5, 5], HR: [25, 13, 5] }, preparedBy: 'Simon Modic, Tokovi', preparedFor: '', reportLang: 'en', keepFiles: true, bookingUrl: '' };
+    return { req: req, dupThreshold: 85, home: 'SI', vatRates: { SI: [22, 9.5, 5], HR: [25, 13, 5] }, preparedBy: 'Simon Modic, Clearfigure', preparedFor: '', reportLang: 'en', keepFiles: true, bookingUrl: '' };
   }
   function validDb(o) { return !!(o && o.version === VERSION && o.settings && typeof o.settings === 'object' && Array.isArray(o.checks)); }
   function ensureSchema(d) {
@@ -1281,7 +1281,7 @@
       examples: 'Examples', row: 'Row', record: 'Record', field: 'Field', value: 'Value', suggested: 'Suggested', dups: 'Duplicates', dupGroups: 'Groups of possible duplicates', dupRecords: 'Records in these groups', dupMerge: 'Records to merge',
       dupTop: 'Largest groups', fix: 'What to fix before you migrate', missing: 'Columns not in the file', required: 'required', recommended: 'recommended', none: 'No problems found.',
       noData: 'Examples and duplicate names are not available because the file is not stored in this browser.', noDup: 'No duplicates found.',
-      footer: 'Checked with the Tokovi data health check on {d}. The file was read in the browser and was not uploaded anywhere. This is a technical check of the data, not legal or tax advice.',
+      footer: 'Checked with the Clearfigure data health check on {d}. The file was read in the browser and was not uploaded anywhere. This is a technical check of the data, not legal or tax advice.',
       sev: { error: 'Error', warning: 'Warning', info: 'Note' }, band: { good: 'Good: ready to migrate after a quick review.', fair: 'Fair: usable, but correct the errors before you migrate.', poor: 'Poor: the data needs work before it goes into a new system.', critical: 'Critical: the data is not fit to migrate as it is.' },
       types: { customers: 'Customers', suppliers: 'Suppliers', products: 'Products' },
       since: 'Since the first check on {d}: {a} → {b}', recipe: 'Recipe', einv: 'E-invoice readiness',
@@ -1296,7 +1296,7 @@
       examples: 'Primeri', row: 'Vrstica', record: 'Zapis', field: 'Polje', value: 'Vrednost', suggested: 'Predlog', dups: 'Dvojniki', dupGroups: 'Skupine verjetnih dvojnikov', dupRecords: 'Zapisi v teh skupinah', dupMerge: 'Zapisi za združitev',
       dupTop: 'Največje skupine', fix: 'Kaj popraviti pred prenosom podatkov', missing: 'Stolpci, ki jih v datoteki ni', required: 'obvezen', recommended: 'priporočen', none: 'Težav ni bilo najdenih.',
       noData: 'Primeri in nazivi dvojnikov niso na voljo, ker datoteka ni shranjena v tem brskalniku.', noDup: 'Dvojnikov ni bilo najdenih.',
-      footer: 'Preverjeno s pregledom kakovosti podatkov Tokovi dne {d}. Datoteka je bila prebrana v brskalniku in ni bila nikamor naložena. Gre za tehnični pregled podatkov in ne za pravni ali davčni nasvet.',
+      footer: 'Preverjeno s pregledom kakovosti podatkov Clearfigure dne {d}. Datoteka je bila prebrana v brskalniku in ni bila nikamor naložena. Gre za tehnični pregled podatkov in ne za pravni ali davčni nasvet.',
       sev: { error: 'Napaka', warning: 'Opozorilo', info: 'Opomba' }, band: { good: 'Dobro: podatki so po hitrem pregledu pripravljeni za prenos.', fair: 'Zadovoljivo: podatki so uporabni, vendar pred prenosom odpravite napake.', poor: 'Slabo: podatke je treba urediti, preden jih prenesete v nov sistem.', critical: 'Kritično: podatki v tej obliki niso primerni za prenos.' },
       types: { customers: 'Kupci', suppliers: 'Dobavitelji', products: 'Artikli' },
       since: 'Od prvega pregleda {d}: {a} → {b}', recipe: 'Recept', einv: 'Pripravljenost na e-račune',
@@ -1311,7 +1311,7 @@
       examples: 'Primjeri', row: 'Redak', record: 'Zapis', field: 'Polje', value: 'Vrijednost', suggested: 'Prijedlog', dups: 'Duplikati', dupGroups: 'Skupine mogućih duplikata', dupRecords: 'Zapisi u tim skupinama', dupMerge: 'Zapisi za spajanje',
       dupTop: 'Najveće skupine', fix: 'Što ispraviti prije prijenosa podataka', missing: 'Stupci kojih nema u datoteci', required: 'obavezan', recommended: 'preporučen', none: 'Nisu pronađeni problemi.',
       noData: 'Primjeri i nazivi duplikata nisu dostupni jer datoteka nije spremljena u ovom pregledniku.', noDup: 'Nisu pronađeni duplikati.',
-      footer: 'Provjereno provjerom kvalitete podataka Tokovi {d}. Datoteka je pročitana u pregledniku i nije nigdje učitana. Ovo je tehnička provjera podataka, a ne pravni ili porezni savjet.',
+      footer: 'Provjereno provjerom kvalitete podataka Clearfigure {d}. Datoteka je pročitana u pregledniku i nije nigdje učitana. Ovo je tehnička provjera podataka, a ne pravni ili porezni savjet.',
       sev: { error: 'Pogreška', warning: 'Upozorenje', info: 'Napomena' }, band: { good: 'Dobro: podaci su nakon kratkog pregleda spremni za prijenos.', fair: 'Zadovoljavajuće: podaci su upotrebljivi, ali prije prijenosa ispravite pogreške.', poor: 'Loše: podatke treba urediti prije prijenosa u novi sustav.', critical: 'Kritično: podaci u ovom obliku nisu prikladni za prijenos.' },
       types: { customers: 'Kupci', suppliers: 'Dobavljači', products: 'Artikli' },
       since: 'Od prve provjere {d}: {a} → {b}', recipe: 'Recept', einv: 'Spremnost za e-račune',
@@ -1449,7 +1449,7 @@
     if (cur && cur.id === r.id && (cur.loading || (cur.data && !cur.res))) return tools + '<p class="loading" role="status"><i aria-hidden="true"></i>Preparing the report…</p>';
     if (!s) return tools + '<p class="empty">This file has not been checked yet.</p>';
     var band = E.scoreBand(s.score), rows = meta.rows, cnt = themeCounts(s);
-    var h = tools + '<article class="report" lang="' + lang + '"><header class="rp-head"><div><span class="rp-brand"><i aria-hidden="true"></i>Tokovi</span><h1>' + esc(T.title) + '</h1></div>' +
+    var h = tools + '<article class="report" lang="' + lang + '"><header class="rp-head"><div><span class="rp-brand"><i aria-hidden="true"></i>Clearfigure</span><h1>' + esc(T.title) + '</h1></div>' +
       '<dl class="rp-meta"><div><dt>' + T.for + '</dt><dd>' + esc(meta.preparedFor || db.settings.preparedFor || '—') + '</dd></div><div><dt>' + T.by + '</dt><dd>' + esc(db.settings.preparedBy || '—') + '</dd></div>' +
       '<div><dt>' + T.date + '</dt><dd>' + dateLang(meta.checkedAt || new Date().toISOString(), lang) + '</dd></div><div><dt>' + T.file + '</dt><dd>' + esc(meta.name) + '</dd></div>' +
       '<div><dt>' + T.contents + '</dt><dd>' + esc(T.types[meta.type] || meta.type) + '</dd></div><div><dt>' + T.records + ' · ' + T.columns + '</dt><dd>' + n0(rows) + ' · ' + n0(meta.cols) + '</dd></div>' +

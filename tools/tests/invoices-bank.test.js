@@ -59,7 +59,7 @@ t('one payment: what stops it, what only warns', () => {
 // ── pain.001.001.03 ────────────────────────────────────────────────────────
 const RUN = {
   msgId: 'INV20261015120000ABCD', createdAt: '2026-10-15T12:00:00.000Z', execDate: '2026-10-16',
-  debtor: { name: 'Tokovi d.o.o.', iban: IBAN_SI, bic: 'DBSISI2X' },
+  debtor: { name: 'Clearfigure d.o.o.', iban: IBAN_SI, bic: 'DBSISI2X' },
   payments: [
     { id: 'a', amount: 976, currency: 'EUR', creditor: { name: 'Lipa svetovanje d.o.o.', iban: IBAN_SI, bic: 'DBSISI2X' }, reference: 'SI00 2026-0042', remittance: 'Racun 2026-0042', endToEnd: '2026-0042' },
     { id: 'b', amount: 171, currency: 'EUR', creditor: { name: 'Oblak Tehnologije d.o.o.', iban: IBAN_HR }, reference: 'RF18 5390 0754 7034', endToEnd: 'OT-1' },
@@ -239,9 +239,9 @@ t('demo: pay run of the approved samples → sample statement → every payment 
   const run = invs.filter((x) => !x.paid && x.total > 0 && x.approval && x.approval.status === 'approved');
   assert.ok(run.length >= 3);
   const pays = run.map((x) => ({ id: x.id, amount: x.total, currency: 'EUR', creditor: { name: x.detectedVendor, iban: x.iban, bic: x.bic }, reference: x.reference, endToEnd: x.number }));
-  const pain = B.buildPain001({ execDate: today, debtor: { name: 'Tokovi d.o.o.', iban: 'SI00020100000000019' }, payments: pays }, { sampleIban: true });
+  const pain = B.buildPain001({ execDate: today, debtor: { name: 'Clearfigure d.o.o.', iban: 'SI00020100000000019' }, payments: pays }, { sampleIban: true });
   assert.strictEqual(pain.ok, true, JSON.stringify(pain.errors));
-  assert.strictEqual(B.buildPain001({ execDate: today, debtor: { name: 'Tokovi d.o.o.', iban: 'SI00020100000000019' }, payments: pays }).ok, false, 'never with sample accounts outside the demo');
+  assert.strictEqual(B.buildPain001({ execDate: today, debtor: { name: 'Clearfigure d.o.o.', iban: 'SI00020100000000019' }, payments: pays }).ok, false, 'never with sample accounts outside the demo');
   run.forEach((x) => { x.payRun = { id: 'r', date: today, endToEnd: x.number }; });
   const st = B.parseCamt(S.statement(invs, today));
   const open = invs.filter((x) => !x.paid && x.total > 0).map((x) => ({ id: x.id, vendor: x.vendor, number: x.number, reference: x.reference, iban: x.iban, open: x.total, endToEnd: x.payRun ? x.payRun.endToEnd : '' }));

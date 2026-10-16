@@ -11,7 +11,7 @@ export const HOME = { sl: '/', hr: '/hr/', en: '/en/' };
 const LANG_NAME = { sl: 'Slovenščina', hr: 'Hrvatski', en: 'English' };
 const ICON_APPS = { datacheck: 'datacheck', collections: 'collections', cashflow: 'cashflow', budget: 'budget' };
 
-// the Tokovi mark (three layers), inline so it needs no request
+// the Clearfigure mark (three layers), inline so it needs no request
 const MARK = (s) => '<svg width="' + s + '" height="' + s + '" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="gm' + s + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B66F0"/><stop offset=".55" stop-color="#5B3FE0"/><stop offset="1" stop-color="#17869C"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#gm' + s + ')"/><rect x="11.5" y="8.6" width="13" height="3.4" rx="1.7" fill="#fff" opacity=".55"/><rect x="9.5" y="14.3" width="15" height="3.4" rx="1.7" fill="#fff" opacity=".8"/><rect x="7.5" y="20" width="17" height="3.4" rx="1.7" fill="#fff"/></svg>';
 
 /** <head> shared by every page. ctx: { lang, title, description, robots (bool noindex), assets, siteUrl, path, alternates } */
@@ -37,7 +37,7 @@ function header(lang, t, langLinks) {
   const navA = links.map((l) => '<a href="' + h + '#' + l[0] + '">' + esc(l[1]) + '</a>').join('');
   return '<a class="skip" href="#main">' + esc(t.skip) + '</a>\n' +
     '<header class="nav" id="nav"><div class="nav-in">' +
-    '<a class="logo" href="' + h + '" aria-label="Tokovi">' + MARK(28) + '<span>Tokovi</span></a>' +
+    '<a class="logo" href="' + h + '" aria-label="Clearfigure">' + MARK(28) + '<span>Clearfigure</span></a>' +
     '<nav class="links" aria-label="' + esc(t.nav.menu) + '">' + navA + '</nav>' +
     '<nav class="langs" aria-label="' + esc(t.nav.lang) + '">' + langLinks + '</nav>' +
     '<a class="btn primary sm cta" href="' + h + '#contact">' + esc(t.nav.cta) + '</a>' +
@@ -55,7 +55,7 @@ function footer(lang, t, C) {
   const co = [C.legalName, C.address, C.registrationNumber && f.reg + ': ' + C.registrationNumber, C.taxNumber && f.tax + ': ' + C.taxNumber, C.court, C.shareCapital && f.capital + ': ' + C.shareCapital,
     !C.registrationNumber && C.registrationNote && C.registrationNote[lang]].filter(Boolean).map(esc).join(' · ');
   return '<footer class="foot"><div class="wrap foot-in">' +
-    '<div class="foot-brand"><a class="logo" href="' + h + '">' + MARK(24) + '<span>Tokovi</span></a><p>' + esc(f.tagline) + '</p></div>' +
+    '<div class="foot-brand"><a class="logo" href="' + h + '">' + MARK(24) + '<span>Clearfigure</span></a><p>' + esc(f.tagline) + '</p></div>' +
     '<nav aria-label="' + esc(f.legal) + '"><a href="/zasebnost/">' + esc(f.privacy + f.legalLang) + '</a><a href="/pravno-obvestilo/">' + esc(f.legal + f.legalLang) + '</a><a href="' + h + '#contact">' + esc(f.contact) + '</a></nav>' +
     '<p class="co">' + co + ' · <a href="mailto:' + esc(C.email) + '">' + esc(C.email) + '</a>' + (C.phone ? ' · ' + esc(C.phone) : '') + '</p>' +
     '<p class="note">' + esc(f.demoNote) + '</p>' +
@@ -144,7 +144,7 @@ export function renderLanding(ctx) {
     '<ul class="built">' + builtName + '</ul></div></section>\n' +
     // ── about
     '<section class="sec" id="about" aria-labelledby="aboutTitle"><div class="wrap"><p class="eyebrow">' + esc(t.about.eyebrow) + '</p><h2 id="aboutTitle">' + esc(t.about.h2) + '</h2>' +
-    '<div class="about"><div class="me">' + photo + '<div><h3>' + esc(person.name) + '</h3><p class="role">' + esc(person.role[lang]) + ', Tokovi</p><p>' + esc(t.about.bio) + '</p><p>' + esc(t.about.bio2) + '</p>' + linkedin + '</div></div>' +
+    '<div class="about"><div class="me">' + photo + '<div><h3>' + esc(person.name) + '</h3><p class="role">' + esc(person.role[lang]) + ', Clearfigure</p><p>' + esc(t.about.bio) + '</p><p>' + esc(t.about.bio2) + '</p>' + linkedin + '</div></div>' +
     '<div class="cases"><h3>' + esc(t.about.cases) + '</h3><div class="case-grid">' + caseCard(t.about.case1) + caseCard(t.about.case2) + '</div><p class="note">' + esc(t.about.casesNote) + '</p></div></div></div></section>\n' +
     // ── FAQ
     '<section class="sec alt" id="faq" aria-labelledby="faqTitle"><div class="wrap narrow"><p class="eyebrow">' + esc(t.faq.eyebrow) + '</p><h2 id="faqTitle">' + esc(t.faq.h2) + '</h2>' +
@@ -174,7 +174,7 @@ export function renderLanding(ctx) {
 // ── legal pages (Slovenian) ─────────────────────────────────────────────────────────────────────────────────────────
 function legalPage(ctx, title, description, path, body) {
   const t = content('sl', ctx.P, ctx.C);
-  return head({ ...ctx, lang: 'sl', title: title + ' – Tokovi', description, path }) +
+  return head({ ...ctx, lang: 'sl', title: title + ' – Clearfigure', description, path }) +
     '<body data-page="legal">\n' + header('sl', t, langSwitch('sl', { sl: '/', hr: '/hr/', en: '/en/' })) +
     '<main id="main" class="legal"><div class="wrap narrow"><h1>' + esc(title) + '</h1>' + body + '</div></main>\n' + footer('sl', t, ctx.C) + '</body>\n</html>\n';
 }
@@ -199,7 +199,7 @@ export function renderPrivacy(ctx) {
     '<h2>6. Vaše pravice</h2><p>Imate pravico do dostopa do svojih podatkov, popravka, izbrisa, omejitve obdelave, ugovora obdelavi na podlagi zakonitega interesa in prenosljivosti podatkov. Pišite nam na <a href="mailto:' + e(C.email) + '">' + e(C.email) + '</a>; odgovorimo najpozneje v enem mesecu.</p>' +
     '<p>Če menite, da vaše podatke obdelujemo v nasprotju s predpisi, se lahko pritožite pri Informacijskem pooblaščencu Republike Slovenije, Dunajska cesta 22, 1000 Ljubljana, <a href="https://www.ip-rs.si/">www.ip-rs.si</a>.</p>' +
     '<h2>7. Spremembe</h2><p>Izjavo lahko posodobimo; veljavna je različica na tej strani. Zadnja sprememba: ' + e(date(ctx.today, 'sl')) + '.</p>';
-  return legalPage(ctx, 'Izjava o varstvu osebnih podatkov', 'Kako Tokovi ravna z osebnimi podatki iz kontaktnega obrazca in v demo aplikacijah.', '/zasebnost/', body);
+  return legalPage(ctx, 'Izjava o varstvu osebnih podatkov', 'Kako Clearfigure ravna z osebnimi podatki iz kontaktnega obrazca in v demo aplikacijah.', '/zasebnost/', body);
 }
 
 export function renderLegal(ctx) {
@@ -216,12 +216,12 @@ export function renderLegal(ctx) {
     '<h2>6. Odgovornost</h2><p>Za škodo, ki bi nastala zaradi uporabe strani ali demo aplikacij, odgovarjamo v mejah, ki jih določa zakon. Za vsebino zunanjih strani, na katere vodijo povezave, ne odgovarjamo.</p>' +
     '<h2>7. Varstvo podatkov</h2><p>Kako ravnamo z osebnimi podatki, piše v <a href="/zasebnost/">izjavi o varstvu osebnih podatkov</a>.</p>' +
     '<h2>8. Pravo in spori</h2><p>Za uporabo strani velja pravo Republike Slovenije. Za spore je pristojno [Pristojno sodišče].</p>';
-  return legalPage(ctx, 'Pravno obvestilo in pogoji uporabe', 'Podatki o ponudniku in pogoji uporabe spletne strani in demo aplikacij Tokovi.', '/pravno-obvestilo/', body);
+  return legalPage(ctx, 'Pravno obvestilo in pogoji uporabe', 'Podatki o ponudniku in pogoji uporabe spletne strani in demo aplikacij Clearfigure.', '/pravno-obvestilo/', body);
 }
 
 export function render404(ctx) {
-  return head({ ...ctx, lang: 'sl', title: 'Stran ne obstaja – Tokovi', description: 'Stran ne obstaja.', path: '/404.html', noindex: true }) +
-    '<body data-page="404"><main id="main" class="nf"><div class="wrap narrow"><a class="logo" href="/">' + MARK(28) + '<span>Tokovi</span></a>' +
+  return head({ ...ctx, lang: 'sl', title: 'Stran ne obstaja – Clearfigure', description: 'Stran ne obstaja.', path: '/404.html', noindex: true }) +
+    '<body data-page="404"><main id="main" class="nf"><div class="wrap narrow"><a class="logo" href="/">' + MARK(28) + '<span>Clearfigure</span></a>' +
     '<p class="eyebrow">404</p><h1>Te strani ni.</h1><p lang="hr">Ova stranica ne postoji.</p><p lang="en">This page does not exist.</p>' +
     '<p><a class="btn primary" href="/">Na začetno stran</a> <a class="btn" href="/hr/" lang="hr">Početna</a> <a class="btn" href="/en/" lang="en">Home</a></p></div></main></body>\n</html>\n';
 }

@@ -111,7 +111,7 @@
 
   // ---------- the sample set ----------
 
-  var BUYER = { name: 'Tokovi d.o.o.', street: 'Vzorčna ulica 1', postCode: '1000', city: 'Ljubljana', country: 'SI', vatId: 'SI00000019', email: 'nabava@example.si' };
+  var BUYER = { name: 'Clearfigure d.o.o.', street: 'Vzorčna ulica 1', postCode: '1000', city: 'Ljubljana', country: 'SI', vatId: 'SI00000019', email: 'nabava@example.si' };
   var V = {
     energija: { name: 'Energija Sava d.o.o.', street: 'Elektrarniška cesta 5', postCode: '4000', city: 'Kranj', country: 'SI', vatId: 'SI00000027', email: 'racuni@energija-sava.example.si', iban: 'SI00 0400 1000 0000 027', bic: 'BAKOSI2X', web: 'energija-sava.example.si' },
     lipa: { name: 'Lipa Net d.o.o.', street: 'Optična ulica 12', postCode: '2000', city: 'Maribor', country: 'SI', vatId: 'SI00000035', email: 'e-racuni@lipanet.example.si', iban: 'SI00 0510 0800 0000 035', bic: 'ABANSI2X', web: 'lipanet.example.si' },

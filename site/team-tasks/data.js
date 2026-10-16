@@ -103,7 +103,7 @@
 
     var db = {
       schema: 1,
-      workspace: { name: 'Tokovi' },
+      workspace: { name: 'Clearfigure' },
       me: 'm1',
       members: MEMBERS.map(function (m) { return { id: m[0], name: m[1], color: m[2] }; }),
       teams: [

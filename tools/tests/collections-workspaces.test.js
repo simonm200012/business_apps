@@ -132,7 +132,7 @@ const memStore = () => {
   async function call(email, method, url, body, o = {}) {
     const headers = new Headers(o.headers || {});
     if (email) headers.set('Cf-Access-Jwt-Assertion', TOK[email] || email);
-    if (method !== 'GET' && !o.noHeader) headers.set('X-Tokovi-Apps', '1');
+    if (method !== 'GET' && !o.noHeader) headers.set('X-Stratum-Apps', '1');
     if (body !== undefined && typeof body !== 'string') { body = JSON.stringify(body); headers.set('Content-Type', 'application/json'); }
     const res = await worker.fetch(new Request((o.host || 'https://apps.example') + url, { method, headers, body }), o.env || env);
     const text = await res.text();
@@ -153,7 +153,7 @@ const memStore = () => {
     r = await call(OWNER, 'POST', '/api/ws', { name: 'x', app: 'billing' });
     assert.strictEqual(r.status, 400, 'pilot: Collections only');
     r = await call(OWNER, 'POST', '/api/ws', { name: 'Termo d.o.o.', app: 'collections' }, { noHeader: true });
-    assert.strictEqual(r.status, 400, 'every change needs X-Tokovi-Apps');
+    assert.strictEqual(r.status, 400, 'every change needs X-Stratum-Apps');
     r = await call(OWNER, 'POST', '/api/ws', { name: '  Termo   d.o.o. ', app: 'collections' });
     assert.strictEqual(r.status, 201); ws = r.j;
     assert.ok(/^w-[a-z0-9]{10}$/.test(ws.id));

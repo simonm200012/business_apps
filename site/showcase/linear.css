@@ -1,4 +1,4 @@
-/* Tokovi showcase: the Linear look (SH2). Active only on html[data-look="linear"], set by the Classic / Linear switch in
+/* Clearfigure showcase: the Linear look (SH2). Active only on html[data-look="linear"], set by the Classic / Linear switch in
    the nav (remembered in localStorage, or ?look=linear). Near-black page, a faint violet glow, a fading white headline,
    a tilted "Ask your data" window, hairline grids, Inter. Dark by design: it ignores the light/dark setting. */
 :root[data-look=linear],:root[data-look=linear] .band{

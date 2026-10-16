@@ -162,7 +162,7 @@
         var agreed = { gen: gen, pins: res.cloud.pins, pinsAt: res.cloud.pinsAt, needs: {} };
         Object.keys(res.local.needs).forEach(function (k) { agreed.needs[k] = res.local.needs[k].at; });
         if (res.cloudChanged) {
-          var w = await req('/api/sync/' + APP + '?base=' + gen, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Tokovi-Apps': '1' }, body: JSON.stringify(res.cloud) });
+          var w = await req('/api/sync/' + APP + '?base=' + gen, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Stratum-Apps': '1' }, body: JSON.stringify(res.cloud) });
           if (w.status === 409) continue; // the other device saved meanwhile: merge again with its copy
           if (w.type === 'opaqueredirect' || w.status === 401) { st.ready = null; return 'expired'; }
           if (w.status === 403) { st.off = true; return 'off'; } // view only after all

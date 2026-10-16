@@ -71,7 +71,7 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
       assert.ok(meta > 0 && shell > meta, p + ': meta before the shell');
       assert.match(h, /<script src="\/assets\/demo\.js\?v=[0-9a-f]{10}"><\/script>/);
       assert.match(h, /<link rel="stylesheet" href="\/assets\/demo\.css\?v=[0-9a-f]{10}">\n<\/head>/);
-      assert.match(h, /<title>[^<]*— Tokovi demo<\/title>/);
+      assert.match(h, /<title>[^<]*— Clearfigure demo<\/title>/);
       assert.ok(!/manifest\.webmanifest|apple-mobile-web-app-title|Business Apps/.test(h), p + ': no home-screen app tags or private-site name');
     }
     // the shared scripts are the repo's, byte for byte (the switch lives in them)
@@ -81,7 +81,7 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
     // only the four apps (and what they load) are copied
     const top = fs.readdirSync(out).filter((d) => fs.statSync(path.join(out, d)).isDirectory()).sort();
     assert.deepStrictEqual(top, ['_shared', 'assets', 'budget', 'cashflow', 'collections', 'datacheck', 'en', 'hr', 'pravno-obvestilo', 'zasebnost']);
-    // document titles set by script say Tokovi demo, not the private site
+    // document titles set by script say Clearfigure demo, not the private site
     for (const [f, s] of texts) if (f.endsWith('.js')) assert.ok(!/ — Business Apps['"]/.test(s), f);
   });
 
@@ -89,7 +89,7 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
     const h = B.publicAppHtml('<!doctype html>\n<head>\n<meta charset="utf-8">\n<script src="/_shared/stratum-shell.js"></script>\n<meta name="robots" content="noindex, nofollow">\n<title>X — Business Apps</title>\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link href="https://fonts.googleapis.com/css2?family=Geist" rel="stylesheet">\n<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest"><!-- /phone app -->\n</head>', { demoJs: '/assets/demo.js?v=1', demoCss: '/assets/demo.css?v=1' });
     assert.ok(!/fonts\.g|manifest/.test(h));
     assert.match(h, /<link rel="icon" type="image\/svg\+xml" href="\/assets\/favicon\.svg"><link rel="stylesheet" href="\/_shared\/phone\.css">/);
-    assert.match(h, /<title>X — Tokovi demo<\/title>/);
+    assert.match(h, /<title>X — Clearfigure demo<\/title>/);
   });
 
   await t('no link into the private site: no private app paths, no workers.dev host, no /billing/ etc.', async () => {

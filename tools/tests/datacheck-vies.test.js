@@ -56,7 +56,7 @@ async function t(name, fn) { await fn(); n++; console.log('ok', n, name); }
       assert.strictEqual((await get(p)).status, 400, p);
     }
     assert.strictEqual(calls.length, 0);
-    assert.strictEqual((await worker.fetch(new Request('https://apps.example.test/api/vies/SI/12345679', { method: 'POST', headers: { 'X-Tokovi-Apps': '1' } }), DEV)).status, 405);
+    assert.strictEqual((await worker.fetch(new Request('https://apps.example.test/api/vies/SI/12345679', { method: 'POST', headers: { 'X-Stratum-Apps': '1' } }), DEV)).status, 405);
   });
 
   await t('the same sign-in check as the other routes: no Access setup or token, no VIES call', async () => {

@@ -1,4 +1,4 @@
-/* Tokovi showcase: scroll reveals, the animated "ask your data" window, tabbed product mock-ups,
+/* Clearfigure showcase: scroll reveals, the animated "ask your data" window, tabbed product mock-ups,
  * a ⌘K jump menu and a brief builder. Everything is static and illustrative; nothing is sent anywhere. */
 (function () {
   'use strict';
@@ -438,7 +438,7 @@
   function brief() {
     const needs = $$('button[aria-pressed="true"]', chips).map((b) => b.textContent);
     const note = $('#bNote').value.trim();
-    return 'Hello Tokovi,\n\nWe are a company of ' + $('#bSize').value.toLowerCase() + ' and we are looking at: ' + (needs.length ? needs.join(', ') : 'not sure yet') + '.\n' +
+    return 'Hello Clearfigure,\n\nWe are a company of ' + $('#bSize').value.toLowerCase() + ' and we are looking at: ' + (needs.length ? needs.join(', ') : 'not sure yet') + '.\n' +
       'Timeline: ' + $('#bTime').value.toLowerCase() + '.' + (note ? '\n\n' + note : '') + '\n\nCould we set up a short call?';
   }
   const drawBrief = () => { out.textContent = brief(); const m = $('#mailBrief'); if (CONTACT_EMAIL) { m.hidden = false; m.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('Project enquiry') + '&body=' + encodeURIComponent(brief()); const w = $('#mailTo'); if (w) { w.hidden = false; w.querySelector('a').href = 'mailto:' + CONTACT_EMAIL; w.querySelector('a').textContent = CONTACT_EMAIL; } } };

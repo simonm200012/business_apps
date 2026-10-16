@@ -1,4 +1,4 @@
-// Tests for Tokovi Mail: subscriber CSV import (site/mail/importer.js), the SMS "Replace č/š/ž" fixer
+// Tests for Clearfigure Mail: subscriber CSV import (site/mail/importer.js), the SMS "Replace č/š/ž" fixer
 // (site/mail/util.js), the Refill → Mail handover (site/mail/handoff.js) and the dashboard's opening story
 // (site/mail/data.js). Run: node tools/tests/mail-import.test.js
 'use strict';
@@ -162,12 +162,12 @@ t('plan: future consent dates are not used; custom columns become properties', (
 
 // ── SMS: GSM-7 and "Replace č/š/ž" ───────────────────────────────────────
 t('smsInfo: č forces UCS-2, the fixer brings it back to GSM-7 and saves segments', () => {
-  const text = 'Tokovi: teden pregledov vida — brezplačen pregled ob nakupu očal. Rezerviraj termin že danes v vaši najbližji trgovini: https://s.example/pv Odjava: STOP';
+  const text = 'Clearfigure: teden pregledov vida — brezplačen pregled ob nakupu očal. Rezerviraj termin že danes v vaši najbližji trgovini: https://s.example/pv Odjava: STOP';
   const before = U.smsInfo(text);
   assert.strictEqual(before.encoding, 'UCS-2 (Unicode)');
   assert.strictEqual(before.segments, 3);
   const fix = U.gsmSafe(text);
-  assert.strictEqual(fix.text, 'Tokovi: teden pregledov vida - brezplacen pregled ob nakupu ocal. Rezerviraj termin ze danes v vasi najblizji trgovini: https://s.example/pv Odjava: STOP');
+  assert.strictEqual(fix.text, 'Clearfigure: teden pregledov vida - brezplacen pregled ob nakupu ocal. Rezerviraj termin ze danes v vasi najblizji trgovini: https://s.example/pv Odjava: STOP');
   assert.strictEqual(fix.replaced, 6);
   assert.strictEqual(fix.left.length, 0);
   const after = U.smsInfo(fix.text);
@@ -182,7 +182,7 @@ t('gsmSafe: keeps GSM letters (é, ü, €), maps Croatian and typography, repor
   assert.strictEqual(U.smsInfo('€').chars, 2, '€ is a GSM-7 extension character');
 });
 
-// ── Refill → Tokovi Mail handover ───────────────────────────────────────
+// ── Refill → Clearfigure Mail handover ───────────────────────────────────────
 t('handoff: validity checks', () => {
   const ok = { v: 1, from: 'refill', at: NOW, market: 'SI', action: 'Refill reminder', bucket: '1 0-7' };
   assert.strictEqual(H.valid(ok, NOW + 1000), '');

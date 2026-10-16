@@ -5,7 +5,7 @@
  * demo-api.js answers those calls in the browser with made-up numbers.
  * Access: /api/refill/session says whether the signed-in account may see the app. Anyone else sees a page
  * that explains the app. Numbers are kept in memory only (no IndexedDB or sync snapshot; localStorage only carries
- * the one-off "Send with Tokovi Mail" handover, which Tokovi Mail removes when it reads it);
+ * the one-off "Send with Clearfigure Mail" handover, which Clearfigure Mail removes when it reads it);
  * a 401/403 at any point drops them and returns to that page.
  */
 (function () {
@@ -228,8 +228,8 @@
     csv: (b) => { const f = CSVS[b.getAttribute('data-v')]; if (f) f(); },
     mail: (b) => sendWithMail(SEGROWS[+b.getAttribute('data-v')]),
   };
-  // "Send with Tokovi Mail": hand one segment (market × action × runout window, counts only) to Tokovi Mail on
-  // this site. Tokovi Mail reads it from localStorage, rebuilds the segment on its own subscribers and creates
+  // "Send with Clearfigure Mail": hand one segment (market × action × runout window, counts only) to Clearfigure Mail on
+  // this site. Clearfigure Mail reads it from localStorage, rebuilds the segment on its own subscribers and creates
   // a draft campaign (site/mail/handoff.js). No customer details leave this page — there are none here.
   const MAIL_KEY = 'stratum-handoff:mail';
   const mailable = (x) => x && (x.market === 'SI' || x.market === 'HR' || x.market === 'CRO') && x.action !== 'No contact';
@@ -462,7 +462,7 @@
     const rules = card('How the model picks an action', 'From each customer\'s usual reorder gap and predicted value (refreshed with the scores every morning).',
       '<div class="tw"><table class="t"><thead><tr><th>Suggested action</th><th>Who</th></tr></thead><tbody>' +
       ACTIONS.map((a) => '<tr><td class="nw"><span class="dot sw-' + a[1] + '" aria-hidden="true"></span>' + esc(a[0]) + '</td><td>' + esc(a[2]) + '</td></tr>').join('') + '</tbody></table></div>') +
-      notice('', '<p><b>Send a segment with Tokovi Mail.</b> On <a href="#/segments">Segments</a>, “Send with Tokovi Mail” hands a row (market, suggested action, runout window) to Tokovi Mail, which rebuilds it on its subscribers with e-mail consent, keeps a 10% hold-out un-mailed so the A/B read stays fair, and opens a draft campaign. Customer lists themselves stay in the CRM.</p>');
+      notice('', '<p><b>Send a segment with Clearfigure Mail.</b> On <a href="#/segments">Segments</a>, “Send with Clearfigure Mail” hands a row (market, suggested action, runout window) to Clearfigure Mail, which rebuilds it on its subscribers with e-mail consent, keeps a 10% hold-out un-mailed so the A/B read stays fair, and opens a draft campaign. Customer lists themselves stay in the CRM.</p>');
     return head((window.StratumDemo ? 'Demo · scored ' : 'Live · scored ') + fDay(scoredOn()), 'Overview', 'Contact-lens customers whose supply runs out · ' + num(T.all) + ' scored. “Run out” is the day a customer\'s last lens supply ends; “value at stake” is the predicted sales of the next 12 months. Counts per market, no customer details.') +
       '<div class="ctrls mk-chips">' + marketSeg('All markets') + '</div>' +
       '<div class="ov-grid">' + hero + flows + '</div>' + freshStrip(['scores', 'models', 'emails']) + kpis + tiles + rules;
@@ -530,7 +530,7 @@
       '<td class="nw"><span class="dot sw-' + aCls(x.action) + '" aria-hidden="true"></span>' + esc(x.action) + '</td><td class="nw">' + esc(bName(x.bucket)) + '</td>' +
       '<td class="num">' + num(x.customers) + '<span class="cellbar" aria-hidden="true"><i style="width:' + (100 * x.customers / maxC).toFixed(1) + '%"></i></span></td><td class="num">' + num(x.mail) + '</td><td class="num">' + pct(x.share, 0) + '</td>' +
       '<td class="num">' + num(x.exp) + ' <small>' + pct(x.expRate, 0) + ' each</small></td><td class="num">' + eur(x.value) + '</td><td class="num">' + eur(x.margin) + '</td>' +
-      '<td class="send">' + (mailable(x) && x.mail > 0 ? '<button type="button" class="btn sm" data-act="mail" data-v="' + i + '" data-fid="mail-' + i + '" aria-label="Send with Tokovi Mail: ' + esc(x.action + ', ' + mName(x.market) + ', ' + bName(x.bucket)) + '" title="Send with Tokovi Mail">' + ic('mail') + 'Send</button>' : '<small title="' + (x.action === 'No contact' ? 'Not contacted' : x.mail > 0 ? 'Tokovi Mail has no subscribers in this market' : 'No e-mail consent') + '">–</small>') + '</td></tr>').join('');
+      '<td class="send">' + (mailable(x) && x.mail > 0 ? '<button type="button" class="btn sm" data-act="mail" data-v="' + i + '" data-fid="mail-' + i + '" aria-label="Send with Clearfigure Mail: ' + esc(x.action + ', ' + mName(x.market) + ', ' + bName(x.bucket)) + '" title="Send with Clearfigure Mail">' + ic('mail') + 'Send</button>' : '<small title="' + (x.action === 'No contact' ? 'Not contacted' : x.mail > 0 ? 'Clearfigure Mail has no subscribers in this market' : 'No e-mail consent') + '">–</small>') + '</td></tr>').join('');
     CSVS.segments = () => downloadCsv('segments', ['Market'].concat(F.by === 'project' ? ['Webshop'] : []).concat(['Suggested action', 'Runs out', 'Customers', 'E-mailable', 'E-mailable share', 'Expected reorders 30d', 'Predicted 12-month value EUR', 'Predicted 12-month margin EUR']),
       list.map((x) => [x.market].concat(F.by === 'project' ? [x.project] : []).concat([x.action, bName(x.bucket), x.customers, x.mail, r4(x.share), r2(x.exp), r2(x.value), r2(x.margin)])));
     const shops = (META.shops || []).filter((s) => !F.market || s.market === F.market);
@@ -538,10 +538,10 @@
       '<div class="ctrls">' + marketSeg() + seg('Rows per', 'by', [['market', 'Market'], ['project', 'Webshop']]) + seg('E-mail consent', 'mail', [['', 'All'], ['true', 'E-mailable'], ['false', 'Not e-mailable']]) +
       sel('Suggested action', 'segAction', [['', 'All actions']].concat(ACTIONS.map((a) => [a[0], a[0]]))) + sel('Runs out', 'bucket', [['', 'Any time']].concat(BUCKETS.filter((b) => rows.some((r) => r.runout_bucket === b[0])))) + '</div>' +
       '<section class="card"><div class="card-h"><div><h2>' + num(list.length) + ' segments · ' + num(T.customers) + ' customers</h2><p>' + esc(F.market ? mName(F.market) : 'All markets') + (F.by === 'project' ? ' · ' + num(shops.length) + ' webshops' : '') + '</p></div>' + csvBtn('segments') + '</div>' +
-      (list.length ? '<div class="tw tall"><table class="t"><caption class="sr">Segments</caption><thead><tr>' + th + '<th class="send">Tokovi Mail</th></tr></thead><tbody>' + body + '</tbody><tfoot><tr><td colspan="' + (F.by === 'project' ? 4 : 3) + '">Total</td>' +
+      (list.length ? '<div class="tw tall"><table class="t"><caption class="sr">Segments</caption><thead><tr>' + th + '<th class="send">Clearfigure Mail</th></tr></thead><tbody>' + body + '</tbody><tfoot><tr><td colspan="' + (F.by === 'project' ? 4 : 3) + '">Total</td>' +
         '<td class="num">' + num(T.customers) + '</td><td class="num">' + num(T.mail) + '</td><td class="num">' + pct(T.customers ? T.mail / T.customers : null, 0) + '</td><td class="num">' + num(T.exp) + '</td><td class="num">' + eur(T.value) + '</td><td class="num">' + eur(T.margin) + '</td><td></td></tr></tfoot></table></div>'
         : '<p class="empty">No customers in this selection.</p>') +
-      '<div class="card-foot">“Send with Tokovi Mail” hands the row (counts only) to Tokovi Mail, which builds the same segment on its own subscribers and creates a draft. “Runs out” is counted from the scoring day, ' + esc(fShort(scoredOn())) + '.</div></section>';
+      '<div class="card-foot">“Send with Clearfigure Mail” hands the row (counts only) to Clearfigure Mail, which builds the same segment on its own subscribers and creates a draft. “Runs out” is counted from the scoring day, ' + esc(fShort(scoredOn())) + '.</div></section>';
   }
 
   // 4. Did reminders work?

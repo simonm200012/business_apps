@@ -655,7 +655,7 @@
 
     var who = ui.me === 'all' ? 'Team' : OWNER[ui.me].name.split(' ')[0] + '’s';
     return head({
-      eyebrow: 'Tokovi B2B · ' + fmtDateFull(today), title: ui.me === 'all' ? 'Sales overview' : 'Hello, ' + OWNER[ui.me].name.split(' ')[0],
+      eyebrow: 'Clearfigure B2B · ' + fmtDateFull(today), title: ui.me === 'all' ? 'Sales overview' : 'Hello, ' + OWNER[ui.me].name.split(' ')[0],
       sub: '<span>Showing <b>' + esc(scopeLabel()) + '</b> · opticians, clinics, corporate eye-care and partners in Slovenia and Croatia</span>',
       actions: btn('New deal', 'new-deal', {}, 'pri', 'plus') + btn('Log activity', 'new-act', {}, '', 'task')
     }) +
@@ -1310,7 +1310,7 @@
       var vc = CE.checkVat(vat);
       if (!vc.ok) { note(esc(vc.msg) + ' VIES would not find it.', true); return; }
       vatEl.value = vat; b.disabled = true; note('Asking the EU VIES service…');
-      fetch('/api/vies/' + encodeURIComponent(cc) + '/' + encodeURIComponent(num), { credentials: 'same-origin', headers: { 'X-Tokovi-Apps': '1', Accept: 'application/json' } }).then(function (r) {
+      fetch('/api/vies/' + encodeURIComponent(cc) + '/' + encodeURIComponent(num), { credentials: 'same-origin', headers: { 'X-Stratum-Apps': '1', Accept: 'application/json' } }).then(function (r) {
         var ct = r.headers.get('content-type') || '';
         if (r.status === 401 || r.status === 403) throw { msg: 'Your sign-in has expired: reload the page and try again.' };
         if (r.status === 404 || ct.indexOf('json') < 0) throw { msg: 'The VAT lookup is not available on this server yet. Enter the details by hand.' };
@@ -2143,7 +2143,7 @@
   var erp = { catalog: null, catalogAt: null, catIndex: null, customers: null, custIndex: null };
   // Standard VAT rates of the EU member states (used for distance sales to consumers in another EU country).
   var VAT_STD = { AT: 20, BE: 21, BG: 20, CY: 19, CZ: 21, DE: 19, DK: 25, EE: 24, ES: 21, FI: 25.5, FR: 20, GR: 24, HR: 25, HU: 27, IE: 23, IT: 22, LT: 21, LU: 17, LV: 21, MT: 18, NL: 21, PL: 23, PT: 23, RO: 21, SE: 25, SI: 22, SK: 23 };
-  var SELLER = { name: 'Tokovi demo company d.o.o.', country: 'SI', vat: 'SI00000000', lines: ['Demo cesta 1, 1000 Ljubljana, Slovenia', 'VAT ID SI00000000 · b2b@example.com · +386 1 555 00 00'] };
+  var SELLER = { name: 'Clearfigure demo company d.o.o.', country: 'SI', vat: 'SI00000000', lines: ['Demo cesta 1, 1000 Ljubljana, Slovenia', 'VAT ID SI00000000 · b2b@example.com · +386 1 555 00 00'] };
   var RC_NOTE = 'Obrnjena davčna obveznost / reverse charge, čl. 196 Direktive 2006/112/ES';
   // The one VAT rule for everything the CRM sells (seller: SELLER, Slovenia).
   //  same country → local rate · EU business with a VAT ID elsewhere → 0 % reverse charge · EU consumer elsewhere → buyer's rate
@@ -2830,11 +2830,11 @@
 
   // ── Email templates & compose ───────────────────────────────────────────────
   var EMAIL_TPL = [
-    { id: 'intro', name: 'Introduction — B2B programme', subject: 'Tokovi B2B programme for {{company}}', body: 'Dear {{first_name}},\n\nthank you for your interest in working with Tokovi. We supply opticians, clinics and companies in Slovenia and Croatia with frames, lenses, contact-lens subscriptions and corporate eye-care programmes.\n\nI would be glad to show you what we could do for {{company}} — would a short call next week suit you?\n\nKind regards,\n{{owner}}\nTokovi B2B' },
+    { id: 'intro', name: 'Introduction — B2B programme', subject: 'Clearfigure B2B programme for {{company}}', body: 'Dear {{first_name}},\n\nthank you for your interest in working with Clearfigure. We supply opticians, clinics and companies in Slovenia and Croatia with frames, lenses, contact-lens subscriptions and corporate eye-care programmes.\n\nI would be glad to show you what we could do for {{company}} — would a short call next week suit you?\n\nKind regards,\n{{owner}}\nClearfigure B2B' },
     { id: 'followup', name: 'Follow-up after a meeting', subject: 'Thank you for the meeting — next steps', body: 'Dear {{first_name}},\n\nthank you for your time today. As agreed, I will prepare a proposal for {{deal}} and send it to you shortly.\n\nIf anything else comes up in the meantime, just reply to this email.\n\nBest regards,\n{{owner}}' },
-    { id: 'proposal', name: 'Proposal / quote sent', subject: 'Our proposal: {{deal}}', body: 'Dear {{first_name}},\n\nplease find our proposal for {{deal}} ({{value}} excl. VAT){{quote_ref}}. It is valid for 30 days.\n\nI am happy to walk you through it — let me know a time that works for you.\n\nKind regards,\n{{owner}}\nTokovi B2B' },
+    { id: 'proposal', name: 'Proposal / quote sent', subject: 'Our proposal: {{deal}}', body: 'Dear {{first_name}},\n\nplease find our proposal for {{deal}} ({{value}} excl. VAT){{quote_ref}}. It is valid for 30 days.\n\nI am happy to walk you through it — let me know a time that works for you.\n\nKind regards,\n{{owner}}\nClearfigure B2B' },
     { id: 'reminder', name: 'Gentle reminder', subject: 'Following up on {{deal}}', body: 'Dear {{first_name}},\n\nI wanted to follow up on our proposal for {{deal}}. Have you had a chance to look at it? If it helps, we can adjust volumes or delivery dates.\n\nBest regards,\n{{owner}}' },
-    { id: 'thanks', name: 'Thank you for your order', subject: 'Thank you for your order, {{company}}', body: 'Dear {{first_name}},\n\nthank you for choosing Tokovi. Your order for {{deal}} is being processed and we will confirm the delivery date shortly.\n\nWarm regards,\n{{owner}}\nTokovi B2B' }
+    { id: 'thanks', name: 'Thank you for your order', subject: 'Thank you for your order, {{company}}', body: 'Dear {{first_name}},\n\nthank you for choosing Clearfigure. Your order for {{deal}} is being processed and we will confirm the delivery date shortly.\n\nWarm regards,\n{{owner}}\nClearfigure B2B' }
   ];
   function fillTpl(s, ctx) { return String(s).replace(/\{\{\s*(\w+)\s*\}\}/g, function (m, k) { return ctx[k] != null && ctx[k] !== '' ? ctx[k] : (k === 'quote_ref' ? '' : m); }); }
   function copyText(text) {
@@ -3113,7 +3113,7 @@
   var TPL_CAT_OF = { intro: 'Intro', followup: 'Follow-up', proposal: 'Proposal', reminder: 'Follow-up', thanks: 'Thank you' };
   var DEFAULT_TEMPLATES = EMAIL_TPL.map(function (t) { return { key: t.id, lang: 'en', name: t.name, category: TPL_CAT_OF[t.id] || 'Other', subject: t.subject, body: t.body }; }).concat([{ lang: 'en',
     key: 'winback', name: 'Win-back — it has been a while', category: 'Win-back', subject: 'Shall we pick up where we left off, {{first_name}}?',
-    body: 'Dear {{first_name}},\n\nit has been a while since we last worked with {{company}}. This season we have new frame collections, contact-lens subscriptions and corporate eye-care packages, and I would be glad to show you what is new.\n\nWould you have 20 minutes next week?\n\nKind regards,\n{{owner}}\nTokovi B2B'
+    body: 'Dear {{first_name}},\n\nit has been a while since we last worked with {{company}}. This season we have new frame collections, contact-lens subscriptions and corporate eye-care packages, and I would be glad to show you what is new.\n\nWould you have 20 minutes next week?\n\nKind regards,\n{{owner}}\nClearfigure B2B'
   }]);
   var templatesSeeded = false;
   function seedTemplates(d) {
@@ -3482,7 +3482,7 @@
       '<div class="toolbar"><div class="weeknav"><button type="button" class="btn icon" id="dgPrev" data-act="digest-week" data-d="-1" aria-label="Previous week">' + icon('chevL') + '</button>' +
       '<span class="wk" aria-live="polite">' + esc(w.label) + '</span><button type="button" class="btn icon" id="dgNext" data-act="digest-week" data-d="1" aria-label="Next week"' + (ui.digest.offset >= 1 ? ' disabled' : '') + '>' + icon('chevR') + '</button>' +
       (ui.digest.offset !== 0 ? '<button type="button" class="btn sm" data-act="digest-week" data-d="0">Last full week</button>' : '') + '</div><span class="grow"></span>' + ownerFilter('dgOwner') + '</div></div>' +
-      '<div class="print-only"><h1 style="font-size:26px">Pipeline digest · ' + esc(w.label) + '</h1><p class="sub">' + esc(m.owner === 'all' ? 'All owners' : ownerName(m.owner)) + ' · Tokovi B2B CRM</p></div>' +
+      '<div class="print-only"><h1 style="font-size:26px">Pipeline digest · ' + esc(w.label) + '</h1><p class="sub">' + esc(m.owner === 'all' ? 'All owners' : ownerName(m.owner)) + ' · Clearfigure B2B CRM</p></div>' +
       '<section class="card digest-sum" aria-labelledby="hDgSum"><div class="card-h"><div><span class="label">' + esc(m.who) + ' · ' + esc(w.label) + '</span><h2 id="hDgSum">Summary</h2></div></div><ul class="sumlist">' + m.sentences.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>' +
       '<div class="kpis" style="margin-top:16px">' + kpis + '</div>' +
       '<div class="grid2 even">' +

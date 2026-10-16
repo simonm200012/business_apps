@@ -1,4 +1,4 @@
-/* Tokovi Mail — shared UI pieces: page header, status chips, condition editor (segments, splits,
+/* Clearfigure Mail — shared UI pieces: page header, status chips, condition editor (segments, splits,
  * flow filters), profile picker, sandboxed preview frame, pager. */
 (function () {
   'use strict';

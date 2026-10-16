@@ -1,4 +1,4 @@
-/* Tokovi Mail — email designs: block model, email-safe HTML renderer, plain text, personalization,
+/* Clearfigure Mail — email designs: block model, email-safe HTML renderer, plain text, personalization,
  * rich-text sanitizer, generated SVG artwork (no external images) and the template library.
  * A design is JSON: { s: {styles}, blocks: [{id, type, ...props}] }. Rendered HTML is only ever shown
  * inside a sandboxed <iframe srcdoc>, never injected into the app DOM. */
@@ -18,7 +18,7 @@
   M.ARTS = [['frames', 'Eyeglass frames'], ['sunglasses', 'Sunglasses at sunset'], ['lenses', 'Contact lenses'], ['eye', 'Eye exam'], ['box', 'Parcel / back in stock'], ['sale', 'Sale badge'], ['cart', 'Shopping bag'], ['heart', 'Heart'], ['pattern', 'Abstract waves'], ['store', 'Store front']];
 
   M.BLOCKS = {
-    header: { label: 'Header / logo', icon: '<path d="M4 6h16M4 12h10"/><circle cx="18" cy="15" r="3"/>', def: function () { return { logo: 'Tokovi', tag: 'Optika · si.shop.example', align: 'center', nav: false }; } },
+    header: { label: 'Header / logo', icon: '<path d="M4 6h16M4 12h10"/><circle cx="18" cy="15" r="3"/>', def: function () { return { logo: 'Clearfigure', tag: 'Optika · si.shop.example', align: 'center', nav: false }; } },
     text: { label: 'Text', icon: '<path d="M5 6h14M12 6v13M9 19h6"/>', def: function () { return { html: '<p>Write something your subscribers will want to read.</p>', align: 'left', size: 0 }; } },
     image: { label: 'Image', icon: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="15.5" cy="9" r="1.5"/>', def: function () { return { art: 'frames', headline: '', sub: '', alt: 'Illustration', url: 'https://si.shop.example/', height: 240 }; } },
     button: { label: 'Button', icon: '<rect x="3" y="8" width="18" height="8" rx="4"/>', def: function () { return { label: 'Shop now', url: 'https://si.shop.example/', align: 'center', full: false }; } },
@@ -27,7 +27,7 @@
     divider: { label: 'Divider', icon: '<path d="M3 12h18"/>', def: function () { return { color: '', w: 1 }; } },
     spacer: { label: 'Spacer', icon: '<path d="M12 4v16M8 8l4-4 4 4M8 16l4 4 4-4"/>', def: function () { return { h: 24 }; } },
     social: { label: 'Social links', icon: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4"/>', def: function () { return { items: ['Facebook', 'Instagram', 'TikTok', 'YouTube'], align: 'center' }; } },
-    footer: { label: 'Footer + unsubscribe', icon: '<path d="M4 16h16M4 20h10"/><rect x="3" y="4" width="18" height="8" rx="2"/>', def: function () { return { text: 'Tokovi d.o.o. · Demo street 1, 1000 Ljubljana, Slovenia\nYou are receiving this because you subscribed at si.shop.example or hr.shop.example.', unsub: 'Unsubscribe', prefs: true, align: 'center' }; } }
+    footer: { label: 'Footer + unsubscribe', icon: '<path d="M4 16h16M4 20h10"/><rect x="3" y="4" width="18" height="8" rx="2"/>', def: function () { return { text: 'Clearfigure d.o.o. · Demo street 1, 1000 Ljubljana, Slovenia\nYou are receiving this because you subscribed at si.shop.example or hr.shop.example.', unsub: 'Unsubscribe', prefs: true, align: 'center' }; } }
   };
   M.SOCIAL = ['Facebook', 'Instagram', 'TikTok', 'YouTube', 'Pinterest', 'LinkedIn'];
 
@@ -190,7 +190,7 @@
     switch (b.type) {
       case 'header':
         out = '<tr><td style="background:' + s.head + ';padding:22px ' + s.pad + 'px;text-align:' + (b.align === 'left' ? 'left' : 'center') + ';border-radius:' + s.radius + 'px ' + s.radius + 'px 0 0">' +
-          '<a href="https://si.shop.example/" data-b="' + esc(b.id) + '" style="text-decoration:none;font-family:Georgia,serif;font-size:28px;letter-spacing:1px;color:' + s.headText + '">' + esc(b.logo || 'Tokovi') + '</a>' +
+          '<a href="https://si.shop.example/" data-b="' + esc(b.id) + '" style="text-decoration:none;font-family:Georgia,serif;font-size:28px;letter-spacing:1px;color:' + s.headText + '">' + esc(b.logo || 'Clearfigure') + '</a>' +
           (b.tag ? '<div style="font-family:' + f + ';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:' + s.headText + ';opacity:.8;margin-top:4px">' + esc(b.tag) + '</div>' : '') +
           (b.nav ? '<div style="margin-top:12px;font-family:' + f + ';font-size:13px"><a href="https://si.shop.example/" style="color:' + s.headText + ';text-decoration:none;margin:0 8px">Eyeglasses</a><a href="https://si.shop.example/" style="color:' + s.headText + ';text-decoration:none;margin:0 8px">Sunglasses</a><a href="https://si.shop.example/" style="color:' + s.headText + ';text-decoration:none;margin:0 8px">Contact lenses</a></div>' : '') +
           '</td></tr>';
@@ -282,7 +282,7 @@
     o = o || {}; var p = o.profile, lines = [];
     (design.blocks || []).forEach(function (b) {
       switch (b.type) {
-        case 'header': lines.push((b.logo || 'Tokovi').toUpperCase() + (b.tag ? ' — ' + b.tag : '')); break;
+        case 'header': lines.push((b.logo || 'Clearfigure').toUpperCase() + (b.tag ? ' — ' + b.tag : '')); break;
         case 'text': lines.push(M.htmlToText(M.resolve(M.sanitize(b.html), p, true, false))); break;
         case 'image': if (b.headline) lines.push(M.resolve(b.headline, p).toUpperCase() + (b.sub ? '\n' + M.resolve(b.sub, p) : '')); break;
         case 'button': lines.push(M.resolve(b.label, p) + ': ' + (M.safeUrl(M.resolve(b.url, p)) || '')); break;
@@ -305,8 +305,8 @@
   var B = M.block;
   var HI = '<p>Hi {{ first_name|default:"there" }},</p>';
   M.TEMPLATES = [
-    { key: 'welcome', name: 'Welcome', category: 'Onboarding', subject: 'Welcome to Tokovi, {{ first_name|default:"friend" }} 👓', preview: 'Here is 10% off your first order.', design: function () { return d([
-      B('header'), B('image', { art: 'frames', headline: 'Welcome to Tokovi', sub: 'Eyewear, lenses and expert eye care' }),
+    { key: 'welcome', name: 'Welcome', category: 'Onboarding', subject: 'Welcome to Clearfigure, {{ first_name|default:"friend" }} 👓', preview: 'Here is 10% off your first order.', design: function () { return d([
+      B('header'), B('image', { art: 'frames', headline: 'Welcome to Clearfigure', sub: 'Eyewear, lenses and expert eye care' }),
       B('text', { html: HI + '<p>Thanks for joining us! As a welcome gift, here is <b>10% off</b> your first order with code <b>WELCOME10</b>.</p><p>Our opticians in Slovenia and Croatia are here to help you see — and look — your best.</p>' }),
       B('button', { label: 'Start shopping', url: 'https://si.shop.example/' }),
       B('columns', { cells: [{ art: 'eye', title: 'Free eye exam', text: 'With every pair of prescription glasses.', label: 'Book', url: 'https://si.shop.example/eye-exam' }, { art: 'box', title: 'Free delivery', text: 'On all orders over €49.', label: 'Shop', url: 'https://si.shop.example/' }, { art: 'store', title: '20+ stores', text: 'Across Slovenia and Croatia.', label: 'Find a store', url: 'https://si.shop.example/stores' }] }),
@@ -338,8 +338,8 @@
       B('header'), B('image', { art: 'heart', headline: 'We miss you', sub: '15% off your next order' }),
       B('text', { html: HI + '<p>It has been a while! Use code <b>COMEBACK15</b> for 15% off anything in store or online — valid for 14 days.</p>', align: 'center' }),
       B('button', { label: 'Redeem 15% off', url: 'https://si.shop.example/' }), B('products', { title: 'New since your last visit', mode: 'recommended', count: 3 }), B('footer')]); } },
-    { key: 'news', name: 'Newsletter', category: 'Newsletter', subject: 'This month at Tokovi: new frames and lens care tips', preview: 'New arrivals, expert tips and an event near you.', design: function () { return d([
-      B('header', { nav: true }), B('image', { art: 'pattern', headline: 'This month at Tokovi', sub: 'New arrivals · tips · events', height: 200 }),
+    { key: 'news', name: 'Newsletter', category: 'Newsletter', subject: 'This month at Clearfigure: new frames and lens care tips', preview: 'New arrivals, expert tips and an event near you.', design: function () { return d([
+      B('header', { nav: true }), B('image', { art: 'pattern', headline: 'This month at Clearfigure', sub: 'New arrivals · tips · events', height: 200 }),
       B('text', { html: HI + '<p>Autumn is here, and so is our new collection of frames. Plus: how to keep your lenses comfortable when the heating comes on.</p>' }),
       B('columns', { cells: [{ art: 'lenses', title: 'Dry eyes in autumn?', text: 'Five optician tips for comfortable lenses all day.', label: 'Read more', url: 'https://si.shop.example/blog/dry-eyes' }, { art: 'frames', title: 'Frames for your face shape', text: 'Round, square or oval — find the shape that suits you.', label: 'Take the quiz', url: 'https://si.shop.example/blog/face-shape' }] }),
       B('divider'), B('products', { title: 'New arrivals', mode: 'recommended', count: 3 }), B('social'), B('footer')]); } }

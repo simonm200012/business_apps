@@ -1,4 +1,4 @@
-/* Tokovi Mail — persistence. IndexedDB database "stratum-mail", object store "kv" (one record per
+/* Clearfigure Mail — persistence. IndexedDB database "stratum-mail", object store "kv" (one record per
  * collection). Falls back to memory if IndexedDB is unavailable. BroadcastChannel("stratum-mail")
  * tells other open tabs which collections changed. localStorage is NOT used for data. */
 (function () {

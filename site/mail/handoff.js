@@ -1,7 +1,7 @@
-/* Tokovi Mail — segments handed over from other apps on this site (today: Refill & win-back).
+/* Clearfigure Mail — segments handed over from other apps on this site (today: Refill & win-back).
  * The sending app writes one message to localStorage "stratum-handoff:mail" and opens /mail/#/handoff.
  * Refill only knows counts per market / action / runout window (no customer names or e-mails), so the
- * handover carries the segment *definition*; Tokovi Mail rebuilds it as a live segment on its own profiles
+ * handover carries the segment *definition*; Clearfigure Mail rebuilds it as a live segment on its own profiles
  * (country + lens refill date + orders + predicted value), creates a draft campaign for it and excludes a
  * 10% hold-out list so Refill's A/B read stays fair. The message is removed once used or dismissed.
  * segmentDef() is pure and tested in tools/tests/mail-import.test.js. */
@@ -16,11 +16,11 @@
   H.valid = function (h, now) {
     if (!h || h.v !== 1 || h.from !== 'refill' || typeof h.at !== 'number') return 'This handover is not from Refill & win-back.';
     if (now - h.at > H.MAX_AGE) return 'This handover is older than 2 hours. Send the segment again from Refill & win-back.';
-    if (!COUNTRY[h.market]) return 'Tokovi Mail has subscribers in Slovenia and Croatia only' + (h.market ? ' — there are no ' + h.market + ' profiles to match.' : '.');
+    if (!COUNTRY[h.market]) return 'Clearfigure Mail has subscribers in Slovenia and Croatia only' + (h.market ? ' — there are no ' + h.market + ' profiles to match.' : '.');
     if (H.ACTIONS.indexOf(h.action) < 0) return '"' + (h.action || 'No action') + '" customers are not contacted.';
     return '';
   };
-  // Refill's market × suggested action × runout window → a Tokovi Mail segment definition
+  // Refill's market × suggested action × runout window → a Clearfigure Mail segment definition
   H.segmentDef = function (h) {
     var conds = [{ kind: 'prop', field: 'country', op: 'eq', value: COUNTRY[h.market] }, { kind: 'consent', channel: 'email', value: 'can' }];
     var groups = [{ match: 'all', conds: conds }];
@@ -59,7 +59,7 @@
   var HOLD = 'Refill hold-out (10%, never mailed)';
   AM.route(/^\/handoff$/, function (page) {
     App().title = 'From Refill & win-back';
-    var h = read(), now = Date.now(), err = h ? H.valid(h, now) : 'Nothing was handed over. Open Refill & win-back → Segments and press "Send with Tokovi Mail" on a row.';
+    var h = read(), now = Date.now(), err = h ? H.valid(h, now) : 'Nothing was handed over. Open Refill & win-back → Segments and press "Send with Clearfigure Mail" on a row.';
     var head = UI.head({ crumb: { href: '#/campaigns', label: 'Campaigns' }, title: 'From Refill & win-back' });
     if (err) {
       page.innerHTML = head + '<section class="card"><div class="card-b stack" style="gap:12px;padding-top:18px"><div class="banner warn">' + esc(err) + '</div><div class="actions"><a class="btn" href="/refill/#/segments">Open Refill segments</a>' + (h ? '<button type="button" class="btn ghost" id="hoDrop">Dismiss</button>' : '') + '</div></div></section>';
@@ -72,7 +72,7 @@
       '<div class="grid2"><section class="card"><div class="card-h"><div><span class="label">Handed over ' + esc(U.dateTime(h.at)) + '</span><h2>' + esc(H.title(h)) + '</h2></div></div><div class="card-b stack" style="gap:12px">' +
       '<div class="tiles" style="padding:0"><div class="tile"><span class="label">In Refill</span><div class="v">' + U.n(h.customers) + '</div><small>' + U.n(h.emailable) + ' e-mailable' + (/^\d{4}-\d{2}-\d{2}$/.test(h.scoredOn || '') ? ' · scored ' + esc(+h.scoredOn.slice(8) + '. ' + +h.scoredOn.slice(5, 7) + '. ' + h.scoredOn.slice(0, 4)) : '') + '</small></div>' +
       '<div class="tile"><span class="label">Matched here</span><div class="v">' + U.n(ids.length - hold) + '</div><small>can receive email · ' + U.n(hold) + ' kept back as hold-out</small></div></div>' +
-      '<p class="hint" style="margin:0">Refill shares counts only, never names or addresses, so Tokovi Mail rebuilds the segment on its own subscribers: <b style="font-weight:500">' + esc(E.defText(def)) + '</b>. The numbers differ because the two apps use different demo customers.</p>' +
+      '<p class="hint" style="margin:0">Refill shares counts only, never names or addresses, so Clearfigure Mail rebuilds the segment on its own subscribers: <b style="font-weight:500">' + esc(E.defText(def)) + '</b>. The numbers differ because the two apps use different demo customers.</p>' +
       '<p class="hint" style="margin:0">To keep Refill\'s A/B read fair, the campaign excludes the list "' + esc(HOLD) + '" (every tenth profile) — the stand-in for Refill\'s 10% hold-out hash.</p></div></section>' +
       '<section class="card"><div class="card-h"><h2>What happens</h2></div><ul class="rows">' +
       '<li><span class="typeic">' + ic(I.filter) + '</span><div class="main">A live segment "From Refill: ' + esc(H.title(h)) + '"</div></li>' +

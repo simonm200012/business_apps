@@ -11,7 +11,7 @@ function t(name, fn) { fn(); n++; console.log('ok', n, name); }
 const STORE = { id: 'S-MB', short: 'Maribor', kind: 'store', country: 'SI' }, ZG = { id: 'ZGO', short: 'Office Zagreb', kind: 'office', country: 'HR' };
 const task = (id, title, team, o) => Object.assign({ id, title, team, offset: 0, status: 'todo' }, o || {});
 function joiner(o) {
-  return Object.assign({ type: 'joiner', first: 'Nina', last: 'Kos', email: 'nina.kos@example.com', role: 'Optician', date: '2026-11-02', loc: STORE, company: { name: 'Tokovi d.o.o.' },
+  return Object.assign({ type: 'joiner', first: 'Nina', last: 'Kos', email: 'nina.kos@example.com', role: 'Optician', date: '2026-11-02', loc: STORE, company: { name: 'Clearfigure d.o.o.' },
     manager: 'Maja Novak', hr: 'Tina Zupan', licencePlan: 'Microsoft 365 F3', today: '2026-10-15', tasks: [
       task('t1', 'Pre-employment medical check passed', 'HR', { offset: -5 }),
       task('t2', 'Payroll data form received (tax + bank account)', 'HR', { offset: -7, status: 'done' }),

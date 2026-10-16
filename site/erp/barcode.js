@@ -1,4 +1,4 @@
-/* Tokovi ERP · barcodes. No network, no dependencies.
+/* Clearfigure ERP · barcodes. No network, no dependencies.
  *
  *   ERPBarcode.check(body)        → GS1 check digit for 7 / 11 / 12 digits (EAN-8, UPC-A, EAN-13)
  *   ERPBarcode.valid(code)        → true for an EAN-13, EAN-8 or UPC-A (12 digits) with a correct check digit

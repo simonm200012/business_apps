@@ -45,11 +45,11 @@
     { n: 'LensCase Co', c: 4, w: 0.60, m: 0.66 }, { n: 'Wipe & Go', c: 4, w: 0.40, m: 0.70 }
   ];
   var PROJECTS = [
-    { id: 'optika-si', name: 'Tokovi Optika SI', market: 'Slovenia', group: 'Tokovi Retail', cats: [0, 1, 2, 3, 4] },
-    { id: 'optika-hr', name: 'Tokovi Optika HR', market: 'Croatia', group: 'Tokovi Retail', cats: [0, 1, 2, 3, 4] },
-    { id: 'lensico-si', name: 'Lensico SI', market: 'Slovenia', group: 'Tokovi Online', cats: [0, 3, 4] },
-    { id: 'lensico-hr', name: 'Lensico HR', market: 'Croatia', group: 'Tokovi Online', cats: [0, 3, 4] },
-    { id: 'sunvale', name: 'Sunvale Shades', market: 'Slovenia', group: 'Tokovi Online', cats: [2, 4] }
+    { id: 'optika-si', name: 'Clearfigure Optika SI', market: 'Slovenia', group: 'Clearfigure Retail', cats: [0, 1, 2, 3, 4] },
+    { id: 'optika-hr', name: 'Clearfigure Optika HR', market: 'Croatia', group: 'Clearfigure Retail', cats: [0, 1, 2, 3, 4] },
+    { id: 'lensico-si', name: 'Lensico SI', market: 'Slovenia', group: 'Clearfigure Online', cats: [0, 3, 4] },
+    { id: 'lensico-hr', name: 'Lensico HR', market: 'Croatia', group: 'Clearfigure Online', cats: [0, 3, 4] },
+    { id: 'sunvale', name: 'Sunvale Shades', market: 'Slovenia', group: 'Clearfigure Online', cats: [2, 4] }
   ];
   // kind: 0 store, 1 online, 2 B2B; base = average revenue per day before seasonality
   var PAIRS = [
@@ -441,7 +441,7 @@
     setWindow();
     if (!CELLS) build();
     switch (path) {
-      case 'session': return { signedIn: true, allowed: true, email: 'demo@tokovi.example' };
+      case 'session': return { signedIn: true, allowed: true, email: 'demo@clearfigure.example' };
       case 'meta': return meta();
       case 'overview': return overview(params);
       case 'codes': return codes(params);

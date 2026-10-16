@@ -179,7 +179,7 @@ const server = { putDelay: 0, gate: null }; // gate: snapshot uploads wait until
 function gate() { let open; const promise = new Promise((r) => { open = r; }); return { promise, open }; }
 function opaqueRedirect() { return { type: 'opaqueredirect', status: 0, ok: false, headers: new Headers(), json: async () => { throw new SyntaxError('opaque'); }, blob: async () => new Blob([]) }; }
 async function call(tok, method, p, body) { // a request straight to the Worker (as the test, not a device)
-  const headers = new Headers({ 'X-Tokovi-Apps': '1' });
+  const headers = new Headers({ 'X-Stratum-Apps': '1' });
   if (tok) headers.set('Cf-Access-Jwt-Assertion', tok);
   if (body !== undefined) headers.set('Content-Type', 'application/json');
   return worker.fetch(new Request('https://apps.example' + p, { method, headers, body }), env);

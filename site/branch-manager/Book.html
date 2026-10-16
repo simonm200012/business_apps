@@ -7,7 +7,7 @@
 <script src="./bm-bookings.js?v=1"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Online booking — Tokovi Optika</title>
+<title>Online booking — Clearfigure Optika</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -177,8 +177,8 @@ textarea.in{min-height:84px;padding:10px 14px;resize:vertical}
     return '<div class="langs" role="group" aria-label="Jezik / Language">' + [['sl', 'SL'], ['hr', 'HR'], ['en', 'EN']].map(function (l) { return '<button type="button" data-lang="' + l[0] + '" aria-pressed="' + (st.lang === l[0]) + '">' + l[1] + '</button>'; }).join('') + '</div>';
   }
   function head() {
-    if (!b) return '<div class="brand"><div class="logo">SO</div><div><h1>Tokovi Optika</h1><p class="addr">' + T('choose') + '</p></div></div>';
-    return '<div class="brand"><div class="logo">SO</div><div><h1>Tokovi Optika ' + esc(b.city) + '</h1><p class="addr">' + esc(b.address) + ' · ' + esc(b.phone) + '</p></div></div>';
+    if (!b) return '<div class="brand"><div class="logo">SO</div><div><h1>Clearfigure Optika</h1><p class="addr">' + T('choose') + '</p></div></div>';
+    return '<div class="brand"><div class="logo">SO</div><div><h1>Clearfigure Optika ' + esc(b.city) + '</h1><p class="addr">' + esc(b.address) + ' · ' + esc(b.phone) + '</p></div></div>';
   }
   function stepsBar() {
     var names = [T('svc'), T('time'), T('you')];
@@ -199,11 +199,11 @@ textarea.in{min-height:84px;padding:10px 14px;resize:vertical}
 
   function render() {
     document.documentElement.lang = st.lang;
-    document.title = (b ? 'Tokovi Optika ' + b.city : 'Tokovi Optika') + ' — ' + ({ sl: 'spletno naročanje', hr: 'online naručivanje', en: 'online booking' })[st.lang];
+    document.title = (b ? 'Clearfigure Optika ' + b.city : 'Clearfigure Optika') + ' — ' + ({ sl: 'spletno naročanje', hr: 'online naručivanje', en: 'online booking' })[st.lang];
     var html = '<p class="demo"><span>' + T('demo') + '</span></p>' + head() + langs();
     if (!b) {
       html += '<div class="card"><div class="branches">' + K.BRANCHES.map(function (x) {
-        return '<a class="branch" href="' + esc(url({}).pathname + '?branch=' + x.id + '&lang=' + (x.country === 'HR' ? 'hr' : 'sl')) + '"><span><b>Tokovi Optika ' + esc(x.city) + '</b><small>' + esc(x.address) + '</small></span><span aria-hidden="true">›</span></a>';
+        return '<a class="branch" href="' + esc(url({}).pathname + '?branch=' + x.id + '&lang=' + (x.country === 'HR' ? 'hr' : 'sl')) + '"><span><b>Clearfigure Optika ' + esc(x.city) + '</b><small>' + esc(x.address) + '</small></span><span aria-hidden="true">›</span></a>';
       }).join('') + '</div></div>';
       app.innerHTML = html; return;
     }
@@ -264,7 +264,7 @@ textarea.in{min-height:84px;padding:10px 14px;resize:vertical}
     html += '<div class="card done' + (cancelled ? ' cancelled' : '') + '" role="status"><div class="tick">' + (cancelled ? '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>') + '</div>' +
       '<h2>' + (cancelled ? T('cancelledT') : T('doneT')) + '</h2>' + (cancelled ? '<p class="note">' + T('cancelledP') + '</p>' : '<p class="note">' + T('doneP') + ' ' + esc(x.email) + '</p>') +
       '<div class="code">' + esc(x.code) + '</div><p class="note">' + T('code') + '</p></div>' +
-      '<div class="card"><div class="sum" style="margin:0"><div><span>' + T('sumSvc') + '</span><b>' + esc(svcName(s)) + '</b></div><div><span>' + T('sumWhen') + '</span><b>' + esc(when(x.date, x.start)) + '</b></div><div><span>' + T('sumWhere') + '</span><b>Tokovi Optika ' + esc(b.city) + ', ' + esc(b.street) + '</b></div><div><span>' + T('sumPrice') + '</span><b>' + eur(s.fee) + '</b></div></div>' +
+      '<div class="card"><div class="sum" style="margin:0"><div><span>' + T('sumSvc') + '</span><b>' + esc(svcName(s)) + '</b></div><div><span>' + T('sumWhen') + '</span><b>' + esc(when(x.date, x.start)) + '</b></div><div><span>' + T('sumWhere') + '</span><b>Clearfigure Optika ' + esc(b.city) + ', ' + esc(b.street) + '</b></div><div><span>' + T('sumPrice') + '</span><b>' + eur(s.fee) + '</b></div></div>' +
       '<div class="acts">' + (cancelled ? '' : '<button type="button" class="btn" data-ics><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>' + T('ics') + '</button><button type="button" class="btn danger" data-cancel>' + T('cancel') + '</button>') +
       '<span class="grow"></span><button type="button" class="btn pri" data-again>' + T('again') + '</button></div></div>' +
       '<p class="staff"><a href="Bookings.html?branch=' + b.id + '&date=' + x.date + '&view=day">' + T('staff') + '</a></p>';

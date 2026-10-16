@@ -188,7 +188,7 @@ addMark('signedSheet', ({ sheet = [192, 192, 384, 544], f = 120, a = 132, top = 
   return centre(planes, nx, ny);
 });
 
-/** Tokovi Mail — a campaign leaving the envelope: the light inside with its raised flap, a paper plane taking off out
+/** Clearfigure Mail — a campaign leaving the envelope: the light inside with its raised flap, a paper plane taking off out
  *  of it (its wide upper wing mid, the folded keel a step deeper) and the deep pocket with a V notch in front. The plane
  *  is the 'send a campaign' cue that keeps it from reading as the phone's own inbox (or Desk's e-mail-to-task); it is
  *  never a white plane on a disc (Telegram), never a lone plane, and the envelope has no M (Gmail). */
@@ -536,7 +536,7 @@ addMark('ratedAnswer', ({ bx = 192, by = 200, bw = 548, bh = 432, br = 96, tailR
 
 // ═════════════════════════════ Studio ═════════════════════════════
 
-/** Tokovi — the site's three-layer logo as planes: three slabs flush right, getting thicker towards the bottom, their
+/** Clearfigure — the site's three-layer logo as planes: three slabs flush right, getting thicker towards the bottom, their
  *  left ends all cut along ONE shared slanted edge (the site logo's stepped left edge made continuous), tile-coloured
  *  gaps between them; the top slab lightest, the bottom deepest. White tile like every app in the grid. Flat, front-on:
  *  never an isometric diamond stack (Buffer), never three round pills (a menu glyph, Team Tasks). */
@@ -611,7 +611,7 @@ export default [
     args: { sheet: [192, 192, 336, 496], f: 112, a: 120, top: -248, sh: -16, tip: 272, at: [612, 604], hole: 36, holeY: -54 } },
 
   { id: 'crm', name: 'CRM', group: 'Sales & marketing', hue: 'berry', mark: 'account', nudge: [0, -16] },
-  { id: 'mail', name: 'Tokovi Mail', group: 'Sales & marketing', hue: 'blue', mark: 'sendMail' },
+  { id: 'mail', name: 'Clearfigure Mail', group: 'Sales & marketing', hue: 'blue', mark: 'sendMail' },
   { id: 'marketing', name: 'Marketing calendar', group: 'Sales & marketing', hue: 'coral', mark: 'megaphone',
     args: { rot: -24, P: [300, 712], h0: 72, h1: 236, len: 400, cal: [192, 192, 320, 336], hb: 92, rimW: 80, piece: [120, 128] } },
   { id: 'refill', name: 'Refill & win-back', group: 'Sales & marketing', hue: 'cyan', mark: 'lensLoop' },
@@ -642,7 +642,7 @@ export default [
   { id: 'webshop', name: 'Webshop conversion health', group: 'Insights', hue: 'magenta', mark: 'shopFunnel' },
   { id: 'cs-quality', name: 'Customer service quality', group: 'Insights', hue: 'teal', mark: 'ratedAnswer', args: { br: 128 } },
 
-  { id: 'showcase', name: 'Tokovi', group: 'Studio', hue: 'teal', mark: 'strata', nudge: [-24, -16] },
+  { id: 'showcase', name: 'Clearfigure', group: 'Studio', hue: 'teal', mark: 'strata', nudge: [-24, -16] },
   { id: 'client-atlas', name: 'ERP & BI Client Atlas', group: 'Studio', hue: 'emerald', mark: 'atlasPin', args: { mt: 392, zz: 48 } },
   { id: 'design-compare', name: 'Design Comparison', group: 'Studio', hue: 'rose', mark: 'pickOne' },
 ];

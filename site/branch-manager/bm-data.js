@@ -1,5 +1,5 @@
 /*
- * Branch Manager demo data: "Tokovi Optika", a fictional optics chain with branches in Slovenia and Croatia.
+ * Branch Manager demo data: "Clearfigure Optika", a fictional optics chain with branches in Slovenia and Croatia.
  * Every name, address, e-mail, phone number and ID here is made up. Nothing comes from a real account.
  *
  * The figures are generated from a fixed seed relative to today, so the demo never goes stale:

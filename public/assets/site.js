@@ -1,4 +1,4 @@
-/* Tokovi public site: menu, the Slovenian countdown, the calculator, the contact form. No cookies, no trackers.
+/* Clearfigure public site: menu, the Slovenian countdown, the calculator, the contact form. No cookies, no trackers.
  * Texts come from the page (<script type="application/json" id="siteText">), so this file has no words of its own.
  * The contact form posts JSON to /api/contact (public/worker.js); when that is not reachable it offers a mailto: link.
  * Input is only ever put on the page with textContent, never as HTML. */

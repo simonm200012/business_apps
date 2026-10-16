@@ -230,7 +230,7 @@
   function apptOk(w, per, i) { return w.cur[i] <= apptThrough(); }
 
   // ---------- routes ----------
-  function session() { return { signedIn: true, allowed: true, email: 'demo@tokovi.example' }; }
+  function session() { return { signedIn: true, allowed: true, email: 'demo@clearfigure.example' }; }
 
   function meta() {
     var thr = dataThrough();

@@ -5,9 +5,9 @@
 (function () {
   'use strict';
   var TEXT = {
-    sl: { demo: 'Demo', note: 'Vzorčni podatki – vse ostane v vašem brskalniku.', talk: 'Pogovorimo se', home: 'Tokovi', pill: 'Izmišljeni demo podatki. Vse, kar spremenite ali uvozite, ostane v tem brskalniku; nič se ne pošlje.' },
-    hr: { demo: 'Demo', note: 'Ogledni podaci – sve ostaje u vašem pregledniku.', talk: 'Razgovarajmo', home: 'Tokovi', pill: 'Izmišljeni demo podaci. Sve što promijenite ili uvezete ostaje u ovom pregledniku; ništa se ne šalje.' },
-    en: { demo: 'Demo', note: 'Sample data – everything stays in your browser.', talk: 'Talk to us', home: 'Tokovi', pill: 'Fictional demo data. Whatever you change or import stays in this browser; nothing is sent.' }
+    sl: { demo: 'Demo', note: 'Vzorčni podatki – vse ostane v vašem brskalniku.', talk: 'Pogovorimo se', home: 'Clearfigure', pill: 'Izmišljeni demo podatki. Vse, kar spremenite ali uvozite, ostane v tem brskalniku; nič se ne pošlje.' },
+    hr: { demo: 'Demo', note: 'Ogledni podaci – sve ostaje u vašem pregledniku.', talk: 'Razgovarajmo', home: 'Clearfigure', pill: 'Izmišljeni demo podaci. Sve što promijenite ili uvezete ostaje u ovom pregledniku; ništa se ne šalje.' },
+    en: { demo: 'Demo', note: 'Sample data – everything stays in your browser.', talk: 'Talk to us', home: 'Clearfigure', pill: 'Fictional demo data. Whatever you change or import stays in this browser; nothing is sent.' }
   };
   var HOME = { sl: '/', hr: '/hr/', en: '/en/' };
   var app = (location.pathname.split('/')[1] || '').toLowerCase();
@@ -45,7 +45,7 @@
     for (var i = 0; i < l.length; i++) if (l[i].title !== t.pill) l[i].title = t.pill;
   }
   // document titles end in "— Business Apps" on the private site
-  function title() { if (/Business Apps/.test(document.title)) document.title = document.title.replace(/\s*[—–-]\s*Business Apps\s*$/, '') + ' — Tokovi demo'; }
+  function title() { if (/Business Apps/.test(document.title)) document.title = document.title.replace(/\s*[—–-]\s*Business Apps\s*$/, '') + ' — Clearfigure demo'; }
   function tidy() { pills(); title(); }
   function start() {
     bar(); tidy();

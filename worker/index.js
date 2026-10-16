@@ -21,7 +21,7 @@
 // u/<hash of the e-mail>/. Every request must carry a valid Access token for OWNER_EMAIL, or for a view-only e-mail in
 // VIEWER_EMAILS, who reads the owner's copies of the demo apps, never the private apps, and can never write
 // (worker/access.js), and
-// every change must carry the X-Tokovi-Apps header the apps send (a custom header cannot be sent cross-site).
+// every change must carry the X-Stratum-Apps header the apps send (a custom header cannot be sent cross-site).
 // DEV_BYPASS=1 (only ever in a local .dev.vars, never deployed) skips the Access check for wrangler dev.
 //
 // Team workspaces (/api/ws, /api/ws/*): worker/workspaces.js. Several people of one company share one Collections data
@@ -79,7 +79,7 @@ async function api(request, env, url) {
     if (method !== 'GET' && method !== 'HEAD') return json({ error: 'You have view-only access: changes are not saved to the cloud.', viewer: true }, 403);
     if (isPrivatePath(path)) return json({ error: 'View-only access does not include this app.', viewer: true }, 403);
   }
-  if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Tokovi-Apps') !== '1') return json({ error: 'Missing X-Tokovi-Apps header.' }, 400);
+  if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Stratum-Apps') !== '1' && request.headers.get('X-Tokovi-Apps') !== '1' /* 16 Oct 2026 build; drop after 2026-12-31 */) return json({ error: 'Missing X-Stratum-Apps header.' }, 400);
 
   if (path === '/api/auth/config') return json({ enabled: true, provider: 'access', devLogin: false, signupDomains: [] });
   if (path === '/api/auth/me') return json(who.viewer ? { email: who.viewer, name: who.viewer.split('@')[0], viewer: true } : { email: who.email, name: env.OWNER_NAME || who.email.split('@')[0] });

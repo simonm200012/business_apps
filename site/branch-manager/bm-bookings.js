@@ -110,7 +110,7 @@ function create(opts) {
             out.push({
               id: branch.id + '-' + s + '-' + room.code + '-' + t, gen: true, branch: branch.id, date: s, room: room.code, start: t, dur: svc.dur, svc: svc.id, title: '',
               first: f, last: l, email: email, phone: phone, note: remark,
-              createdAt: created + ' ' + hm(480 + Math.floor(r() * 600)), createdBy: viaApp ? 'Tokovi' : staff[Math.floor(r() * staff.length)],
+              createdAt: created + ' ' + hm(480 + Math.floor(r() * 600)), createdBy: viaApp ? 'Clearfigure' : staff[Math.floor(r() * staff.length)],
               status: r() < 0.035 ? 'cancelled' : 'active', noShow: s < TODAY && r() < 0.035
             });
             t += svc.dur;
@@ -229,7 +229,7 @@ function create(opts) {
   // ── Reminders: SMS link, e-mail (.eml) and calendar file (.ics) ─────────────
   // Browser-only: nothing is sent. The SMS opens the phone's messages app with the text filled in;
   // the .eml opens in Outlook as a draft (X-Unsent: 1) with the .ics attached.
-  var BRAND = 'Tokovi Optika';
+  var BRAND = 'Clearfigure Optika';
   var L = {
     sl: { wd: ['ponedeljek', 'torek', 'sredo', 'četrtek', 'petek', 'soboto', 'nedeljo'], hi: 'Pozdravljeni', at: 'ob', on: 'v',
       sms: function (o) { return o.hi + ' ' + o.first + ', vaš termin »' + o.svc + '« je ' + o.on + ' ' + o.wd + ', ' + o.date + ' ' + o.at + ' ' + o.time + ' v poslovalnici ' + BRAND + ' ' + o.city + ', ' + o.street + '. Če ne morete priti, nam prosim sporočite na ' + o.phone + '.'; },
@@ -311,7 +311,7 @@ function create(opts) {
         'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(p.svc), 'TRIGGER:-PT2H', 'END:VALARM',
         'END:VEVENT');
     });
-    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Tokovi//Branch Manager//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Clearfigure//Branch Manager//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
     Object.keys(tzs).forEach(function (tz) { lines = lines.concat(vtimezone(tz)); });
     lines = lines.concat(ev, ['END:VCALENDAR']);
     return lines.map(fold).join('\r\n') + '\r\n';

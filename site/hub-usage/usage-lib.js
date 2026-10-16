@@ -8,11 +8,11 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
   var NAMES = {
-    'mail': 'Tokovi Mail', 'erp': 'ERP', 'crm': 'CRM', 'analytics': 'Analytics', 'invoices': 'Invoices', 'billing': 'Billing', 'desk': 'Desk',
+    'mail': 'Clearfigure Mail', 'erp': 'ERP', 'crm': 'CRM', 'analytics': 'Analytics', 'invoices': 'Invoices', 'billing': 'Billing', 'desk': 'Desk',
     'ads': 'Ads & Return', 'margin': 'Margin guard', 'refill': 'Refill & win-back', 'webshop': 'Webshop conversion health', 'cs-quality': 'Customer service quality',
     'parcels': 'Parcels & COD', 'recon': 'Payment reconciliation', 'stores': 'Store daily board', 'onboarding': 'Joiners & leavers', 'contracts': 'Contracts & renewals',
     'marketing': 'Marketing calendar', 'team-tasks': 'Team Tasks', 'branch-manager': 'Branch Manager', 'client-atlas': 'ERP & BI Client Atlas', 'pisarna-dms': 'Pisarna DMS Demo',
-    'postbench': 'Postbench', 'design-compare': 'Design Comparison', 'showcase': 'Tokovi (showcase)', 'n8n': 'n8n Runs', 'portal-usage': 'Portal usage & speed',
+    'postbench': 'Postbench', 'design-compare': 'Design Comparison', 'showcase': 'Clearfigure (showcase)', 'n8n': 'n8n Runs', 'portal-usage': 'Portal usage & speed',
     'cashflow': 'Cash forecast', 'collections': 'Collections', 'budget': 'Budget vs actual', 'leave': 'Time & leave', 'datacheck': 'Data health check', 'service': 'Service jobs',
     '(portal platform)': 'Portal platform'
   };

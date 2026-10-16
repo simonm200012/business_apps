@@ -230,6 +230,6 @@ details.tbl summary:hover{color:var(--ink)}
   .app{display:block}.main{padding:0}.card{box-shadow:none}
 }
 
-/* Send with Tokovi Mail (segments table) */
+/* Send with Clearfigure Mail (segments table) */
 .t td.send,.t th.send{text-align:right;white-space:nowrap}
 .t td.send small{display:inline;font-family:var(--font)}

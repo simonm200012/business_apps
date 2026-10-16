@@ -1,4 +1,4 @@
-# Tokovi public site
+# Clearfigure public site
 
 The public sales site: a landing page in Slovenian (first), Croatian and English, a privacy page and a legal notice
 (Slovenian), and demo-only copies of four apps (Data health check, Collections, Cash forecast, Budget vs actual).
@@ -44,13 +44,13 @@ npx wrangler dev -c public/wrangler.jsonc --port 8302            # with the cont
 Once:
 
 ```
-npx wrangler r2 bucket create tokovi-leads --jurisdiction eu
-npx wrangler r2 bucket lifecycle add tokovi-leads ratelimit-expire ratelimit/ --expire-days 2 --jurisdiction eu
+npx wrangler r2 bucket create clearfigure-leads --jurisdiction eu
+npx wrangler r2 bucket lifecycle add clearfigure-leads ratelimit-expire ratelimit/ --expire-days 2 --jurisdiction eu
 ```
 
 The second command makes the rate-limit records (hashed IPs) disappear after 2 days, as the privacy page says; the
 Worker also deletes days before yesterday on each new message. After creating the bucket, check in the dashboard
-(R2 → tokovi-leads → Settings) that its jurisdiction is EU; only then set `leadsBucketEU: true` in
+(R2 → clearfigure-leads → Settings) that its jurisdiction is EU; only then set `leadsBucketEU: true` in
 `public/data/company.mjs`, so the privacy page says the messages are stored in the EU.
 
 Every time:
@@ -91,8 +91,8 @@ move), set `ALLOWED_ORIGINS` (comma-separated) under `vars`.
 - The page shows success or failure in its language; when the API can't be reached (or answers 5xx/429) it offers a
   `mailto:` link with the message filled in.
 
-Reading the messages until the Client Atlas import exists: Cloudflare dashboard → R2 → `tokovi-leads` → `leads/`, or
-`npx wrangler r2 object get tokovi-leads/leads/2026-10/<file>.json --jurisdiction eu --remote --pipe`.
+Reading the messages until the Client Atlas import exists: Cloudflare dashboard → R2 → `clearfigure-leads` → `leads/`, or
+`npx wrangler r2 object get clearfigure-leads/leads/2026-10/<file>.json --jurisdiction eu --remote --pipe`.
 
 ### Optional: Cloudflare Turnstile (spam check)
 
@@ -111,7 +111,7 @@ created, updated }`. The public Worker already has the mapping: `toAtlasLead(rec
 `AtlasLeads.clean`). What the private Worker would need (not built here; `worker/` belongs to the private site):
 
 1. **Binding** in the root `wrangler.jsonc`: add
-   `{ "binding": "LEADS", "bucket_name": "tokovi-leads", "jurisdiction": "eu" }` to `r2_buckets`.
+   `{ "binding": "LEADS", "bucket_name": "clearfigure-leads", "jurisdiction": "eu" }` to `r2_buckets`.
 2. **Route** in `worker/index.js`: `GET /api/leads?after=<key>` →
    - the same Access check as `/api/sync`, and **owner only**: `OWNER_EMAIL`, never a `VIEWER_EMAILS` person (add a
      `leads` entry next to `PRIVATE_APPS` in `worker/access.js` so viewers get 403);
@@ -133,5 +133,5 @@ created, updated }`. The public Worker already has the mapping: `toAtlasLead(rec
 - `/assets/demo.js` (demo bar "Demo — sample data, stays in your browser" + "Talk to us" → `/#contact`, the language from
   `?lang=`; Collections opens in that language) and `/assets/demo.css` (hides the sync panel, the VIES check, Cash
   forecast's "Fill from Billing and Invoices", the workspace box).
-- Google Fonts and the home-screen app tags removed; Tokovi favicon; titles "… — Tokovi demo"; Cash forecast's two
+- Google Fonts and the home-screen app tags removed; Clearfigure favicon; titles "… — Clearfigure demo"; Cash forecast's two
   always-visible sentences about the private cloud copy reworded.

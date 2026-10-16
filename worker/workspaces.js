@@ -96,7 +96,7 @@ export async function workspaces(request, env, url) {
   const who = await caller(request, env, url);
   if (who instanceof Response) return who;
   const me = who.email, method = request.method;
-  if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Tokovi-Apps') !== '1') return json({ error: 'Missing X-Tokovi-Apps header.' }, 400);
+  if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Stratum-Apps') !== '1' && request.headers.get('X-Tokovi-Apps') !== '1' /* 16 Oct 2026 build; drop after 2026-12-31 */) return json({ error: 'Missing X-Stratum-Apps header.' }, 400);
   const m = url.pathname.match(/^\/api\/ws(?:\/([^/]+)(?:\/(members|ops|snapshot|activity))?)?\/?$/);
   if (!m) return notFound();
   const id = m[1], sub = m[2];

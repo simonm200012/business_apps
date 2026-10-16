@@ -1,4 +1,4 @@
-/* Tokovi Mail — Campaigns (list, wizard, A/B, schedule, simulated send, report + click map), SMS
+/* Clearfigure Mail — Campaigns (list, wizard, A/B, schedule, simulated send, report + click map), SMS
  * campaigns (composer with segment counter + consent checks, report), Templates, Sign-up forms. */
 (function () {
   'use strict';
@@ -11,7 +11,7 @@
     var c = { id: E.nextId('campaign'), name: o.name || 'Untitled campaign', channel: o.channel || 'email', status: 'draft', created: now, updated: now,
       audience: { include: o.include || [{ type: 'list', id: db.lists[0].id }], exclude: [] }, schedule: { type: 'now' } };
     if (c.channel === 'email') Object.assign(c, { subject: t ? t.subject : '', preview: t ? t.preview : '', fromName: db.settings.senderName, fromEmail: db.settings.senderEmail, replyTo: db.settings.replyTo, design: t ? M.reid(t.design) : M.newDesign(), tpl: t ? t.key : '', utm: true, ab: { on: false, type: 'subject', variants: [{ subject: '' }, { subject: '' }], testPct: 20, metric: 'open', wait: 4 } });
-    else Object.assign(c, { body: 'Tokovi: {{ first_name|default:"Pozdravljeni" }}, ... https://s.example/x Odjava: STOP', sender: db.settings.smsSender, stop: true, audience: { include: [{ type: 'list', id: (db.lists.filter(function (l) { return /SMS/.test(l.name); })[0] || db.lists[0]).id }], exclude: [] } });
+    else Object.assign(c, { body: 'Clearfigure: {{ first_name|default:"Pozdravljeni" }}, ... https://s.example/x Odjava: STOP', sender: db.settings.smsSender, stop: true, audience: { include: [{ type: 'list', id: (db.lists.filter(function (l) { return /SMS/.test(l.name); })[0] || db.lists[0]).id }], exclude: [] } });
     db.campaigns.push(c); App().save(['campaigns', 'meta']);
     return c;
   }
@@ -25,7 +25,7 @@
   function thumb(design, h) {
     var img = (design.blocks || []).filter(function (b) { return b.type === 'image'; })[0];
     var s = M.styles(design);
-    return '<div style="width:86%;margin-top:10px;background:' + s.content + ';border-radius:8px 8px 0 0;box-shadow:var(--shadow);overflow:hidden"><div style="background:' + s.head + ';color:' + s.headText + ';font:13px Georgia,serif;text-align:center;padding:6px">Tokovi</div>' + (img ? '<img alt="" style="display:block;width:100%" src="' + M.art(img.art, 400, 170, { headline: img.headline }) + '">' : '<div style="height:' + (h - 30) + 'px"></div>') + '</div>';
+    return '<div style="width:86%;margin-top:10px;background:' + s.content + ';border-radius:8px 8px 0 0;box-shadow:var(--shadow);overflow:hidden"><div style="background:' + s.head + ';color:' + s.headText + ';font:13px Georgia,serif;text-align:center;padding:6px">Clearfigure</div>' + (img ? '<img alt="" style="display:block;width:100%" src="' + M.art(img.art, 400, 170, { headline: img.headline }) + '">' : '<div style="height:' + (h - 30) + 'px"></div>') + '</div>';
   }
   (AM.pending = AM.pending || {}).newCampaign = newCampaign; // used by handoff.js (segments handed over from Refill)
   AM.pending.newCampaignFlow = function () { chosenTplDialog(function (tid, name) { var t = tid ? E.template(tid) : null; var c = newCampaign({ tpl: tid, name: name || (t ? t.name + ' campaign' : 'Untitled campaign') }); location.hash = '#/campaigns/' + c.id + '/edit/1'; }); };
@@ -423,7 +423,7 @@
       '<div style="font-size:22px;font-weight:700;margin-bottom:6px">' + esc(f.title) + '</div><div style="font-size:14.5px;opacity:.85;margin-bottom:14px">' + esc(f.body) + '</div>' + fields +
       '<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;opacity:.85;margin:4px 0 12px"><input type="checkbox"> <span>' + esc(f.consent) + '</span></label>' +
       '<button type="button" style="width:100%;padding:13px;border:0;border-radius:999px;background:' + col('btn', '#0E5A63') + ';color:' + col('btnText', '#FFFFFF') + ';font:700 15px Helvetica,Arial,sans-serif">' + esc(f.button) + '</button></div></div>';
-    var site = '<div style="background:#fff;font-family:Helvetica,Arial,sans-serif;min-height:100%"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #eee"><b style="font-family:Georgia,serif;font-size:20px;color:#0E5A63">Tokovi</b><span style="font-size:12px;color:#888">si.shop.example · demo page</span></div><div style="padding:20px;display:grid;grid-template-columns:repeat(' + (device === 'mobile' ? 2 : 4) + ',1fr);gap:14px">' + E.db().products.slice(0, device === 'mobile' ? 4 : 8).map(function (p) { return '<div><img alt="" src="' + M.productArt(p, 160) + '" style="width:100%;border-radius:10px"><div style="font-size:12px;margin-top:6px">' + esc(p.name) + '</div><div style="font-size:12px;color:#888">' + esc(U.money2(p.price)) + '</div></div>'; }).join('') + '</div>';
+    var site = '<div style="background:#fff;font-family:Helvetica,Arial,sans-serif;min-height:100%"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #eee"><b style="font-family:Georgia,serif;font-size:20px;color:#0E5A63">Clearfigure</b><span style="font-size:12px;color:#888">si.shop.example · demo page</span></div><div style="padding:20px;display:grid;grid-template-columns:repeat(' + (device === 'mobile' ? 2 : 4) + ',1fr);gap:14px">' + E.db().products.slice(0, device === 'mobile' ? 4 : 8).map(function (p) { return '<div><img alt="" src="' + M.productArt(p, 160) + '" style="width:100%;border-radius:10px"><div style="font-size:12px;margin-top:6px">' + esc(p.name) + '</div><div style="font-size:12px;color:#888">' + esc(U.money2(p.price)) + '</div></div>'; }).join('') + '</div>';
     var css = '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; img-src data:; style-src \'unsafe-inline\'"><style>body{margin:0;background:#f4f4f4}</style>';
     if (f.type === 'embedded') return '<!doctype html><html><head><meta charset="utf-8">' + css + '</head><body>' + site + '<div style="background:' + col('bg', '#F3EFE8') + ';padding:20px;border-top:1px solid #eee"><div style="max-width:420px;margin:0 auto">' + card + '</div></div></div></body></html>';
     if (f.type === 'flyout') return '<!doctype html><html><head><meta charset="utf-8">' + css + '</head><body>' + site + '</div><div style="position:fixed;right:16px;bottom:16px;width:' + (device === 'mobile' ? 'calc(100% - 32px)' : '340px') + '">' + card + '</div></body></html>';

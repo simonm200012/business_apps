@@ -1,4 +1,4 @@
-/* Tokovi Mail — Profiles (list, detail, edit, consent), Lists & segments (segment builder). */
+/* Clearfigure Mail — Profiles (list, detail, edit, consent), Lists & segments (segment builder). */
 (function () {
   'use strict';
   var AM = window.AM, U = AM.U, E = AM.E, UI = AM.UI, C = AM.C, esc = U.esc, ic = U.ic, I = U.I, DAY = U.DAY;

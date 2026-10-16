@@ -1,6 +1,6 @@
 # Business Apps
 
-Browser apps for finance, sales, operations and people, plus the Tokovi showcase site. They are demos Simon shows to
+Browser apps for finance, sales, operations and people, plus the Clearfigure showcase site. They are demos Simon shows to
 customers and tools he uses himself. Live (private, behind Cloudflare Access): https://business-apps.simonm2000.workers.dev
 
 - `site/`: the web root. Every app is a folder of plain HTML, CSS and JavaScript (no build step). The home page

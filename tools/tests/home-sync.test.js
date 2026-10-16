@@ -190,7 +190,7 @@ function makeR2() {
     assert.strictEqual(await v.runner.run(), 'off');
     assert.strictEqual(v.puts, 0); eq(v.pins(), ['crm']);
     assert.strictEqual(await v.runner.check(), 'off');
-    const res = await worker.fetch(new Request('https://apps.example/api/sync/home', { headers: { 'Cf-Access-Jwt-Assertion': await token(VIEWER), 'X-Tokovi-Apps': '1' } }), env);
+    const res = await worker.fetch(new Request('https://apps.example/api/sync/home', { headers: { 'Cf-Access-Jwt-Assertion': await token(VIEWER), 'X-Stratum-Apps': '1' } }), env);
     assert.strictEqual(res.status, 403, 'view-only people never read "home" (PRIVATE_APPS)');
   });
   await t('a site without the sync server (auth config says off) stays off', async () => {

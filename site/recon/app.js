@@ -1,4 +1,4 @@
-/* Tokovi Payment reconciliation demo — vanilla JS single-page app.
+/* Clearfigure Payment reconciliation demo — vanilla JS single-page app.
  * Base data (orders, provider transactions, payouts, bank lines) is regenerated deterministically by data.js
  * from state.genDate, so the only thing stored is what the person decides: links (accepted / manual
  * matches), unmatched + rejected keys, exception status/owner/notes, month-close checks and the decision log.
@@ -99,7 +99,7 @@
   var storageWarned = false, saveTimer = null, writeQ = Promise.resolve();
   function storageFailed(err) {
     idbOK = false;
-    if (err && window.console) console.warn('Tokovi Recon: IndexedDB unavailable, keeping decisions in memory only.', err);
+    if (err && window.console) console.warn('Clearfigure Recon: IndexedDB unavailable, keeping decisions in memory only.', err);
     if (!storageWarned) { storageWarned = true; setTimeout(function () { toast('Browser storage is unavailable: decisions last until you reload.'); }, 50); }
   }
   function enqueue(job) { writeQ = writeQ.then(job).catch(storageFailed); return writeQ; }
@@ -3053,7 +3053,7 @@
     es.push({ d: REF, amt: -1240, cp: 'BANKA (DEMO) D.D.', text: 'Nadomestilo za vodenje racuna', ref: '' });
     var from = es.reduce(function (m, e) { return e.d < m ? e.d : m; }, REF), seq = 0;
     var x = '<?xml version="1.0" encoding="UTF-8"?>\n<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">\n<BkToCstmrStmt>\n<GrpHdr><MsgId>DEMO-' + REF.replace(/-/g, '') + '</MsgId><CreDtTm>' + REF + 'T07:00:00</CreDtTm></GrpHdr>\n<Stmt><Id>DEMO-STMT-' + REF + '</Id><FrToDt><FrDtTm>' + from + 'T00:00:00</FrDtTm><ToDtTm>' + REF + 'T23:59:59</ToDtTm></FrToDt>\n' +
-      '<Acct><Id><IBAN>SI00000000000000000</IBAN></Id><Ccy>EUR</Ccy><Ownr><Nm>Tokovi demo d.o.o.</Nm></Ownr></Acct>\n' +
+      '<Acct><Id><IBAN>SI00000000000000000</IBAN></Id><Ccy>EUR</Ccy><Ownr><Nm>Clearfigure demo d.o.o.</Nm></Ownr></Acct>\n' +
       es.map(function (e) {
         var dbit = e.amt < 0, a = (Math.abs(e.amt) / 100).toFixed(2), p = dbit ? 'Cdtr' : 'Dbtr';
         return '<Ntry><Amt Ccy="EUR">' + a + '</Amt><CdtDbtInd>' + (dbit ? 'DBIT' : 'CRDT') + '</CdtDbtInd><Sts>BOOK</Sts><BookgDt><Dt>' + e.d + '</Dt></BookgDt><ValDt><Dt>' + e.d + '</Dt></ValDt><AcctSvcrRef>DEMO-' + REF.replace(/-/g, '') + '-' + (++seq) + '</AcctSvcrRef>' +
@@ -3120,7 +3120,7 @@
     try {
       SYNC = window.StratumSync.attach({ app: 'recon', label: 'Payment reconciliation', getSnapshot: function () { return Promise.resolve(syncSnapshot()); }, applySnapshot: applyCloud });
       var el = $('syncPanel'); if (el) SYNC.mountPanel(el);
-    } catch (e) { if (window.console) console.warn('Tokovi Recon: cloud sync unavailable', e); }
+    } catch (e) { if (window.console) console.warn('Clearfigure Recon: cloud sync unavailable', e); }
   }
   if (channel) channel.onmessage = function (e) {
     if (!e.data || e.data.type !== 'changed' || !S || saveTimer) return;

@@ -1,4 +1,4 @@
-// Builds the Tokovi public site into public/dist (or --out <dir>): the landing page in SL / HR / EN, the privacy page
+// Builds the Clearfigure public site into public/dist (or --out <dir>): the landing page in SL / HR / EN, the privacy page
 // and legal notice, and demo-only copies of four apps made from site/<app>/ at build time (never edited by hand).
 //
 //   node tools/build-public.mjs                 noindex everywhere (until Simon launches)
@@ -51,7 +51,7 @@ export function publicAppHtml(html, assets) {
   let h = html;
   // Google Fonts (and their preconnects) out: the apps fall back to the system fonts in their own font stacks
   h = h.replace(/[ \t]*<link[^>]+(?:fonts\.googleapis\.com|fonts\.gstatic\.com)[^>]*>\s*\n?/g, '');
-  // the home-screen app block (manifest "Business Apps", its icons) → the Tokovi favicon; keep the phone fixes
+  // the home-screen app block (manifest "Business Apps", its icons) → the Clearfigure favicon; keep the phone fixes
   h = h.replace(/<!-- phone app:[\s\S]*?<!-- \/phone app -->/, '<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"><link rel="stylesheet" href="/_shared/phone.css">');
   h = h.replace(/<meta name="robots"[^>]*>/, '<meta name="robots" content="noindex, nofollow">');
   if (!/<meta name="robots"/.test(h)) h = h.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">');
@@ -59,12 +59,12 @@ export function publicAppHtml(html, assets) {
   if (!h.includes('<meta charset="utf-8">')) throw new Error('app page without <meta charset="utf-8">');
   h = h.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="stratum-public" content="1">\n<script src="' + assets.demoJs + '"></script>');
   h = h.replace('</head>', '<link rel="stylesheet" href="' + assets.demoCss + '">\n</head>');
-  h = h.replace(/<title>([^<]*?)\s*[—–-]\s*Business Apps<\/title>/, '<title>$1 — Tokovi demo</title>');
+  h = h.replace(/<title>([^<]*?)\s*[—–-]\s*Business Apps<\/title>/, '<title>$1 — Clearfigure demo</title>');
   return h;
 }
 /** Script text in the demo copies: the private site's name in document titles and PDF metadata. */
 export function publicAppJs(js) {
-  return js.replace(/ — Business Apps(['"])/g, ' — Tokovi demo$1').replace(/\(Collections, Business Apps\)/g, '(Collections, Tokovi)')
+  return js.replace(/ — Business Apps(['"])/g, ' — Clearfigure demo$1').replace(/\(Collections, Business Apps\)/g, '(Collections, Clearfigure)')
     // Cash forecast's always-shown sentences about the private cloud copy (sync is off here). Texts that only show when
     // someone is signed in to sync never appear on the public site and are left as they are.
     .replace('Nothing is sent anywhere except your private cloud copy.', 'Nothing is sent anywhere: it all stays in this browser.')

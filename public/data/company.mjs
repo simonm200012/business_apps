@@ -3,8 +3,8 @@
 // Values in [square brackets] are placeholders and are shown on the page exactly like that until you replace them.
 // The legal fields are what ZEPT Art. 5 (and ZGD-1 Art. 33 for a d.o.o.) ask a business website to show.
 export default {
-  brand: 'Tokovi',                         // no "Tokovi" company found in the business register (checked 16 Oct 2026); tokovi.si / tokovi.eu were free
-  legalName: 'Simon Modic, Tokovi',
+  brand: 'Clearfigure',                         // no "Clearfigure" company found in the business register (checked 16 Oct 2026); clearfigure.si / clearfigure.eu were free
+  legalName: 'Simon Modic, Clearfigure',
   address: 'Cerklje na Gorenjskem, Slovenija', // full street address once the company is registered
   // Empty until the company is registered: never put invented numbers here. Empty fields are left out, and
   // registrationNote is shown instead.
@@ -37,9 +37,9 @@ export default {
 
   // Privacy page: how long contact-form messages are kept when no contract follows.
   retentionMonths: 12,
-  // Set to true only after checking in the Cloudflare dashboard that the bucket "tokovi-leads" was created with
+  // Set to true only after checking in the Cloudflare dashboard that the bucket "clearfigure-leads" was created with
   // jurisdiction EU (see public/README.md). Then the privacy page says the messages are stored in the EU.
-  leadsBucketEU: true,                      // "tokovi-leads" created with jurisdiction EU on 16 Oct 2026
+  leadsBucketEU: true,                      // "clearfigure-leads" created with jurisdiction EU on 16 Oct 2026
 
   // Optional Cloudflare Turnstile (spam protection on the contact form): the site key from the Cloudflare dashboard.
   // Empty = off. Also set the secret: npx wrangler secret put TURNSTILE_SECRET -c public/wrangler.jsonc

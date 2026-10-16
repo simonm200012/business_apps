@@ -64,7 +64,7 @@ t('notice periods in the right grammatical number', () => {
 const base = { id: 'c1', no: 'CT-2025-001', title: 'Cleaning; offices, HQ', party: 'Čistoča d.o.o.', company: 'RSI', owner: 'p1', category: 'facility', status: 'active',
   start: '2025-01-01', end: '2026-12-31', renewal: 'auto', renewMonths: 12, noticeN: 3, noticeUnit: 'm', noticeEom: false, indexType: 'none', history: [], milestones: [{ id: 'm1', date: '2026-11-20', label: 'Ask for an offer' }], decision: { choice: 'undecided', due: '2026-11-01' } };
 const ctx = (o) => Object.assign({ D, today: '2026-10-15', months: 12, types: { notice: true, reminder: true, decision: true, milestone: true, end: true, renewal: true, price: true }, alarm: 'cat', remind: { facility: 30 },
-  catName: () => 'Cleaning & security', compName: () => 'Tokovi Retail SI', personName: () => 'Maja Kos' }, o || {});
+  catName: () => 'Cleaning & security', compName: () => 'Clearfigure Retail SI', personName: () => 'Maja Kos' }, o || {});
 t('events: deadline, its reminder, decision, milestone and renewal; closed contracts are left out', () => {
   const ev = I.calendarEvents([base, Object.assign({}, base, { id: 'c2', status: 'ended' })], ctx());
   const dl = ev.find(e => e.kind === 'notice');

@@ -1,4 +1,4 @@
-/* Tokovi Mail — Dashboard, Analytics (comparison, flows, cohorts, attribution, export), Event simulator. */
+/* Clearfigure Mail — Dashboard, Analytics (comparison, flows, cohorts, attribution, export), Event simulator. */
 (function () {
   'use strict';
   var AM = window.AM, U = AM.U, E = AM.E, UI = AM.UI, C = AM.C, esc = U.esc, ic = U.ic, I = U.I, DAY = U.DAY;

@@ -1,4 +1,4 @@
-/* Tokovi Mail — block-based email editor. Drag & drop (palette → canvas, reorder) with button and
+/* Clearfigure Mail — block-based email editor. Drag & drop (palette → canvas, reorder) with button and
  * keyboard alternatives, rich text (bold/italic/link/alignment), styles panel, desktop/mobile preview
  * in a sandboxed iframe, generated plain-text version, undo/redo, send test (simulated), save as template. */
 (function () {
@@ -7,7 +7,7 @@
   var Ed = AM.Editor = {};
 
   var PRESETS = {
-    'Tokovi teal': { bg: '#EFEBE4', content: '#FFFFFF', text: '#22272B', muted: '#6A6F73', link: '#0E5A63', btn: '#0E5A63', btnText: '#FFFFFF', head: '#0E5A63', headText: '#FFFFFF' },
+    'Clearfigure teal': { bg: '#EFEBE4', content: '#FFFFFF', text: '#22272B', muted: '#6A6F73', link: '#0E5A63', btn: '#0E5A63', btnText: '#FFFFFF', head: '#0E5A63', headText: '#FFFFFF' },
     'Summer coral': { bg: '#F6EADF', content: '#FFFFFF', text: '#2B2420', muted: '#7A6A60', link: '#A63F21', btn: '#C2502E', btnText: '#FFFFFF', head: '#C2502E', headText: '#FFFFFF' },
     'Midnight': { bg: '#10151C', content: '#1B232D', text: '#E9EEF3', muted: '#9AA7B4', link: '#8FD3E0', btn: '#8FD3E0', btnText: '#0D1A20', head: '#0B1016', headText: '#E9EEF3' },
     'Minimal': { bg: '#F5F5F5', content: '#FFFFFF', text: '#111111', muted: '#666666', link: '#111111', btn: '#111111', btnText: '#FFFFFF', head: '#FFFFFF', headText: '#111111' }
@@ -43,7 +43,7 @@
   function mock(b, s, p) {
     var f = M.FONTS[s.font].css;
     switch (b.type) {
-      case 'header': return '<div class="mock" style="background:' + s.head + ';color:' + s.headText + ';text-align:' + (b.align === 'left' ? 'left' : 'center') + ';padding:18px 20px"><div style="font-family:Georgia,serif;font-size:24px;letter-spacing:1px">' + esc(b.logo || 'Tokovi') + '</div>' + (b.tag ? '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.8">' + esc(b.tag) + '</div>' : '') + (b.nav ? '<div style="font-size:12.5px;margin-top:8px;opacity:.9">Eyeglasses · Sunglasses · Contact lenses</div>' : '') + '</div>';
+      case 'header': return '<div class="mock" style="background:' + s.head + ';color:' + s.headText + ';text-align:' + (b.align === 'left' ? 'left' : 'center') + ';padding:18px 20px"><div style="font-family:Georgia,serif;font-size:24px;letter-spacing:1px">' + esc(b.logo || 'Clearfigure') + '</div>' + (b.tag ? '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.8">' + esc(b.tag) + '</div>' : '') + (b.nav ? '<div style="font-size:12.5px;margin-top:8px;opacity:.9">Eyeglasses · Sunglasses · Contact lenses</div>' : '') + '</div>';
       case 'text': return '<div class="mock" style="font-family:' + f + ';font-size:' + (b.size || s.size) + 'px;text-align:' + (['left', 'center', 'right'].indexOf(b.align) >= 0 ? b.align : 'left') + ';padding:12px ' + Math.min(s.pad, 28) + 'px">' + M.sanitize(b.html) + '</div>';
       case 'image': return '<div class="mock" style="padding:0"><img alt="' + esc(b.alt || '') + '" src="' + M.art(b.art, 600, U.clamp(U.num(b.height, 240), 80, 480), { headline: b.headline, sub: b.sub }) + '"></div>';
       case 'button': return '<div class="mock" style="text-align:' + (b.align || 'center') + '"><span class="mbtn" style="background:' + s.btn + ';color:' + s.btnText + ';font-family:' + f + (b.full ? ';display:block;text-align:center' : '') + '">' + esc(b.label) + '</span>' + (!M.safeUrl(b.url) ? '<div class="hint" style="color:#B4561C">Invalid link</div>' : '') + '</div>';

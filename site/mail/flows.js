@@ -1,4 +1,4 @@
-/* Tokovi Mail — Flows: list, visual builder (canvas with zoom, branches, drag & drop + button/keyboard
+/* Clearfigure Mail — Flows: list, visual builder (canvas with zoom, branches, drag & drop + button/keyboard
  * alternatives), trigger / filters / re-entry settings, per-step stats, flow email editor route. */
 (function () {
   'use strict';

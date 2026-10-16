@@ -1,4 +1,4 @@
-/* Tokovi Mail — boot, hash router, persistence wiring, cross-tab sync, send jobs, demo clock. */
+/* Clearfigure Mail — boot, hash router, persistence wiring, cross-tab sync, send jobs, demo clock. */
 (function () {
   'use strict';
   var AM = window.AM, U = AM.U, E = AM.E, S = AM.S, esc = U.esc;
@@ -27,7 +27,7 @@
       U.$$('.nav a, .tabbar a').forEach(function (a) { if (a.dataset.nav === r.nav) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
       if (keep) window.scrollTo(0, y); else { window.scrollTo(0, 0); var h1 = page.querySelector('h1'); if (h1 && App.navigated) h1.focus({ preventScroll: true }); }
       App.navigated = true;
-      document.title = (App.title || 'Tokovi Mail') + ' — Business Apps';
+      document.title = (App.title || 'Clearfigure Mail') + ' — Business Apps';
       App.title = null;
       return;
     }
@@ -199,8 +199,8 @@
     return out;
   };
   App.applySnapshot = function (data) {
-    if (!data || data.format !== 'stratum-mail/1' || !data.meta) throw new Error('This cloud copy is not Tokovi Mail data.');
-    if (data.version !== AM.Data.VERSION) throw new Error('The cloud copy was made by a different version of Tokovi Mail (' + data.version + ').');
+    if (!data || data.format !== 'stratum-mail/1' || !data.meta) throw new Error('This cloud copy is not Clearfigure Mail data.');
+    if (data.version !== AM.Data.VERSION) throw new Error('The cloud copy was made by a different version of Clearfigure Mail (' + data.version + ').');
     var cols = (data.events && data.events.cols) || EVK;
     var next = {};
     S.KEYS.forEach(function (k) { if (k !== 'events') next[k] = data[k]; });
@@ -211,12 +211,12 @@
     return S.saveAll(db).then(function () {
       S.broadcast({ type: 'saved', keys: S.KEYS.slice() });
       App.navCounts(); App.publishSoon(); App.render(true);
-      U.toast('Loaded Tokovi Mail data from the cloud.');
+      U.toast('Loaded Clearfigure Mail data from the cloud.');
     });
   };
   function attachSync() {
     if (!window.StratumSync || App.sync) return;
-    App.sync = StratumSync.attach({ app: 'mail', label: 'Tokovi Mail data', getSnapshot: function () { return Promise.resolve(App.snapshot()); }, applySnapshot: function (d) { return App.applySnapshot(d); } });
+    App.sync = StratumSync.attach({ app: 'mail', label: 'Clearfigure Mail data', getSnapshot: function () { return Promise.resolve(App.snapshot()); }, applySnapshot: function (d) { return App.applySnapshot(d); } });
     S.afterSave = function () { App.sync.changed(); };
     var el = document.getElementById('syncPanel'); if (el) App.sync.mountPanel(el);
   }

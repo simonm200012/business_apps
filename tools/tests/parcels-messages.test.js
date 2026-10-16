@@ -6,7 +6,7 @@ const M = require(path.join(__dirname, '../../site/parcels/messages.js'));
 
 let n = 0;
 function t(name, fn) { fn(); n++; console.log('ok', n, name); }
-const VARS = { first: 'Ana', name: 'Ana Novak', order: 'SI-1041901', tracking: '91234567890', carrier: 'GLS SI', point: 'GLS ParcelShop Kranj', deadline: '', eta: '', cod: '', shop: 'Tokovi Optika', contact: 'info@example.si · +386 1 000 00 00' };
+const VARS = { first: 'Ana', name: 'Ana Novak', order: 'SI-1041901', tracking: '91234567890', carrier: 'GLS SI', point: 'GLS ParcelShop Kranj', deadline: '', eta: '', cod: '', shop: 'Clearfigure Optika', contact: 'info@example.si · +386 1 000 00 00' };
 
 t('language from country and template kind from the exception rule', () => {
   assert.strictEqual(M.langFor('SI'), 'sl'); assert.strictEqual(M.langFor('HR'), 'hr'); assert.strictEqual(M.langFor('IT'), 'en');
@@ -19,7 +19,7 @@ t('every kind exists in every language with subject, body and SMS, and no placeh
     const v = Object.assign({}, VARS, { eta: M.fmtDate('2026-10-20', lang), deadline: M.fmtDate('2026-10-22', lang), cod: M.fmtMoney(49.9) });
     const m = M.compose(kind, lang, v);
     [m.subject, m.body, m.sms].forEach((x) => { assert.ok(x && x.length > 10, lang + ' ' + kind); assert.ok(!/\{[?/]?\w+\}/.test(x), lang + ' ' + kind + ': ' + x); });
-    assert.ok(m.body.indexOf('Tokovi Optika') > 0 && m.sms.indexOf('Tokovi Optika') === 0);
+    assert.ok(m.body.indexOf('Clearfigure Optika') > 0 && m.sms.indexOf('Clearfigure Optika') === 0);
   }));
 });
 t('placeholders filled: locker point and deadline, ETA, COD only when COD', () => {
@@ -38,7 +38,7 @@ t('placeholders filled: locker point and deadline, ETA, COD only when COD', () =
   assert.ok(M.compose('damaged', 'sl', Object.assign({}, VARS, { lost: true })).body.indexOf('izgubljena') > 0);
   assert.ok(M.compose('damaged', 'hr', VARS).sms.indexOf('oštećena') > 0);
   const noContact = M.compose('late', 'sl', Object.assign({}, VARS, { contact: '' }));
-  assert.ok(/Tokovi Optika$/.test(noContact.body));
+  assert.ok(/Clearfigure Optika$/.test(noContact.body));
 });
 t('formats: dates per language, money with thousands dot and decimal comma', () => {
   assert.strictEqual(M.fmtDate('2026-10-05', 'sl'), '5. 10. 2026');

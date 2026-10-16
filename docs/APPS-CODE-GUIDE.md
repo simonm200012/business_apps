@@ -24,7 +24,7 @@ developer who has never seen the code.
 | ERP | `erp/` | generated demo data | Part 1 |
 | CRM | `crm/` | generated demo data | Part 1 |
 | Analytics | `analytics/` | generated demo data | Part 1 |
-| Tokovi Mail | `mail/` | generated demo data | Part 2 |
+| Clearfigure Mail | `mail/` | generated demo data | Part 2 |
 | Invoices | `invoices/` | the user's own PDFs and photos (stored in the browser) | Part 2 |
 | Desk | `desk/` | the user's own e-mails and confirmations (stored in the browser), plus example tasks | Part 2 |
 | Design Comparison | `design-compare/` | static content | Part 2 |
@@ -38,7 +38,7 @@ developer who has never seen the code.
 
 **Not covered:**
 - **Apps on a demo API:** Portal usage & speed, Margin guard, Refill & win-back, Webshop conversion health, Customer service quality, n8n Runs, Ads & Return. Their `/api/…` calls are answered in the browser by `_shared/demo-api.js` and the app's own `demo-api.js` with made-up numbers.
-- **Apps that came from elsewhere:** Tokovi (`showcase/`), Team Tasks (`team-tasks/`), Pisarna DMS, Client Atlas, Postbench, and the older Branch Manager prototype pages (`*.dc.html`). These were built outside this work and only got small changes here.
+- **Apps that came from elsewhere:** Clearfigure (`showcase/`), Team Tasks (`team-tasks/`), Pisarna DMS, Client Atlas, Postbench, and the older Branch Manager prototype pages (`*.dc.html`). These were built outside this work and only got small changes here.
 
 ## Running the apps locally
 
@@ -477,9 +477,9 @@ Hash form `#/<page>?<filters>`. `readHash()` passes the query through `sanitize(
 
 ---
 
-# Part 2: Tokovi Mail, Invoices, Desk, Design Comparison, Branch Manager bookings
+# Part 2: Clearfigure Mail, Invoices, Desk, Design Comparison, Branch Manager bookings
 
-## Tokovi Mail (`/mail/`)
+## Clearfigure Mail (`/mail/`)
 
 **What it does**: A demo email and SMS marketing tool (in the style of Klaviyo) for a fictional optical retailer: profiles, lists, segments, campaigns with A/B tests, automated flows, sign-up forms, a block email editor and analytics. Everything is simulated in the browser: no email or SMS is ever sent, and all profiles and results are generated. A "demo clock" can be moved forward so that flows and scheduled campaigns run.
 
@@ -848,7 +848,7 @@ No URL routing; `state.view` is a tab saved in localStorage. A search query repl
 
 ## Design Comparison (`/design-compare/`)
 
-**What it does**: A one-page decision tool that renders the same fictional Tokovi dashboard in three design languages (Branch Manager, Photon, Tenzen), side by side or one at a time, in light and dark. It lists the key differences and colour tokens and lets the user pick a winner per criterion, write notes and copy a summary. Nothing is loaded from a server except the font.
+**What it does**: A one-page decision tool that renders the same fictional Clearfigure dashboard in three design languages (Branch Manager, Photon, Tenzen), side by side or one at a time, in light and dark. It lists the key differences and colour tokens and lets the user pick a winner per criterion, write notes and copy a summary. Nothing is loaded from a server except the font.
 
 **Files**
 
@@ -917,7 +917,7 @@ Shell only (theme switch, back button). No bus, no sync.
 
 ## Branch Manager bookings (`/branch-manager/Bookings.html`)
 
-**What it does**: An appointment calendar for the branches of the fictional Tokovi Optika chain: agenda, day, week and monthly shift-plan views per branch, with rooms, services, opening hours and public holidays. Bookings are generated sample data; the user can add, edit, duplicate and delete bookings, and those changes are kept in this browser only. Nothing is sent anywhere.
+**What it does**: An appointment calendar for the branches of the fictional Clearfigure Optika chain: agenda, day, week and monthly shift-plan views per branch, with rooms, services, opening hours and public holidays. Bookings are generated sample data; the user can add, edit, duplicate and delete bookings, and those changes are kept in this browser only. Nothing is sent anywhere.
 
 **Files**
 
@@ -944,7 +944,7 @@ Generated sample bookings, deterministic per branch, day and room:
 - `BRANCHES`: built from `bm-data.js` (Slovenian and Croatian branches), each with its rooms (`roomList` codes `E1`, `E2`…).
 - `SERVICES`: 10 services (eye exams 20/30/60 min, sight measurement, contact-lens fitting/check-up, eye doctor, eye pressure test) with duration, light and dark colours and a weight `w` for random picks; plus `CUSTOM`.
 - Opening hours (`hours()`): Mon–Fri 08:00–19:00 with a 12:00–12:30 break, Saturday 08:00–13:00, Sunday closed. `holidays(country, year)` lists fixed SI/HR holidays, Easter Monday from `easter(y)` and, for HR, Corpus Christi.
-- `generated(branch, date)`: seeds mulberry32 `rng()` with an FNV-1a `hash(branchId|date|room)`. It walks the day from opening to closing; at each step, with probability `base` (0.78 weekdays, 0.58 Saturday, × 1/0.72/0.5 for the 1st/2nd/3rd room, × 0.35 for a showroom, fading after 40 days ahead) it places a weighted service; otherwise it skips 10 or 20 minutes. Customers come from Slovenian/Croatian name pools with `@example.si` / `@example.hr` emails and fake phones; about 3.5% are cancelled, about 3.5% of past ones are no-shows, some are booked online (`createdBy: 'Tokovi'`) and the rest by staff names. Results are cached in `GEN`. Ids look like `ljubljana-2026-10-08-E1-480`.
+- `generated(branch, date)`: seeds mulberry32 `rng()` with an FNV-1a `hash(branchId|date|room)`. It walks the day from opening to closing; at each step, with probability `base` (0.78 weekdays, 0.58 Saturday, × 1/0.72/0.5 for the 1st/2nd/3rd room, × 0.35 for a showroom, fading after 40 days ahead) it places a weighted service; otherwise it skips 10 or 20 minutes. Customers come from Slovenian/Croatian name pools with `@example.si` / `@example.hr` emails and fake phones; about 3.5% are cancelled, about 3.5% of past ones are no-shows, some are booked online (`createdBy: 'Clearfigure'`) and the rest by staff names. Results are cached in `GEN`. Ids look like `ljubljana-2026-10-08-E1-480`.
 
 **State and storage**
 
@@ -1380,7 +1380,7 @@ None of the three ever sends e-mail, posts anything or changes an outside system
 
 ## Joiners & leavers (`/onboarding/`)
 
-**What it does.** Joiners & leavers tracks the checklists for people who start, leave or change role or store, across three fictional group companies (Tokovi SI, Tokovi HR and Tokovi Group). Each case gets dated tasks for HR, IT, the manager, payroll, facilities and the person themself. It also keeps an asset register (laptops, phones, keys, attendance cards) that records who holds what and what still has to come back from leavers.
+**What it does.** Joiners & leavers tracks the checklists for people who start, leave or change role or store, across three fictional group companies (Clearfigure SI, Clearfigure HR and Clearfigure Group). Each case gets dated tasks for HR, IT, the manager, payroll, facilities and the person themself. It also keeps an asset register (laptops, phones, keys, attendance cards) that records who holds what and what still has to come back from leavers.
 
 ### Files
 

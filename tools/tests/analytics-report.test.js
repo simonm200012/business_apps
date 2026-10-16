@@ -128,11 +128,11 @@ t('PDF definition: A4, translated headings, every key figure, page footer', () =
 
 t('e-mail: subject, body and file names per language', () => {
   const sl = R.emailParts(model(), 'sl'), hr = R.emailParts(model({ mtd: true, b: '2026-10-15' }), 'hr');
-  assert.strictEqual(sl.subject, 'Mesečno poročilo – oktober 2026 (Tokovi)');
-  assert.strictEqual(sl.pdfName, 'Tokovi-mesecno-porocilo-2026-10.pdf');
+  assert.strictEqual(sl.subject, 'Mesečno poročilo – oktober 2026 (Clearfigure)');
+  assert.strictEqual(sl.pdfName, 'Clearfigure-mesecno-porocilo-2026-10.pdf');
   assert.ok(sl.body.startsWith('Pozdravljeni,\r\n\r\nv prilogi je mesečno poslovno poročilo za oktober 2026 (1. 10. – 31. 10. 2026).'), sl.body.slice(0, 120));
   assert.ok(sl.body.includes('\r\n• Prihodki so znašali'));
-  assert.strictEqual(hr.emlName, 'Tokovi-mjesecno-izvjesce-2026-10-15.eml');
+  assert.strictEqual(hr.emlName, 'Clearfigure-mjesecno-izvjesce-2026-10-15.eml');
   assert.ok(hr.body.includes('od početka mjeseca do danas'));
 });
 
@@ -143,12 +143,12 @@ t('base64 and RFC 2047 headers', () => {
   const big = Buffer.from(Array.from({ length: 1000 }, (_, i) => (i * 37) % 256));
   assert.strictEqual(R.base64(big), big.toString('base64'));
   assert.strictEqual(R.encodeHeader('Monthly report'), 'Monthly report');
-  const h = R.encodeHeader('Mesečno poročilo – oktober 2026 (Tokovi) – zelo dolga zadeva s šumniki čšž');
+  const h = R.encodeHeader('Mesečno poročilo – oktober 2026 (Clearfigure) – zelo dolga zadeva s šumniki čšž');
   const words = h.split('\r\n ');
   assert.ok(words.length > 1);
   words.forEach(w => { assert.ok(/^=\?UTF-8\?B\?[A-Za-z0-9+/=]+\?=$/.test(w), w); assert.ok(w.length <= 75, w.length); });
   const back = words.map(w => Buffer.from(w.slice(10, -2), 'base64')).reduce((a, b) => Buffer.concat([a, b]));
-  assert.strictEqual(back.toString('utf8'), 'Mesečno poročilo – oktober 2026 (Tokovi) – zelo dolga zadeva s šumniki čšž');
+  assert.strictEqual(back.toString('utf8'), 'Mesečno poročilo – oktober 2026 (Clearfigure) – zelo dolga zadeva s šumniki čšž');
   assert.ok(!/\r|\n/.test(R.encodeHeader('a\r\nBcc: x@y.si').replace(/\r\n /g, '')), 'no header injection');
 });
 
@@ -161,7 +161,7 @@ t('recipients: valid addresses only', () => {
 
 t('.eml: headers, text and the PDF attachment decode back', () => {
   const pdf = Buffer.from('%PDF-1.3\nfake pdf bytes čšž\n%%EOF');
-  const eml = R.buildEml({ to: ['ana@example.si'], subject: 'Mesečno poročilo – oktober 2026', text: 'Pozdravljeni,\r\n\r\nv prilogi je poročilo.', attachments: [{ filename: 'Tokovi-mesecno-porocilo-2026-10.pdf', type: 'application/pdf', bytes: pdf }], boundary: 'BND', date: new Date(2026, 9, 15, 9, 5, 0) });
+  const eml = R.buildEml({ to: ['ana@example.si'], subject: 'Mesečno poročilo – oktober 2026', text: 'Pozdravljeni,\r\n\r\nv prilogi je poročilo.', attachments: [{ filename: 'Clearfigure-mesecno-porocilo-2026-10.pdf', type: 'application/pdf', bytes: pdf }], boundary: 'BND', date: new Date(2026, 9, 15, 9, 5, 0) });
   const [head, body] = eml.split('\r\n\r\n', 2);
   assert.ok(/^To: ana@example\.si$/m.test(head));
   assert.ok(/^Subject: =\?UTF-8\?B\?/m.test(head));
@@ -173,7 +173,7 @@ t('.eml: headers, text and the PDF attachment decode back', () => {
   assert.ok(parts[3].startsWith('--'));
   const dec = p => Buffer.from(p.split('\r\n\r\n')[1].replace(/\r\n/g, ''), 'base64');
   assert.strictEqual(dec(parts[1]).toString('utf8'), 'Pozdravljeni,\r\n\r\nv prilogi je poročilo.');
-  assert.ok(parts[2].includes('Content-Disposition: attachment; filename="Tokovi-mesecno-porocilo-2026-10.pdf"'));
+  assert.ok(parts[2].includes('Content-Disposition: attachment; filename="Clearfigure-mesecno-porocilo-2026-10.pdf"'));
   assert.ok(dec(parts[2]).equals(pdf));
   eml.split('\r\n').forEach(line => assert.ok(line.length <= 998, 'line length'));
   assert.ok(!R.buildEml({ subject: 'x', text: '' }).includes('To:'), 'no To header without recipients');

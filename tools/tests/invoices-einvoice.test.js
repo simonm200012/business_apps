@@ -44,7 +44,7 @@ const ESLOG = `<?xml version="1.0" encoding="UTF-8"?>
   <S_FTX><D_4451>AAI</D_4451><C_C108><D_4440>Hvala za zaupanje</D_4440></C_C108></S_FTX>
   <G_SG1><S_RFF><C_C506><D_1153>ON</D_1153><D_1154>NAR-12</D_1154></C_C506></S_RFF></G_SG1>
   <G_SG1><S_RFF><C_C506><D_1153>PQ</D_1153><D_1154>SI12 2026-77</D_1154></C_C506></S_RFF></G_SG1>
-  <G_SG2><S_NAD><D_3035>BY</D_3035><C_C080><D_3036>Tokovi d.o.o.</D_3036></C_C080><C_C059><D_3042>Ulica 2</D_3042></C_C059><D_3164>Maribor</D_3164><D_3251>2000</D_3251><D_3207>SI</D_3207></S_NAD>
+  <G_SG2><S_NAD><D_3035>BY</D_3035><C_C080><D_3036>Clearfigure d.o.o.</D_3036></C_C080><C_C059><D_3042>Ulica 2</D_3042></C_C059><D_3164>Maribor</D_3164><D_3251>2000</D_3251><D_3207>SI</D_3207></S_NAD>
    <S_FII><D_3035>BB</D_3035><C_C078><D_3194>SI56020100000000019</D_3194></C_C078></S_FII>
    <G_SG3><S_RFF><C_C506><D_1153>VA</D_1153><D_1154>SI 0000 0019</D_1154></C_C506></S_RFF></G_SG3></G_SG2>
   <G_SG2><S_NAD><D_3035>SE</D_3035><C_C080><D_3036>Lipa Net d.o.o.</D_3036><D_3036_2>Lipa</D_3036_2></C_C080><C_C059><D_3042>Optična 12</D_3042></C_C059><D_3164>Maribor</D_3164><D_3251>2000</D_3251><D_3207>SI</D_3207></S_NAD>
@@ -85,7 +85,7 @@ t('e-SLOG 2.0: number, dates, parties, payment details, totals, VAT breakdown, i
   assert.strictEqual(r.seller.name, 'Lipa Net d.o.o.');
   assert.strictEqual(r.seller.vatId, 'SI00000035');
   assert.strictEqual(r.seller.email, 'racuni@lipa.example.si');
-  assert.strictEqual(r.buyer.name, 'Tokovi d.o.o.');
+  assert.strictEqual(r.buyer.name, 'Clearfigure d.o.o.');
   assert.strictEqual(r.buyer.vatId, 'SI00000019', 'spaces removed from the VAT ID');
   assert.strictEqual(r.iban, 'SI56191000000123438', 'the seller\'s RB account, not the buyer\'s BB');
   assert.strictEqual(r.bic, 'DBSISI2X');
@@ -127,9 +127,9 @@ JSVFT0YK</cbc:EmbeddedDocumentBinaryObject></cac:Attachment></cac:AdditionalDocu
   <cac:PostalAddress><cbc:StreetName>Ilica 100</cbc:StreetName><cbc:CityName>Zagreb</cbc:CityName><cbc:PostalZone>10000</cbc:PostalZone><cac:Country><cbc:IdentificationCode>HR</cbc:IdentificationCode></cac:Country></cac:PostalAddress>
   <cac:PartyTaxScheme><cbc:CompanyID>HR00000000043</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>
   <cac:PartyLegalEntity><cbc:RegistrationName>Oblak Tehnologije d.o.o.</cbc:RegistrationName></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty>
- <cac:AccountingCustomerParty><cac:Party><cac:PartyName><cbc:Name>Tokovi</cbc:Name></cac:PartyName>
+ <cac:AccountingCustomerParty><cac:Party><cac:PartyName><cbc:Name>Clearfigure</cbc:Name></cac:PartyName>
   <cac:PartyTaxScheme><cbc:CompanyID>SI00000019</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>
-  <cac:PartyLegalEntity><cbc:RegistrationName>Tokovi d.o.o.</cbc:RegistrationName></cac:PartyLegalEntity><cac:Contact><cbc:ElectronicMail>nabava@example.si</cbc:ElectronicMail></cac:Contact></cac:Party></cac:AccountingCustomerParty>
+  <cac:PartyLegalEntity><cbc:RegistrationName>Clearfigure d.o.o.</cbc:RegistrationName></cac:PartyLegalEntity><cac:Contact><cbc:ElectronicMail>nabava@example.si</cbc:ElectronicMail></cac:Contact></cac:Party></cac:AccountingCustomerParty>
  <cac:PaymentMeans><cbc:PaymentMeansCode>30</cbc:PaymentMeansCode><cbc:PaymentID>HR00 123-1-1</cbc:PaymentID><cac:PayeeFinancialAccount><cbc:ID>HR1723600001101234565</cbc:ID><cac:FinancialInstitutionBranch><cbc:ID>ZABAHR2X</cbc:ID></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans>
  <cac:TaxTotal><cbc:TaxAmount currencyID="HRK">0.00</cbc:TaxAmount></cac:TaxTotal>
  <cac:TaxTotal><cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="EUR">171.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount><cac:TaxCategory><cbc:ID>AE</cbc:ID><cbc:Percent>0</cbc:Percent><cbc:TaxExemptionReason>Reverse charge</cbc:TaxExemptionReason><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal>
@@ -181,15 +181,15 @@ t('not an e-invoice: a clear error', () => {
 
 // ── parser: Billing's own PDFs (quick win 11) ──────────────────────────────
 // the lines pdf.js reads from a PDF made by Billing (billing/pdf.js), Slovenian and English
-const BILLING_SL = ['Lipa svetovanje d.o.o.   RAČUN', 'Cesta 1', '1000 Ljubljana   2026-0042', 'ID za DDV: SI00000001', 'Matična številka: 1234567000   Številka 2026-0042', 'info@example.si · +386 1 000 00 00', 'Datum izdaje 30. 09. 2026', 'Obdobje opravljanja storitev 01. 09. 2026 – 30. 09. 2026', 'Rok plačila 15. 10. 2026', 'Sklic SI00 2026-0042', 'KUPEC', 'Tokovi d.o.o.', 'Ulica 2', '2000 Maribor', 'ID za DDV: SI00000002', 'Opis Količina EM Cena brez DDV Popust DDV Znesek brez DDV', 'Svetovanje september 10 h 80,00 22 % 800,00', 'Osnova 22 % 800,00 €', 'DDV 22 % 176,00 €', 'Skupaj brez DDV 800,00 €', 'Skupaj DDV 176,00 €', 'Za plačilo 976,00 €', 'PLAČILO', 'Prosimo, plačajte na transakcijski račun:', 'IBAN SI56 1910 0000 0123 438 BIC DBSISI2X', 'Banka: Banka d.d.', 'Sklic: SI00 2026-0042', 'Za plačilo:976,00 € · Rok plačila:15. 10. 2026', 'UPN QR', 'Lipa svetovanje d.o.o. · Cesta 1, 1000 Ljubljana · ID za DDV SI00000001 · Matična številka 1234567000 1/1'];
-const BILLING_EN = ['Lipa svetovanje d.o.o.   INVOICE', 'Cesta 1', '1000 Ljubljana   2026-0042', 'VAT ID: SI00000001', 'Registration no.: 1234567000   Number 2026-0042', 'Issue date 30. 09. 2026', 'Due date 15. 10. 2026', 'Payment reference SI00 2026-0042', 'BILL TO', 'Tokovi d.o.o.', 'Description Qty Unit Unit price excl.   Discount VAT Amount excl. VAT', 'Consulting September 10 h 80,00 22 % 800,00', 'Total excl. VAT 800,00 €', 'Total VAT 176,00 €', 'Amount due 976,00 €', 'Please pay by bank transfer to:', 'IBAN SI56 1910 0000 0123 438 BIC DBSISI2X', 'Payment reference: SI00 2026-0042'];
-const CO = [{ id: 'stratum', name: 'Tokovi d.o.o.', variants: [], vatId: 'SI00000002', keywords: [] }];
+const BILLING_SL = ['Lipa svetovanje d.o.o.   RAČUN', 'Cesta 1', '1000 Ljubljana   2026-0042', 'ID za DDV: SI00000001', 'Matična številka: 1234567000   Številka 2026-0042', 'info@example.si · +386 1 000 00 00', 'Datum izdaje 30. 09. 2026', 'Obdobje opravljanja storitev 01. 09. 2026 – 30. 09. 2026', 'Rok plačila 15. 10. 2026', 'Sklic SI00 2026-0042', 'KUPEC', 'Clearfigure d.o.o.', 'Ulica 2', '2000 Maribor', 'ID za DDV: SI00000002', 'Opis Količina EM Cena brez DDV Popust DDV Znesek brez DDV', 'Svetovanje september 10 h 80,00 22 % 800,00', 'Osnova 22 % 800,00 €', 'DDV 22 % 176,00 €', 'Skupaj brez DDV 800,00 €', 'Skupaj DDV 176,00 €', 'Za plačilo 976,00 €', 'PLAČILO', 'Prosimo, plačajte na transakcijski račun:', 'IBAN SI56 1910 0000 0123 438 BIC DBSISI2X', 'Banka: Banka d.d.', 'Sklic: SI00 2026-0042', 'Za plačilo:976,00 € · Rok plačila:15. 10. 2026', 'UPN QR', 'Lipa svetovanje d.o.o. · Cesta 1, 1000 Ljubljana · ID za DDV SI00000001 · Matična številka 1234567000 1/1'];
+const BILLING_EN = ['Lipa svetovanje d.o.o.   INVOICE', 'Cesta 1', '1000 Ljubljana   2026-0042', 'VAT ID: SI00000001', 'Registration no.: 1234567000   Number 2026-0042', 'Issue date 30. 09. 2026', 'Due date 15. 10. 2026', 'Payment reference SI00 2026-0042', 'BILL TO', 'Clearfigure d.o.o.', 'Description Qty Unit Unit price excl.   Discount VAT Amount excl. VAT', 'Consulting September 10 h 80,00 22 % 800,00', 'Total excl. VAT 800,00 €', 'Total VAT 176,00 €', 'Amount due 976,00 €', 'Please pay by bank transfer to:', 'IBAN SI56 1910 0000 0123 438 BIC DBSISI2X', 'Payment reference: SI00 2026-0042'];
+const CO = [{ id: 'stratum', name: 'Clearfigure d.o.o.', variants: [], vatId: 'SI00000002', keywords: [] }];
 
 t('parser: the number after "Številka" / "Number" on Billing PDFs, never the registration number', () => {
-  const sl = P.parseInvoice(BILLING_SL, { ownNames: ['Tokovi'], companies: CO });
+  const sl = P.parseInvoice(BILLING_SL, { ownNames: ['Clearfigure'], companies: CO });
   assert.strictEqual(sl.number, '2026-0042');
   assert.strictEqual(sl.confidence.number, 'high');
-  const en = P.parseInvoice(BILLING_EN, { ownNames: ['Tokovi'], companies: CO });
+  const en = P.parseInvoice(BILLING_EN, { ownNames: ['Clearfigure'], companies: CO });
   assert.strictEqual(en.number, '2026-0042');
   assert.deepStrictEqual([sl.total, sl.vat, sl.net, sl.dueDate, sl.billedTo], [976, 176, 800, '2026-10-15', 'stratum']);
   // label and number in separate columns
@@ -225,7 +225,7 @@ t('samples: dated from today, fictional, files that read back to the same amount
       assert.ok(pdf.startsWith('%PDF-1.4') && pdf.trimEnd().endsWith('%%EOF'));
       const xref = +pdf.match(/startxref\n(\d+)/)[1];
       assert.strictEqual(pdf.slice(xref, xref + 4), 'xref', 'xref offset is right');
-      const p = P.parseInvoice(inv.text.split('\n'), { ownNames: ['Tokovi'] });
+      const p = P.parseInvoice(inv.text.split('\n'), { ownNames: ['Clearfigure'] });
       assert.strictEqual(p.total, inv.total, inv.number);
       assert.strictEqual(p.number, inv.number);
     }

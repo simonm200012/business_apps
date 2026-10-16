@@ -1,4 +1,4 @@
-/* Portal usage & speed — demo of a usage monitor for an internal apps portal (the fictional Tokovi apps portal).
+/* Portal usage & speed — demo of a usage monitor for an internal apps portal (the fictional Clearfigure apps portal).
  * Active users, apps, pages, speed, errors and cloud cost. /api/usage/* is answered in the browser by demo-api.js
  * with made-up numbers. Every number lives in page memory only (LC / META): nothing fetched is written to
  * localStorage, IndexedDB or a sync snapshot. localStorage keeps view preferences only (range, retire threshold, picked apps).
@@ -8,7 +8,7 @@
 
   const $ = (id) => document.getElementById(id);
   const API = '/api/usage/';
-  const UIKEY = 'tokovi-portal-usage-ui';
+  const UIKEY = 'stratum-portal-usage-ui';
   const RANGES = [['30', '30 days'], ['90', '90 days'], ['182', '6 months'], ['400', '13 months']];
 
   // ── helpers ──────────────────────────────────────────────────────────────
@@ -377,9 +377,9 @@
     $('sideFoot').innerHTML = f;
     let t = '';
     if (ok && route.base !== 'apps') {
-      t = '<span class="proj">' + ic('grid') + 'tokovi-portal</span><div class="seg" role="group" aria-label="Period">' + RANGES.map((r) => '<button type="button" data-act="range" data-v="' + r[0] + '" data-fid="range-' + r[0] + '" aria-pressed="' + (ui.range === r[0]) + '">' + r[1] + '</button>').join('') + '</div>' +
+      t = '<span class="proj">' + ic('grid') + 'clearfigure-portal</span><div class="seg" role="group" aria-label="Period">' + RANGES.map((r) => '<button type="button" data-act="range" data-v="' + r[0] + '" data-fid="range-' + r[0] + '" aria-pressed="' + (ui.range === r[0]) + '">' + r[1] + '</button>').join('') + '</div>' +
         '<span class="grow"></span><span class="thru">' + (route.base === 'cost' ? 'Cost through ' + esc(dLong(costThru())) + ' (Pacific time days)' : 'Through ' + esc(dLong(thru())) + ' · Ljubljana days') + '</span>';
-    } else if (ok) t = '<span class="proj">' + ic('grid') + 'tokovi-portal</span><span class="thru">Last 30 days · ' + esc(dLong(addDays(thru(), -29))) + ' – ' + esc(dLong(thru())) + '</span>';
+    } else if (ok) t = '<span class="proj">' + ic('grid') + 'clearfigure-portal</span><span class="thru">Last 30 days · ' + esc(dLong(addDays(thru(), -29))) + ' – ' + esc(dLong(thru())) + '</span>';
     $('topbar').innerHTML = t;
   }
   function setMenu(open) { $('side').classList.toggle('open', open); $('menuBtn').setAttribute('aria-expanded', open ? 'true' : 'false'); }
@@ -441,7 +441,7 @@
   function pageOverview() {
     pageTitle = 'Overview';
     const w = win(), c = lget(apiUrl('overview', w));
-    let h = head('Tokovi apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Portal usage & speed', 'Who uses the portal (as counts), which apps matter, and how fast and reliable they are.');
+    let h = head('Clearfigure apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Portal usage & speed', 'Who uses the portal (as counts), which apps matter, and how fast and reliable they are.');
     const wait = lwait([c], 'portal usage');
     if (wait) return h + wait;
     const days = c.data.days, weeks = c.data.weeks, apps = META.apps;
@@ -548,7 +548,7 @@
     pageTitle = 'Apps';
     const c = lget(apiUrl('apps'));
     const apps = META.apps, T = thru();
-    let h = head('Tokovi apps portal · last 30 days', 'Apps', 'Every portal app with its users in the last 30 days, the trend, speed and errors. Apps are flagged as retire candidates by the rule below.',
+    let h = head('Clearfigure apps portal · last 30 days', 'Apps', 'Every portal app with its users in the last 30 days, the trend, speed and errors. Apps are flagged as retire candidates by the rule below.',
       csvBtn('apps'));
     h += '<div class="ctrls">' +
       '<div class="grp"><label class="label" for="minUsers">Retire if fewer than … users / 30 days</label><input class="num" id="minUsers" type="number" min="0" max="1000" step="1" value="' + ui.minUsers + '" data-chg="minUsers" data-fid="minUsers"></div>' +
@@ -677,7 +677,7 @@
     pageTitle = 'Speed';
     const w = win(), app = appsById()[ui.speedApp] ? ui.speedApp : '';
     const c = lget(apiUrl('speed', { from: w.from, to: w.to, app: app })), o = lget(apiUrl('overview', w));
-    let h = head('Tokovi apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Speed', 'p95 response time (95 % of page loads and API calls were faster) per week, by app and by page.');
+    let h = head('Clearfigure apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Speed', 'p95 response time (95 % of page loads and API calls were faster) per week, by app and by page.');
     const wait = lwait([c, o], 'speed data');
     if (wait) return h + wait;
     const weeks = o.data.weeks, wl = weeks.map((x) => x.week), part = (wk) => addDays(wk, 6) > w.to;
@@ -741,7 +741,7 @@
     pageTitle = 'Errors';
     const w = win(), app = appsById()[ui.errApp] ? ui.errApp : '';
     const c = lget(apiUrl('errors', { from: w.from, to: w.to, app: app }));
-    let h = head('Tokovi apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Errors', '5xx = the app or the portal failed (incl. 502/503/504 from an app behind the portal). 4xx = the request was refused (incl. 401/403 sign-in and access, 404, 429, 499 closed by the browser).',
+    let h = head('Clearfigure apps portal · ' + RANGES.find((r) => r[0] === ui.range)[1], 'Errors', '5xx = the app or the portal failed (incl. 502/503/504 from an app behind the portal). 4xx = the request was refused (incl. 401/403 sign-in and access, 404, 429, 499 closed by the browser).',
       '<label class="sr" for="errApp">App</label><select class="select" id="errApp" data-chg="errApp" data-fid="errApp">' + appOptions(app, 'All apps') + '</select>');
     const wait = lwait([c], 'error data');
     if (wait) return h + wait;
@@ -803,7 +803,7 @@
     const bq = sum(wl.filter((x) => x.service === 'BigQuery'), 'cost');
     h += '<div class="kpis">' + kpi('Total cost', usd(total), dLong(w.from) + ' – ' + dLong(w.to)) +
       kpi('Traced to portal apps', usd(portalCost), pct(rate(portalCost, total)) + ' of the total') +
-      kpi('Portal itself (tokovi-portal)', usd(platform), 'Cloud Run service') +
+      kpi('Portal itself (clearfigure-portal)', usd(platform), 'Cloud Run service') +
       kpi('Unlabelled BigQuery jobs', usd(unl), pct(rate(unl, total)) + ' of the total · ' + pct(rate(unl, bq), 0) + ' of BigQuery', unl > total * 0.2 ? 'neg' : '') +
       kpi('Credits', usd(sum(wl, 'credits')), 'already taken off') + '</div>';
     h += '<div class="stack" style="margin-bottom:14px">' + budgetCard(true) + '</div>';

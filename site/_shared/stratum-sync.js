@@ -51,7 +51,7 @@
   'use strict';
   if (window.StratumSync) return;
 
-  var H = { 'X-Tokovi-Apps': '1' };
+  var H = { 'X-Stratum-Apps': '1' };
   // expired: Cloudflare Access wants a new sign-in; unreachable: the last check could not reach the server
   var auth = { enabled: false, provider: '', devLogin: false, signupDomains: [], user: null, loaded: false, expired: false, unreachable: false };
   var listeners = [], controllers = [];

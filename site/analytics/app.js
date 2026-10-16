@@ -1,4 +1,4 @@
-/* Tokovi Analytics: dashboard UI. Demo data comes from data.js (window.AA). No network, no libraries. */
+/* Clearfigure Analytics: dashboard UI. Demo data comes from data.js (window.AA). No network, no libraries. */
 (function () {
   'use strict';
   const A = window.AA;
@@ -2144,7 +2144,7 @@
     const R = getRange();
     const RP = page === 'report' && ui.reportPeriod ? ui.reportPeriod : null;
     const period = RP ? [RP.a, RP.b] : [R.a, R.b];
-    const lines = [['Tokovi Analytics (demo data)'], ['Page', (PAGES.find(p => p[0] === page) || [0, page])[1]], ['Period', A.iso(period[0]), A.iso(period[1])],
+    const lines = [['Clearfigure Analytics (demo data)'], ['Page', (PAGES.find(p => p[0] === page) || [0, page])[1]], ['Period', A.iso(period[0]), A.iso(period[1])],
       RP ? ['Comparison', 'previous month', RP.pr ? A.iso(RP.pr[0]) : '', RP.pr ? A.iso(RP.pr[1]) : '', 'last year', RP.lr ? A.iso(RP.lr[0]) : '', RP.lr ? A.iso(RP.lr[1]) : '']
         : page === 'live' ? ['Source', 'ERP and CRM demo apps (stratum-bus snapshots)'] : ['Comparison', R.cmpOk ? cmpName() : 'none', R.cmpOk ? A.iso(R.ca) : '', R.cmpOk ? A.iso(R.cb) : ''],
       ['Filters', page === 'live' ? 'not applied' : scopeText()], ['Note', 'Targets and forecasts are plans/estimates, not actuals'], []];

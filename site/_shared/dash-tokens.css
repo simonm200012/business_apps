@@ -1,6 +1,6 @@
 /* Business Apps — design tokens for the "New design" dashboard pages.
  * Same token names the dashboard pages were written against; light by default,
- * dark when the Tokovi shell resolves the theme to dark (html[data-stratum-mode="dark"]). */
+ * dark when the Clearfigure shell resolves the theme to dark (html[data-stratum-mode="dark"]). */
 :root {
   color-scheme: light;
   --font-anthropic-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;

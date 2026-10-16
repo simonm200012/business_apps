@@ -286,7 +286,7 @@
       for (var n = e; n && n !== document.body && n !== document.documentElement; n = n.parentElement) {
         var cs = getComputedStyle(n), p = cs.position;
         if (p !== 'fixed' && p !== 'sticky') continue;
-        if (seen.indexOf(n) >= 0 || n.id === 'stratum-demo-badge' || n.tagName === 'TOKOVI-DESIGN-SWITCH') return;
+        if (seen.indexOf(n) >= 0 || n.id === 'stratum-demo-badge' || n.tagName === 'STRATUM-DESIGN-SWITCH') return;
         seen.push(n);
         if (p === 'sticky' && cs.bottom === 'auto') return;
         var b = n.getBoundingClientRect();

@@ -55,7 +55,7 @@ function sl(P, C, e, d) {
   const mo = (n) => e(n) + '/mesec', from = (n) => 'od ' + e(n);
   return {
     locale: 'sl-SI',
-    title: 'Tokovi – priprava na e-račune, terjatve, likvidnost in plan',
+    title: 'Clearfigure – priprava na e-račune, terjatve, likvidnost in plan',
     description: 'Preverimo in uredimo matične podatke pred obveznimi e-računi (Hrvaška od 1. 1. 2026, Slovenija od 1. 1. 2028) ter uvedemo orodja za terjatve, napoved likvidnosti in plan.',
     skip: 'Skoči na vsebino',
     nav: { einv: 'E-računi', products: 'Paketi', demo: 'Demo', about: 'O meni', faq: 'Vprašanja', contact: 'Kontakt', cta: 'Pišite nam', menu: 'Meni', lang: 'Jezik' },
@@ -122,7 +122,7 @@ function sl(P, C, e, d) {
     },
     built: { eyebrow: 'Zgrajeno za stranke', h2: 'In še aplikacije za finance, prodajo in operativo.', lead: 'Vse temeljijo na istem pristopu: vaš proces, vaši podatki, brez menjave ERP-ja. Pokažemo jih na sestanku.' },
     about: {
-      eyebrow: 'O meni', h2: 'Za podjetjem Tokovi stojim jaz.', photo: '[Fotografija]',
+      eyebrow: 'O meni', h2: 'Za podjetjem Clearfigure stojim jaz.', photo: '[Fotografija]',
       bio: 'Gradim podatkovne platforme, poročila Power BI in poslovne aplikacije za finance, prodajo in operativo. Delam neposredno z vami: od prvega pregleda podatkov do aplikacije, ki jo vaša ekipa uporablja vsak dan.',
       bio2: 'Študiral sem na Ekonomski fakulteti Univerze v Ljubljani in delam kot podatkovni in BI analitik ter finančni kontroler (Python, SQL, BigQuery, Power BI). Zato vprašanja financ poznam iz prve roke, ne samo iz kode.',
       cases: 'Primera iz demo aplikacij', casesNote: 'Nordvik Distribucija d.o.o. je izmišljeno podjetje iz demo aplikacij; številke izračunajo aplikacije same na demo podatkih. Študije primerov resničnih strank bomo objavili s soglasjem strank.',
@@ -163,7 +163,7 @@ function sl(P, C, e, d) {
       }
     },
     footer: {
-      tagline: 'Tokovi – podatki, analitika in poslovne aplikacije za slovenska in hrvaška podjetja.',
+      tagline: 'Clearfigure – podatki, analitika in poslovne aplikacije za slovenska in hrvaška podjetja.',
       privacy: 'Zasebnost', legal: 'Pravno obvestilo', contact: 'Kontakt', demoNote: 'Vsi podatki v demo aplikacijah so izmišljeni.',
       reg: 'Matična številka', tax: 'Davčna številka', capital: 'Osnovni kapital', legalLang: ''
     }
@@ -175,7 +175,7 @@ function hr(P, C, e, d) {
   const mo = (n) => e(n) + '/mj.', from = (n) => 'od ' + e(n);
   return {
     locale: 'hr-HR',
-    title: 'Tokovi – priprema za eRačune, potraživanja, likvidnost i plan',
+    title: 'Clearfigure – priprema za eRačune, potraživanja, likvidnost i plan',
     description: 'Provjerimo i uredimo matične podatke za obvezne eRačune (Hrvatska od 1. 1. 2026., Slovenija od 1. 1. 2028.) i uvedemo alate za potraživanja, prognozu likvidnosti i plan.',
     skip: 'Preskoči na sadržaj',
     nav: { einv: 'eRačuni', products: 'Paketi', demo: 'Demo', about: 'O meni', faq: 'Pitanja', contact: 'Kontakt', cta: 'Javite se', menu: 'Izbornik', lang: 'Jezik' },
@@ -242,7 +242,7 @@ function hr(P, C, e, d) {
     },
     built: { eyebrow: 'Izrađeno za klijente', h2: 'I još aplikacija za financije, prodaju i operativu.', lead: 'Sve počivaju na istom pristupu: vaš proces, vaši podaci, bez zamjene ERP-a. Pokažemo ih na sastanku.' },
     about: {
-      eyebrow: 'O meni', h2: 'Iza tvrtke Tokovi stojim ja.', photo: '[Fotografija]',
+      eyebrow: 'O meni', h2: 'Iza tvrtke Clearfigure stojim ja.', photo: '[Fotografija]',
       bio: 'Gradim podatkovne platforme, Power BI izvještaje i poslovne aplikacije za financije, prodaju i operativu. Radim izravno s vama: od prve provjere podataka do aplikacije koju vaš tim koristi svaki dan.',
       bio2: 'Studirao sam na Ekonomskom fakultetu Sveučilišta u Ljubljani i radim kao podatkovni i BI analitičar te financijski kontroler (Python, SQL, BigQuery, Power BI). Zato pitanja financija poznajem iz prve ruke, a ne samo iz koda.',
       cases: 'Primjeri iz demo aplikacija', casesNote: 'Nordvik Distribucija d.o.o. izmišljena je tvrtka iz demo aplikacija; brojke izračunavaju same aplikacije na demo podacima. Studije slučaja stvarnih klijenata objavit ćemo uz njihovu suglasnost.',
@@ -283,7 +283,7 @@ function hr(P, C, e, d) {
       }
     },
     footer: {
-      tagline: 'Tokovi – podaci, analitika i poslovne aplikacije za slovenske i hrvatske tvrtke.',
+      tagline: 'Clearfigure – podaci, analitika i poslovne aplikacije za slovenske i hrvatske tvrtke.',
       privacy: 'Privatnost', legal: 'Pravna obavijest', contact: 'Kontakt', demoNote: 'Svi podaci u demo aplikacijama su izmišljeni.',
       reg: 'Matični broj', tax: 'Porezni broj', capital: 'Temeljni kapital', legalLang: ' (na slovenskom)'
     }
@@ -295,7 +295,7 @@ function en(P, C, e, d) {
   const mo = (n) => e(n) + '/month', from = (n) => 'from ' + e(n);
   return {
     locale: 'en-GB',
-    title: 'Tokovi – e-invoice readiness, collections, cash forecast and budgets',
+    title: 'Clearfigure – e-invoice readiness, collections, cash forecast and budgets',
     description: 'We check and clean your master data before mandatory e-invoicing (Croatia since 1 January 2026, Slovenia from 1 January 2028) and set up tools for collections, cash forecasting and budgets.',
     skip: 'Skip to content',
     nav: { einv: 'E-invoices', products: 'Packages', demo: 'Demo', about: 'About', faq: 'FAQ', contact: 'Contact', cta: 'Get in touch', menu: 'Menu', lang: 'Language' },
@@ -362,7 +362,7 @@ function en(P, C, e, d) {
     },
     built: { eyebrow: 'Built for clients', h2: 'And more apps for finance, sales and operations.', lead: 'All built the same way: your process, your data, no ERP replacement. We show them in a meeting.' },
     about: {
-      eyebrow: 'About', h2: 'Tokovi is me.', photo: '[Photo]',
+      eyebrow: 'About', h2: 'Clearfigure is me.', photo: '[Photo]',
       bio: 'I build data platforms, Power BI reports and business apps for finance, sales and operations. You work with me directly: from the first data check to the app your team uses every day.',
       bio2: 'I studied at the School of Economics and Business, University of Ljubljana, and work as a data & BI analyst and financial controller (Python, SQL, BigQuery, Power BI). So I know finance questions first-hand, not just from code.',
       cases: 'Examples from the demo apps', casesNote: 'Nordvik Distribucija d.o.o. is a fictional company from the demo apps; the apps calculate these figures themselves from the demo data. Case studies of real clients will be published with their consent.',
@@ -403,7 +403,7 @@ function en(P, C, e, d) {
       }
     },
     footer: {
-      tagline: 'Tokovi – data, analytics and business apps for Slovenian and Croatian companies.',
+      tagline: 'Clearfigure – data, analytics and business apps for Slovenian and Croatian companies.',
       privacy: 'Privacy', legal: 'Legal notice', contact: 'Contact', demoNote: 'All data in the demo apps is fictional.',
       reg: 'Registration no.', tax: 'Tax no.', capital: 'Share capital', legalLang: ' (in Slovenian)'
     }

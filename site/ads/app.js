@@ -434,7 +434,7 @@
     const f = state.meta?.freshness || {};
     const defs = [
       ['Ad spend', 'Google Ads cost and Meta spend in EUR, from the daily campaign exports.'],
-      ['Revenue, orders (GA4)', 'GA4 purchase revenue and transactions across the three web shops (Tokovi Optika SI, Tokovi Optika HR, Tokovi Lenses IT), by session channel.'],
+      ['Revenue, orders (GA4)', 'GA4 purchase revenue and transactions across the three web shops (Clearfigure Optika SI, Clearfigure Optika HR, Clearfigure Lenses IT), by session channel.'],
       ['Revenue per € of ads', 'GA4 web revenue ÷ e-commerce ad spend (Google + Meta). Optics campaigns are left out because they drive store visits, not web orders.'],
       ['Cost per order', 'E-commerce ad spend ÷ GA4 orders, all channels. A blended number: it includes orders that ads did not drive.'],
       ['Google ROAS (GA4)', 'GA4 revenue from sessions GA4 attributes to Google Ads campaigns ÷ Google e-commerce spend.'],

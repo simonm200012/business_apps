@@ -1,6 +1,6 @@
-// Tokovi public site Worker (public/wrangler.jsonc). Static files come from public/dist (the build output); only
+// Clearfigure public site Worker (public/wrangler.jsonc). Static files come from public/dist (the build output); only
 // /api/* reaches this code. The one route is POST /api/contact: the contact form's message, checked and stored as JSON
-// in the private R2 bucket "tokovi-leads" (binding LEADS). No Cloudflare Access, no cloud sync, no cookies.
+// in the private R2 bucket "clearfigure-leads" (binding LEADS). No Cloudflare Access, no cloud sync, no cookies.
 //
 //   leads/<YYYY-MM>/<time>-<id>.json   one message (see leadRecord), never parsed again by this Worker
 //   ratelimit/<YYYY-MM-DD>/salt         a random key for that day's IP hashes

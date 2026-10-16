@@ -561,7 +561,7 @@
     var fmtD = function (x) { return x == null ? '—' : NF0.format(Math.round(x)); };
 
     var h = head(eyebrow('People operations · demo'), 'Joiners &amp; leavers<span class="dot">.</span>',
-      'Checklists for starts, moves and last days across Tokovi d.o.o. (SI, HR) and Tokovi Group d.o.o. A real version would read the HR list and Microsoft 365; here every person, device and number is fictional.',
+      'Checklists for starts, moves and last days across Clearfigure d.o.o. (SI, HR) and Clearfigure Group d.o.o. A real version would read the HR list and Microsoft 365; here every person, device and number is fictional.',
       '<a class="btn" href="#/tasks">' + ic('check') + 'My tasks</a><button type="button" class="btn pri" data-act="new-case" data-fid="ov-new">' + ic('plus') + 'New case</button>');
     h += '<div class="kpis">' +
       kpi('Open cases', num(open.length), n.joiner + ' joiners · ' + n.leaver + ' leavers · ' + n.change + ' changes', '#/cases') +

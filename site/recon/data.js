@@ -24,8 +24,8 @@
     { id: 'monri-si', provider: 'monri', name: 'Monri SI', cadence: 'daily', lag: 2, bank: 'MONRI PAYMENTS D.O.O.' },
     { id: 'monri-hr', provider: 'monri', name: 'Monri HR', cadence: 'daily', lag: 2, bank: 'MONRI PAYMENTS D.O.O.' },
     { id: 'adyen', provider: 'adyen', name: 'Adyen', cadence: 'daily', lag: 2, bank: 'ADYEN N.V.' },
-    { id: 'paypal-stratum', provider: 'paypal', name: 'PayPal Tokovi', cadence: 'weekly', lag: 1, bank: 'PAYPAL EUROPE S.A R.L.' },
-    { id: 'paypal-tokovi-group', provider: 'paypal', name: 'PayPal Tokovi Group', cadence: 'weekly', lag: 1, bank: 'PAYPAL EUROPE S.A R.L.' },
+    { id: 'paypal-stratum', provider: 'paypal', name: 'PayPal Clearfigure', cadence: 'weekly', lag: 1, bank: 'PAYPAL EUROPE S.A R.L.' },
+    { id: 'paypal-clearfigure-group', provider: 'paypal', name: 'PayPal Clearfigure Group', cadence: 'weekly', lag: 1, bank: 'PAYPAL EUROPE S.A R.L.' },
     { id: 'klarna-si', provider: 'klarna', name: 'Klarna SI', cadence: 'weekly', lag: 3, bank: 'KLARNA BANK AB' },
     { id: 'klarna-hr', provider: 'klarna', name: 'Klarna HR', cadence: 'weekly', lag: 3, bank: 'KLARNA BANK AB' },
     { id: 'klarna-it', provider: 'klarna', name: 'Klarna IT', cadence: 'weekly', lag: 3, bank: 'KLARNA BANK AB' },
@@ -124,7 +124,7 @@
     function accountFor(provider, shop) {
       switch (provider) {
         case 'monri': return shop.country === 'HR' ? 'monri-hr' : 'monri-si';
-        case 'paypal': return shop.country === 'IT' ? 'paypal-tokovi-group' : 'paypal-stratum';
+        case 'paypal': return shop.country === 'IT' ? 'paypal-clearfigure-group' : 'paypal-stratum';
         case 'klarna': return 'klarna-' + shop.country.toLowerCase();
         case 'cod': return shop.country === 'SI' ? (chance(.6) ? 'cod-posta' : 'cod-gls-si') : shop.country === 'HR' ? (chance(.7) ? 'cod-hp' : 'cod-boxnow') : 'cod-gls-it';
         default: return provider;
@@ -142,7 +142,7 @@
       switch (t.provider) {
         case 'monri': return Math.round(g * ({ Visa: .0125, Mastercard: .0125, Maestro: .009, Diners: .022, Amex: .026 }[t.brand] || .0125));
         case 'adyen': return 11 + Math.round(g * ({ Amex: .028, Maestro: .009 }[t.brand] || .011));
-        case 'paypal': return 35 + Math.round(g * (a === 'paypal-tokovi-group' && t.origCurrency ? .039 : .0249));
+        case 'paypal': return 35 + Math.round(g * (a === 'paypal-clearfigure-group' && t.origCurrency ? .039 : .0249));
         case 'klarna': return 35 + Math.round(g * .0329);
         case 'flik': return 15;
         case 'valu': return Math.round(g * .01);
@@ -285,7 +285,7 @@
     });
     // payments without an order (test payments, deleted orders, B2B customers paying to the web account)
     [['monri', 'monri-si', 'SI', '#si-399' + int(100, 999)], ['monri', 'monri-hr', 'HR', 'HR-5' + int(10000, 99999) + '-TEST'], ['adyen', 'adyen', 'IT', 'IT-799' + int(100, 999)],
-     ['adyen', 'adyen', 'SI', ''], ['paypal', 'paypal-stratum', 'HR', ''], ['paypal', 'paypal-tokovi-group', 'IT', 'Order IT-798' + int(100, 999)],
+     ['adyen', 'adyen', 'SI', ''], ['paypal', 'paypal-stratum', 'HR', ''], ['paypal', 'paypal-clearfigure-group', 'IT', 'Order IT-798' + int(100, 999)],
      ['bank', 'bank', 'SI', 'AKONTACIJA'], ['bank', 'bank', 'SI', 'SI00 2026-0918'], ['bank', 'bank', 'HR', 'HR99'], ['flik', 'flik', 'SI', 'SI00 3999' + int(10, 99)], ['cod', 'cod-posta', 'SI', '']
     ].forEach(function (x) {
       var c = newCustomer(x[2]), d = addDays(START, int(8, 80));
@@ -355,8 +355,8 @@
       var c = d.replace(/-/g, '');
       switch (a.provider) {
         case 'monri': return 'MNR-' + a.id.slice(-2).toUpperCase() + '-' + c;
-        case 'adyen': return 'TokoviEU_batch_' + (1200 + n);
-        case 'paypal': return 'PP-' + (a.id === 'paypal-tokovi-group' ? 'VAL' : 'ADR') + '-' + c;
+        case 'adyen': return 'ClearfigureEU_batch_' + (1200 + n);
+        case 'paypal': return 'PP-' + (a.id === 'paypal-clearfigure-group' ? 'VAL' : 'ADR') + '-' + c;
         case 'klarna': return 'KL-' + a.id.slice(-2).toUpperCase() + '-' + (880000 + n);
         case 'flik': return 'BKT-' + c;
         case 'valu': return 'VALU-' + c;

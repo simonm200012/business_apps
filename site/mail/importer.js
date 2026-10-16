@@ -1,4 +1,4 @@
-/* Tokovi Mail — subscriber CSV import: parsing (";" or "," or tab, quotes, BOM), column mapping with
+/* Clearfigure Mail — subscriber CSV import: parsing (";" or "," or tab, quotes, BOM), column mapping with
  * EN/SL/HR header guesses, and a dry-run plan (new / update / skip, with reasons) that the Profiles page
  * shows before anything is saved. Pure functions, no DOM: also loaded by tools/tests/mail-import.test.js.
  *

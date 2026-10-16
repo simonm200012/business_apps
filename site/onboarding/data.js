@@ -10,9 +10,9 @@
   var VERSION = 2; // saved data of an older version is replaced by a fresh demo (upgrade)
 
   var COMPANIES = [
-    { id: 'SSI', name: 'Tokovi d.o.o.', country: 'SI', label: 'Tokovi d.o.o. (SI)' },
-    { id: 'SHR', name: 'Tokovi d.o.o.', country: 'HR', label: 'Tokovi d.o.o. (HR)' },
-    { id: 'SGR', name: 'Tokovi Group d.o.o.', country: 'SI', label: 'Tokovi Group d.o.o. (SI)' }
+    { id: 'SSI', name: 'Clearfigure d.o.o.', country: 'SI', label: 'Clearfigure d.o.o. (SI)' },
+    { id: 'SHR', name: 'Clearfigure d.o.o.', country: 'HR', label: 'Clearfigure d.o.o. (HR)' },
+    { id: 'SGR', name: 'Clearfigure Group d.o.o.', country: 'SI', label: 'Clearfigure Group d.o.o. (SI)' }
   ];
   var KINDS = { store: 'Optics store', office: 'Office', warehouse: 'Warehouse', callcentre: 'Call centre' };
   var LOCATIONS = [

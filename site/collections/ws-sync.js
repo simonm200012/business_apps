@@ -45,7 +45,7 @@
     var running = null, again = false;
 
     function req(method, path, body, raw) {
-      var init = { method: method, headers: { 'X-Tokovi-Apps': '1' }, redirect: 'manual', credentials: 'same-origin', cache: 'no-store' };
+      var init = { method: method, headers: { 'X-Stratum-Apps': '1' }, redirect: 'manual', credentials: 'same-origin', cache: 'no-store' };
       if (body !== undefined) { init.body = raw ? body : JSON.stringify(body); init.headers['Content-Type'] = 'application/json'; }
       return P().then(function () { return o.fetch(base + path, init); }).then(function (r) {
         if (r.type === 'opaqueredirect' || r.status === 0 || r.status === 401) throw err('expired', 'Your sign-in has expired.');
@@ -283,7 +283,7 @@
     try { root.location.hash = '#/'; root.location.reload(); } catch (e) { /* tests */ }
   }
   function api(method, url, body) {
-    var init = { method: method, headers: { 'X-Tokovi-Apps': '1' }, redirect: 'manual', credentials: 'same-origin', cache: 'no-store' };
+    var init = { method: method, headers: { 'X-Stratum-Apps': '1' }, redirect: 'manual', credentials: 'same-origin', cache: 'no-store' };
     if (body !== undefined) { init.body = typeof body === 'string' ? body : JSON.stringify(body); init.headers['Content-Type'] = 'application/json'; }
     return root.fetch(url, init).then(function (r) {
       if (r.type === 'opaqueredirect' || r.status === 0 || r.status === 401) throw err('expired', tx('Your sign-in has expired.'));

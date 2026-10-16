@@ -1,4 +1,4 @@
-/* Tokovi Mail — shared helpers: escaping, formatting, seeded random, dates, dialogs, toast, CSV. */
+/* Clearfigure Mail — shared helpers: escaping, formatting, seeded random, dates, dialogs, toast, CSV. */
 (function () {
   'use strict';
   var AM = window.AM = window.AM || {};

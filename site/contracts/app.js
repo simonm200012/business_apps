@@ -1332,7 +1332,7 @@
   $('csvPick').addEventListener('change', function () { var f = this.files && this.files[0]; this.value = ''; if (f && importLayer && layers.indexOf(importLayer) >= 0) importLayer.onFile(f); });
   function sampleCsv() {
     var rows = [
-      ['', 'Lease: pop-up store Ljubljana (example)', 'Demo Retail Park d.o.o.', 'Tokovi Retail SI (demo)', 'Petra Hrovat', 'Store leases', 'SI-LJ', '2026-11-01', '2029-10-31', 'auto', '12', '6m', 'yes', '3200', 'month', 'EUR', 'monthly', 'cpi', '', 'anniversary', '9600', 'deposit', 'draft', 'shopping centre; pop-up', 'Rent monthly in advance; CPI yearly.', 'Example Person', 'person@example.com', '+386 1 555 00 00'],
+      ['', 'Lease: pop-up store Ljubljana (example)', 'Demo Retail Park d.o.o.', 'Clearfigure Retail SI (demo)', 'Petra Hrovat', 'Store leases', 'SI-LJ', '2026-11-01', '2029-10-31', 'auto', '12', '6m', 'yes', '3200', 'month', 'EUR', 'monthly', 'cpi', '', 'anniversary', '9600', 'deposit', 'draft', 'shopping centre; pop-up', 'Rent monthly in advance; CPI yearly.', 'Example Person', 'person@example.com', '+386 1 555 00 00'],
       ['', 'Courier agreement (example)', 'Example Courier d.o.o.', 'ECOM', '', 'logistics', '', '1.1.2026', '', 'open', '', '30d', 'yes', '2400', 'month', 'EUR', 'monthly', 'none', '', '', '0', 'none', 'active', 'courier', 'Price per parcel by weight band.', '', '', ''],
       ['', 'Analytics tool (example)', 'Example Analytics Inc.', 'HOLD', 'Tomaž Kralj', 'software', '', '2026-03-15', '2027-03-14', 'auto', '12', '30d', 'no', '1990', 'year', 'USD', 'yearly', 'fixed', '5', 'jan', '0', 'none', 'active', 'data tool', 'Annual subscription.', '', '', '']
     ];

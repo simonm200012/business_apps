@@ -1,4 +1,4 @@
-/* Tokovi Mail — engine: profile/event index, segment evaluation, predictive metrics, attribution,
+/* Clearfigure Mail — engine: profile/event index, segment evaluation, predictive metrics, attribution,
  * message stats, flow runner (history + live), campaign/SMS send simulation. Nothing leaves the browser. */
 (function () {
   'use strict';
@@ -601,8 +601,8 @@
   };
   E.newStep = function (type) {
     var s = { id: 's' + U.uid(), type: type, st: {} };
-    if (type === 'email') { var t = AM.Email.templateByKey('news'); s.name = 'Email'; s.subject = 'A message from Tokovi'; s.preview = ''; s.design = AM.Email.reid(t.design()); }
-    if (type === 'sms') { s.name = 'SMS'; s.body = 'Tokovi: Hi {{ first_name|default:"there" }}, ...  Reply STOP to opt out.'; }
+    if (type === 'email') { var t = AM.Email.templateByKey('news'); s.name = 'Email'; s.subject = 'A message from Clearfigure'; s.preview = ''; s.design = AM.Email.reid(t.design()); }
+    if (type === 'sms') { s.name = 'SMS'; s.body = 'Clearfigure: Hi {{ first_name|default:"there" }}, ...  Reply STOP to opt out.'; }
     if (type === 'delay') { s.amount = 1; s.unit = 'days'; }
     if (type === 'split') { s.cond = { kind: 'event', ev: 'order', op: 'atleast', n: 1, win: { type: 'since' } }; s.yes = []; s.no = []; }
     if (type === 'tsplit') { s.cond = { field: 'value', op: 'gt', value: 100 }; s.yes = []; s.no = []; }

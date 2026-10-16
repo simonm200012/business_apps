@@ -276,7 +276,7 @@
     else if (!SESSION.signedIn) box = '<div class="box"><p><b>Live data for approved accounts — sign in.</b> Your Business Apps account must be on the list for this app.</p><button type="button" class="btn pri" data-act="signin">Sign in</button></div>';
     else box = '<div class="box"><p>Signed in as <b>' + esc(SESSION.email) + '</b>, but <b>your account is not on the list</b> for live webshop data. Ask the app owner to add it, or sign in with another account.</p><button type="button" class="btn" data-act="signin">Switch account</button></div>';
     return '<div class="gate"><span class="eyebrow">Business Apps · e-commerce & UX</span><h1 tabindex="-1">Webshop conversion health</h1>' +
-      '<p class="lead">How shoppers behave on the webshops (Tokovi Optika SI, Tokovi Optika HR, Tokovi Lenses IT): where they drop off, by shop, device, product category and landing page, and what looks broken. Built every morning from Google Analytics 4. Ad spend is in Ads & Return.</p>' +
+      '<p class="lead">How shoppers behave on the webshops (Clearfigure Optika SI, Clearfigure Optika HR, Clearfigure Lenses IT): where they drop off, by shop, device, product category and landing page, and what looks broken. Built every morning from Google Analytics 4. Ad spend is in Ads & Return.</p>' +
       '<ul><li>Overview per shop: sessions, conversion, revenue per session and the funnel, against the previous period and last year.</li>' +
       '<li>Funnel by category: contact lenses vs frames vs sunglasses and more.</li>' +
       '<li>The mobile vs desktop gap per shop.</li><li>Landing pages with traffic but no sales, and the biggest drops.</li>' +

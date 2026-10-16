@@ -27,10 +27,10 @@
   var MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   // your own companies: which one an invoice is billed to (the buyer), so costs land on the right books
   var DEFAULT_COMPANIES = [
-    { id: 'stratum', name: 'Tokovi d.o.o.', country: 'SI', variants: [], vatId: '', keywords: [] }
+    { id: 'stratum', name: 'Clearfigure d.o.o.', country: 'SI', variants: [], vatId: '', keywords: [] }
   ];
   var DEFAULT_SETTINGS = {
-    ownNames: ['Tokovi'], ownTaxIds: [], categories: P.DEFAULT_CATEGORIES.slice(), companies: DEFAULT_COMPANIES, users: [], migrations: {},
+    ownNames: ['Clearfigure'], ownTaxIds: [], categories: P.DEFAULT_CATEGORIES.slice(), companies: DEFAULT_COMPANIES, users: [], migrations: {},
     remindDays: 3, notify: false, exportPattern: '{date}_{vendor}_{number}', exportSep: ';'
   };
   var UNASSIGNED = '__none';

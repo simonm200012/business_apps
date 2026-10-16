@@ -94,7 +94,7 @@ t('reminder texts in the customer\'s language', () => {
   const a = K.reminderText(si), b = K.reminderText(hr);
   assert.ok(a.startsWith('Pozdravljeni ' + si.first + ','), a);
   assert.ok(a.includes('v petek, 16. 10. 2026 ob ' + K.hm(si.start)), a);
-  assert.ok(a.includes('Tokovi Optika Ljubljana, Slovenska cesta 41'));
+  assert.ok(a.includes('Clearfigure Optika Ljubljana, Slovenska cesta 41'));
   assert.ok(b.startsWith('Poštovani ' + hr.first + ','), b);
   assert.ok(b.includes('u petak, 16. 10. 2026 u ' + K.hm(hr.start)), b);
   assert.ok(K.reminderText(si, 'en').includes('on Friday, 16. 10. 2026 at'));

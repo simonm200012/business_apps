@@ -15,7 +15,7 @@
   var MARKETS = ['IT', 'CRO', 'SI', 'Other'];
   var EDGES = [300, 900, 1800, 3600, 7200, 10800, 14400, 21600, 28800, 43200, 57600, 86400, 129600, 172800, 259200, 345600, 432000, 604800, 1209600];
   var NB = EDGES.length + 1;
-  var LIVE_EMAIL = 'demo@tokovi.example';
+  var LIVE_EMAIL = 'demo@clearfigure.example';
 
   // ── small helpers ──────────────────────────────────────────────────────
   function normal(r) { var u = Math.max(r(), 1e-9), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
@@ -54,9 +54,9 @@
     { m: 'SI', base: 3.2, pro: 0.52, det: 0.22 }
   ];
   var BOTS = [
-    { m: 'IT', bot: 'Tokovi Lenses IT', base: 48, ho: 0.34 },
-    { m: 'CRO', bot: 'Tokovi Optika HR', base: 24, ho: 0.30 },
-    { m: 'SI', bot: 'Tokovi Optika SI', base: 15, ho: 0.27 }
+    { m: 'IT', bot: 'Clearfigure Lenses IT', base: 48, ho: 0.34 },
+    { m: 'CRO', bot: 'Clearfigure Optika HR', base: 24, ho: 0.30 },
+    { m: 'SI', bot: 'Clearfigure Optika SI', base: 15, ho: 0.27 }
   ];
   var TOPICS = [
     ['Order status', 0.34, 0.18], ['Delivery & tracking', 0.26, 0.24], ['Returns & refunds', 0.2, 0.52],
