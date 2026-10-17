@@ -305,6 +305,18 @@
   ],
   "pitch": "One dashboard for sales, stores, the webshop funnel and marketing return, with filters you can change live."
  },
+ "convert": {
+  "short": "Anyone who handles contracts, statements and exports and needs them in another format",
+  "what": "You drop in a PDF, Word, Excel, CSV or XML file and get it back in the format you need: Word to PDF, PDF to Word, tables from a PDF into Excel, Excel or CSV to XML and back, plus merging and splitting PDFs. Everything happens in your browser, so the files are never uploaded.",
+  "who": "Office staff, finance and operations teams, and anyone who gets documents in the wrong format.",
+  "problem": "Stops you sending contracts and bank statements to an online converter just to change the file type.",
+  "features": [
+   "PDF, Word, Excel, CSV, XML, pictures and text, in the combinations people actually need",
+   "PDF tables into Excel, with real numbers and a preview of the first rows",
+   "Merge and split PDFs; nothing leaves your computer"
+  ],
+  "pitch": "Your contracts and statements never leave your computer, unlike online converters."
+ },
  "datacheck": {
   "short": "Anyone who maintains customer or supplier master data, such as finance, sales ops or data teams",
   "what": "You drop in a customer, supplier or product list and it finds what is broken: invalid VAT numbers and IBANs, duplicates and missing fields. It can fix them in one click and gives back a clean file and a report. Files never leave the browser.",

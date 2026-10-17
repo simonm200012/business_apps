@@ -597,6 +597,15 @@ addMark('pickOne', ({ cw = 184, ch = 376, gap = 40, lift = 80, ck = 116, cy = 54
 // ═════════════════════════════ the specs, in home-page order ═════════════════════════════
 // Apps of one group never share a ramp; violet is the suite brand and belongs to the launcher only (no app ramp within
 // 30° of it: indigo and plum are retired). Only the launcher has the dark tile.
+/** Convert — a page turning into another: a light page at the back with text lines, a deeper page in front with a
+ *  white arrow across it (from one format to the next). No pair of arrows in a circle (sync). */
+addMark('pageSwap', ({ nx = 0, ny = 0 } = {}, k) => centre([
+  { role: 'back', tone: [0.3, 1.2], d: rect(200, 232, 384, 512, k.R) },
+  { role: 'detail', tone: [1.4, 1.8], d: [rect(264, 312, 192, 44, 22), rect(264, 392, 140, 44, 22), rect(264, 472, 192, 44, 22)] },
+  { role: 'front', gap: true, d: rect(440, 336, 384, 456, k.R) },
+  { role: 'inlay', d: [rect(536, 544, 160, k.wi + 4, (k.wi + 4) / 2), roundPoly([[664, 484], [664, 612], [752, 548]], [k.r, k.r, k.r])] },
+], nx, ny));
+
 export default [
   { id: 'launcher', name: 'Business Apps', group: 'Launcher', hue: 'violet', tile: 'dark', mark: 'peak' },
 
@@ -627,6 +636,7 @@ export default [
   { id: 'branch-manager', name: 'Branch Manager', group: 'Operations', hue: 'magenta', mark: 'bookedSlot' },
   { id: 'desk', name: 'Desk', group: 'Operations', hue: 'crimson', mark: 'taskMail' },
   { id: 'pisarna-dms', name: 'Pisarna DMS', group: 'Operations', hue: 'ink', mark: 'binderStamp' },
+  { id: 'convert', name: 'Convert', group: 'Operations', hue: 'cyan', mark: 'pageSwap' },
 
   { id: 'leave', name: 'Time & leave', group: 'People & IT', hue: 'teal', mark: 'dayOff',
     args: { x: 224, w: 576, y: 272, h: 504, hh: 108, rd: 76, rIn: 112, rOut: 144, rw: 44, ringX: 120 } },

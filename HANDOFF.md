@@ -235,6 +235,35 @@ story. Each has `engine.js` with Node tests in `tools/tests/`.
 
 Every legal rate and rule is an editable default in the app's Settings, marked as something to check; none of the apps is legal advice.
 
+## Convert (`convert/`, 17 Oct 2026)
+
+A file converter that runs completely in the browser: nothing is uploaded, no Worker, no AI, no outside service. It
+started as a copy of the tested converter from the private My Apps hub, restyled in the Business Apps look, with four
+new tools.
+
+- **Tools (16):** Word to PDF, PDF to Word, Images to PDF, PDF to images, Merge PDF, Split PDF, CSV to PDF, Excel to PDF,
+  Text/Markdown to PDF, PDF to text, CSV to Excel, Excel to CSV, and the "Data & XML" group: PDF to Excel (tables),
+  Excel or CSV to XML, XML to Excel, PDF to XML.
+- **Files:** `app.mjs` (page), `ui.mjs` (toast, password dialog, escaping), `lib.mjs` (pure helpers: tools list, CSV,
+  names, XML names and writing, XML records, PDF table guessing), `tools.mjs` (the conversions), `convert.css`,
+  `vendor/` (libraries, each folder named with its exact version and holding its licence). Shell, theme and back
+  button come from `/_shared/stratum-shell.js`; phone-app tags from `tools/make-pwa.mjs`; icon `tools/icons/specs.mjs`
+  (`convert`, mark `pageSwap`; only `site/icons/apps/convert.png` was generated, not the whole set).
+- **Libraries (vendored, loaded only when a tool needs them):** pdf.js 6.3.289, pdf-lib 1.17.1, pdfmake 0.3.11,
+  mammoth 1.13.0, html-to-pdfmake 2.5.34, docx 9.8.1, marked 18.0.14, SheetJS 0.20.3, JSZip 3.10.1. All MIT or
+  Apache-2.0. No CDN; pdfmake is told to refuse every URL. Only Noto Sans comes from Google Fonts, like the home page.
+- **Privacy:** files are read in the page and never leave the device. The page says "On this device".
+- **Limits:** no OCR (scans have no text); Word to PDF is not Word's exact layout; PDF to Word is text only.
+  PDF to Excel guesses rows (text on the same baseline) and columns (gutters between filled bands) and works on
+  computer-made tables, not on scans, merged cells or tables without clear columns. XML to Excel picks the repeated
+  element highest in the tree as the record, names nested values `parent/child` and attributes `@name`, joins repeated
+  values with "; " and warns when it flattened something. Excel/CSV to XML writes `<rows><row><Header>..` with safe
+  names, one file per sheet.
+- **Tests:** `tools/tests/convert.test.js` (ported from the hub, 21 checks) and `tools/tests/convert-data.test.js`
+  (11 checks: XML names, rows to XML and back, nested XML, PDF to XML, table guessing on a pdf-lib PDF read with
+  pdf.js). The XML tests in Node use a small stand-in parser because Node has no DOMParser; the four new tools were
+  also run once in headless Chrome on generated files (real DOMParser). Screenshots: `docs/design/convert-shots/`.
+
 ## Run locally
 
 Static only (sync stays off):

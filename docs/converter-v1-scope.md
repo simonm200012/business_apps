@@ -1,6 +1,6 @@
 # File converter for Business Apps: what's possible, and a v1 scope
 
-Status: proposal for Simon to agree (17 Oct 2026). Nothing built yet.
+Status: built (17 Oct 2026), not yet deployed: `site/convert/`, see HANDOFF.md, section "Convert". Not in v1 (as planned): OCR, faithful Word layout, e-invoice XML, password removal.
 
 ## The big finding: most of it already exists
 

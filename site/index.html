@@ -584,7 +584,7 @@ body.searching .b-adj{display:none}
   </section>
 
   <section class="appsec" id="apps" aria-labelledby="appsH">
-    <div class="ah"><h2 id="appsH">All apps</h2><span class="n" id="appsN">33 apps</span><div class="chips" id="chips" role="group" aria-label="Show a group"></div>
+    <div class="ah"><h2 id="appsH">All apps</h2><span class="n" id="appsN">34 apps</span><div class="chips" id="chips" role="group" aria-label="Show a group"></div>
       <div class="view" role="group" aria-label="Show apps as"><button type="button" data-view="cards" aria-pressed="true" aria-label="Cards" title="Cards"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg></button><button type="button" data-view="list" aria-pressed="false" aria-label="List" title="List"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></button></div></div>
     <p class="status" id="status" role="status" aria-live="polite"></p>
     <div class="b-ui" id="bui">
@@ -658,7 +658,7 @@ body.searching .b-adj{display:none}
     </div>
   </section>
   <section class="group" id="g-operations" data-group="operations" aria-labelledby="h-operations">
-    <header class="ghead"><h2 id="h-operations">Operations</h2><span class="gcount">7 apps</span><p>Stock, stores, deliveries and field service</p></header>
+    <header class="ghead"><h2 id="h-operations">Operations</h2><span class="gcount">8 apps</span><p>Stock, stores, deliveries and field service</p></header>
     <div class="grid">
     <article class="card" data-app="erp">
       <div class="top"><img class="ai" src="/icons/apps/erp.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="erp/">ERP</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
@@ -685,6 +685,10 @@ body.searching .b-adj{display:none}
     <article class="card" data-app="desk">
       <div class="top"><img class="ai" src="/icons/apps/desk.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="desk/">Desk</a></h3><div class="tags"><span class="pill kind">Tool</span><span class="pill data yours" title="Real data you add yourself, saved in your browser and your private cloud copy">Your data</span></div></div></div>
       <p>Turn Outlook e-mails into tasks, attach booking links and confirmation PDFs, and see what's done and what's left. Saved in your browser and your private cloud copy.</p>
+    </article>
+    <article class="card" data-app="convert" data-new="">
+      <div class="top"><img class="ai" src="/icons/apps/convert.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="convert/">Convert</a></h3><div class="tags"><span class="pill new">New</span><span class="pill kind">Tool</span><span class="pill data yours" title="Your own files, converted in this browser and never uploaded">Your files</span></div></div></div>
+      <p>Turn PDF, Word, Excel, CSV and XML files into one another, pull tables out of a PDF into Excel, and merge or split PDFs. Files never leave your computer.</p>
     </article>
     <article class="card" data-app="pisarna-dms">
       <div class="top"><img class="ai" src="/icons/apps/pisarna-dms.png" alt="" width="44" height="44" decoding="async"><div class="ttl"><h3><a class="open" href="pisarna-dms/">Pisarna DMS Demo</a></h3><div class="tags"><span class="pill kind">App</span><span class="pill data demo" title="Made-up sample data">Demo data</span></div></div></div>
@@ -861,6 +865,7 @@ body.searching .b-adj{display:none}
     leave: 'dopust dopusti odsotnost bolniška bolniški stalež prihod odhod evidenca delovnega časa ure prazniki godišnji odmor bolovanje',
     'team-tasks': 'naloge projekti zadaci',
     onboarding: 'zaposlitev novi sodelavci odhod zaposleni prijava odjava',
+    convert: 'pretvori pretvornik datoteka pdf word excel xml csv pretvorba',
     datacheck: 'čiščenje podatkov preverjanje podatkov davčna številka ddv številka iban oib',
     analytics: 'analitika poročila prodaja',
     margin: 'marža marže popusti cene',
@@ -1385,6 +1390,7 @@ body.searching .b-adj{display:none}
     ['crm', 'New deal', 'CRM › Deals, then New deal', 'crm/#/deals', 'deal opportunity priložnost posel prilika'],
     ['contracts', 'New contract', 'Contracts › Contracts, then New contract', 'contracts/#/contracts', 'contract pogodba ugovor'],
     ['service', 'New service job', 'Service jobs › Jobs, then New job', 'service/#/jobs', 'service job work order delovni nalog servis'],
+    ['convert', 'Convert a file', 'Convert: PDF, Word, Excel, CSV or XML', 'convert/', 'convert pdf to excel word xml csv merge split pretvori datoteko'],
     ['datacheck', 'Check a customer list', 'Data health check: drop a CSV or Excel file', 'datacheck/', 'check clean data vat id iban preveri podatke davčna številka'],
     ['budget', 'Board pack', 'Budget vs actual › Board pack', 'budget/#/print', 'board pack report poročilo za upravo'],
     ['client-atlas', 'Leads to follow up', 'ERP & BI Client Atlas › Leads', 'client-atlas/#leads', 'leads follow up prospects potencialne stranke']
