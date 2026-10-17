@@ -537,3 +537,24 @@
   :root[data-look="arc"] .cx-in{height:58px}
 }
 @media print{:root[data-look="arc"] body::before,:root[data-look="arc"] .arc-frame,:root[data-look="arc"] .arc-nav,:root[data-look="arc"] .arc-bot,:root[data-look="arc"] .arc-ban{display:none!important}}
+
+/* ── sales sheet (_shared/app-sheet-panel.js): a rounded white sheet like the page, Inter, soft chips ── */
+:root[data-look="arc"] .sp-pane{top:10px;right:10px;bottom:10px;width:min(440px,calc(100% - 20px));border:1px solid var(--arc-popLine);border-radius:18px;background:var(--card);font-family:'Inter',system-ui,sans-serif}
+:root[data-look="arc"] .sp-x{background:var(--arc-soft);color:var(--arc-ink2)}
+:root[data-look="arc"] .sp-x:hover{background:var(--arc-softH)}
+:root[data-look="arc"] .sp-body .b-hd h3{font:700 22px/28px 'Inter',system-ui,sans-serif;letter-spacing:-.02em}
+:root[data-look="arc"] .sp-body .fbtn{height:32px;border-radius:10px;font-weight:600}
+:root[data-look="arc"] .sp-body .fbtn.pri{border-color:var(--arc-btn);background:var(--arc-btn);color:var(--arc-btnFg)}
+:root[data-look="arc"] .sp-body .b-sc a{border-radius:8px;background:var(--arc-soft)}
+:root[data-look="arc"] .sp-body .b-pitch{border-left:0;border-radius:12px;padding:12px 14px}
+:root[data-look="arc"] .sp-body .b-cust{border:0;border-radius:14px;background:var(--arc-soft)}
+:root[data-look="arc"] .sp-info{background:var(--arc-soft);color:var(--arc-ink2);border-radius:10px}
+:root[data-look="arc"] .sp-info:hover{background:var(--arc-softH);color:var(--arc-ink)}
+:root[data-look="arc"] .sp-adj{border:0;border-radius:14px;background:var(--arc-soft)}
+:root[data-look="arc"] .sp-adj-chips span{border-radius:8px;background:var(--card)}
+:root[data-look="arc"] .sp-adj-hd b{font-weight:600}
+:root[data-look="arc"] .sp-adj .b-adjg li{border:0;border-radius:10px;background:var(--card)}
+:root[data-look="arc"] .sp-adj .b-news{border:0;border-radius:10px}
+@media (max-width:640px){
+  :root[data-look="arc"] .sp-pane{top:auto;left:0;right:0;bottom:0;width:auto;max-height:88vh;border-radius:18px 18px 0 0;border-width:1px 0 0}
+}

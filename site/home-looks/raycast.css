@@ -534,3 +534,26 @@
 }
 @media (max-width:360px){:root[data-look="raycast"] .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media print{:root[data-look="raycast"] .rc-foot,:root[data-look="raycast"] .rc-det{display:none}:root[data-look="raycast"] body{background:#fff}}
+
+/* ── sales sheet (_shared/app-sheet-panel.js): a command-window panel, hairlines, no shadow ── */
+:root[data-look="raycast"] .sp-back{background:rgba(0,0,0,.5)}
+:root[data-look="raycast"] .sp-pane{top:12px;right:12px;bottom:12px;width:min(440px,calc(100% - 24px));border:1px solid var(--rc-line);border-radius:12px;background:var(--rc-pop);font-family:var(--rc-sans)}
+:root[data-look="raycast"] .sp-x{border-radius:7px;background:var(--rc-fill);color:var(--rc-ink2)}
+:root[data-look="raycast"] .sp-body .b-hd h3{font:600 20px/26px var(--rc-sans);letter-spacing:-.02em}
+:root[data-look="raycast"] .sp-body .fbtn{height:30px;border-radius:8px;border-color:var(--rc-line);background:transparent;color:var(--rc-ink);font-weight:500}
+:root[data-look="raycast"] .sp-body .fbtn.pri{border-color:transparent;background:var(--rc-cta);color:var(--rc-ctaInk)}
+:root[data-look="raycast"] .sp-body .b-sc a{border-radius:6px;background:var(--rc-fill)}
+:root[data-look="raycast"] .sp-body .b-lab{font-weight:500;letter-spacing:.02em;text-transform:none;font-size:11.5px}
+:root[data-look="raycast"] .sp-body .b-pitch{border-left:2px solid var(--rc-red);border-radius:0 8px 8px 0}
+:root[data-look="raycast"] .sp-body .b-cust{border:1px solid var(--rc-line);border-radius:10px;background:var(--rc-field)}
+:root[data-look="raycast"] .sp-adj{margin:8px 24px 12px;border:1px solid var(--rc-line);border-radius:10px;background:var(--rc-field)}
+:root[data-look="raycast"] .sp-adj-hd b{font-weight:500;font-size:13px}
+:root[data-look="raycast"] .sp-adj-chips span{border-radius:5px;background:var(--rc-fill);font-size:11px}
+:root[data-look="raycast"] .sp-adj .b-adjg li{border-color:var(--rc-line);border-radius:8px;background:var(--rc-pop)}
+:root[data-look="raycast"] .sp-adj .b-news{border:0;border-radius:8px}
+:root[data-look="raycast"] .rc-sheet{display:flex;align-items:center;justify-content:center;width:100%;height:32px;margin:-4px 0 16px;border:1px solid var(--rc-line);border-radius:8px;background:transparent;color:var(--rc-ink);font:500 13px/1 var(--rc-sans);cursor:pointer}
+:root[data-look="raycast"] .rc-sheet:hover{background:var(--rc-fill)}
+@media (max-width:640px){
+  :root[data-look="raycast"] .sp-pane{top:auto;left:0;right:0;bottom:0;width:auto;max-height:88vh;border-width:1px 0 0;border-radius:14px 14px 0 0}
+  :root[data-look="raycast"] .sp-adj{margin:8px 12px 12px}
+}

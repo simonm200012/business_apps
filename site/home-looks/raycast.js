@@ -110,6 +110,7 @@
         '<div class="rc-dtt"><h2>' + e + '</h2><div class="rc-tags">' + tags + '</div></div>' +
         '<button type="button" class="rc-dpin" data-pin="' + a.id + '" aria-pressed="' + pinned + '" aria-label="Pin ' + e + '">' + svg('star', 15) + '<span class="off">Pin</span><span class="on">Pinned</span></button></div>' +
       '<p class="rc-ddesc">' + esc(a.desc) + '</p>' +
+      (window.AppSheetPanel && AppSheetPanel.app(a.id) ? '<button type="button" class="rc-sheet" data-sp-open="' + a.id + '">Sales sheet</button>' : '') +
       '<div class="rc-dl">' + (a.screens.length ? 'Screens' : 'Opens at') + '</div>' +
       '<ul class="rc-scr" data-app="' + a.id + '">' + scr.map(function (s, i) {
         var keys = s.open ? '<kbd class="sym">↵</kbd>' : i < 9 ? '<kbd' + (isMac ? ' class="sym"' : '') + '>' + mod + '</kbd><kbd>' + (i + 1) + '</kbd>' : '';
@@ -254,6 +255,7 @@
     M.setPh = function () { q.setAttribute('placeholder', 'Search ' + n + ' apps' + (phone.matches ? '…' : ' and screens…')); };
     M.setPh();
     measureShell(); setTimeout(measureShell, 300);
+    if (window.AppSheetPanel) { var gw = $('groupsWrap'); if (gw && gw.parentNode) { M.band = AppSheetPanel.adjustBand(); gw.parentNode.insertBefore(M.band, gw); } }
     syncGroup();
     show(pick(), false);
     // the page marks Home or Apps in the header and tab bar on scroll: let it look again at the new layout
@@ -267,7 +269,7 @@
     m.off.forEach(function (f) { f(); });
     if (m.cur) m.cur.classList.remove('rc-on');
     [].forEach.call(document.querySelectorAll('.rc-on'), function (x) { x.classList.remove('rc-on'); });
-    [m.det, m.foot, m.grp].forEach(function (x) { if (x && x.parentNode) x.parentNode.removeChild(x); });
+    [m.det, m.foot, m.grp, m.band].forEach(function (x) { if (x && x.parentNode) x.parentNode.removeChild(x); });
     root.style.removeProperty('--rc-shell');
     if (m.ph !== null && m.ph !== undefined) $('q').setAttribute('placeholder', m.ph);
   }

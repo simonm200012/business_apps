@@ -20,6 +20,7 @@
     search: 'M4.5 11a6.5 6.5 0 1 0 13 0a6.5 6.5 0 1 0 -13 0M16 16l4.5 4.5',
     clock: 'M3.5 12a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0M12 7v5.2l3.3 2',
     history: 'M5.2 15.2A7.6 7.6 0 1 0 5 8.6M4.4 4.6v4.2h4.2M12 8v4.3l2.9 1.8',
+    info: 'M12 11v5.5M12 7.8h.01M3.5 12a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0',
     star: 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z',
     bars: 'M4 6.5h16M4 12h16M4 17.5h16',
     chevd: 'M7 10l5 5 5-5', chevl: 'M14.5 6l-6 6 6 6', chevr: 'M9.5 6l6 6-6 6',
@@ -177,10 +178,12 @@
       t.innerHTML = '<a class="od-link" id="od-t-' + esc(a.id) + '" href="' + esc(a.href) + '" draggable="false" title="' + e + ' · ' + esc(a.group.name) + '">' +
         '<img src="' + esc(a.icon) + '" alt="" width="76" height="76" draggable="false" decoding="async"><span class="od-cap">' + e + '</span></a>' +
         '<button type="button" class="od-pin" data-pin="' + esc(a.id) + '" aria-label="Pin ' + e + '">' + svg('star', 13) + '</button>' +
+        (window.AppSheetPanel ? '<button type="button" class="od-info" data-sp-open="' + esc(a.id) + '" aria-label="About ' + e + '" title="About this app">' + svg('info', 13) + '</button>' : '') +
         '<span class="od-ed"><button type="button" class="od-mv" data-od-mv="-1" aria-label="Move ' + e + ' left">' + svg('chevl', 14) + '</button>' +
         '<button type="button" class="od-mv" data-od-mv="1" aria-label="Move ' + e + ' right">' + svg('chevr', 14) + '</button></span>';
       tiles[a.id] = t; grid.appendChild(t);
     });
+    if (window.AppSheetPanel) { var band = AppSheetPanel.adjustBand(); band.className += ' od-band'; grid.parentNode.insertBefore(band, grid); }
     ui.home = home; ui.grid = grid; ui.input = home.querySelector('#odQ'); ui.menus = home.querySelector('.od-menus'); ui.none = home.querySelector('.od-none');
   }
 

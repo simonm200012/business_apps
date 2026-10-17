@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   var NAME = 'appstore', on = false, doc = document, root = doc.documentElement;
-  var made = [], offs = [], obs = null, tick = 0;
+  var made = [], offs = [], obs = null, tick = 0, spBand = null;
   function $(id) { return doc.getElementById(id); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var P = {
@@ -164,6 +164,12 @@
     if (on) return;
     on = true;
     build();
+    // the sales sheet and the "adjust for your company" band (shared with every look: _shared/app-sheet-panel.js)
+    if (window.AppSheetPanel) {
+      var gw = $('groupsWrap');
+      spBand = AppSheetPanel.adjustBand(); if (gw && gw.parentNode) gw.parentNode.insertBefore(spBand, gw);
+      AppSheetPanel.cardButtons(true);
+    }
     listen($('asSide'), 'click', onSide);
     listen(doc, 'click', onClick);
     listen(window, 'scroll', soon, { passive: true });
@@ -182,6 +188,8 @@
     offs.forEach(function (f) { f(); }); offs = [];
     if (obs) { obs.disconnect(); obs = null; }
     if (tick) { cancelAnimationFrame(tick); tick = 0; }
+    if (window.AppSheetPanel) AppSheetPanel.cardButtons(false);
+    if (spBand && spBand.parentNode) spBand.parentNode.removeChild(spBand); spBand = null;
     made.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); }); made = [];
     root.classList.remove('as-scrolled');
   }

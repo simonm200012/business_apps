@@ -494,7 +494,42 @@ html.b-on[data-look="m365"] .groups-wrap,html.b-on[data-look="m365"] .ah .view{d
 .b-cust{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
 .b-cust ul{margin:2px 0 0;padding-left:18px;columns:2}
 .b-cust p{margin:6px 0 0;color:var(--ink2)}
-body.searching .b-adj{display:none}
+body.searching .b-adj,body.searching .sp-adj{display:none}
+/* The sales sheet in the other looks (_shared/app-sheet-panel.js): a side panel on a computer, a bottom sheet on a phone.
+   Colours come from the page's tokens, so each look's tokens restyle it; the looks add their own touches in home-looks/<look>.css. */
+.sp[hidden]{display:none}
+.sp{position:fixed;inset:0;z-index:50}
+.sp-back{position:absolute;inset:0;background:var(--scrim)}
+.sp-pane{position:absolute;top:0;right:0;bottom:0;width:min(460px,100%);overflow:auto;overscroll-behavior:contain;padding:22px 22px 28px;background:var(--card);color:var(--ink);border-left:1px solid var(--line);font-family:var(--sans)}
+.sp-pane:focus{outline:none}
+.sp-x{position:absolute;top:10px;right:10px;z-index:1;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:var(--chip);color:var(--ink2);cursor:pointer}
+.sp-x:hover{background:var(--chipH)}
+.sp-body .b-hd{padding-right:36px}
+.sp-body .b-sec{max-width:none}
+.sp-body .b-cust ul{columns:1}
+html.sp-lock{overflow:hidden}
+@media (max-width:640px){html[data-look]:not([data-look="m365"]),html[data-look]:not([data-look="m365"]) body{overflow-x:clip}}
+.sp-info,.sp-about{position:relative;z-index:2;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border:0;border-radius:13px;background:var(--chip);color:var(--ink2);font:inherit;font-size:12.5px;line-height:1;cursor:pointer;white-space:nowrap}
+.sp-info:hover,.sp-about:hover{background:var(--chipH);color:var(--ink)}
+.card>.sp-info{position:absolute;right:12px;bottom:12px}
+.list .card>.sp-info{top:50%;bottom:auto;right:56px;margin-top:-13px}
+@media (max-width:700px){.card>.sp-info{top:2px;bottom:auto;left:2px;right:auto;width:26px;padding:0;justify-content:center}.card>.sp-info span{display:none}.list .card>.sp-info{top:50%;left:auto;right:44px;margin-top:-13px}}
+.sp-adj{margin:0 0 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.sp-adj-hd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:10px 12px}
+.sp-adj-hd b{font-size:13.5px;font-weight:600}
+.sp-adj-chips{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+.sp-adj-chips span{padding:1px 8px;border-radius:99px;background:var(--chip);color:var(--ink2);font-size:12px;line-height:18px}
+.sp-adj-tg{margin-left:auto;padding:2px 6px;border:0;background:none;color:var(--brandFg);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.sp-adj-body{padding:0 12px 12px;border-top:1px solid var(--line3)}
+.sp-adj-body>p{margin:10px 0;max-width:70ch;color:var(--ink2)}
+.sp-adj .b-adjg{grid-template-columns:repeat(5,minmax(0,1fr))}
+.sp-adj .b-adjg li{background:var(--bg)}
+@media (max-width:900px){.sp-adj .b-adjg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+  .sp-pane{top:auto;left:0;right:0;width:auto;max-height:86vh;padding:20px 16px 24px;border-left:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}
+  .sp-pane::before{content:"";display:block;width:36px;height:4px;margin:-10px auto 12px;border-radius:2px;background:var(--line2)}
+  .sp-adj .b-adjg{grid-template-columns:1fr}
+}
 @media (max-width:900px){.b-lay{grid-template-columns:minmax(240px,300px) minmax(0,1fr)}.b-adjg{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){
   .b-ui{padding:0 16px}
@@ -511,7 +546,7 @@ body.searching .b-adj{display:none}
 </style>
 <!-- Only the active style's files load (written here so they block the first paint like a normal stylesheet and the
      page never flashes in the wrong style); the others load when they are chosen, see HomeLook below. -->
-<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<link rel="stylesheet" href="home-looks/'+l+'.css?v=2" data-look-css="'+l+'">');})();</script>
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<link rel="stylesheet" href="home-looks/'+l+'.css?v=3" data-look-css="'+l+'">');})();</script>
 <!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
 </head>
 <body>
@@ -588,11 +623,7 @@ body.searching .b-adj{display:none}
       <div class="view" role="group" aria-label="Show apps as"><button type="button" data-view="cards" aria-pressed="true" aria-label="Cards" title="Cards"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg></button><button type="button" data-view="list" aria-pressed="false" aria-label="List" title="List"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></button></div></div>
     <p class="status" id="status" role="status" aria-live="polite"></p>
     <div class="b-ui" id="bui">
-      <section class="b-adj" id="bAdj" aria-labelledby="bAdjH"><h3 id="bAdjH">Every app can be adjusted for your company</h3>
-        <p>The apps shown here use sample branding. For a client we change the app to look and work like their own system, so it feels like theirs from day one.</p>
-        <ul class="b-adjg"><li><b>Branding</b><span>Your logo and your colours on every screen, invoice and report.</span></li><li><b>Fields</b><span>Add, rename or hide fields, for example a contract number or cost centre.</span></li><li><b>Workflows</b><span>Your approval steps, statuses and who sees what.</span></li><li><b>Language</b><span>English, Slovenian, Croatian or German labels and letters.</span></li><li><b>Company news</b><span>An announcements area on the start screen: opening hours, new rules, campaigns.</span></li></ul>
-        <p class="b-news"><b>Example: Company news</b><br>"Stores close at 14:00 on Friday for stocktake. New returns form is in Operations." Posted by Head office.</p>
-      </section>
+      <section class="b-adj" id="bAdj" aria-labelledby="bAdjH"></section>
       <div class="b-lay" id="bLay"><nav class="b-list" id="bList" aria-label="Apps"></nav><article class="b-sheet" id="bSheet" tabindex="-1" aria-label="App sales sheet"></article></div>
     </div>
     <div class="groups-wrap" id="groupsWrap">
@@ -802,6 +833,8 @@ body.searching .b-adj{display:none}
 <p class="sr" id="live" aria-live="polite"></p>
 
 <script src="/_shared/app-sheets.js?v=1"></script>
+<script src="/_shared/app-sheet-panel.js?v=1"></script>
+<script>AppSheetPanel.fillAdjust(document.getElementById("bAdj"));</script>
 <script>
 // Home page: pinned apps, "Needs you today", Quick access, search, group chips, cards/list view, the ⌘K command bar and
 // Install. Works without this script too (every app is a plain link in the page).
@@ -1548,22 +1581,7 @@ body.searching .b-adj{display:none}
         }).join('') + '</section>';
     }).join('') + '<p class="b-none" id="bNone" hidden></p>';
   }
-  function sheetHtml(a) {
-    var s = a.sheet || { what: a.desc, who: '', problem: '', features: [], pitch: '' };
-    var tags = (a.isNew ? '<span class="pill new">New</span>' : '') + (a.kind ? '<span class="pill kind">' + esc(a.kind) + '</span>' : '') +
-      (a.data ? '<span class="pill data ' + a.data + '">' + (a.data === 'yours' ? 'Your data' : 'Demo data') + '</span>' : '');
-    function sec(label, text) { return text ? '<div class="b-sec"><span class="b-lab">' + label + '</span><p>' + esc(text) + '</p></div>' : ''; }
-    return '<button type="button" class="b-back" data-bback>← All apps</button>' +
-      '<div class="b-hd"><img src="' + esc(a.icon) + '" alt="" width="44" height="44"><div><h3 id="bSheetH">' + esc(a.name) + '</h3><div class="tags">' + tags + '</div></div></div>' +
-      '<div class="b-act" data-app="' + a.id + '"><a class="fbtn pri b-open" href="' + esc(a.href) + '">Open app</a>' +
-      '<button type="button" class="fbtn" data-pin="' + a.id + '" aria-pressed="false">' + svg('star', 16) + '<span>Pin</span></button></div>' +
-      (a.screens.length ? '<nav class="b-sc" data-app="' + a.id + '" aria-label="' + esc(a.name) + ' screens">' + a.screens.map(function (x) { return '<a href="' + esc(x.href) + '">' + esc(x.name) + '</a>'; }).join('') + '</nav>' : '') +
-      sec('What it does', s.what) + sec('Who it’s for', s.who) + sec('Problem it solves', s.problem) +
-      (s.features.length ? '<div class="b-sec"><span class="b-lab">Key features</span><ul>' + s.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>' : '') +
-      (s.pitch ? '<div class="b-sec"><div class="b-pitch"><small>How I’d pitch it</small>' + esc(s.pitch) + '</div></div>' : '') +
-      '<div class="b-cust"><span class="b-lab">Adjust for your company</span><ul><li>Your logo and colours</li><li>Your fields (for example extra columns or IDs)</li><li>Your workflow and approval steps</li><li>Your language</li><li>A company news area on the start screen</li></ul>' +
-      '<p>Typical for ' + esc(a.name) + ': same screens, relabelled and recoloured for the client, with their news on top.</p></div>';
-  }
+  function sheetHtml(a) { return AppSheetPanel.sheetHtml(a, { back: true }); }   // shared with the other looks: _shared/app-sheet-panel.js
   function bMark() {
     [].forEach.call(blist.querySelectorAll('.b-row'), function (b) { b.setAttribute('aria-current', String(b.getAttribute('data-id') === bsel)); });
   }
@@ -1661,7 +1679,7 @@ body.searching .b-adj{display:none}
    look. A look that cannot load (offline) leaves the page as it is and says so. */
 (function () {
   'use strict';
-  var KEY = 'stratum-home-look', VER = '2', root = document.documentElement;
+  var KEY = 'stratum-home-look', VER = '3', root = document.documentElement;
   var LIST = [{ id: 'm365', name: 'Microsoft 365', sub: 'Default' }, { id: 'appstore', name: 'App Store', sub: 'Story cards and Open pills' }, { id: 'raycast', name: 'Raycast', sub: 'Dark command window' }, { id: 'arc', name: 'Arc', sub: 'Gradient spaces' }, { id: 'odoo', name: 'Odoo', sub: 'A grid of app icons' }, { id: 'classic', name: 'Classic', sub: 'The earlier cursor.com look' }];
   var btn = document.getElementById('lookBtn'), menu = document.getElementById('lookMenu'), q = document.getElementById('q');
   var PH = q ? q.getAttribute('placeholder') : '', want = null;
@@ -1734,7 +1752,7 @@ body.searching .b-adj{display:none}
   window.HomeLook = { get: get, set: set, load: load, list: LIST };
 })();
 </script>
-<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<script src="home-looks/'+l+'.js?v=2" data-look-js="'+l+'"><\/script>');})();</script>
-<script src="home-looks/sync.js?v=2"></script>
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<script src="home-looks/'+l+'.js?v=3" data-look-js="'+l+'"><\/script>');})();</script>
+<script src="home-looks/sync.js?v=3"></script>
 </body>
 </html>

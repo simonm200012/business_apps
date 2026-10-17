@@ -33,3 +33,19 @@ t('the sheet script and the list container are in the page', () => {
   assert.ok(html.includes('/_shared/app-sheets.js'));
   assert.ok(html.includes('id="bList"') && html.includes('id="bSheet"'));
 });
+
+t('the shared sheet panel script is loaded by the page and every look uses it', () => {
+  assert.ok(html.includes('/_shared/app-sheet-panel.js'));
+  const panel = fs.readFileSync(path.join(ROOT, 'site/_shared/app-sheet-panel.js'), 'utf8');
+  assert.ok(panel.includes('sheetHtml') && panel.includes('adjustBand'));
+  for (const look of ['appstore', 'raycast', 'arc', 'odoo', 'classic']) {
+    const js = fs.readFileSync(path.join(ROOT, 'site/home-looks/' + look + '.js'), 'utf8');
+    assert.ok(js.includes('AppSheetPanel') && js.includes('data-sp-open') || js.includes('cardButtons'), look + '.js uses the shared panel');
+    assert.ok(js.includes('adjustBand'), look + '.js shows the adjust band');
+    const css = fs.readFileSync(path.join(ROOT, 'site/home-looks/' + look + '.css'), 'utf8');
+    assert.ok(css.includes('.sp-pane') && css.includes('.sp-adj'), look + '.css styles the panel');
+  }
+});
+t('the adjust texts live only in the shared panel script', () => {
+  assert.ok(!html.includes('Every app can be adjusted for your company'));
+});

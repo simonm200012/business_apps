@@ -442,3 +442,25 @@
   :root[data-look="classic"] .cmdk-box{border:0;border-radius:0}
   :root[data-look="classic"] .cx-in{height:58px;padding:0 8px 0 16px}
 }
+
+/* ── sales sheet (_shared/app-sheet-panel.js): hairlines, Geist, mono uppercase labels, no radius on the panel ── */
+:root[data-look="classic"] .sp-pane{border-left:1px solid var(--cl-line2);border-radius:0;background:var(--cl-bg);font-family:var(--cl-sans)}
+:root[data-look="classic"] .sp-x{background:transparent;color:var(--cl-ink2);border:1px solid var(--cl-line)}
+:root[data-look="classic"] .sp-body .b-hd h3{font:400 24px/30px var(--cl-sans);letter-spacing:-.02em}
+:root[data-look="classic"] .sp-body .fbtn{height:32px;border-radius:99px;border-color:var(--cl-line2);background:transparent;font-weight:400}
+:root[data-look="classic"] .sp-body .fbtn.pri{border-color:var(--cl-btn);background:var(--cl-btn);color:var(--cl-btnInk)}
+:root[data-look="classic"] .sp-body .b-sc a{border-radius:99px;border:1px solid var(--cl-line);background:transparent}
+:root[data-look="classic"] .sp-body .b-lab,:root[data-look="classic"] .sp-body .b-pitch small{font-family:var(--cl-mono);font-weight:400;letter-spacing:.04em}
+:root[data-look="classic"] .sp-body .b-pitch{border-left:1px solid var(--cl-ink);border-radius:0;background:transparent;font-weight:400}
+:root[data-look="classic"] .sp-body .b-cust{border:1px solid var(--cl-line);border-radius:6px;background:transparent}
+:root[data-look="classic"] .sp-info{border:1px solid var(--cl-line2);background:transparent;color:var(--cl-ink);font-weight:400}
+:root[data-look="classic"] .sp-info:hover{background:var(--cl-card2)}
+:root[data-look="classic"] .sp-adj{border:1px solid var(--cl-line);border-radius:6px;background:transparent}
+:root[data-look="classic"] .sp-adj-hd b{font:400 11px/16px var(--cl-mono);text-transform:uppercase;letter-spacing:.04em}
+:root[data-look="classic"] .sp-adj-chips span{border:1px solid var(--cl-line);border-radius:99px;background:transparent}
+:root[data-look="classic"] .sp-adj-tg{color:var(--cl-ink)}
+:root[data-look="classic"] .sp-adj .b-adjg li{border-color:var(--cl-line);border-radius:6px;background:transparent}
+:root[data-look="classic"] .sp-adj .b-news{border-color:var(--cl-line2);border-radius:6px;background:transparent}
+@media (max-width:640px){
+  :root[data-look="classic"] .sp-pane{border-radius:12px 12px 0 0;border-top:1px solid var(--cl-line2)}
+}

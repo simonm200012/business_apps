@@ -77,7 +77,7 @@
     return g && groupById(g) ? g : '';
   }
 
-  var nav, favBox, spBox, bot, head, ban, frame, instTx, obs = [], cur = null, keys = {}, folders = {}, dragId = null, qPh = null;
+  var spBand = null, nav, favBox, spBox, bot, head, ban, frame, instTx, obs = [], cur = null, keys = {}, folders = {}, dragId = null, qPh = null;
   try { folders = JSON.parse(sessionStorage.getItem(FKEY)) || {}; } catch (e) { folders = {}; }
 
   function el(tag, cls, attrs) {
@@ -363,6 +363,12 @@
     var q = $('q'); if (q) { qPh = q.getAttribute('placeholder'); q.setAttribute('placeholder', 'Search ' + M.apps.length + ' apps'); }
     var ps = $('pSearch'); if (ps) ps.setAttribute('data-arc-label', 'Search ' + M.apps.length + ' apps');
 
+    // the sales sheet and the "adjust for your company" band (shared with every look: _shared/app-sheet-panel.js)
+    if (window.AppSheetPanel) {
+      var gw = $('groupsWrap');
+      spBand = AppSheetPanel.adjustBand(); if (gw && gw.parentNode) gw.parentNode.insertBefore(spBand, gw);
+      AppSheetPanel.cardButtons(true);
+    }
     cur = null; keys = {};
     onGroup();
     renderAll();
@@ -391,6 +397,8 @@
     window.removeEventListener('storage', onStorage);
     window.removeEventListener('pageshow', onShow);
     document.removeEventListener('visibilitychange', onShow);
+    if (window.AppSheetPanel) AppSheetPanel.cardButtons(false);
+    if (spBand && spBand.parentNode) spBand.parentNode.removeChild(spBand); spBand = null;
     [nav, bot, head, ban, frame, instTx].forEach(function (e) { if (e && e.parentNode) e.parentNode.removeChild(e); });
     nav = favBox = spBox = bot = head = ban = frame = instTx = null;
     [].forEach.call(document.querySelectorAll('.arc-on, .arc-swap'), function (e) { e.classList.remove('arc-on', 'arc-swap'); });

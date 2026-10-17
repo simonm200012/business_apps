@@ -49,6 +49,13 @@
     if (find && ah && find.parentNode !== ah) ah.insertBefore(find, ah.firstChild);
     var q = $('q'); if (q) { place = q.getAttribute('placeholder'); q.setAttribute('placeholder', 'Find an app'); q.addEventListener('input', onInput); }
 
+    // the sales sheet and the "adjust for your company" band (shared with every look: _shared/app-sheet-panel.js)
+    if (window.AppSheetPanel) {
+      var gw = $('groupsWrap');
+      if (gw && gw.parentNode) { var band = AppSheetPanel.adjustBand(); added.push(band); gw.parentNode.insertBefore(band, gw); }
+      AppSheetPanel.cardButtons(true);
+    }
+
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
     onScroll();
@@ -57,6 +64,7 @@
   function unmount() {
     clearTimeout(timer);
     if (!on) return; on = false;
+    if (window.AppSheetPanel) AppSheetPanel.cardButtons(false);
     added.forEach(function (el) { if (el.parentNode) el.parentNode.removeChild(el); });
     added = [];
     // put the search back where the page has it: in the top bar, before its right-hand buttons

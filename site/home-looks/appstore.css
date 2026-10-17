@@ -460,3 +460,25 @@
   :root[data-look="appstore"] .cx-cancel{padding:0 10px;color:var(--as-blue);font:400 17px var(--sans)}
   :root[data-look="appstore"] .cx-o{min-height:56px}
 }
+
+/* ── sales sheet (_shared/app-sheet-panel.js): a floating rounded sheet, pill buttons ── */
+:root[data-look="appstore"] .sp-back{background:var(--scrim)}
+:root[data-look="appstore"] .sp-pane{top:12px;right:12px;bottom:12px;width:min(440px,calc(100% - 24px));padding:24px 22px 28px;border:0;border-radius:22px;background:var(--card);font-family:var(--sans);box-shadow:0 0 0 .5px rgba(0,0,0,.1)}
+:root[data-look="appstore"] .sp-x{background:var(--as-fill);color:var(--ink3)}
+:root[data-look="appstore"] .sp-x:hover{background:var(--as-fillH)}
+:root[data-look="appstore"] .sp-body .b-hd h3{font:700 24px/29px var(--sans);letter-spacing:-.02em}
+:root[data-look="appstore"] .sp-body .fbtn{height:32px;border-radius:16px;font-weight:600}
+:root[data-look="appstore"] .sp-body .fbtn.pri{background:var(--as-blue);border-color:var(--as-blue);color:#fff}
+:root[data-look="appstore"] .sp-body .b-sc a{border-radius:14px;height:28px;background:var(--as-fill)}
+:root[data-look="appstore"] .sp-body .b-lab{letter-spacing:.06em}
+:root[data-look="appstore"] .sp-body .b-pitch{border-left:0;border-radius:16px;padding:12px 14px}
+:root[data-look="appstore"] .sp-body .b-cust{border:0;border-radius:16px;background:var(--as-side)}
+:root[data-look="appstore"] .sp-info{background:var(--as-fill);color:var(--as-blue);font-weight:700;border-radius:14px}
+:root[data-look="appstore"] .sp-info:hover{background:var(--as-fillH);color:var(--as-blue)}
+:root[data-look="appstore"] .sp-adj{border:0;border-radius:20px;background:var(--as-side)}
+:root[data-look="appstore"] .sp-adj-hd b{font:700 15px/20px var(--sans);letter-spacing:-.01em}
+:root[data-look="appstore"] .sp-adj .b-adjg li{border:0;border-radius:14px;background:var(--card)}
+:root[data-look="appstore"] .sp-adj .b-news{border:0;border-radius:14px}
+@media (max-width:640px){
+  :root[data-look="appstore"] .sp-pane{top:auto;left:0;right:0;bottom:0;width:auto;max-height:88vh;border-radius:22px 22px 0 0;padding:20px 18px 28px}
+}

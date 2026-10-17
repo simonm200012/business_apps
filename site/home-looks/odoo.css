@@ -321,3 +321,34 @@
 @keyframes od-in{from{transform:translateX(-100%)}}
 @media (prefers-reduced-motion:reduce){:root[data-look="odoo"] .od-gp{animation:none}:root[data-look="odoo"] .od-link img{transition:none}}
 @media print{:root[data-look="odoo"] :is(.od-search,.od-foot,.od-pin,.od-ed){display:none!important}}
+
+/* ── sales sheet (_shared/app-sheet-panel.js): Odoo's flat panel, Roboto, plum, 4px radii ── */
+:root[data-look="odoo"] .sp-pane{padding-top:26px;border-left:1px solid var(--od-ddline);border-radius:0;background:#fff;font-family:var(--sans)}
+:root[data-look="odoo"] .sp-x{border-radius:4px;background:transparent;color:var(--od-ink3)}
+:root[data-look="odoo"] .sp-x:hover{background:var(--od-hover)}
+:root[data-look="odoo"] .sp-body .b-hd h3{font:500 20px/26px var(--sans)}
+:root[data-look="odoo"] .sp-body .fbtn{height:32px;border-radius:4px;border-color:var(--od-ddline);font-weight:500}
+:root[data-look="odoo"] .sp-body .fbtn.pri{border-color:var(--od-plum);background:var(--od-plum);color:#fff}
+:root[data-look="odoo"] .sp-body .b-sc a{border-radius:4px;background:var(--od-hover)}
+:root[data-look="odoo"] .sp-body .b-pitch{border-left-color:var(--od-plum);border-radius:0 4px 4px 0;background:var(--od-plumTint)}
+:root[data-look="odoo"] .sp-body .b-pitch small,:root[data-look="odoo"] .sp-body .b-cust{border-radius:4px}
+:root[data-look="odoo"] .sp-body .b-cust{border-color:var(--od-line);background:#F9FAFB}
+:root[data-look="odoo"] .sp-adj{width:min(100%,640px);margin:0 auto 18px;border:1px solid var(--od-ddline);border-radius:4px;background:rgba(255,255,255,.85)}
+:root[data-look="odoo"] .sp-adj-hd b{font-weight:500}
+:root[data-look="odoo"] .sp-adj-chips span{border-radius:3px;background:var(--od-hover)}
+:root[data-look="odoo"] .sp-adj-tg{color:var(--od-teal)}
+:root[data-look="odoo"] .sp-adj .b-adjg li{border-radius:4px;border-color:var(--od-line);background:#fff}
+:root[data-look="odoo"] .sp-adj .b-news{border-radius:4px;border-color:var(--od-plumTint)}
+:root[data-look="odoo"] .od-app{position:relative}
+:root[data-look="odoo"] .od-info{position:absolute;top:2px;left:6px;z-index:2;display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:var(--od-ink3);cursor:pointer;opacity:0;transition:opacity .12s}
+:root[data-look="odoo"] .od-app:hover .od-info,:root[data-look="odoo"] .od-info:focus-visible{opacity:1}
+:root[data-look="odoo"] .od-info:hover{color:var(--od-plum)}
+@media (hover:none){:root[data-look="odoo"] .od-info{opacity:.85}}
+@media (max-width:640px){
+  :root[data-look="odoo"] .sp-pane{border-radius:12px 12px 0 0;border-top:1px solid var(--od-ddline)}
+}
+
+:root[data-look="odoo"][data-stratum-mode="dark"] .sp-pane{background:var(--card)}
+:root[data-look="odoo"][data-stratum-mode="dark"] .sp-adj{background:var(--card)}
+:root[data-look="odoo"][data-stratum-mode="dark"] .od-info{background:rgba(0,0,0,.4);color:var(--ink2)}
+:root[data-look="odoo"][data-stratum-mode="dark"] .sp-body .b-cust,:root[data-look="odoo"][data-stratum-mode="dark"] .sp-adj .b-adjg li{background:var(--bg)}
