@@ -162,7 +162,7 @@ async function logo({ env, t }) {
 }
 
 async function decision({ env, request, url, who, t, c, log }, qid) {
-  const expected = env.PORTAL_ORIGIN || (who.dev ? url.origin : '');
+  const expected = who.dev ? url.origin : env.PORTAL_ORIGIN; // local dev: the dev page's own origin; deployed: the configured address
   if (!expected) return json({ error: 'Answering quotes is not available right now.' }, 503);
   const h = (n) => request.headers.get(n);
   if (h('Origin') !== expected) { await log('quote.decision', 'origin', '403'); return json({ error: 'Request refused.' }, 403); }

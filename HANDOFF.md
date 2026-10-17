@@ -303,3 +303,12 @@ for f in tools/tests/*.test.js; do node "$f" || break; done
 - How each app is built: `docs/APPS-CODE-GUIDE.md`. The note at the top covers hosting and sync.
 - Apps written against an `/api/<app>/` endpoint get made-up answers in the browser (`_shared/demo-api.js` and the
   app's own `demo-api.js`). The home page tags them Demo data, and the Business Apps bar shows a small DEMO chip.
+
+
+## Client portal (branch feat/client-portal, 17 Oct 2026, built, not deployed)
+
+Separate portal Worker (`worker/portal.js`, `wrangler.portal.jsonc`, `portal-site/`), staff publish API (`worker/portal-staff.js`,
+`/api/portal/*`), projection builder `site/billing/portal-projection.js`, schema `worker/portal-schema.js`, tests `tools/tests/portal-*.test.js`,
+sample page `site/client-portal/` and a home-page card with sales sheet. Steps Simon must do in Cloudflare and unverified assumptions:
+`docs/CLIENT-PORTAL.md`. Also fixed: the staff Worker refuses every request when `DEV_BYPASS` is set on a non-localhost host.
+Not built: Billing's own "Portal access / Publish to portal" screen (use `tools/portal-publish.mjs` and the endpoints for now).

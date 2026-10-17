@@ -325,7 +325,7 @@ const A = 'client-a@example.test', B = 'client-b@example.test', X = 'client-x@ex
     for (const p of ['/api/audit', '/api/portal/audit', '/api/files/audit']) assert.ok([404].includes((await call(A, 'GET', p)).status));
   });
   await t('DEV_BYPASS in the portal: cookie e-mail on localhost only (mapping still applies), 500 for every request anywhere else', async () => {
-    const dev = { ...penv, DEV_BYPASS: '1', PORTAL_ORIGIN: undefined }; const old = Object.assign({}, penv);
+    const dev = { ...penv, DEV_BYPASS: '1' }; /* PORTAL_ORIGIN stays set, as in wrangler.portal.jsonc */ const old = Object.assign({}, penv);
     const go = async (host, cookie, method = 'GET', p = '/api/view', extra = {}) => { r2.reset(); return portal.fetch(new Request('http://' + host + p, { method, headers: { ...(cookie ? { Cookie: 'portal_dev_as=' + encodeURIComponent(cookie) } : {}), ...extra } }), dev); };
     assert.strictEqual((await go('localhost:8788', A)).status, 200);
     const b = await (await go('localhost:8788', B)).json(); assert.ok(!/Lindgren/.test(JSON.stringify(b)) && /Birch/.test(JSON.stringify(b)), 'the cookie picks the person; mapping decides the data');

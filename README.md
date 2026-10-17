@@ -10,6 +10,7 @@ customers and tools he uses himself. Live (private, behind Cloudflare Access): h
   same on the phone and the computer (`worker/index.js`, Access check in `worker/access.js`).
 - `tools/`: `make-pwa.mjs` (home-screen tags on every page), `make-icons.mjs` (the launcher and app icons in
   `site/icons/`, drawn by `tools/icons/`), `tests/` (Node tests).
+- `portal-site/`, `worker/portal.js`, `wrangler.portal.jsonc`: the client portal, a separate Worker (`docs/CLIENT-PORTAL.md`).
 - `HANDOFF.md`: current state, deploy steps and what to check.
 
 ## Run locally
