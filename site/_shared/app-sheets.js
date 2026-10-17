@@ -307,12 +307,13 @@
  },
  "convert": {
   "short": "Anyone who handles contracts, statements and exports and needs them in another format",
-  "what": "You drop in a PDF, Word, Excel, CSV or XML file and get it back in the format you need: Word to PDF, PDF to Word, tables from a PDF into Excel, Excel or CSV to XML and back, plus merging and splitting PDFs. Everything happens in your browser, so the files are never uploaded.",
+  "what": "You drop in a PDF, Word, Excel, CSV or XML file and get it back in the format you need: Word to PDF, PDF to Word, tables from a PDF into Excel, Excel or CSV to XML and back, plus merging and splitting PDFs. It also turns an Excel or PDF invoice into a Slovenian eSLOG 2.0 e-invoice (XML), with plain-English checks before you download. Everything happens in your browser, so the files are never uploaded.",
   "who": "Office staff, finance and operations teams, and anyone who gets documents in the wrong format.",
   "problem": "Stops you sending contracts and bank statements to an online converter just to change the file type.",
   "features": [
    "PDF, Word, Excel, CSV, XML, pictures and text, in the combinations people actually need",
    "PDF tables into Excel, with real numbers and a preview of the first rows",
+   "Excel or PDF invoice into eSLOG XML, with checks on VAT IDs, IBAN and totals",
    "Merge and split PDFs; nothing leaves your computer"
   ],
   "pitch": "Your contracts and statements never leave your computer, unlike online converters."
