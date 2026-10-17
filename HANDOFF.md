@@ -11,7 +11,7 @@ phone, with demos good enough to show and sell to customers.
   `business-apps owner` (simonm2000@outlook.com, one-time PIN).
 - `site/` is the web root: one folder per app, plain HTML/CSS/JS, no build step.
 - `worker/` answers only `/api/*` (cloud sync, see below). Everything else is a static file.
-- The home page lists 33 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
+- The home page lists 35 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
   It has search (press `/`, also matches who/problem/pitch text) and "Recently opened". In the default Microsoft 365 look "All apps" is a list plus a sales sheet per app (`site/_shared/app-sheets.js`, linkable as `#app=<id>`, on phones the sheet replaces the list); the other looks still use the cards. `tools/tests/home-sheets.test.js` checks every app has a sheet.
 - **Animated pitches** (`site/pitch/`, no video files): `/pitch/?app=<id>` plays a ~40 s pitch per app from its sales sheet, `/pitch/?all` is "Business Apps in 40 seconds". Scenes are pure data (`scenes.js`, tested in `tools/tests/pitch.test.js`), `pitch.js` draws and drives them with one clock (`&t=<s>` or `&scene=<n>` freezes a frame; reduced motion gives static slides). Buttons: "Play pitch" on every sheet and "Business Apps in 40 seconds" in the adjust box/band (`app-sheet-panel.js`). Checked in headless Chrome only (screenshots in `docs/design/pitch-shots/`), not on a real phone or in full screen.
 
@@ -279,6 +279,28 @@ new tools.
   (11 checks: XML names, rows to XML and back, nested XML, PDF to XML, table guessing on a pdf-lib PDF read with
   pdf.js). The XML tests in Node use a small stand-in parser because Node has no DOMParser; the four new tools were
   also run once in headless Chrome on generated files (real DOMParser). Screenshots: `docs/design/convert-shots/`.
+
+## Quotes (`quotes/`, 17 Oct 2026, branch `feat/quotes`, not deployed)
+
+Quote builder in the Stripe-like look picked from mockup B (`docs/design/quotes/b.html` in the main checkout).
+- **Files:** `core.js` (pure maths, status, share links, demo data; same rounding as Billing's `computeTotals`),
+  `app.js` (list with status tabs and KPIs, editor with live preview, status changes, print), `billing-link.js`,
+  `accept.html` + `accept.js` (client page), `quotes.css`. Data: IndexedDB `stratum-quotes`, cloud sync app `quotes`
+  (added to `PRIVATE_APPS` in `worker/access.js`, so viewers never read it), demo dates via `DemoDates`.
+- **Expired** is not stored: a sent quote past its valid-until day shows as Expired. Locked once sent (valid-until
+  stays editable); "Back to draft" reopens it. PDF = print stylesheet (`window.print()`, save as PDF), not Billing's pdfmake.
+- **Accept page is a DEMO, not a real endpoint.** The quote is in the link fragment (`accept.html#q=...`); Accept or
+  Decline is saved in the same browser's localStorage and BroadcastChannel (Quotes picks it up), and the page shows a
+  reply link (`quotes/#reply=...`) for the owner on another device. No Worker route was added (no auth bypass). The whole
+  site sits behind Cloudflare Access, so a real client could not open it; a real version needs a public endpoint that
+  stores the answer plus an Access bypass for that path: a decision for Simon.
+- **Create invoice in Billing:** writes a numberless invoice DRAFT into Billing's own data (same lock, hash-chained audit
+  entry, client matched by name or created). The overall discount becomes one negative "Discount x %" line, so Billing's
+  net/VAT/total equal the quote's to the cent (tested). Once per quote (also checked in Billing by `fromQuote`); the quote
+  then shows the draft, and the invoice number once issued in Billing. Billing patch: it uploads on the `external`
+  channel message or the `stratum-billing-external-change` flag, so its cloud copy catches up.
+- **Tests:** `tools/tests/quotes.test.js` (17 checks). Screenshots and the e2e shots: `docs/design/quotes-shots/`.
+- Billing has its own older "Quotes/proforma" feature; the two are separate on purpose.
 
 ## Run locally
 

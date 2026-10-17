@@ -606,6 +606,15 @@ addMark('pageSwap', ({ nx = 0, ny = 0 } = {}, k) => centre([
   { role: 'inlay', d: [rect(536, 544, 160, k.wi + 4, (k.wi + 4) / 2), roundPoly([[664, 484], [664, 612], [752, 548]], [k.r, k.r, k.r])] },
 ], nx, ny));
 
+/** Quotes — an offer sheet with a tick: a light sheet with three item lines at the back and a deep rounded "stamp"
+ *  square in front of its lower right carrying a white tick (accepted). No coin (Billing), no pen nib (Contracts). */
+addMark('quoteTick', ({ nx = 0, ny = 0 } = {}, k) => centre([
+  { role: 'back', tone: [0.3, 1.2], d: rect(232, 216, 400, 520, k.R) },
+  { role: 'detail', tone: [1.4, 1.8], d: [rect(296, 296, 208, 40, 20), rect(296, 368, 136, 40, 20), rect(296, 440, 176, 40, 20)] },
+  { role: 'front', gap: true, d: rect(468, 520, 316, 316, k.R) },
+  { role: 'inlay', d: [capsule([540, 686], [598, 744], k.wi + 4), capsule([598, 744], [716, 612], k.wi + 4)] },
+], nx, ny));
+
 export default [
   { id: 'launcher', name: 'Business Apps', group: 'Launcher', hue: 'violet', tile: 'dark', mark: 'peak' },
 
@@ -620,6 +629,7 @@ export default [
     args: { sheet: [192, 192, 336, 496], f: 112, a: 120, top: -248, sh: -16, tip: 272, at: [612, 604], hole: 36, holeY: -54 } },
 
   { id: 'crm', name: 'CRM', group: 'Sales & marketing', hue: 'berry', mark: 'account', nudge: [0, -16] },
+  { id: 'quotes', name: 'Quotes', group: 'Sales & marketing', hue: 'emerald', mark: 'quoteTick' },
   { id: 'mail', name: 'Clearfigure Mail', group: 'Sales & marketing', hue: 'blue', mark: 'sendMail' },
   { id: 'marketing', name: 'Marketing calendar', group: 'Sales & marketing', hue: 'coral', mark: 'megaphone',
     args: { rot: -24, P: [300, 712], h0: 72, h1: 236, len: 400, cal: [192, 192, 320, 336], hb: 92, rimW: 80, piece: [120, 128] } },

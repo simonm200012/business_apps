@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="/_shared/stratum-shell.js" data-pos="br"></script>
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>Quotes · Business Apps</title>
+<meta name="description" content="Build a quote, send the client a link to accept it, and turn it into an invoice in Billing with one click.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="quotes.css?v=1">
+<!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+  <aside class="qside" aria-label="Quotes menu">
+    <div class="lg"><i></i><span id="coName">Quotes</span></div>
+    <a class="nv on" href="#/" aria-current="page">Quotes</a>
+    <small>Connected</small>
+    <a class="nv" href="/billing/">Billing</a>
+  </aside>
+  <main class="main" id="main" tabindex="-1"><p class="empty">Loading…</p></main>
+</div>
+<div id="printArea" aria-hidden="true"></div>
+<dialog id="dlg" aria-modal="true"></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<noscript><p class="empty">Quotes needs JavaScript.</p></noscript>
+<script src="/_shared/demo-dates.js"></script>
+<script src="/_shared/stratum-sync.js"></script>
+<script src="/billing/core.js?v=4"></script>
+<script src="core.js?v=1"></script>
+<script src="billing-link.js?v=1"></script>
+<script src="app.js?v=1" defer></script>
+</body>
+</html>
