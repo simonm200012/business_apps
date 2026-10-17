@@ -55,18 +55,28 @@ export async function identity(request, env) {
   return { email };
 }
 
-/** The e-mail in a valid Access token (signature, issuer, audience, expiry), whoever it is: → { email } (lowercased, may be
- * '' when the token has none) or { error: 'setup' | 'signin' }. identity() adds the owner/viewer rules on top; team
- * workspaces (worker/workspaces.js) add their own membership check. Throws if Access keys cannot be fetched. */
-export async function verifiedEmail(request, env) {
-  const team = env.ACCESS_TEAM_DOMAIN, aud = env.ACCESS_AUD;
+/** True for localhost, 127.0.0.1, [::1] and *.localhost (the only hosts where DEV_BYPASS may ever work). */
+export const isLocalHost = (host) => { host = String(host || '').toLowerCase(); return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.localhost'); };
+
+/** The e-mail in a valid Access token (signature, issuer, audience, expiry), whoever it is: → { email } (lowercased) or
+ * { error: 'setup' | 'signin' }. identity() adds the owner/viewer rules on top; team workspaces (worker/workspaces.js) add
+ * their own membership check; the client portal (worker/portal.js) passes its own audience.
+ * opts.aud: the audience this caller accepts (default env.ACCESS_AUD, the staff app). opts.otherAud: the audience of the
+ * other Access app on the same team (default env.PORTAL_ACCESS_AUD): a token that lists it is refused even if it also lists
+ * ours, because both apps share one issuer and the audience is the only thing that separates a client from a staff token.
+ * Tokens without an e-mail (service tokens) are refused. Throws if Access keys cannot be fetched (callers answer 503). */
+export async function verifiedEmail(request, env, opts = {}) {
+  const team = env.ACCESS_TEAM_DOMAIN, aud = opts.aud === undefined ? env.ACCESS_AUD : opts.aud;
+  const other = opts.otherAud === undefined ? env.PORTAL_ACCESS_AUD : opts.otherAud;
   if (!team || !aud) return { error: 'setup' };
+  if (other && other === aud) return { error: 'setup' }; // the two apps must have different audiences
   const token = request.headers.get('Cf-Access-Jwt-Assertion');
   if (!token) return { error: 'signin' };
   const parts = token.split('.');
   if (parts.length !== 3) return { error: 'signin' };
   let header, payload;
   try { header = decodeJson(parts[0]); payload = decodeJson(parts[1]); } catch { return { error: 'signin' }; }
+  if (!header || !payload || typeof payload !== 'object') return { error: 'signin' };
   if (header.alg !== 'RS256' || !header.kid) return { error: 'signin' };
   let jwk = (await accessKeys(team)).find((k) => k.kid === header.kid);
   if (!jwk) jwk = (await accessKeys(team, true)).find((k) => k.kid === header.kid);
@@ -77,6 +87,8 @@ export async function verifiedEmail(request, env) {
   const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sig, new TextEncoder().encode(parts[0] + '.' + parts[1]));
   if (!ok) return { error: 'signin' };
   const now = Date.now() / 1000, auds = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
-  if (!auds.includes(aud) || !(payload.exp > now) || (payload.nbf && payload.nbf > now + 60) || payload.iss !== 'https://' + team) return { error: 'signin' };
-  return { email: String(payload.email || '').trim().toLowerCase() };
+  if (!auds.includes(aud) || (other && auds.includes(other)) || !(payload.exp > now) || (payload.nbf && payload.nbf > now + 60) || payload.iss !== 'https://' + team) return { error: 'signin' };
+  const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
+  if (!email || !email.includes('@')) return { error: 'signin' };
+  return { email };
 }

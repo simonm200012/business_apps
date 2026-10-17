@@ -26,7 +26,7 @@
 //
 // Team workspaces (/api/ws, /api/ws/*): worker/workspaces.js. Several people of one company share one Collections data
 // set with roles (owner, editor, viewer) checked there; the personal copies above are not involved.
-import { identity, isPrivatePath } from './access.js';
+import { identity, isPrivatePath, isLocalHost } from './access.js';
 import { workspaces } from './workspaces.js';
 
 const APP = /^[a-z0-9][a-z0-9-]{0,39}$/;
@@ -65,6 +65,8 @@ export default {
 
 async function api(request, env, url) {
   if (url.pathname === '/api/ws' || url.pathname.startsWith('/api/ws/')) return workspaces(request, env, url); // own access rules
+  // DEV_BYPASS must never be set on a deployed Worker: on any host but localhost every request is refused, loudly.
+  if (env.DEV_BYPASS && !isLocalHost(url.hostname)) { console.error('DEV_BYPASS is set on a non-local host: refusing every request'); return json({ error: 'This Worker is misconfigured (DEV_BYPASS on a deployed host).' }, 500); }
   let who;
   if (env.DEV_BYPASS === '1') who = { email: String(env.OWNER_EMAIL || 'owner@local.test').toLowerCase() };
   else {

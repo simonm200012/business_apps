@@ -1,0 +1,92 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Client portal A · Dashboard style</title>
+<style>
+:root{--brand:#1F6B4F;--brandT:#E6F2EC;--bg:#F6F9FC;--card:#fff;--ink:#1A2433;--ink2:#4B5768;--ink3:#6B7686;--line:#E3E8EE;
+--ok:#0E6B3C;--okBg:#DDF3E6;--warn:#8A4B00;--warnBg:#FDEBCB;--bad:#A3202F;--badBg:#FBDDE0;
+--sans:'Segoe UI Variable Text','Segoe UI','Noto Sans',system-ui,-apple-system,BlinkMacSystemFont,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#cfd6de;font:400 14px/20px var(--sans);color:var(--ink)}
+h1,h2,h3,p{margin:0}.wrap{display:flex;gap:40px;align-items:flex-start;padding:30px}
+.frame{background:var(--bg);overflow:hidden}
+#d{width:1280px}#p{width:390px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.logo svg{width:28px;height:28px}
+.badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600;line-height:20px}
+.paid{background:var(--okBg);color:var(--ok)}.due{background:var(--warnBg);color:var(--warn)}.over{background:var(--badBg);color:var(--bad)}
+.btn{display:inline-block;background:var(--brand);color:#fff;border-radius:6px;padding:6px 14px;font-weight:600;font-size:14px}
+.btn.o{background:#fff;color:var(--ink);border:1px solid #cdd5de}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px}
+.card h3{font-size:14px;font-weight:600;padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.card h3 a{font-weight:400;font-size:13px;color:var(--brand)}
+.row{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.row .g{flex:1;min-width:0}.row b{font-weight:600}.sub{color:var(--ink3);font-size:13px}
+.amt{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.ico{width:32px;height:32px;border-radius:6px;background:var(--brandT);color:var(--brand);display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+/* desktop */
+#d .top{background:#fff;border-bottom:1px solid var(--line);height:64px;padding:0 40px;display:flex;align-items:center;gap:40px}
+#d nav{display:flex;gap:6px;height:100%}#d nav a{display:flex;align-items:center;padding:0 12px;color:var(--ink2);font-weight:500;border-bottom:2px solid transparent}
+#d nav a.on{color:var(--brand);border-color:var(--brand)}
+.user{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--ink2)}.av{width:30px;height:30px;border-radius:15px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:600;font-size:12px}
+#d main{padding:32px 40px 40px}#d h1{font-size:26px;line-height:34px;font-weight:600;margin-bottom:4px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+.kpi{padding:18px 20px}.kpi .l{color:var(--ink3);font-size:13px}.kpi .v{font-size:28px;line-height:38px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;align-items:start}.stack{display:grid;gap:16px}
+.quote{padding:20px}.quote .big{font-size:24px;font-weight:600;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.news .row{display:block}.news .d{font-size:12px;color:var(--ink3)}
+footer{padding:0 40px 28px;color:var(--ink3);font-size:12px}
+/* phone */
+#p .top{background:#fff;border-bottom:1px solid var(--line);height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between}
+#p main{padding:20px 16px 12px;display:grid;gap:14px}#p h1{font-size:22px;line-height:28px;font-weight:600}
+#p .bal{padding:18px}#p .bal .v{font-size:32px;line-height:40px;font-weight:600}
+#p .row{padding:12px 16px}#p .card h3{padding:12px 16px}
+.tabs{display:flex;background:#fff;border-top:1px solid var(--line);height:64px}
+.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--ink3);font-weight:500}
+.tabs a.on{color:var(--brand)}.tabs svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cap{font:600 13px var(--sans);color:#33414f;margin:0 0 8px}
+</style>
+<body><div class="wrap">
+<div><p class="cap">A · Desktop 1280</p>
+<div class="frame" id="d">
+<div class="top"><div class="logo"><svg viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#1F6B4F"/><path d="M7 21 14 7l7 14M10 16h8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg>Alder &amp; Finch Studio</div>
+<nav><a class="on">Overview</a><a>Invoices</a><a>Documents</a><a>Quotes</a><a>News</a></nav>
+<div class="user"><span>Lindgren Café</span><div class="av">EL</div></div></div>
+<main><h1>Good morning, Elena</h1><p class="sub">Here is what is going on with your projects at Alder &amp; Finch Studio.</p>
+<div class="kpis"><div class="card kpi"><div class="l">Outstanding balance</div><div class="v">€2,100.00</div></div>
+<div class="card kpi"><div class="l">Overdue</div><div class="v" style="color:var(--bad)">€860.00</div></div>
+<div class="card kpi"><div class="l">Paid this year</div><div class="v">€8,790.00</div></div></div>
+<div class="cols"><div class="stack">
+<div class="card"><h3>Invoices <a>View all</a></h3>
+<div class="row"><div class="g"><b>INV-2041</b><div class="sub">Brand refresh, phase 2 · due 24 Oct 2026</div></div><span class="badge due">Due soon</span><div class="amt" style="width:100px">€1,240.00</div><span class="btn o">Pay</span></div>
+<div class="row"><div class="g"><b>INV-2038</b><div class="sub">Menu and signage design · due 11 Oct 2026</div></div><span class="badge over">Overdue 6 days</span><div class="amt" style="width:100px">€860.00</div><span class="btn o">Pay</span></div>
+<div class="row"><div class="g"><b>INV-2032</b><div class="sub">Brand refresh, phase 1 · paid 2 Sep 2026</div></div><span class="badge paid">Paid</span><div class="amt" style="width:100px">€2,150.00</div><span class="btn o" style="visibility:hidden">Pay</span></div>
+<div class="row"><div class="g"><b>INV-2027</b><div class="sub">Photography day · paid 14 Aug 2026</div></div><span class="badge paid">Paid</span><div class="amt" style="width:100px">€640.00</div><span class="btn o" style="visibility:hidden">Pay</span></div></div>
+<div class="card"><h3>Shared documents <a>View all</a></h3>
+<div class="row"><div class="ico">PDF</div><div class="g"><b>Brand guidelines v3</b><div class="sub">Shared 9 Oct · 4.2 MB</div></div><span class="sub">Download</span></div>
+<div class="row"><div class="ico">PDF</div><div class="g"><b>Signage proof, front window</b><div class="sub">Shared 2 Oct · 1.8 MB</div></div><span class="sub">Download</span></div>
+<div class="row"><div class="ico">ZIP</div><div class="g"><b>Logo files, final</b><div class="sub">Shared 21 Sep · 12 MB</div></div><span class="sub">Download</span></div></div>
+</div><div class="stack">
+<div class="card"><h3>Open quote</h3><div class="quote"><span class="badge due">Awaiting your answer</span><div class="big">€4,800.00</div><p><b>Q-118 · Website relaunch</b></p><p class="sub" style="margin:2px 0 16px">Valid until 31 Oct 2026 · 3 items</p><div style="display:flex;gap:8px"><span class="btn">Accept quote</span><span class="btn o">View details</span></div></div></div>
+<div class="card news"><h3>News from Alder &amp; Finch</h3>
+<div class="row"><div><div class="d">14 Oct 2026</div><b>Studio closed 2 to 4 November</b><div class="sub">We are at a print fair. Urgent requests still reach us by email.</div></div></div>
+<div class="row"><div><div class="d">1 Oct 2026</div><b>New: invoices payable by bank transfer QR</b><div class="sub">Scan the code on any invoice from your banking app.</div></div></div>
+<div class="row"><div><div class="d">18 Sep 2026</div><b>Welcome, Jonas Berg, junior designer</b><div class="sub">Jonas joins the brand team this month.</div></div></div></div>
+</div></div></main>
+<footer>Alder &amp; Finch Studio · Sample portal with fictional data · Powered by Business Apps</footer>
+</div></div>
+
+<div><p class="cap">A · Phone 390</p>
+<div class="frame" id="p">
+<div class="top"><div class="logo"><svg viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#1F6B4F"/><path d="M7 21 14 7l7 14M10 16h8" stroke="#fff" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg>Alder &amp; Finch</div><div class="av">EL</div></div>
+<main><div><h1>Good morning, Elena</h1><p class="sub">Lindgren Café</p></div>
+<div class="card bal"><div class="sub">Outstanding balance</div><div class="v">€2,100.00</div><p class="sub" style="margin:2px 0 14px">€860.00 of it is overdue</p><span class="btn" style="display:block;text-align:center">Pay now</span></div>
+<div class="card"><h3>Invoices <a>All</a></h3>
+<div class="row"><div class="g"><b>INV-2041</b><div class="sub">Due 24 Oct</div></div><span class="badge due">Due soon</span><div class="amt">€1,240.00</div></div>
+<div class="row"><div class="g"><b>INV-2038</b><div class="sub">Due 11 Oct</div></div><span class="badge over">Overdue</span><div class="amt">€860.00</div></div>
+<div class="row"><div class="g"><b>INV-2032</b><div class="sub">Paid 2 Sep</div></div><span class="badge paid">Paid</span><div class="amt">€2,150.00</div></div></div>
+<div class="card"><h3>Open quote</h3><div class="quote" style="padding:16px"><div class="big">€4,800.00</div><p><b>Q-118 · Website relaunch</b></p><p class="sub" style="margin:2px 0 14px">Valid until 31 Oct 2026</p><span class="btn" style="display:block;text-align:center">Accept quote</span></div></div>
+<div class="card"><h3>Documents <a>All</a></h3>
+<div class="row"><div class="ico">PDF</div><div class="g"><b>Brand guidelines v3</b><div class="sub">9 Oct · 4.2 MB</div></div></div>
+<div class="row"><div class="ico">PDF</div><div class="g"><b>Signage proof, front window</b><div class="sub">2 Oct · 1.8 MB</div></div></div></div>
+<div class="card news"><h3>News</h3>
+<div class="row"><div><div class="d">14 Oct 2026</div><b>Studio closed 2 to 4 November</b><div class="sub">We are at a print fair.</div></div></div></div>
+</main>
+<div class="tabs"><a class="on"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H4z"/></svg>Home</a><a><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/></svg>Invoices</a><a><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4"/></svg>Files</a><a><svg viewBox="0 0 24 24"><path d="M5 4h14v12H9l-4 4z"/></svg>Quotes</a><a><svg viewBox="0 0 24 24"><path d="M5 5h14M5 12h14M5 19h9"/></svg>News</a></div>
+</div></div></div></body></html>
