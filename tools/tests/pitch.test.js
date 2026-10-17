@@ -66,6 +66,32 @@ t('the overall pitch covers every group and lasts 25-45 s', () => {
   assert.strictEqual(sc.find((s) => s.kind === 'different').items.length, 4);
   assert.strictEqual(sc[sc.length - 1].book, PS.BOOKING_URL);
 });
+t('the overview is a 35-45 s film: opening montage, per-group mock screens, proofs, live re-brand, call to action', () => {
+  const sc = PS.buildAllScenes(groups, ADJUST), sum = PS.total(sc);
+  assert.ok(sum >= 35 && sum <= 45, 'overview lasts ' + sum + ' s');
+  const intro = sc[0];
+  assert.strictEqual(intro.kind, 'allintro');
+  assert.ok(intro.promise && intro.total === Object.keys(byApp).length, 'promise and the app count come from the data');
+  assert.deepStrictEqual(intro.groups.map((g) => g.id), groups.map((g) => g.id));
+  intro.groups.forEach((g, i) => assert.deepStrictEqual(g.apps, groups[i].apps.map((a) => a.id)));
+  sc.filter((s) => s.kind === 'group').forEach((s, i) => {
+    assert.strictEqual(s.mock, groups[i].id, 'mock screen for ' + s.id);
+    assert.ok(s.highlight.length >= 2 && s.highlight.length <= 3 && s.highlight.every((id) => s.apps.some((a) => a.id === id)));
+  });
+  assert.deepStrictEqual(sc.find((s) => s.kind === 'different').items.map((i) => i.visual), ['devices', 'lock', 'table', 'swatch']);
+  const rb = sc.find((s) => s.kind === 'adjust');
+  assert.ok(rb.rebrand && rb.rebrand.company && rb.rebrand.accent && rb.rebrand.nav.length >= 3, 're-brand scene');
+  rb.rebrand.nav.forEach((n) => assert.ok(n[0] && n[1] && n[0] !== n[1], 'EN and SL label'));
+  assert.strictEqual(rb.news, ADJUST.news);
+  assert.ok(sc.map((s) => s.kind).indexOf('adjust') > sc.map((s) => s.kind).indexOf('different'));
+  assert.ok(sc.every((s) => s.dur >= 3 && s.dur <= 8));
+});
+t('pitch.js draws the new overview scenes from the shared data', () => {
+  const js = read('site/pitch/pitch.js'), css = read('site/pitch/pitch.css');
+  for (const k of ['allIntro', 'groupScene', 'gmock', 'proof', 'rebrand']) assert.ok(js.includes('function ' + k), k);
+  for (const g of ['finance', 'sales', 'operations', 'people', 'insights']) assert.ok(js.includes("id === '" + g + "'"), 'mock ' + g);
+  assert.ok(/\.k-allintro|\.mont/.test(css) && css.includes('.rb{') && css.includes('.portrait .rb'));
+});
 t('sceneAt finds the scene for a moment', () => {
   const sc = PS.buildAllScenes(groups, ADJUST);
   assert.deepStrictEqual(PS.sceneAt(sc, 0), { index: 0, local: 0 });

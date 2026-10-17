@@ -61,21 +61,31 @@
     return sc;
   }
 
+  var PROMISE = 'Every tool your company runs on, in one place.';
+  // each point has a small animated proof (drawn by pitch.js): devices, lock, table, swatch
   var DIFFS = [
-    ['Browser apps', 'Nothing to install. Open a link on the phone or the computer.'],
-    ['Private cloud copy', 'The same data on every device, behind your own sign-in.'],
-    ['Demos with realistic data', 'Try every screen with believable numbers before you decide.'],
-    ['Adjustable per company', 'Your branding, fields, workflows and language.']
+    ['Browser apps', 'Nothing to install. Open a link on the phone or the computer.', 'devices'],
+    ['Private cloud copy', 'The same data on every device, behind your own sign-in.', 'lock'],
+    ['Demos with realistic data', 'Try every screen with believable numbers before you decide.', 'table'],
+    ['Adjustable per company', 'Your branding, fields, workflows and language.', 'swatch']
   ];
+  // demo company for the live re-brand scene (sample data only); the five things it shows come from ADJUST
+  var REBRAND = { from: { name: 'Your logo', mark: 'B' }, company: 'Alpina Trade', mark: 'A', accent: '#1F7A5C',
+    nav: [['Dashboard', 'Nadzorna plošča'], ['Invoices', 'Računi'], ['Customers', 'Stranke'], ['Leave', 'Dopust']], extraField: 'Cost centre', extraFieldSl: 'Stroškovno mesto' };
   function buildAllScenes(groups, adjust) {
     var n = groups.reduce(function (s, g) { return s + g.apps.length; }, 0);
-    var sc = [{ id: 'intro', kind: 'allintro', dur: 3.5, title: 'Business Apps in 40 seconds', text: n + ' apps in ' + groups.length + ' groups', groups: groups.map(function (g) { return g.name; }), icons: [].concat.apply([], groups.map(function (g) { return g.apps.slice(0, 2).map(function (a) { return a.id; }); })), caption: n + ' browser apps in ' + groups.length + ' groups' }];
+    var sc = [{ id: 'intro', kind: 'allintro', dur: 7.5, title: 'Business Apps', promise: PROMISE, total: n,
+      groups: groups.map(function (g) { return { id: g.id, name: g.name, count: g.apps.length, apps: g.apps.map(function (a) { return a.id; }) }; }),
+      caption: PROMISE + ' ' + n + ' apps in ' + groups.length + ' groups.' }];
     groups.forEach(function (g) {
-      sc.push({ id: 'group-' + g.id, kind: 'group', dur: 3.3, title: g.name, text: g.desc, count: g.apps.length, apps: g.apps.map(function (a) { return { id: a.id, name: a.name }; }), caption: g.name + ': ' + g.desc });
+      sc.push({ id: 'group-' + g.id, kind: 'group', dur: 3.2, title: g.name, text: g.desc, count: g.apps.length, mock: g.id,
+        apps: g.apps.map(function (a) { return { id: a.id, name: a.name }; }), highlight: g.apps.slice(0, 3).map(function (a) { return a.id; }), caption: g.name + ': ' + g.desc });
     });
-    sc.push({ id: 'different', kind: 'different', dur: 6, title: 'What makes them different', items: DIFFS.map(function (d) { return { name: d[0], text: d[1] }; }), caption: DIFFS.map(function (d) { return d[0]; }).join(' · ') });
-    sc.push(adjustScene(adjust));
-    sc.push({ id: 'cta', kind: 'cta', dur: 4, title: 'See it with your own company’s look', book: BOOKING_URL, bookLabel: 'Book 20 minutes', openLabel: 'Open Business Apps', openHref: '/', caption: 'Book 20 minutes, or open the apps and try them' });
+    sc.push({ id: 'different', kind: 'different', dur: 5.5, title: 'What makes them different', items: DIFFS.map(function (d) { return { name: d[0], text: d[1], visual: d[2] }; }), caption: DIFFS.map(function (d) { return d[0]; }).join(' · ') });
+    var ad = adjustScene(adjust, 'Re-branded live: logo, colours, language, company news');
+    ad.dur = 6.5; ad.rebrand = REBRAND;
+    sc.push(ad);
+    sc.push({ id: 'cta', kind: 'cta', dur: 3.5, title: 'See it with your own company’s look', book: BOOKING_URL, bookLabel: 'Book 20 minutes', openLabel: 'Open Business Apps', openHref: '/', caption: 'Book 20 minutes, or open the apps and try them' });
     return sc;
   }
 
