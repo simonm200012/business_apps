@@ -13,6 +13,7 @@ phone, with demos good enough to show and sell to customers.
 - `worker/` answers only `/api/*` (cloud sync, see below). Everything else is a static file.
 - The home page lists 33 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
   It has search (press `/`, also matches who/problem/pitch text) and "Recently opened". In the default Microsoft 365 look "All apps" is a list plus a sales sheet per app (`site/_shared/app-sheets.js`, linkable as `#app=<id>`, on phones the sheet replaces the list); the other looks still use the cards. `tools/tests/home-sheets.test.js` checks every app has a sheet.
+- **Animated pitches** (`site/pitch/`, no video files): `/pitch/?app=<id>` plays a ~40 s pitch per app from its sales sheet, `/pitch/?all` is "Business Apps in 40 seconds". Scenes are pure data (`scenes.js`, tested in `tools/tests/pitch.test.js`), `pitch.js` draws and drives them with one clock (`&t=<s>` or `&scene=<n>` freezes a frame; reduced motion gives static slides). Buttons: "Play pitch" on every sheet and "Business Apps in 40 seconds" in the adjust box/band (`app-sheet-panel.js`). Checked in headless Chrome only (screenshots in `docs/design/pitch-shots/`), not on a real phone or in full screen.
 
 ## Cloud sync (new)
 

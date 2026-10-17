@@ -23,7 +23,11 @@
     news: '"Stores close at 14:00 on Friday for stocktake. New returns form is in Operations." Posted by Head office.',
     list: ['Your logo and colours', 'Your fields (for example extra columns or IDs)', 'Your workflow and approval steps', 'Your language', 'A company news area on the start screen']
   };
+  // Node (tools/tests/pitch.test.js) and the pitch page (/pitch/) read the same texts
+  if (typeof module !== 'undefined' && module.exports) module.exports = { ADJUST: ADJUST };
+  if (!root.document) return;
   var STAR = 'M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z';
+  var PLAY = 'M8 5.5v13l10.5-6.5z';
   var X = 'M6.5 6.5l11 11M17.5 6.5l-11 11';
   var doc = root.document;
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -40,6 +44,7 @@
     return (o.back ? '<button type="button" class="b-back" data-bback>← All apps</button>' : '') +
       '<div class="b-hd"><img src="' + esc(a.icon) + '" alt="" width="44" height="44"><div><h3 id="' + hid + '">' + esc(a.name) + '</h3><div class="tags">' + tags + '</div></div></div>' +
       '<div class="b-act" data-app="' + esc(a.id) + '"><a class="fbtn pri b-open" href="' + esc(a.href) + '">Open app</a>' +
+      '<a class="fbtn b-play" href="/pitch/?app=' + esc(a.id) + '">' + icon(PLAY, 16) + '<span>Play pitch</span></a>' +
       '<button type="button" class="fbtn" data-pin="' + esc(a.id) + '" aria-pressed="false">' + icon(STAR, 16) + '<span>Pin</span></button></div>' +
       (screens.length ? '<nav class="b-sc" data-app="' + esc(a.id) + '" aria-label="' + esc(a.name) + ' screens">' + screens.map(function (x) { return '<a href="' + esc(x.href) + '">' + esc(x.name) + '</a>'; }).join('') + '</nav>' : '') +
       sec('What it does', s.what) + sec('Who it’s for', s.who) + sec('Problem it solves', s.problem) +
@@ -54,13 +59,15 @@
       '<p class="b-news"><b>' + esc(ADJUST.newsLabel) + '</b><br>' + esc(ADJUST.news) + '</p>';
   }
   // the Microsoft 365 page box (#bAdj) is filled from the same text
-  function fillAdjust(el) { if (el) el.innerHTML = adjustInner('bAdjH'); }
+  function fillAdjust(el) { if (el) el.innerHTML = adjustInner('bAdjH') + '<p class="b-playp">' + playAll() + '</p>'; }
+  // "Business Apps in 40 seconds": the overall animated pitch (/pitch/?all)
+  function playAll() { return '<a class="fbtn pri b-playall" href="/pitch/?all">' + icon(PLAY, 16) + '<span>Business Apps in 40 seconds</span></a>'; }
   // the compact band the other looks place above their app grid: a one-line summary that opens to the full text
   function adjustBand() {
     var d = doc.createElement('section');
     d.className = 'sp-adj'; d.setAttribute('aria-labelledby', 'spAdjH');
     d.innerHTML = '<div class="sp-adj-hd"><b id="spAdjH">' + esc(ADJUST.title) + '</b>' +
-      '<span class="sp-adj-chips">' + ADJUST.items.map(function (i) { return '<span>' + esc(i[0]) + '</span>'; }).join('') + '</span>' +
+      '<span class="sp-adj-chips">' + ADJUST.items.map(function (i) { return '<span>' + esc(i[0]) + '</span>'; }).join('') + '</span>' + playAll() +
       '<button type="button" class="sp-adj-tg" aria-expanded="false" aria-controls="spAdjBody">Details</button></div>' +
       '<div class="sp-adj-body" id="spAdjBody" hidden><p>' + esc(ADJUST.lead) + '</p>' +
       '<ul class="b-adjg">' + ADJUST.items.map(function (i) { return '<li><b>' + esc(i[0]) + '</b><span>' + esc(i[1]) + '</span></li>'; }).join('') + '</ul>' +
@@ -196,5 +203,5 @@
   });
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', function () { setTimeout(onHash, 0); }); else setTimeout(onHash, 0);
 
-  root.AppSheetPanel = { sheetHtml: sheetHtml, fillAdjust: fillAdjust, adjustBand: adjustBand, aboutBtn: aboutBtn, cardButtons: cardButtons, open: function (id) { open(id, 'push'); }, close: function () { close(true); }, app: function (id) { return apps()[id] || null; } };
+  root.AppSheetPanel = { sheetHtml: sheetHtml, fillAdjust: fillAdjust, adjustBand: adjustBand, ADJUST: ADJUST, aboutBtn: aboutBtn, cardButtons: cardButtons, open: function (id) { open(id, 'push'); }, close: function () { close(true); }, app: function (id) { return apps()[id] || null; } };
 })(typeof window !== 'undefined' ? window : this);
