@@ -8,8 +8,12 @@
 //   ratelimit/<YYYY-MM-DD>/total        all messages that day (customMetadata.n), a cap against floods
 // Days before yesterday are deleted on the next message (and by the bucket's lifecycle rule, public/README.md).
 //
+// Branded demos (public/demo.js): GET /d/<slug> (page), GET /api/demo/<slug>[/logo.png] (data), read from the same bucket under demos/.
+//
 // Optional secrets/vars: TURNSTILE_SECRET (then a Turnstile token is required), ALLOWED_ORIGINS (comma-separated extra
 // origins allowed to post, e.g. a custom domain during a move; the Worker's own origin is always allowed).
+
+import { handleDemoPage, handleDemoApi, notFoundPage } from './demo.js';
 
 export const LIMITS = { bodyBytes: 16384, name: 100, company: 120, email: 254, phone: 40, message: 4000, minMessage: 10, minName: 2, minFillMs: 3000, perHour: 5, perDay: 200 };
 export const PRODUCTS = ['datacheck', 'einvoice', 'collections', 'cashflow', 'budget', 'custom', 'other'];
@@ -147,6 +151,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === '/api/contact') return handleContact(request, env);
+    if (url.pathname.startsWith('/d/') || url.pathname === '/d') return url.pathname.startsWith('/d/') ? handleDemoPage(request, env, url) : notFoundPage(); // branded demos (public/demo.js)
+    if (url.pathname.startsWith('/api/demo/')) return handleDemoApi(request, env, url);
     if (url.pathname.startsWith('/api/')) return json(404, { ok: false, error: 'not_found' });
     // everything else is a static file (run_worker_first only sends /api/* here)
     return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Not found', { status: 404 });

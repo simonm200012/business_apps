@@ -22,6 +22,8 @@
     "ACCESS_TEAM_DOMAIN": "twilight-forest-055c.cloudflareaccess.com",
     "ACCESS_AUD": "d2118dbaa694438dd172f794b8a031cf5fda9c3dbf8fa5e3100232bbf979d5d3",
     "OWNER_EMAIL": "simonm2000@outlook.com",
-    "OWNER_NAME": "Simon"
+    "OWNER_NAME": "Simon",
+    // Where the public Clearfigure site lives: Studio > Branded demo builds the prospect's link from it (can be changed in the editor).
+    "PUBLIC_BASE_URL": "https://clearfigure.simonm2000.workers.dev"
   }
 }

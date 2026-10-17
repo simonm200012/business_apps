@@ -11,7 +11,7 @@ phone, with demos good enough to show and sell to customers.
   `business-apps owner` (simonm2000@outlook.com, one-time PIN).
 - `site/` is the web root: one folder per app, plain HTML/CSS/JS, no build step.
 - `worker/` answers only `/api/*` (cloud sync, see below). Everything else is a static file.
-- The home page lists 35 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
+- The home page lists 36 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
   It has search (press `/`, also matches who/problem/pitch text) and "Recently opened". In the default Microsoft 365 look "All apps" is a list plus a sales sheet per app (`site/_shared/app-sheets.js`, linkable as `#app=<id>`, on phones the sheet replaces the list); the other looks still use the cards. `tools/tests/home-sheets.test.js` checks every app has a sheet.
 - **Animated pitches** (`site/pitch/`, no video files): `/pitch/?app=<id>` plays a ~40 s pitch per app from its sales sheet, `/pitch/?all` is "Business Apps in 40 seconds". Scenes are pure data (`scenes.js`, tested in `tools/tests/pitch.test.js`), `pitch.js` draws and drives them with one clock (`&t=<s>` or `&scene=<n>` freezes a frame; reduced motion gives static slides). Buttons: "Play pitch" on every sheet and "Business Apps in 40 seconds" in the adjust box/band (`app-sheet-panel.js`). Checked in headless Chrome only (screenshots in `docs/design/pitch-shots/`), not on a real phone or in full screen.
 
@@ -301,6 +301,36 @@ Quote builder in the Stripe-like look picked from mockup B (`docs/design/quotes/
   channel message or the `stratum-billing-external-change` flag, so its cloud copy catches up.
 - **Tests:** `tools/tests/quotes.test.js` (17 checks). Screenshots and the e2e shots: `docs/design/quotes-shots/`.
 - Billing has its own older "Quotes/proforma" feature; the two are separate on purpose.
+
+## Branded demo (`demo-builder/`, 17 Oct 2026)
+
+A personal link for one prospect: `https://<public site>/d/<slug>` shows their logo, name and colours, a company news card,
+and the apps you chose, each with its sales sheet, "Play pitch" (`/pitch/?app=<id>` on the public site) and, for the apps
+with a public demo copy (Collections, Budget, Data health check), "Open demo". Optional "Book a call" button.
+
+- **Editor (private):** `site/demo-builder/` (Studio group on the home page): list of demos with views ("opened 3 times,
+  last 17 Oct 14:12"), copy link, extend 30 days, expire now, delete; split-screen editor with the live preview drawn by
+  the same renderer as the public page (`site/_shared/demo-render.js`, `demo-view.css`, texts in `demo-strings.js` for
+  EN/SL/HR/DE, app list in `demo-catalog.js`). Logo: PNG/JPEG/WebP up to 300 KB, shrunk to 256 px and saved as PNG in the
+  browser (no SVG ever); colours suggested from the logo; the main colour is darkened until white text on it is 4.5:1.
+  "Open as prospect" adds `?p=1` so your own look is not counted.
+- **Private API:** `worker/demos.js` (rules and validation in `worker/demo-shared.js`), `GET/POST/PATCH/DELETE /api/demos[/<slug>]`,
+  owner only (view-only e-mails get 403; `demo-builder` and `/api/demos` are in `worker/access.js`), writes need `X-Stratum-Apps`.
+- **Data:** R2 bucket `clearfigure-leads` (binding `LEADS`, already in both wrangler configs) under `demos/<slug>/`:
+  `config.json`, `logo.png`, `views.json` (`{ count, last }`: no IP, no cookie, no e-mail). Slug = readable part + 16 random
+  base32 characters. Default expiry 60 days; the list call deletes demos 90 days after they expired (that is what the
+  privacy page says; it only runs when the list is opened).
+- **Public:** `public/demo.js` (routed from `public/worker.js`): `/d/<slug>` (page shell `dist/demo/index.html`),
+  `GET /api/demo/<slug>` (settings without internal fields, counts one view per page load, not for link previews/bots or
+  `?c=0`), `/api/demo/<slug>/logo.png`. Unknown and expired links give the same plain 404. Strict CSP, noindex, no referrer.
+  The build also copies the pitch (`/pitch/`, with its own app list `pitch/home.html`) and the app icons.
+- **Not translated yet:** the sales sheets and the pitch stay in English; only the page around them is EN/SL/HR/DE.
+- **Tests:** `tools/tests/branded-demo.test.js` (+ extended `public-build.test.js`). Checked locally in headless Chrome
+  (screenshots `docs/design/branded-demo/built-*.png`), not on a real phone, not deployed.
+- **To do once:** nothing new to create (the bucket exists). Deploy both workers: `npx wrangler deploy` and
+  `node tools/build-public.mjs && npx wrangler deploy -c public/wrangler.jsonc`. Check `PUBLIC_BASE_URL` in the root
+  `wrangler.jsonc` is the real address of the public Worker (or type it into "Public site address" in the editor).
+  The public run_worker_first now includes `/d/*`.
 
 ## Run locally
 

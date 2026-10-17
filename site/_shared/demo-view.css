@@ -1,0 +1,81 @@
+/* The branded demo page (_shared/demo-render.js): the public page /d/<slug> and the live preview in Studio > Branded demo.
+   Same look as the Business Apps home page (Microsoft 365 / Fluent tokens, light and dark, no glow). The prospect's colours
+   arrive as --c (buttons), --c2 (bars), --ct / --cink (tint and text on it), --cinkd / --ctd in dark mode. Everything is scoped
+   to .dv, so it can sit in a shadow root; widths are container queries, so the phone preview is the real phone layout. */
+.dv{--bg:#F5F5F5;--main:#FAFAFA;--card:#FFFFFF;--ink:#242424;--ink2:#424242;--ink3:#616161;--ink4:#707070;--line:#E0E0E0;--line2:#D1D1D1;--hover:#F5F5F5;
+  --cc:var(--c,#0F6CBD);--cx:var(--cink,#115EA3);--cb:var(--ct,#EBF3FC);
+  --sans:'Segoe UI Variable Text','Segoe UI','Noto Sans',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  container-type:inline-size;background:var(--main);color:var(--ink);font:400 14px/20px var(--sans);-webkit-font-smoothing:antialiased;text-align:left;min-height:100%}
+@media (prefers-color-scheme:dark){.dv:not([data-theme="light"]){--bg:#141414;--main:#1F1F1F;--card:#292929;--ink:#FFFFFF;--ink2:#D6D6D6;--ink3:#ADADAD;--ink4:#999999;--line:#3D3D3D;--line2:#525252;--hover:#333333;--cx:var(--cinkd,#62ABF5);--cb:var(--ctd,#082338)}}
+.dv[data-theme="dark"]{--bg:#141414;--main:#1F1F1F;--card:#292929;--ink:#FFFFFF;--ink2:#D6D6D6;--ink3:#ADADAD;--ink4:#999999;--line:#3D3D3D;--line2:#525252;--hover:#333333;--cx:var(--cinkd,#62ABF5);--cb:var(--ctd,#082338)}
+.dv *,.dv *::before,.dv *::after{box-sizing:border-box}
+.dv h1,.dv h2,.dv h3,.dv p{margin:0}
+.dv :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.dv img{max-width:100%}
+html.dvhtml,body.dvpage{margin:0;background:#FAFAFA}
+@media (prefers-color-scheme:dark){html.dvhtml,body.dvpage{background:#1F1F1F}}
+.dv-load{padding:48px 24px;color:#616161;text-align:center;font:400 14px/20px 'Segoe UI','Noto Sans',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){.dv-load{color:#ADADAD}}
+
+/* header */
+.dv-top{height:48px;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 16px}
+.dv-logo{width:32px;height:32px;object-fit:contain;flex:none;border-radius:4px}
+.dv-mk{width:32px;height:32px;border-radius:16px;background:var(--cc);color:#fff;font:700 12px/32px var(--sans);text-align:center;flex:none;overflow:hidden}
+.dv-nm{font-weight:600;font-size:16px;line-height:22px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-sp{flex:1}
+.dv-bar{height:3px;background:var(--c2,var(--cc))}
+.dv-btn,.dv .fbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:4px 12px;border:1px solid var(--line2);border-radius:4px;background:var(--card);color:var(--ink);font:600 14px/20px var(--sans);text-decoration:none;cursor:pointer;white-space:nowrap}
+.dv-btn:hover,.dv .fbtn:hover{background:var(--hover)}
+.dv-btn.o{border-color:var(--cc);color:var(--cx);background:var(--card)}
+.dv .fbtn.pri{background:var(--cc);border-color:transparent;color:#fff}
+.dv .fbtn.pri:hover{filter:brightness(.92);background:var(--cc)}
+.dv .fbtn.b-play{background:var(--cc);border-color:transparent;color:#fff}
+.dv .fbtn.b-play:hover{filter:brightness(.92);background:var(--cc)}
+.dv .i{width:16px;height:16px;fill:currentColor;stroke:none}
+
+/* page */
+.dv-mi{max-width:900px;margin:0 auto;padding:22px 24px 32px}
+.dv h1{font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.01em}
+.dv-sub{color:var(--ink3);font-size:13px;margin-top:2px}
+.dv-news{margin:16px 0 20px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--c2,var(--cc));border-radius:6px;padding:12px 16px}
+.dv-news small{color:var(--cx);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.dv-news h2{font-size:16px;line-height:22px;font-weight:600;margin:2px 0}
+.dv-news p{color:var(--ink2);font-size:13.5px;white-space:pre-line;overflow-wrap:anywhere}
+.dv-h{font-size:14px;font-weight:600;margin:0 0 2px}
+.dv-hint{color:var(--ink3);font-size:12.5px;margin-bottom:6px}
+.dv-tiles{display:flex;gap:2px;margin:0 -6px 16px;flex-wrap:wrap}
+.dv-t{width:92px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px 8px;border:0;border-radius:6px;background:transparent;font:400 12px/16px var(--sans);color:var(--ink2);cursor:pointer;text-align:center;overflow-wrap:anywhere}
+.dv-t img{width:40px;height:40px}
+.dv-t:hover{background:var(--hover)}
+.dv-t.on{background:var(--card);box-shadow:inset 0 0 0 1px var(--line),inset 0 -3px 0 var(--c2,var(--cc));color:var(--ink);font-weight:600}
+.dv-sheet{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.dv-foot{margin-top:14px;color:var(--ink4);font-size:12px;display:flex;gap:6px 16px;flex-wrap:wrap}
+
+/* the sales sheet (markup of AppSheetPanel.sheetHtml) */
+.dv .b-hd{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.dv .b-hd img{width:48px;height:48px;flex:none}
+.dv .b-hd h3{font-size:18px;line-height:24px;font-weight:600}
+.dv .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.dv .pill{font-size:11px;font-weight:600;padding:0 7px;border-radius:9px;line-height:18px;border:1px solid var(--line2);color:var(--ink3);background:var(--card)}
+.dv .pill.new{border-color:var(--cc);color:var(--cx)}
+.dv .b-act{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.dv .b-sec{margin-bottom:10px}
+.dv .b-lab{display:block;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);margin-bottom:2px}
+.dv .b-sec p{color:var(--ink2)}
+.dv .b-sec ul,.dv .b-cust ul{margin:0;padding-left:18px;color:var(--ink2)}
+.dv .b-pitch{background:var(--cb);border-radius:6px;padding:8px 12px;color:var(--cx);font-weight:600}
+.dv .b-pitch small{display:block;font-size:11.5px;font-weight:600;opacity:.85;margin-bottom:2px}
+.dv .b-cust{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+.dv .b-cust p{color:var(--ink3);font-size:13px;margin-top:6px}
+
+@container (max-width:560px){
+  .dv-top{height:44px;padding:0 12px}
+  .dv-mi{padding:14px 14px 24px}
+  .dv h1{font-size:20px;line-height:26px}
+  .dv-topbook{display:none}
+  .dv-t{width:calc(25% - 2px);min-width:72px}
+  .dv-sheet{padding:12px 14px}
+  .dv .b-hd h3{font-size:16px}
+  .dv .b-act{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .dv .b-act .fbtn{padding:4px 6px;white-space:normal;text-align:center}
+}

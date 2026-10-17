@@ -34,6 +34,8 @@
   function icon(path, n) { return '<svg class="i" viewBox="0 0 24 24" width="' + n + '" height="' + n + '" aria-hidden="true" focusable="false"><path d="' + path + '"/></svg>'; }
 
   // ── the texts as markup ─────────────────────────────────────────────────────────────────────────────────────
+  // o: back, headingId; the branded demo page (_shared/demo-render.js) also passes open (false = no "Open app", or its address),
+  // openLabel, playLabel, pin (false = no Pin button) and extra (trusted HTML added to the buttons)
   function sheetHtml(a, o) {
     o = o || {};
     var s = a.sheet || (root.APP_SHEETS || {})[a.id] || { what: a.desc || '', who: '', problem: '', features: [], pitch: '' };
@@ -43,9 +45,9 @@
     function sec(label, text) { return text ? '<div class="b-sec"><span class="b-lab">' + label + '</span><p>' + esc(text) + '</p></div>' : ''; }
     return (o.back ? '<button type="button" class="b-back" data-bback>← All apps</button>' : '') +
       '<div class="b-hd"><img src="' + esc(a.icon) + '" alt="" width="44" height="44"><div><h3 id="' + hid + '">' + esc(a.name) + '</h3><div class="tags">' + tags + '</div></div></div>' +
-      '<div class="b-act" data-app="' + esc(a.id) + '"><a class="fbtn pri b-open" href="' + esc(a.href) + '">Open app</a>' +
-      '<a class="fbtn b-play" href="/pitch/?app=' + esc(a.id) + '">' + icon(PLAY, 16) + '<span>Play pitch</span></a>' +
-      '<button type="button" class="fbtn" data-pin="' + esc(a.id) + '" aria-pressed="false">' + icon(STAR, 16) + '<span>Pin</span></button></div>' +
+      '<div class="b-act" data-app="' + esc(a.id) + '">' + (o.open === false ? '' : '<a class="fbtn pri b-open" href="' + esc(typeof o.open === 'string' ? o.open : a.href) + '">' + esc(o.openLabel || 'Open app') + '</a>') +
+      '<a class="fbtn b-play" href="/pitch/?app=' + esc(a.id) + '">' + icon(PLAY, 16) + '<span>' + esc(o.playLabel || 'Play pitch') + '</span></a>' +
+      (o.pin === false ? '' : '<button type="button" class="fbtn" data-pin="' + esc(a.id) + '" aria-pressed="false">' + icon(STAR, 16) + '<span>Pin</span></button>') + (o.extra || '') + '</div>' +
       (screens.length ? '<nav class="b-sc" data-app="' + esc(a.id) + '" aria-label="' + esc(a.name) + ' screens">' + screens.map(function (x) { return '<a href="' + esc(x.href) + '">' + esc(x.name) + '</a>'; }).join('') + '</nav>' : '') +
       sec('What it does', s.what) + sec('Who it’s for', s.who) + sec('Problem it solves', s.problem) +
       (s.features.length ? '<div class="b-sec"><span class="b-lab">Key features</span><ul>' + s.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>' : '') +

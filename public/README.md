@@ -3,7 +3,7 @@
 The public sales site: a landing page in Slovenian (first), Croatian and English, a privacy page and a legal notice
 (Slovenian), and demo-only copies of four apps (Data health check, Collections, Cash forecast, Budget vs actual).
 It is a separate Cloudflare Worker (`clearfigure`) from the private Business Apps site: no Cloudflare Access, no cloud
-sync, no link into the private apps. The only server code is the contact form (`POST /api/contact`).
+sync, no link into the private apps. The server code is the contact form (`POST /api/contact`) and the branded demo pages (`/d/<slug>`, below).
 
 ## Where to change things
 
@@ -17,6 +17,7 @@ sync, no link into the private apps. The only server code is the contact form (`
 | Form, calculator, menu | `public/assets/site.js` |
 | Demo bar and what the demos hide | `public/assets/demo.js`, `public/assets/demo.css` |
 | Contact form backend | `public/worker.js` |
+| Branded demo pages (`/d/<slug>`, `/api/demo/<slug>`) | `public/demo.js`, `public/assets/demo-page.js`, shell in `public/src/render.mjs`, renderer `site/_shared/demo-*.js` |
 
 Never edit `public/dist/`: the build rewrites it. The demo apps are copied from `site/<app>/` at build time, so a fix in an
 app reaches the public demo with the next build.
@@ -74,6 +75,22 @@ same build works there and on a custom domain.
 
 The form posts to its own origin, so nothing else changes. If a second domain must post to the same Worker (e.g. during a
 move), set `ALLOWED_ORIGINS` (comma-separated) under `vars`.
+
+## Branded demos (`/d/<slug>`)
+
+Made in the private site (Studio > Branded demo, `site/demo-builder/`, API `worker/demos.js`), stored in the same bucket
+`clearfigure-leads` under `demos/<slug>/` (`config.json`, `logo.png`, `views.json`). This Worker only reads them:
+
+- `GET /d/<slug>` the page (`dist/demo/index.html`), `GET /api/demo/<slug>` the settings (no internal fields) and
+  `GET /api/demo/<slug>/logo.png`. Unknown and expired slugs get the same plain 404. Needs `"/d/*"` in `run_worker_first`.
+- Every page and answer: noindex, `Referrer-Policy: no-referrer`, strict CSP (scripts and styles only from the site itself).
+- A view = one config request per page load: `{ count, last }` in `views.json`, no IP, no cookie, no user agent. Link
+  previews/bots (user-agent check in `worker/demo-shared.js`), prefetch and `?c=0` are not counted.
+- Retention (as the privacy page says): deleted with the demo, or 90 days after it expired; the clean-up runs when the
+  private editor's list is opened. A demo link is 16 random base32 characters (80 bits) after a readable part, so it can't be guessed.
+- The build copies the sales sheets, the renderer, the pitch (`/pitch/`, app list `pitch/home.html` generated from the home page
+  without the private apps) and the app icons. Sheet texts and the pitch stay in English; the page around them is EN/SL/HR/DE.
+- The privacy page (Slovenian; the HR/EN pages link to it) has a paragraph "Osebne predstavitvene povezave".
 
 ## Contact form
 

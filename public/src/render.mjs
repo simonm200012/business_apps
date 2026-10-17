@@ -190,10 +190,11 @@ export function renderPrivacy(ctx) {
     '<p>Za zaščito pred zlorabo (omejitev števila sporočil z istega naslova) strežnik za kratek čas hrani enosmerni zgoščeni zapis (hash) vašega IP-naslova, izračunan z naključnim ključem, ki se menja vsak dan. Iz zapisa IP-naslova ni mogoče razbrati in ga ne povezujemo s sporočilom.</p>' +
     '<h3>Demo aplikacije</h3><p>Demo aplikacije na tej strani (Terjatve, Napoved likvidnosti, Plan in realizacija, Pregled podatkov) delujejo v vašem brskalniku. Kar v njih vnesete ali naložite, ostane v shrambi brskalnika na vaši napravi (localStorage, IndexedDB) in se nam ne pošilja. Podatke izbrišete s ponastavitvijo v nastavitvah aplikacije ali z brisanjem podatkov te strani v brskalniku.</p>' +
     '<p>Ko v demu Terjatve odprete opomin s QR kodo oziroma v Pregledu podatkov odprete Excelovo datoteko, brskalnik s strežnika cdnjs.cloudflare.com (Cloudflare, Inc.) naloži programsko knjižnico. Pri tem Cloudflare kot pri vsakem obisku spletne strani vidi vaš IP-naslov; vaši podatki in datoteke se ne pošiljajo.</p>' +
+    '<h3>Osebne predstavitvene povezave</h3><p>Za posamezno podjetje lahko pripravimo osebno predstavitveno povezavo (naslov /d/…), ki prikaže njegovo ime, logotip, barve in izbrane demo aplikacije. Pri taki povezavi štejemo, kolikokrat je bila odprta (število in čas zadnjega odpiranja), brez IP-naslovov, brez piškotkov in brez podatkov o brskalniku. Števec se izbriše skupaj s predstavitvijo, ko jo izbrišemo, ali ko jo čiščenje odstrani 90 dni po izteku povezave. Povezava po izteku ne prikaže ničesar.</p>' +
     '<h3>Piškotki in analitika</h3><p>Stran ne uporablja piškotkov, analitike, oglasnih ali drugih sledilnikov in ne nalaga zunanjih pisav.</p>' +
     '<h3>Tehnični podatki</h3><p>Stran gostuje pri ponudniku Cloudflare, Inc., ki za dostavo strani in zaščito pred napadi obdeluje tehnične podatke (npr. IP-naslov, vrsto brskalnika). Teh podatkov ne uporabljamo za analitiko.</p>' +
     '<h2>3. Nameni in pravne podlage</h2><ul><li>Odgovor na vaše povpraševanje in priprava ponudbe: izvajanje ukrepov pred sklenitvijo pogodbe na vašo zahtevo (točka (b) prvega odstavka 6. člena GDPR).</li><li>Zaščita obrazca pred zlorabo in varnost strani: zakoniti interes (točka (f) prvega odstavka 6. člena GDPR).</li></ul>' +
-    '<h2>4. Koliko časa hranimo podatke</h2><ul><li>Sporočila iz obrazca: ' + e(C.retentionMonths) + ' mesecev od zadnjega stika, nato jih izbrišemo. Če sklenemo pogodbo, podatke hranimo, dokler traja poslovno sodelovanje, in toliko časa, kolikor zahtevajo predpisi.</li><li>Zgoščeni zapisi IP-naslovov: najpozneje 2 dni.</li></ul>' +
+    '<h2>4. Koliko časa hranimo podatke</h2><ul><li>Sporočila iz obrazca: ' + e(C.retentionMonths) + ' mesecev od zadnjega stika, nato jih izbrišemo. Če sklenemo pogodbo, podatke hranimo, dokler traja poslovno sodelovanje, in toliko časa, kolikor zahtevajo predpisi.</li><li>Zgoščeni zapisi IP-naslovov: najpozneje 2 dni.</li><li>Števci odpiranj osebnih predstavitvenih povezav: do izbrisa predstavitve, najpozneje 90 dni po izteku povezave (čiščenje se izvede ob prvem pregledu seznama predstavitev po tem roku).</li></ul>' +
     '<h2>5. Obdelovalci in prenos podatkov</h2><p>Sporočila iz obrazca so shranjena v storitvi Cloudflare R2 (Cloudflare, Inc.)' + (C.leadsBucketEU ? ', v jurisdikciji Evropske unije' : '') + '. S Cloudflarom velja pogodba o obdelavi podatkov; Cloudflare, Inc. je vključen v okvir EU-ZDA za zasebnost podatkov (EU-U.S. Data Privacy Framework).</p>' +
     (/^https:\/\/cal\.com\//.test(C.bookingUrl || '') ? '<p>Termin za pogovor (»Rezervirajte 20 minut«) rezervirate na strani storitve Cal.com (Cal.com, Inc.), kamor vodi povezava. Tam vpisane podatke (ime, e-pošta, izbrani termin, morebitna opomba) obdeluje Cal.com po svoji <a href="https://cal.com/privacy">izjavi o zasebnosti</a>, mi pa jih uporabimo le za izvedbo pogovora. Pogovor poteka prek Cal Video.</p>' : '') +
     '<p>Če nam pišete po e-pošti, sporočilo obdeluje ponudnik naše e-pošte (Microsoft). Vaših podatkov ne prodajamo in jih ne posredujemo za oglaševanje.</p>' +
@@ -225,4 +226,16 @@ export function render404(ctx) {
     '<body data-page="404"><main id="main" class="nf"><div class="wrap narrow"><a class="logo" href="/">' + MARK(28) + '<span>Clearfigure</span></a>' +
     '<p class="eyebrow">404</p><h1>Te strani ni.</h1><p lang="hr">Ova stranica ne postoji.</p><p lang="en">This page does not exist.</p>' +
     '<p><a class="btn primary" href="/">Na začetno stran</a> <a class="btn" href="/hr/" lang="hr">Početna</a> <a class="btn" href="/en/" lang="en">Home</a></p></div></main></body>\n</html>\n';
+}
+
+/** The page shell for branded demos (/demo/index.html in the build; the Worker serves it as /d/<slug>, public/demo.js). No texts of its own:
+ * demo-page.js fills it from GET /api/demo/<slug>. ctx.assets.demoPage = the script's address. */
+export function renderDemoShell(ctx) {
+  const sh = (f) => '/_shared/' + f;
+  return '<!doctype html>\n<html lang="en" class="dvhtml">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+    '<meta name="robots" content="noindex, nofollow, noarchive">\n<meta name="referrer" content="no-referrer">\n<meta name="color-scheme" content="light dark">\n<title>Business apps</title>\n' +
+    '<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">\n<link rel="stylesheet" href="' + sh('demo-view.css') + '">\n</head>\n' +
+    '<body class="dvpage">\n<div id="demoApp"><p class="dv-load">…</p></div>\n<noscript><p>This page needs JavaScript.</p></noscript>\n' +
+    ['demo-catalog.js', 'demo-strings.js', 'app-sheets.js', 'app-sheet-panel.js', 'demo-render.js'].map((f) => '<script src="' + sh(f) + '"></script>\n').join('') +
+    '<script src="' + ctx.assets.demoPage + '"></script>\n</body>\n</html>\n';
 }

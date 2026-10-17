@@ -423,6 +423,18 @@
    "The result travels as a link"
   ],
   "pitch": "Let the client see and vote on the real thing in ten minutes, then we build exactly that."
+ },
+ "demo-builder": {
+  "short": "The consultancy's own sales work (owner)",
+  "what": "Makes a private link for one prospect that shows the apps in their own logo and colours, with their company news on top and only the apps you choose. The prospect opens it without signing in, can play each pitch and book a call. The link expires on its own and counts how often it was opened, without IP addresses or cookies.",
+  "who": "The consultancy's own sales work (owner).",
+  "problem": "Turns a generic demo into one that already looks like the prospect's own company, in minutes.",
+  "features": [
+   "Logo, colours (suggested from the logo, kept readable) and company news",
+   "Page in English, Slovenian, Croatian or German; apps and a booking link of your choice",
+   "Unguessable link with an expiry date, opened-count, extend, expire or delete"
+  ],
+  "pitch": "Send the prospect a link where the apps already wear their logo, colours and news."
  }
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = SHEETS;

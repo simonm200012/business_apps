@@ -25,10 +25,11 @@ async function accessKeys(team, refresh) {
 }
 
 /** Apps whose cloud copies only the owner may read (real business data). */
-export const PRIVATE_APPS = ['billing', 'invoices', 'desk', 'cashflow', 'client-atlas', 'quotes', 'home'];
-/** Is this request path about a private app's cloud copy (/api/sync/<app>, its files or its history) or the website messages (/api/leads)? */
+export const PRIVATE_APPS = ['billing', 'invoices', 'desk', 'cashflow', 'client-atlas', 'quotes', 'home', 'demo-builder'];
+/** Is this request path about a private app's cloud copy (/api/sync/<app>, its files or its history), the website messages (/api/leads) or the branded demos (/api/demos)? */
 export function isPrivatePath(pathname) {
   if (/^\/api\/leads(\/|$)/.test(String(pathname || ''))) return true; // contact-form messages from the public site: owner only
+  if (/^\/api\/demos(\/|$)/.test(String(pathname || ''))) return true; // branded demos (Studio > Branded demo): owner only
   const m = String(pathname || '').match(/^\/api\/sync\/([^/]*)/);
   if (!m) return false;
   let app;

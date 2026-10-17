@@ -26,7 +26,7 @@
       if (!id || !name) return;
       var g = { id: id[1], name: unesc(name[1]).trim(), desc: desc ? unesc(desc[1]).trim() : '', apps: [] };
       chunk.split('<article class="card"').slice(1).forEach(function (card) {
-        var a = /data-app="([^"]+)"/.exec(card), o = /<a class="open" href="([^"]+)">([^<]+)<\/a>/.exec(card);
+        var a = /data-app="([^"]+)"/.exec(card), o = /<a class="open" href="([^"]*)">([^<]+)<\/a>/.exec(card);
         if (a && o) g.apps.push({ id: a[1], name: unesc(o[2]).trim(), href: o[1] });
       });
       out.push(g);
@@ -57,7 +57,7 @@
     });
     sc.push({ id: 'pitch', kind: 'pitch', dur: 4, label: 'The pitch', text: sheet.pitch, caption: sheet.pitch });
     sc.push(adjustScene(adjust));
-    sc.push({ id: 'cta', kind: 'cta', dur: 4, title: 'Want to see it with your own data?', book: BOOKING_URL, bookLabel: 'Book 20 minutes', openLabel: 'Open the app', openHref: meta.href || ('/' + meta.id + '/'), caption: 'Book 20 minutes, or open the app and try it' });
+    sc.push({ id: 'cta', kind: 'cta', dur: 4, title: 'Want to see it with your own data?', book: BOOKING_URL, bookLabel: 'Book 20 minutes', openLabel: 'Open the app', openHref: meta.href === '' ? '' : (meta.href || ('/' + meta.id + '/')), caption: 'Book 20 minutes, or open the app and try it' });
     return sc;
   }
 

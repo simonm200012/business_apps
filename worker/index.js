@@ -11,6 +11,7 @@
 //   GET  /api/sync/:app/versions       [{ generation, updatedAt, size }] earlier versions, newest first (at most 30)
 //   GET  /api/sync/:app/versions/:gen  that earlier snapshot as stored; X-Sync-Generation, X-Sync-Updated-At
 //   HEAD/GET/PUT /api/sync/:app/files/:sha256   binary files (invoice PDFs, photos)
+//   GET/POST/PATCH/DELETE /api/demos[/<slug>]   branded demos (worker/demos.js), owner only
 //   GET  /api/vies/:country/:number    { valid, status, name, address } from the EU's VIES service (Data health check, opt-in)
 //
 // Version history: before a PUT replaces u/<hash>/<app>.json, the copy it replaces is copied (bytes and metadata, still
@@ -28,6 +29,7 @@
 // set with roles (owner, editor, viewer) checked there; the personal copies above are not involved.
 import { identity, isPrivatePath } from './access.js';
 import { workspaces } from './workspaces.js';
+import { demos } from './demos.js';
 
 const APP = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -88,6 +90,8 @@ async function api(request, env, url) {
   if (path === '/api/private/session') return json({ allowed: ['showcase'] });
 
   if (path === '/api/leads') return who.viewer ? json({ error: 'View-only access does not include this app.', viewer: true }, 403) : leads(request, env, url);
+
+  if (path === '/api/demos' || path.startsWith('/api/demos/')) return who.viewer ? json({ error: 'View-only access does not include this app.', viewer: true }, 403) : demos(request, env, url);
 
   const vm = path.match(/^\/api\/vies\/([^/]+)\/([^/]+)\/?$/);
   if (vm) return vies(request, vm[1], vm[2]);

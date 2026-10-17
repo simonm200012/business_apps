@@ -665,4 +665,5 @@ export default [
   { id: 'showcase', name: 'Clearfigure', group: 'Studio', hue: 'teal', mark: 'strata', nudge: [-24, -16] },
   { id: 'client-atlas', name: 'ERP & BI Client Atlas', group: 'Studio', hue: 'emerald', mark: 'atlasPin', args: { mt: 392, zz: 48 } },
   { id: 'design-compare', name: 'Design Comparison', group: 'Studio', hue: 'rose', mark: 'pickOne' },
+  { id: 'demo-builder', name: 'Branded demo', group: 'Studio', hue: 'amber', mark: 'pickOne' },
 ];

@@ -13,12 +13,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { DEMO_CSP } from '../worker/demo-shared.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = path.join(ROOT, 'site'), PUB = path.join(ROOT, 'public');
 export const DEMO_APPS = ['collections', 'datacheck', 'cashflow', 'budget'];
 export const SHARED_FILES = ['stratum-shell.js', 'stratum-sync.js', 'phone.css'];
+// Branded demos (/d/<slug>, public/demo.js): the page renderer and the sales sheets it reuses, from site/_shared/
+// (app-sheets.js is not copied but written by publicSheetsJs: only the offered apps' sheets)
+export const DEMO_SHARED = ['demo-catalog.js', 'demo-strings.js', 'demo-render.js', 'demo-view.css', 'app-sheet-panel.js'];
+const require = createRequire(import.meta.url);
 
 function args(argv) {
   const o = { out: path.join(PUB, 'dist'), index: false, today: new Date().toISOString().slice(0, 10), siteUrl: null };
@@ -71,7 +77,43 @@ export function publicAppJs(js) {
     .replace("'It also replaces your private cloud copy, so every device you use (phone and computer) gets it too.'", "'It only changes the data in this browser.'");
 }
 
-function headersFile(o, C) {
+/** site/pitch/index.html as a public page: no fonts, no home-screen app tags, the app list from /pitch/home.html (not the private home page). */
+export function publicPitchHtml(html) {
+  let h = html;
+  h = h.replace(/[ \t]*<link[^>]+(?:fonts\.googleapis\.com|fonts\.gstatic\.com)[^>]*>\s*\n?/g, '');
+  h = h.replace(/<!-- phone app:[\s\S]*?<!-- \/phone app -->/, '<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg"><link rel="stylesheet" href="/_shared/phone.css">');
+  h = h.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="pitch-home" content="/pitch/home.html">\n<meta name="referrer" content="no-referrer">');
+  return h.replace(/<title>([^<]*?)\s*[—–-]\s*Business Apps<\/title>/, '<title>$1 — Clearfigure</title>');
+}
+export function publicPitchJs(js) { return js.replace(/ — Business Apps(['"])/g, ' — Clearfigure$1'); }
+/** The list of apps for the public pitch (the home page's groups, only the apps a branded demo may show), as the markup pitch.js reads
+ * (PitchScenes.parseHome). An app with a public demo copy links to it; the others have no "open" link. */
+export function pitchHome(homeHtml) {
+  const PS = require(path.join(SITE, 'pitch/scenes.js')), CAT = require(path.join(SITE, '_shared/demo-catalog.js'));
+  const ok = new Set(CAT.ids()), esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  return PS.parseHome(homeHtml).map((g) => ({ ...g, apps: g.apps.filter((a) => ok.has(a.id)) })).filter((g) => g.apps.length).map((g) =>
+    '<section class="group" data-group="' + esc(g.id) + '"><header class="ghead"><h2>' + esc(g.name) + '</h2><p>' + esc(g.desc) + '</p></header>' +
+    g.apps.map((a) => '<article class="card" data-app="' + esc(a.id) + '"><a class="open" href="' + (CAT.COPIES.includes(a.id) ? '/' + a.id + '/' : '') + '">' + esc(a.name) + '</a></article>').join('') + '</section>').join('\n') + '\n';
+}
+
+/** The public pitch's CSP: its own scripts and the one inline script (by hash) only; no libraries, no frames, no forms.
+ * Inline styles stay allowed (the scenes animate with style attributes). */
+export function pitchCsp(html) {
+  const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + crypto.createHash('sha256').update(m[1], 'utf8').digest('base64') + "'");
+  return "default-src 'self'; script-src 'self'" + hashes.map((h) => ' ' + h).join('') + "; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'";
+}
+/** site/_shared/app-sheets.js for the public build: only the sheets of the apps a branded demo may show (demo-catalog.js),
+ * so nothing about the private apps (Billing, Invoices, Desk, Client Atlas, the Studio pages, ...) is published. */
+export function publicSheetsJs() {
+  const SH = require(path.join(SITE, '_shared/app-sheets.js')), CAT = require(path.join(SITE, '_shared/demo-catalog.js'));
+  const keep = {};
+  for (const id of CAT.ids()) if (SH[id]) keep[id] = SH[id];
+  return '/* Sales sheets of the apps a branded demo may show (public build of site/_shared/app-sheets.js, tools/build-public.mjs). */\n' +
+    '(function (root) {\n  var SHEETS = ' + JSON.stringify(keep, null, 1) + ';\n' +
+    "  if (typeof module !== 'undefined' && module.exports) module.exports = SHEETS;\n  else root.APP_SHEETS = SHEETS;\n})(typeof window !== 'undefined' ? window : this);\n";
+}
+
+function headersFile(o, C, pitchPolicy) {
   const ts = C.turnstileSiteKey ? ' https://challenges.cloudflare.com' : '';
   const siteCsp = "default-src 'self'; script-src 'self'" + ts + "; style-src 'self'; img-src 'self' data:; connect-src 'self'" + ts + "; frame-src" + (ts || " 'none'") + "; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self' mailto:; frame-ancestors 'none'";
   // the apps use inline styles, print windows with inline scripts, blob: downloads, and two libraries from cdnjs on demand
@@ -82,7 +124,10 @@ function headersFile(o, C) {
   out.push('');
   for (const p of ['/', '/hr/*', '/en/*', '/zasebnost/*', '/pravno-obvestilo/*']) out.push(p, '  Content-Security-Policy: ' + siteCsp, '  X-Frame-Options: DENY', '');
   for (const a of DEMO_APPS) { out.push('/' + a + '/*', '  Content-Security-Policy: ' + appCsp, '  X-Frame-Options: SAMEORIGIN'); if (o.index) out.push('  X-Robots-Tag: noindex, nofollow'); out.push(''); }
-  out.push('/assets/*', '  Cache-Control: public, max-age=86400', '', '/_shared/*', '  Cache-Control: no-cache', '');
+  // branded demos: the page shell (the Worker adds the same headers on /d/<slug>, public/demo.js) and the pitch they link to; never indexed
+  out.push('/demo/*', '  Content-Security-Policy: ' + DEMO_CSP, '  X-Frame-Options: DENY', '  X-Robots-Tag: noindex, nofollow, noarchive', '  Cache-Control: no-store', '');
+  out.push('/pitch/*', '  Content-Security-Policy: ' + pitchPolicy, '  X-Frame-Options: SAMEORIGIN', '  X-Robots-Tag: noindex, nofollow, noarchive', '');
+  out.push('/assets/*', '  Cache-Control: public, max-age=86400', '', '/_shared/*', '  Cache-Control: no-cache', '', '/icons/*', '  Cache-Control: public, max-age=86400', '');
   return out.join('\n');
 }
 
@@ -107,7 +152,7 @@ export async function build(argv) {
   // assets (with a content hash in the address, so a new build is picked up at once)
   copyDir(path.join(PUB, 'assets'), path.join(out, 'assets'));
   const v = (f) => '/assets/' + f + '?v=' + hash(fs.readFileSync(path.join(PUB, 'assets', f)));
-  const assets = { css: v('site.css'), js: v('site.js'), demoCss: v('demo.css'), demoJs: v('demo.js') };
+  const assets = { css: v('site.css'), js: v('site.js'), demoCss: v('demo.css'), demoJs: v('demo.js'), demoPage: v('demo-page.js') };
   for (const id of new Set([...PRODUCTS, ...BUILT.map((b) => b[0])])) {
     const src = path.join(SITE, 'icons/apps', id + '.png');
     if (fs.existsSync(src)) { fs.mkdirSync(path.join(out, 'assets/apps'), { recursive: true }); fs.copyFileSync(src, path.join(out, 'assets/apps', id + '.png')); }
@@ -134,15 +179,29 @@ export async function build(argv) {
   }
   for (const f of SHARED_FILES) { fs.mkdirSync(path.join(out, '_shared'), { recursive: true }); fs.copyFileSync(path.join(SITE, '_shared', f), path.join(out, '_shared', f)); }
 
+  // branded demos: the page shell for /d/<slug>, the renderer and sales sheets, the pitch (with its own app list), the app icons
+  for (const f of DEMO_SHARED) { fs.mkdirSync(path.join(out, '_shared'), { recursive: true }); fs.copyFileSync(path.join(SITE, '_shared', f), path.join(out, '_shared', f)); }
+  write(path.join(out, '_shared/app-sheets.js'), publicSheetsJs()); // only the offered apps' sheets
+  write(path.join(out, 'demo/index.html'), R.renderDemoShell(ctx));
+  const CAT = require(path.join(SITE, '_shared/demo-catalog.js'));
+  copyDir(path.join(SITE, 'pitch'), path.join(out, 'pitch'));
+  const pitchHtml = publicPitchHtml(fs.readFileSync(path.join(SITE, 'pitch/index.html'), 'utf8'));
+  write(path.join(out, 'pitch/index.html'), pitchHtml);
+  write(path.join(out, 'pitch/pitch.js'), publicPitchJs(fs.readFileSync(path.join(SITE, 'pitch/pitch.js'), 'utf8')));
+  write(path.join(out, 'pitch/home.html'), pitchHome(fs.readFileSync(path.join(SITE, 'index.html'), 'utf8')));
+  fs.mkdirSync(path.join(out, 'icons/apps'), { recursive: true });
+  fs.copyFileSync(path.join(SITE, 'icons/icon.svg'), path.join(out, 'icons/icon.svg'));
+  for (const id of CAT.ids()) { const src = path.join(SITE, 'icons/apps', id + '.png'); if (fs.existsSync(src)) fs.copyFileSync(src, path.join(out, 'icons/apps', id + '.png')); }
+
   // search engines
   write(path.join(out, 'robots.txt'), o.index
-    ? 'User-agent: *\nAllow: /\nDisallow: /api/\n' + DEMO_APPS.map((a) => 'Disallow: /' + a + '/\n').join('') + (siteUrl ? 'Sitemap: ' + siteUrl + '/sitemap.xml\n' : '')
+    ? 'User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /d/\nDisallow: /demo/\nDisallow: /pitch/\n' + DEMO_APPS.map((a) => 'Disallow: /' + a + '/\n').join('') + (siteUrl ? 'Sitemap: ' + siteUrl + '/sitemap.xml\n' : '')
     : 'User-agent: *\nDisallow: /\n');
   if (o.index && siteUrl) {
     const urls = ['/', '/hr/', '/en/', '/zasebnost/', '/pravno-obvestilo/'];
     write(path.join(out, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => '  <url><loc>' + siteUrl + u + '</loc><lastmod>' + o.today + '</lastmod></url>\n').join('') + '</urlset>\n');
   }
-  write(path.join(out, '_headers'), headersFile(o, C));
+  write(path.join(out, '_headers'), headersFile(o, C, pitchCsp(pitchHtml)));
   return { out, index: o.index, today: o.today, siteUrl };
 }
 

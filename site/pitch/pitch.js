@@ -200,7 +200,7 @@
     cta: function (sc) {
       var url = sc.book.replace(/^https?:\/\//, '');
       return shell(sc, (meta.id === 'all' ? '' : '<img class="ic" src="' + icon(meta.id) + '" alt=""' + a('pop', 100, 400) + '>') + '<h2 class="big">' + words(sc.title, 250, 60) + '</h2>' +
-        '<div class="actions"' + a('up', 900) + '><a class="btn pri cb" href="' + esc(sc.book) + '" target="_blank" rel="noopener">' + esc(sc.bookLabel) + '</a><a class="btn cb" href="' + esc(sc.openHref) + '">' + esc(sc.openLabel) + '</a></div>' +
+        '<div class="actions"' + a('up', 900) + '><a class="btn pri cb" href="' + esc(sc.book) + '" target="_blank" rel="noopener">' + esc(sc.bookLabel) + '</a>' + (sc.openHref ? '<a class="btn cb" href="' + esc(sc.openHref) + '">' + esc(sc.openLabel) + '</a>' : '') + '</div>' +
         '<p class="url"' + a('fade', 1300) + '>' + esc(url) + '</p>', '', true);
     },
     allintro: function (sc) { return allIntro(sc); },
@@ -329,6 +329,10 @@
     if (p !== portrait) { portrait = p; stage.classList.toggle('portrait', p); if (scenes.length) { var l = st.local, pl = st.playing; show(st.i); st.local = l; st.playing = pl; apply(); } }
   }
 
+  // the list of apps comes from the home page; the public site (branded demos) points to a generated list of its own with
+  // <meta name="pitch-home" content="/pitch/home.html"> (tools/build-public.mjs)
+  function homeUrl() { var m = doc.querySelector('meta[name="pitch-home"]'); return m ? m.getAttribute('content') : '/'; }
+
   // ── start ─────────────────────────────────────────────────────────────────────────────────────────────────
   function picker(groups) {
     $('ttl').textContent = 'Pitch';
@@ -341,7 +345,7 @@
     if (appId === 'all') { meta = { id: 'all', name: 'Business Apps' }; scenes = PS.buildAllScenes(groups, adjust); $('ttl').textContent = 'Business Apps in 40 seconds'; }
     else {
       var found = null;
-      groups.forEach(function (g) { g.apps.forEach(function (x) { if (x.id === appId) found = { id: x.id, name: x.name, group: g.id, href: new URL(x.href, location.origin + '/').pathname }; }); });
+      groups.forEach(function (g) { g.apps.forEach(function (x) { if (x.id === appId) found = { id: x.id, name: x.name, group: g.id, href: x.href ? new URL(x.href, location.origin + '/').pathname : '' }; }); });
       if (!SH[appId]) return picker(groups);
       meta = found || { id: appId, name: appId, group: '', href: '/' + appId + '/' };
       scenes = PS.buildScenes(SH[appId], adjust, meta); $('ttl').textContent = meta.name + ' · pitch';
@@ -386,6 +390,6 @@
   doc.addEventListener('visibilitychange', function () { if (doc.hidden && st.playing) pause(); });
   window.addEventListener('resize', fit);
 
-  fetch('/', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; })
+  fetch(homeUrl(), { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.text() : ''; }).catch(function () { return ''; })
     .then(function (html) { start(PS.parseHome(html)); });
 })();

@@ -80,7 +80,7 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
     assert.match(read(out, '_shared/stratum-sync.js'), /meta\[name="stratum-public"\]/);
     // only the four apps (and what they load) are copied
     const top = fs.readdirSync(out).filter((d) => fs.statSync(path.join(out, d)).isDirectory()).sort();
-    assert.deepStrictEqual(top, ['_shared', 'assets', 'budget', 'cashflow', 'collections', 'datacheck', 'en', 'hr', 'pravno-obvestilo', 'zasebnost']);
+    assert.deepStrictEqual(top, ['_shared', 'assets', 'budget', 'cashflow', 'collections', 'datacheck', 'demo', 'en', 'hr', 'icons', 'pitch', 'pravno-obvestilo', 'zasebnost']);
     // document titles set by script say Clearfigure demo, not the private site
     for (const [f, s] of texts) if (f.endsWith('.js')) assert.ok(!/ — Business Apps['"]/.test(s), f);
   });
@@ -93,8 +93,8 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
   });
 
   await t('no link into the private site: no private app paths, no workers.dev host, no /billing/ etc.', async () => {
-    const privateApps = fs.readdirSync(path.join(ROOT, 'site'), { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith('_') && !B.DEMO_APPS.includes(d.name)).map((d) => d.name);
-    assert.ok(privateApps.includes('billing') && privateApps.includes('invoices') && privateApps.includes('client-atlas'));
+    const privateApps = fs.readdirSync(path.join(ROOT, 'site'), { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith('_') && !B.DEMO_APPS.includes(d.name) && !['pitch', 'icons'].includes(d.name)).map((d) => d.name);
+    assert.ok(privateApps.includes('billing') && privateApps.includes('invoices') && privateApps.includes('client-atlas') && privateApps.includes('demo-builder'));
     const re = new RegExp('["\'(=]/(' + privateApps.map((x) => x.replace(/[-]/g, '\\-')).join('|') + ')(/|["\'?#])');
     for (const [f, s] of texts) {
       assert.ok(!re.test(s), f + ': links to a private app: ' + (s.match(re) || [])[0]);
@@ -176,6 +176,42 @@ const TEXT = /\.(html|js|css|txt|json|svg|xml)$|_headers$/;
     for (const a of B.DEMO_APPS) assert.match(hd, new RegExp('\\n/' + a + "/\\*\\n  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs\\.cloudflare\\.com"));
     const star = hd.split('\n\n').find((b) => b.startsWith('/*\n'));
     assert.ok(!/Content-Security-Policy/.test(star), 'no site-wide CSP that would combine with the per-path ones');
+  });
+
+  await t('branded demos: the page shell, the renderer and sales sheets, the pitch with its own app list, icons, headers, robots; nothing of the editor', async () => {
+    const shell = read(out, 'demo/index.html');
+    assert.match(shell, /<meta name="robots" content="noindex, nofollow, noarchive">/); assert.match(shell, /<meta name="referrer" content="no-referrer">/);
+    assert.match(shell, /src="\/assets\/demo-page\.js\?v=[0-9a-f]{10}"/);
+    assert.ok(!/<style|\sstyle="|\son\w+="|<script>[^<]/.test(shell), 'no inline script or style (strict CSP)');
+    for (const f of B.DEMO_SHARED) { assert.strictEqual(read(out, '_shared/' + f), fs.readFileSync(path.join(ROOT, 'site/_shared', f), 'utf8'), f); }
+    assert.ok(fs.existsSync(path.join(out, 'assets/demo-page.js')));
+    const CAT = require(path.join(ROOT, 'site/_shared/demo-catalog.js'));
+    for (const id of CAT.ids()) assert.ok(fs.existsSync(path.join(out, 'icons/apps', id + '.png')), id + ' icon');
+    assert.ok(!fs.readdirSync(path.join(out, 'icons/apps')).some((f) => /^(billing|invoices|desk|cashflow|client-atlas|showcase|design-compare|demo-builder)\.png$/.test(f)), 'no icons of private apps');
+    const ph = read(out, 'pitch/home.html');
+    assert.ok(!/data-app="(billing|invoices|desk|cashflow|client-atlas|showcase|design-compare|demo-builder)"/.test(ph));
+    assert.match(ph, /data-app="collections"><a class="open" href="\/collections\/">/); assert.match(ph, /data-app="crm"><a class="open" href="">/);
+    const pi = read(out, 'pitch/index.html');
+    assert.match(pi, /<meta name="pitch-home" content="\/pitch\/home\.html">/); assert.ok(!/fonts\.g|manifest|Business Apps<\/title>/.test(pi));
+    assert.ok(!/ — Business Apps['"]/.test(read(out, 'pitch/pitch.js')));
+    assert.ok(!fs.existsSync(path.join(out, 'demo-builder')) && !texts.some(([f, x]) => /\/demo-builder\/|\/api\/demos/.test(x) && !/^_shared\/demo-(catalog|render)\.js$/.test(f)) /* only comments name the editor */, 'the editor and its API are not in the public build');
+    const hd = read(out, '_headers');
+    assert.match(hd, /\n\/demo\/\*\n  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'/);
+    // the pitch: no 'unsafe-inline' scripts, no libraries; its one inline script is allowed by its exact hash
+    const pcsp = (hd.match(/\n\/pitch\/\*\n  Content-Security-Policy: ([^\n]+)/) || [])[1] || '';
+    const scriptSrc = (pcsp.match(/script-src ([^;]+)/) || [])[1] || '';
+    assert.ok(scriptSrc && !/unsafe-inline|unsafe-eval|https:|\*/.test(scriptSrc), pcsp);
+    const inline = [...pi.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => "'sha256-" + require('crypto').createHash('sha256').update(m[1]).digest('base64') + "'");
+    assert.ok(inline.length >= 1 && inline.every((h) => scriptSrc.includes(h)), 'inline script hash in the CSP');
+    assert.match(pcsp, /object-src 'none'; base-uri 'none'; form-action 'none'/);
+    // the public sales sheets hold only the apps a branded demo may show: no word about the private apps or the Studio pages
+    const pubSheets = require(path.join(out, '_shared/app-sheets.js'));
+    assert.deepStrictEqual(Object.keys(pubSheets).sort(), CAT.ids().filter((id) => require(path.join(ROOT, 'site/_shared/app-sheets.js'))[id]).sort());
+    for (const id of CAT.NEVER.concat(['home'])) assert.ok(!(id in pubSheets) && !new RegExp('"' + id + '":').test(read(out, '_shared/app-sheets.js')), id + ' sheet is not public');
+    assert.match(read(outIdx, 'robots.txt'), /Disallow: \/d\/\nDisallow: \/demo\/\nDisallow: \/pitch\//);
+    assert.match(read(out, 'zasebnost/index.html'), /Osebne predstavitvene povezave[\s\S]*brez IP-naslovov, brez piškotkov[\s\S]*90 dni/);
+    assert.match(read(out, 'zasebnost/index.html'), /Števci odpiranj osebnih predstavitvenih povezav/);
+    assert.match(B.publicPitchHtml('<meta charset="utf-8"><title>Pitch — Business Apps</title><link href="https://fonts.googleapis.com/x" rel="stylesheet">'), /<title>Pitch — Clearfigure<\/title>/);
   });
 
   await t('refuses to build into the repo, site/ or public/', async () => {
