@@ -24,10 +24,14 @@
 // every change must carry the X-Stratum-Apps header the apps send (a custom header cannot be sent cross-site).
 // DEV_BYPASS=1 (only ever in a local .dev.vars, never deployed) skips the Access check for wrangler dev.
 //
+// Client portal admin (/api/portal/*, owner only): worker/portal-staff.js publishes what clients see in the separate portal Worker
+// (worker/portal.js, wrangler.portal.jsonc) through the PORTAL bucket; the portal Worker has no SYNC binding.
+//
 // Team workspaces (/api/ws, /api/ws/*): worker/workspaces.js. Several people of one company share one Collections data
 // set with roles (owner, editor, viewer) checked there; the personal copies above are not involved.
 import { identity, isPrivatePath, isLocalHost } from './access.js';
 import { workspaces } from './workspaces.js';
+import { portalStaff } from './portal-staff.js';
 
 const APP = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const SHA256 = /^[a-f0-9]{64}$/;
@@ -82,6 +86,8 @@ async function api(request, env, url) {
     if (isPrivatePath(path)) return json({ error: 'View-only access does not include this app.', viewer: true }, 403);
   }
   if (method !== 'GET' && method !== 'HEAD' && request.headers.get('X-Stratum-Apps') !== '1' && request.headers.get('X-Tokovi-Apps') !== '1' /* 16 Oct 2026 build; drop after 2026-12-31 */) return json({ error: 'Missing X-Stratum-Apps header.' }, 400);
+
+  if (path === '/api/portal' || path.startsWith('/api/portal/')) return who.viewer ? json({ error: 'View-only access does not include this app.', viewer: true }, 403) : portalStaff(request, env, url, who); // owner only; see worker/portal-staff.js
 
   if (path === '/api/auth/config') return json({ enabled: true, provider: 'access', devLogin: false, signupDomains: [] });
   if (path === '/api/auth/me') return json(who.viewer ? { email: who.viewer, name: who.viewer.split('@')[0], viewer: true } : { email: who.email, name: env.OWNER_NAME || who.email.split('@')[0] });

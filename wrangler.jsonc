@@ -15,13 +15,18 @@
   "r2_buckets": [
     { "binding": "SYNC", "bucket_name": "business-apps-sync-eu", "jurisdiction": "eu" },
     // Messages from the public site's contact form (public/worker.js writes them); read here by GET /api/leads, owner only.
-    { "binding": "LEADS", "bucket_name": "clearfigure-leads", "jurisdiction": "eu" }
+    { "binding": "LEADS", "bucket_name": "clearfigure-leads", "jurisdiction": "eu" },
+    // Client portal data (docs/CLIENT-PORTAL.md): staff publish into it here (/api/portal/*); the separate portal Worker reads it.
+    { "binding": "PORTAL", "bucket_name": "business-apps-portal-eu", "jurisdiction": "eu" }
   ],
   "vars": {
     // Cloudflare Access application for business-apps.simonm2000.workers.dev (policy "business-apps owner").
     "ACCESS_TEAM_DOMAIN": "twilight-forest-055c.cloudflareaccess.com",
     "ACCESS_AUD": "d2118dbaa694438dd172f794b8a031cf5fda9c3dbf8fa5e3100232bbf979d5d3",
     "OWNER_EMAIL": "simonm2000@outlook.com",
-    "OWNER_NAME": "Simon"
+    "OWNER_NAME": "Simon",
+    // Audience tag of the client portal's own Access app (set after docs/CLIENT-PORTAL.md step 4). Empty = not set up yet.
+    // Staff tokens that also list it are refused, so a portal client's token can never open this API.
+    "PORTAL_ACCESS_AUD": ""
   }
 }
