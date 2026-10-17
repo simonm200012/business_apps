@@ -1,6 +1,7 @@
 // Convert: the conversions. Every library is vendored in ./vendor/<name>-<version>/ and loaded only when a tool needs
 // it; nothing is uploaded and nothing is fetched from anywhere else (pdfmake is told to refuse every URL).
 // Each tool takes Files and options and returns results ({ name, blob, note }); app.mjs shows them.
+import { LIMITS as ESLOG_LIMITS, gridFromPdfPages, gridFromSheet } from './eslog/extract.mjs';
 import {
   A4, HTML_STYLES, baseName, cleanText, cellValue, decodeText, expand, ext, fitContent, fitRect, guessDecimal, jpegOrientation,
   markHeadings, outName, pad, pageFor, pageParagraphs, pagesToText, parseRanges, plainError, rangeLabel, readCsv,
@@ -407,6 +408,38 @@ async function pdfXml(file, opts, ctx) {
   const pages = await pdfText(file, ctx);
   ctx.progress(`Writing ${outName(file.name, 'xml')}`); await tick();
   return [{ name: outName(file.name, 'xml'), blob: blobOf(pagesToXml(pages), 'xml'), note: emptyNote(pages) }];
+}
+
+/** An invoice file for the eSLOG tool: Excel (every visible sheet) or a text-layer PDF, as grids of cells (see
+ * eslog/extract.mjs). Nothing is run: formulas are not evaluated, only the stored values are read. */
+export async function readInvoiceFile(file, ctx) {
+  if (file.size > ESLOG_LIMITS.fileBytes) throw plainError(`${file.name} is larger than ${ESLOG_LIMITS.fileBytes / 1048576} MB, which is too big for an invoice. Check that it is the right file.`);
+  const data = await bytesOf(file), kind = sniff(data.subarray(0, 16));
+  if (kind === 'pdf') {
+    const doc = await openPdf(file, ctx), pages = [];
+    try {
+      for (let n = 1; n <= Math.min(doc.numPages, ESLOG_LIMITS.pdfPages); n++) {
+        ctx.progress(`Reading page ${n} of ${doc.numPages}`);
+        const page = await doc.getPage(n), tc = await page.getTextContent();
+        pages.push(tc.items.filter((it) => typeof it.str === 'string').map((it) => ({ str: it.str, x: it.transform[4], y: it.transform[5], w: it.width, size: Math.hypot(it.transform[2], it.transform[3]) || it.height })));
+        page.cleanup();
+      }
+      const note = doc.numPages > ESLOG_LIMITS.pdfPages ? `Only the first ${ESLOG_LIMITS.pdfPages} pages were read.` : '';
+      return { kind: 'pdf', grids: [{ name: 'PDF', grid: gridFromPdfPages(pages) }], note };
+    } finally { doc.loadingTask.destroy(); }
+  }
+  if (kind !== 'zip' && kind !== 'cfb' && !(ext(file.name) === 'ods')) throw plainError(`${file.name} is not an Excel or PDF file.`);
+  const XLSX = await LIB.xlsx();
+  ctx.progress(`Reading ${file.name}`); await tick();
+  let wb;
+  try { wb = XLSX.read(data, { type: 'array', dense: true, cellFormula: false, cellHTML: false, cellNF: true, sheetRows: ESLOG_LIMITS.rows + 1 }); } catch (e) {
+    if (/password|encrypt/i.test(String(e && e.message))) throw plainError(`${file.name} has a password. Open it in Excel, remove the password (File › Info › Protect Workbook) and try again.`);
+    throw plainError(`${file.name} could not be read as a spreadsheet: it is damaged or not an Excel file.`);
+  }
+  const grids = wb.SheetNames.map((name, i) => ({ name, hidden: wb.Workbook?.Sheets?.[i]?.Hidden, ws: wb.Sheets[name] })).filter((s) => !s.hidden && s.ws)
+    .map((s) => ({ name: s.name, grid: gridFromSheet(XLSX, s.ws) })).filter((s) => s.grid.some((r) => r.some((v) => String(v).trim())));
+  if (!grids.length) throw plainError(`${file.name} has no filled cells.`);
+  return { kind: 'xlsx', grids, note: '' };
 }
 
 // each: one result list per file; all: every file together

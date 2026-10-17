@@ -242,7 +242,7 @@ A file converter that runs completely in the browser: nothing is uploaded, no Wo
 started as a copy of the tested converter from the private My Apps hub, restyled in the Business Apps look, with four
 new tools.
 
-- **Tools (16):** Word to PDF, PDF to Word, Images to PDF, PDF to images, Merge PDF, Split PDF, CSV to PDF, Excel to PDF,
+- **Tools (17, the 17th is Invoice to eSLOG XML, see below):** Word to PDF, PDF to Word, Images to PDF, PDF to images, Merge PDF, Split PDF, CSV to PDF, Excel to PDF,
   Text/Markdown to PDF, PDF to text, CSV to Excel, Excel to CSV, and the "Data & XML" group: PDF to Excel (tables),
   Excel or CSV to XML, XML to Excel, PDF to XML.
 - **Files:** `app.mjs` (page), `ui.mjs` (toast, password dialog, escaping), `lib.mjs` (pure helpers: tools list, CSV,
@@ -250,6 +250,19 @@ new tools.
   `vendor/` (libraries, each folder named with its exact version and holding its licence). Shell, theme and back
   button come from `/_shared/stratum-shell.js`; phone-app tags from `tools/make-pwa.mjs`; icon `tools/icons/specs.mjs`
   (`convert`, mark `pageSwap`; only `site/icons/apps/convert.png` was generated, not the whole set).
+- **Invoice to eSLOG XML (`convert/eslog/`, added 17 Oct 2026, branch `feat/eslog`):** an Excel or text-layer PDF invoice
+  becomes an eSLOG 2.0 XML file in a five-step page (drop, check field mapping, preview, validate, download), all in the
+  browser, no AI, no OCR (a scan gets "no text layer, OCR is not supported"). Pure modules, tested without a page:
+  `extract.mjs` (grid from SheetJS or pdf.js items, Slovenian and English header words, confidence, mapping, caps: 10 MB,
+  3000 rows, 60 columns, 40 PDF pages), `model.mjs` (numbers like 1.234,56, dates like 02.10.2026, VAT ID and IBAN checks,
+  totals), `validate.mjs` (our own rules; errors block the download, warnings do not), `eslog.mjs` (the XML writer),
+  `wizard.mjs` (the page), `eslog.css`. Tests: `tools/tests/eslog-*.test.js` (samples in `eslog-samples.js`, fictional,
+  .xlsx made with the vendored SheetJS). Screenshots: `docs/design/eslog-shots/`.
+  **Open and honest:** the official GZS XSD is not in the repo (licence unclear) and was not available, so the element
+  mapping in the header comment of `eslog.mjs` is from knowledge of eSLOG 2.0 (EDIFACT INVOIC D.01B) and marked "to verify
+  against e-SLOG-2.0 documentation from epos.si/eslog". Validation is our own rule check; UJP's structure check
+  (storitve.ujp.gov.si) is the final word. The page and the docs say so. Not done: UBL/EN 16931 output, credit notes,
+  CSV input, the entry in `site/_shared/app-sheets.js`.
 - **Libraries (vendored, loaded only when a tool needs them):** pdf.js 6.3.289, pdf-lib 1.17.1, pdfmake 0.3.11,
   mammoth 1.13.0, html-to-pdfmake 2.5.34, docx 9.8.1, marked 18.0.14, SheetJS 0.20.3, JSZip 3.10.1. All MIT or
   Apache-2.0. No CDN; pdfmake is told to refuse every URL. Only Noto Sans comes from Google Fonts, like the home page.

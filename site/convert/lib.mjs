@@ -28,6 +28,7 @@ export const TOOLS = [
   { id: 'excel-xml', group: 'data', from: 'xlsx', to: 'xml', title: 'Excel or CSV to XML', text: 'One XML file per sheet: a row element for every line, tags from the header.', accept: [...SHEET, 'csv', 'tsv'], glyph: 'code' },
   { id: 'xml-excel', group: 'data', from: 'xml', to: 'xlsx', title: 'XML to Excel', text: 'The repeated records of an XML file as rows; nested values become columns.', accept: ['xml'], glyph: 'sheet' },
   { id: 'pdf-xml', group: 'data', from: 'pdf', to: 'xml', title: 'PDF to XML', text: 'The text of a PDF as XML: pages and paragraphs. Text only.', accept: ['pdf'], glyph: 'code' },
+  { id: 'invoice-eslog', group: 'data', from: 'xlsx', to: 'xml', title: 'Invoice to eSLOG XML', text: 'An Excel or PDF invoice as an eSLOG 2.0 XML file, checked in five steps. Nothing leaves this device.', accept: [...SHEET, 'pdf'], glyph: 'invoice', custom: 'eslog', eyebrow: 'Excel or PDF → eSLOG XML', takes: 'Excel (.xlsx, .xls) or PDF invoices' },
 ];
 export const GROUPS = [['all', 'All'], ['to', 'To PDF'], ['from', 'From PDF'], ['organize', 'Organize PDF'], ['sheets', 'Spreadsheets'], ['data', 'Data & XML']];
 export const tool = (id) => TOOLS.find((t) => t.id === id) || null;

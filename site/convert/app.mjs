@@ -5,11 +5,12 @@
 // each, Download all, and Share on phones. The conversions are in tools.mjs, the pure helpers in lib.mjs.
 import { toolsUi } from './ui.mjs';
 import { TOOLS, GROUPS, FORMATS, tool, ext, fits, toolsFor, unsupportedHint, uniqueName, formatBytes, friendlyError } from './lib.mjs';
-import { RUN, zipOf, pageCount } from './tools.mjs';
+import { RUN, zipOf, pageCount, readInvoiceFile } from './tools.mjs';
+import { mountEslog } from './eslog/wizard.mjs';
 
 const { $, esc, toast, formDialog } = toolsUi;
 const main = $('#main');
-const state = { view: null, files: [], pending: [], results: [], busy: false, filter: 'all', opts: {} };
+const state = { view: null, files: [], pending: [], results: [], busy: false, filter: 'all', opts: {}, wizard: null };
 let seq = 0;
 const LABEL = { pdf: 'PDF', docx: 'Word', xlsx: 'Excel', csv: 'CSV', img: 'JPG · PNG', png: 'PNG', txt: 'TXT', md: 'TXT · MD', xml: 'XML' };
 const RUN_LABEL = { merge: 'Merge PDFs', split: 'Split PDF', png: 'Convert to images', txt: 'Convert to text' };
@@ -32,6 +33,7 @@ const GLYPH = {
   type: '<path d="M4 6.5h16M4 11.5h11M4 16.5h7"/><path d="M18 13v7M16.3 13h3.4M16.3 20h3.4"/>',
   upload: '<path d="M12 16V4.5"/><path d="M7.5 9l4.5-4.5L16.5 9"/><path d="M4.5 15v3.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V15"/>',
   code: '<path d="M9 7l-5 5 5 5M15 7l5 5-5 5M13.5 5l-3 14"/>',
+  invoice: '<path d="M6.5 3.5h11v17l-2.75-1.7-2.75 1.7-2.75-1.7-2.75 1.7z"/><path d="M9.5 8h5M9.5 11.5h5M9.5 15h2.5"/>',
   grip: '<circle cx="9" cy="6.5" r="1.3"/><circle cx="15" cy="6.5" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="17.5" r="1.3"/><circle cx="15" cy="17.5" r="1.3"/>',
 };
 const svg = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${GLYPH[name]}</svg>`;
@@ -64,6 +66,19 @@ function renderHome() {
     <div id="results"></div>
     <p class="small muted how">How it works: the files are read by this page, in this browser, and never leave the device. The converters are served by this site the first time you use each tool; no other website or service is involved.</p>`;
   renderResults();
+}
+
+// ── the eSLOG tool has its own stepper page (eslog/wizard.mjs) instead of the file list and the Convert button ──
+function renderEslog(t) {
+  main.innerHTML = `<a class="back" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg>All tools</a>
+    <div class="tool-top" style="${colours(t)}"><span class="tool-ico big">${svg(t.glyph)}</span><div><p class="eyebrow">${esc(t.eyebrow)}</p><h1>${esc(t.title)}</h1><p class="lead">${esc(t.text)}</p></div></div>
+    <div id="eslog"></div>`;
+  state.wizard = mountEslog($('#eslog'), {
+    esc, toast, dropZone, badge, formatBytes,
+    read: (file, ctx) => readInvoiceFile(file, ctx),
+    password: askPassword, friendly: friendlyError,
+    busy: (b) => { state.busy = b; document.body.classList.toggle('busy', b); },
+  });
 }
 
 // ── a tool's page ───────────────────────────────────────────────────────────────────────────────────────
@@ -101,6 +116,7 @@ const NOTES = {
 };
 
 function renderTool(t) {
+  if (t.custom === 'eslog') return renderEslog(t);
   const o = state.opts[t.id] ||= { ...(DEFAULTS[t.id] || {}) };
   main.innerHTML = `<a class="back" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg>All tools</a>
     <div class="tool-top" style="${colours(t)}"><span class="tool-ico big">${svg(t.glyph)}</span><div><p class="eyebrow">${esc(LABEL[t.from])} → ${esc(LABEL[t.to])}</p><h1>${esc(t.title)}</h1><p class="lead">${esc(t.text)}</p></div></div>
@@ -135,7 +151,14 @@ function renderFiles() {
 
 /** Adds files to the open tool; the ones it does not take are named with the reason. */
 function addFiles(list) {
-  const t = tool(state.view), files = [...list], ok = files.filter((f) => fits(t, f.name)), info = [];
+  const t = tool(state.view), files = [...list];
+  if (state.wizard) { // the eSLOG tool reads one invoice at a time
+    const fit = files.filter((f) => fits(t, f.name)), skipped = files.filter((f) => !fits(t, f.name));
+    if (skipped.length) toast(toolsFor([skipped[0].name]).length ? `${skipped[0].name} was left out: ${t.title} takes ${t.takes}.` : unsupportedHint(skipped[0].name));
+    if (fit.length) { if (fit.length > 1) toast(`${t.title} reads one invoice at a time: ${fit[fit.length - 1].name} is the one used.`); state.wizard.load(fit[fit.length - 1]); }
+    return;
+  }
+  const ok = files.filter((f) => fits(t, f.name)), info = [];
   for (const f of files.filter((x) => !fits(t, x.name))) info.push(toolsFor([f.name]).length ? `${f.name} was left out: ${t.title} takes ${TAKES[t.from]}.` : unsupportedHint(f.name));
   const entry = (file) => ({ id: ++seq, file, url: t.from === 'img' ? URL.createObjectURL(file) : '', pages: null });
   if (t.single && ok.length) { if (ok.length > 1 || state.files.length) info.push(`${t.title} takes one PDF at a time: ${ok[ok.length - 1].name} is the one kept.`); dropFiles(); state.files = [entry(ok[ok.length - 1])]; }
@@ -262,8 +285,8 @@ document.body.appendChild(picker);
 function choose() {
   if (state.busy) return;
   const t = tool(state.view);
-  picker.multiple = !t || !t.single;
-  picker.accept = t ? t.accept.map((e) => '.' + e).concat(MIMES[t.from] || []).join(',') : ALL_ACCEPT;
+  picker.multiple = !t || !(t.single || t.custom);
+  picker.accept = t ? t.accept.map((e) => '.' + e).concat(MIMES[t.from] || [], t.custom ? MIMES.pdf : []).join(',') : ALL_ACCEPT;
   picker.click();
 }
 
@@ -328,10 +351,10 @@ window.addEventListener('unhandledrejection', (e) => { console.error(e.reason); 
 function route() {
   const t = tool(decodeURIComponent(location.hash.slice(1)));
   if (t) {
-    if (state.view !== t.id) { dropFiles(); state.view = t.id; renderTool(t); if (state.pending.length) { const p = state.pending; state.pending = []; addFiles(p); } }
+    if (state.view !== t.id) { state.wizard?.destroy(); state.wizard = null; dropFiles(); state.view = t.id; renderTool(t); if (state.pending.length) { const p = state.pending; state.pending = []; addFiles(p); } }
   } else {
     if (state.view && state.files.length) state.pending = state.files.map((f) => f.file); // back to the tools with the same files
-    dropFiles(); state.view = null; renderHome();
+    state.wizard?.destroy(); state.wizard = null; dropFiles(); state.view = null; renderHome();
   }
   document.title = `${t ? t.title + ' · ' : ''}Convert — Business Apps`;
   window.scrollTo(0, 0);

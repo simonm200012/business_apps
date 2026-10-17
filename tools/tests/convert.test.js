@@ -115,13 +115,13 @@ await t('file types by their first bytes', () => {
 
 await t('tools for dropped files: a .docx opens Word to PDF, one PDF offers six tools (no Merge), several put Merge first (no Split)', () => {
   assert.deepEqual(L.toolsFor(['Report.DOCX']), ['word-pdf']);
-  assert.deepEqual(L.toolsFor(['a.pdf']), ['pdf-word', 'pdf-img', 'split', 'pdf-text', 'pdf-excel', 'pdf-xml']);
-  assert.deepEqual(L.toolsFor(['a.pdf', 'b.pdf']), ['merge', 'pdf-word', 'pdf-img', 'pdf-text', 'pdf-excel', 'pdf-xml']);
+  assert.deepEqual(L.toolsFor(['a.pdf']), ['pdf-word', 'pdf-img', 'split', 'pdf-text', 'pdf-excel', 'pdf-xml', 'invoice-eslog']);
+  assert.deepEqual(L.toolsFor(['a.pdf', 'b.pdf']), ['merge', 'pdf-word', 'pdf-img', 'pdf-text', 'pdf-excel', 'pdf-xml', 'invoice-eslog']);
   assert.deepEqual(L.toolsFor(['x.csv']), ['csv-pdf', 'csv-excel', 'excel-xml']);
   assert.deepEqual(L.toolsFor(['data.XML']), ['xml-excel']);
   assert.deepEqual(L.toolsFor(['p.JPG', 'q.webp']), ['img-pdf']);
   assert.deepEqual(L.toolsFor(['notes.md']), ['text-pdf']);
-  assert.deepEqual(L.toolsFor(['old.xls']), ['excel-pdf', 'excel-csv', 'excel-xml']);
+  assert.deepEqual(L.toolsFor(['old.xls']), ['excel-pdf', 'excel-csv', 'excel-xml', 'invoice-eslog']);
   assert.deepEqual(L.toolsFor(['a.docx', 'b.pdf']).slice(0, 2), ['word-pdf', 'pdf-word'], 'mixed: the tools that take some of them');
   assert.deepEqual(L.toolsFor(['old.doc']), []);
   assert.match(L.unsupportedHint('old.doc'), /save it as \.docx/); assert.match(L.unsupportedHint('deck.pptx'), /presentation/); assert.match(L.unsupportedHint('a.zip'), /not a file Convert can read/);

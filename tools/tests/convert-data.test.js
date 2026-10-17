@@ -175,7 +175,7 @@ await t('PDF to Excel on a real PDF: a 3-column table made with pdf-lib is read 
 });
 
 await t('no personal or hub-only names in the Convert code, no outside URLs, no dependency on the shared kit', () => {
-  const files = ['app.mjs', 'lib.mjs', 'tools.mjs', 'ui.mjs', 'convert.css', 'index.html'].map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n');
+  const files = ['app.mjs', 'lib.mjs', 'tools.mjs', 'ui.mjs', 'convert.css', 'index.html', ...fs.readdirSync(path.join(dir, 'eslog')).map((f) => 'eslog/' + f)].map((f) => fs.readFileSync(path.join(dir, f), 'utf8')).join('\n');
   assert.doesNotMatch(files, /My Apps|\/kit\/|ledger-base|ilove/i);
   assert.doesNotMatch(files.replace(/https:\/\/fonts\.(googleapis|gstatic)\.com[^"']*/g, ''), /https?:\/\/(?!localhost)/);
   assert.doesNotMatch(files, /@[a-z0-9-]+\.(com|eu|si)\b/i);
