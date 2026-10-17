@@ -44,7 +44,7 @@ async function whoIs(request, env, url) {
   }
   if (!env.ACCESS_TEAM_DOMAIN || !env.PORTAL_ACCESS_AUD) return { response: json({ error: 'The client portal is not set up yet.' }, 503) };
   let v;
-  try { v = await verifiedEmail(request, env, { aud: env.PORTAL_ACCESS_AUD, otherAud: env.ACCESS_AUD }); }
+  try { v = await verifiedEmail(request, env, { aud: env.PORTAL_ACCESS_AUD, otherAud: env.ACCESS_AUD, asciiOnly: true }); }
   catch { return { response: json({ error: 'The sign-in check is temporarily unavailable. Try again in a moment.' }, 503) }; }
   if (v.error === 'setup') return { response: json({ error: 'The client portal is not set up yet.' }, 503) };
   if (v.error) return { response: json({ error: 'Your sign-in has expired. Reload the page to sign in again.' }, 401) };

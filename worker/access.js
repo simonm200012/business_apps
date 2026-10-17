@@ -64,6 +64,7 @@ export const isLocalHost = (host) => { host = String(host || '').toLowerCase(); 
  * opts.aud: the audience this caller accepts (default env.ACCESS_AUD, the staff app). opts.otherAud: the audience of the
  * other Access app on the same team (default env.PORTAL_ACCESS_AUD): a token that lists it is refused even if it also lists
  * ours, because both apps share one issuer and the audience is the only thing that separates a client from a staff token.
+ * opts.asciiOnly: refuse e-mails with non-ASCII characters (see below).
  * Tokens without an e-mail (service tokens) are refused. Throws if Access keys cannot be fetched (callers answer 503). */
 export async function verifiedEmail(request, env, opts = {}) {
   const team = env.ACCESS_TEAM_DOMAIN, aud = opts.aud === undefined ? env.ACCESS_AUD : opts.aud;
@@ -88,7 +89,11 @@ export async function verifiedEmail(request, env, opts = {}) {
   if (!ok) return { error: 'signin' };
   const now = Date.now() / 1000, auds = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
   if (!auds.includes(aud) || (other && auds.includes(other)) || !(payload.exp > now) || (payload.nbf && payload.nbf > now + 60) || payload.iss !== 'https://' + team) return { error: 'signin' };
-  const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
+  const raw = typeof payload.email === 'string' ? payload.email.trim() : '';
+  // opts.asciiOnly (the client portal): refuse non-ASCII addresses, because toLowerCase() folds some of them onto ASCII ones
+  // (the Kelvin sign U+212A becomes "k"), so a look-alike address could otherwise land on someone else's e-mail mapping.
+  if (opts.asciiOnly && /[^\x21-\x7e]/.test(raw)) return { error: 'signin' };
+  const email = raw.toLowerCase();
   if (!email || !email.includes('@')) return { error: 'signin' };
   return { email };
 }

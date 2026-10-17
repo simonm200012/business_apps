@@ -10,6 +10,7 @@
 //   PUT    /api/portal/clients/:c/view?base=<etag>           publish a projection (re-whitelisted here); 409 when base is stale
 //   PUT|DELETE /api/portal/clients/:c/files/:fid             a PDF or shared document (≤ 20 MB, allow-list, content checked)
 //   PUT|DELETE /api/portal/users   { email, c, name?, disabled? }   one e-mail → one client; the owner's own e-mail is refused
+//                                  (disabled left out keeps the stored value; e-mails must be plain ASCII, see access.js asciiOnly)
 //   PUT    /api/portal/brand { name, accent } · /brand/logo (raw PNG/JPEG/WebP ≤ 256 KB) · PUT /news { items }
 //   GET    /api/portal/responses?after=<key>                 quote decisions clients made, oldest first (Billing imports them)
 //   GET    /api/portal/audit?day=YYYY-MM-DD                  that day's audit objects
@@ -84,7 +85,11 @@ export async function portalStaff(request, env, url, who) {
       if (!(await B.head(K.meta(t, c)))) return bad('Not found.', 404);
       let n = 0;
       const mappings = await listAll(B, cPrefix(t, c) + 'users/');
-      for (const o of mappings) { await B.delete('pu/' + o.key.split('/').pop()); n++; }
+      for (const o of mappings) { // only a mapping that still points to this client (never another client's person)
+        const uk = 'pu/' + o.key.split('/').pop(), cur = await B.get(uk);
+        let rec = null; if (cur) { try { rec = JSON.parse(await cur.text()); } catch { rec = null; } }
+        if (rec && rec.t === t && rec.c === c) { await B.delete(uk); n++; }
+      }
       const own = (await listAll(B, cPrefix(t, c))).map((o) => o.key).filter((k) => !k.startsWith(cPrefix(t, c) + 'responses/'));
       for (let i = 0; i < own.length; i += 500) await B.delete(own.slice(i, i + 500));
       await log(c, 'staff.client.unpublish', '', 'ok');
@@ -138,8 +143,8 @@ export async function portalStaff(request, env, url, who) {
   if (path === '/api/portal/users') {
     if (method !== 'PUT' && method !== 'DELETE') return bad('Method not allowed.', 405);
     const body = await readJson(request); if (body.error) return body.error;
-    const e = String(body.value && body.value.email || '').trim().toLowerCase(), c = body.value && body.value.c;
-    if (!emailOk(e)) return bad('That does not look like an e-mail address.');
+    const rawEmail = String(body.value && body.value.email || '').trim(), e = rawEmail.toLowerCase(), c = body.value && body.value.c;
+    if (!emailOk(rawEmail)) return bad('That does not look like an e-mail address (portal addresses must be plain ASCII).'); // checked before lowercasing: U+212A would fold to k
     if (typeof c !== 'string' || !HEX32.test(c)) return bad('Bad client id.');
     if (!(await B.head(K.meta(t, c)))) return bad('Not found.', 404);
     const key = await userKey(e), h = await emailHash(e);
@@ -153,16 +158,20 @@ export async function portalStaff(request, env, url, who) {
     const owner = String(env.OWNER_EMAIL || '').trim().toLowerCase();
     const staffList = [owner, ...String(env.VIEWER_EMAILS || '').toLowerCase().split(/[\s,;]+/)].filter(Boolean);
     if (staffList.includes(e)) { await log(c, 'staff.user.add', h.slice(0, 8), 'refused-staff-email'); return bad('A staff e-mail cannot be a portal client. Use a separate address for the test client.', 400); }
-    const disabled = body.value.disabled === true;
+    // "disabled" left out keeps what is stored (a rename never re-enables a disabled person); a new person starts enabled.
+    const given = typeof body.value.disabled === 'boolean';
     const person = String(body.value.name || '').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, 60); // first name for the greeting
     const cur = await B.get(key);
     if (cur) {
       const rec = JSON.parse(await cur.text());
       if (rec.t !== t || rec.c !== c) return bad('This e-mail already belongs to another portal client.', 409);
-      await putJson(B, key, { ...rec, disabled, ...(person ? { name: person } : {}) }, { onlyIf: { etagMatches: cur.etag } });
+      const disabled = given ? body.value.disabled : rec.disabled === true;
+      const saved = await putJson(B, key, { ...rec, disabled, ...(person ? { name: person } : {}) }, { onlyIf: { etagMatches: cur.etag } });
+      if (saved === null) return bad('This person was changed at the same moment. Try again.', 409); // never report a disable that did not happen
       await log(c, disabled ? 'staff.user.disable' : 'staff.user.enable', h.slice(0, 8), 'ok');
       return json({ ok: true, disabled });
     }
+    const disabled = given ? body.value.disabled : false;
     const made = await putJson(B, key, { t, c, addedAt: nowDate(env).toISOString(), addedBy: (await sha256hex('by:' + email)).slice(0, 12), name: person, disabled }, { onlyIf: { etagDoesNotMatch: '*' } });
     if (made === null) return bad('This e-mail already belongs to another portal client.', 409); // created a moment ago by someone else
     await putJson(B, K.marker(t, c, h), { at: nowDate(env).toISOString() });

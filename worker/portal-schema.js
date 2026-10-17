@@ -145,4 +145,5 @@ export function safeFilename(name, ext = '') {
 /** RFC 5987 Content-Disposition value for an attachment. */
 export const attachment = (name) => "attachment; filename*=UTF-8''" + encodeURIComponent(name).replace(/['()*]/g, (c) => '%' + c.charCodeAt(0).toString(16).toUpperCase());
 
-export const emailOk = (e) => typeof e === 'string' && e.length <= 254 && /^[^\s@<>()",;:\\]+@[^\s@<>()",;:\\]+\.[^\s@<>()",;:\\]+$/.test(e);
+/** A portal e-mail: printable ASCII only (the portal's token check refuses non-ASCII addresses, see access.js asciiOnly). */
+export const emailOk = (e) => typeof e === 'string' && e.length <= 254 && /^[\x21-\x7e]+$/.test(e) && /^[^\s@<>()",;:\\]+@[^\s@<>()",;:\\]+\.[^\s@<>()",;:\\]+$/.test(e);

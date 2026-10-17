@@ -129,6 +129,14 @@ const A = 'client-a@example.test', B = 'client-b@example.test', X = 'client-x@ex
     r2.store.set('p/' + T1 + '/c/' + CB + '/view.json', saved);
     assert.strictEqual((await call(B, 'GET', '/api/view')).status, 200);
   });
+  await t('a look-alike e-mail (Kelvin sign U+212A, which toLowerCase() folds to "k") never lands on a mapped person', async () => {
+    await owner(senv, H.OWNER, 'PUT', '/api/portal/users', { email: 'kate@example.test', c: CA });
+    assert.strictEqual((await call(null, 'GET', '/api/view', { tok: await k.portalToken('kate@example.test') })).status, 200, 'the real person');
+    const look = await call(null, 'GET', '/api/view', { tok: await k.portalToken('\u212Aate@example.test') });
+    assert.strictEqual(look.status, 401, 'the look-alike is refused at the token check');
+    assert.strictEqual(look.touched.length, 0, 'and reads nothing');
+    await owner(senv, H.OWNER, 'DELETE', '/api/portal/users', { email: 'kate@example.test', c: CA });
+  });
   await t('A sees exactly A: the view has A\'s data, brand and news, and never B\'s, X\'s or anything private', async () => {
     const r = await call(A, 'GET', '/api/view'); assert.strictEqual(r.status, 200);
     guard(r, CA, T1, 'view');

@@ -56,6 +56,11 @@ async function t(name, fn) { await fn(); n++; console.log('ok', n, name); }
     const bothStr = await k.token('a@example.com', { payload: { aud: H.PORTAL_AUD } });
     assert.strictEqual((await portalVerify(bothStr)).email, 'a@example.com', 'a plain string aud still works');
   });
+  await t('asciiOnly (the portal): a non-ASCII e-mail is refused before lowercasing (U+212A would fold onto "k")', async () => {
+    const look = await k.portalToken('\u212Aate@example.com');
+    assert.strictEqual((await verifiedEmail(req(look), env, { aud: H.PORTAL_AUD, otherAud: H.STAFF_AUD, asciiOnly: true })).error, 'signin');
+    assert.strictEqual((await verifiedEmail(req(await k.portalToken('Kate@Example.com')), env, { aud: H.PORTAL_AUD, otherAud: H.STAFF_AUD, asciiOnly: true })).email, 'kate@example.com');
+  });
   await t('missing configuration answers setup (the callers turn it into 503); the same audience on both apps is a setup error', async () => {
     const tok = await k.portalToken('a@example.com');
     assert.strictEqual((await portalVerify(tok, { ...env, PORTAL_ACCESS_AUD: '' })).error, 'setup');

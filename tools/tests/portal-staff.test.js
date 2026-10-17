@@ -132,6 +132,22 @@ const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a
     assert.strictEqual((await add('client-a@example.test', C1, { disabled: true })).json.disabled, true);
     assert.strictEqual(r2.json('pu/' + await Cm.emailHash('client-a@example.test') + '.json').disabled, true);
     assert.strictEqual((await add('client-a@example.test', C1, { disabled: false })).json.disabled, false);
+    // a rename (no "disabled" in the body) never re-enables a disabled person
+    await add('client-a@example.test', C1, { disabled: true });
+    const renamed = await add('client-a@example.test', C1, { name: 'Elena' });
+    assert.strictEqual(renamed.json.disabled, true);
+    assert.strictEqual(r2.json('pu/' + await Cm.emailHash('client-a@example.test') + '.json').disabled, true, 'still disabled after a rename');
+    // a lost race on the mapping write is reported, never a silent "ok, disabled"
+    await add('client-a@example.test', C1, { disabled: false });
+    const realPut = r2.put; r2.put = async (key, body, opts) => (key.startsWith('pu/') ? null : realPut(key, body, opts));
+    const raced = await add('client-a@example.test', C1, { disabled: true });
+    r2.put = realPut;
+    assert.strictEqual(raced.status, 409);
+    assert.strictEqual(r2.json('pu/' + await Cm.emailHash('client-a@example.test') + '.json').disabled, false);
+    // look-alike addresses: non-ASCII refused before lowercasing (the Kelvin sign U+212A would fold onto "k")
+    assert.strictEqual((await add('\u212Aate@example.test')).status, 400);
+    assert.strictEqual((await add('ana@\u0161ola.si')).status, 400);
+    assert.ok(!r2.store.has('pu/' + await Cm.emailHash('kate@example.test') + '.json'));
     assert.strictEqual((await owner('DELETE', '/api/portal/users', { email: 'client-a@example.test', c: C2 })).status, 404, 'wrong client');
     assert.strictEqual((await owner('DELETE', '/api/portal/users', { email: 'client-a@example.test', c: C1 })).status, 200);
     assert.strictEqual(r2.store.has('pu/' + await Cm.emailHash('client-a@example.test') + '.json'), false);
@@ -169,10 +185,15 @@ const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a
     assert.strictEqual((await owner('GET', '/api/portal/audit?day=yesterday')).status, 400);
   });
   await t('unpublish deletes the view, files, mappings and meta, keeps responses and audit', async () => {
+    // a stale marker under C1 for a person who now belongs to C2 (e.g. a half-finished removal): C2's mapping must survive
+    assert.strictEqual((await owner('PUT', '/api/portal/users', { email: 'moved@example.test', c: C2 })).status, 201);
+    const movedHash = await Cm.emailHash('moved@example.test');
+    await r2.put_json('p/' + T + '/c/' + C1 + '/users/' + movedHash + '.json', { at: 'stale' });
     const del = await owner('DELETE', '/api/portal/clients/' + C1);
     assert.strictEqual(del.status, 200); assert.strictEqual(del.json.removedUsers, 1);
+    assert.deepStrictEqual([r2.json('pu/' + movedHash + '.json').t, r2.json('pu/' + movedHash + '.json').c], [T, C2], 'the other client\'s person keeps their access');
     assert.strictEqual(r2.keys('p/' + T + '/c/' + C1 + '/').filter((x) => !x.includes('/responses/')).length, 0);
-    assert.strictEqual(r2.store.has('pu/' + await Cm.emailHash('client-a@example.test')), false);
+    assert.strictEqual(r2.store.has('pu/' + await Cm.emailHash('client-a@example.test') + '.json'), false);
     assert.ok(r2.keys('p/' + T + '/c/' + C1 + '/responses/').length === 1);
     assert.strictEqual((await owner('DELETE', '/api/portal/clients/' + C1)).status, 404);
     assert.ok(r2.keys('p/' + T + '/c/' + C2 + '/').length > 0, 'the other client is untouched');
