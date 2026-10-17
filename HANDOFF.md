@@ -12,7 +12,7 @@ phone, with demos good enough to show and sell to customers.
 - `site/` is the web root: one folder per app, plain HTML/CSS/JS, no build step.
 - `worker/` answers only `/api/*` (cloud sync, see below). Everything else is a static file.
 - The home page lists 33 apps in six groups (Finance, Sales & marketing, Operations, People & IT, Insights, Studio).
-  It has search (press `/`), a Cards/List switch (List by default on phones) and "Recently opened".
+  It has search (press `/`, also matches who/problem/pitch text) and "Recently opened". In the default Microsoft 365 look "All apps" is a list plus a sales sheet per app (`site/_shared/app-sheets.js`, linkable as `#app=<id>`, on phones the sheet replaces the list); the other looks still use the cards. `tools/tests/home-sheets.test.js` checks every app has a sheet.
 
 ## Cloud sync (new)
 

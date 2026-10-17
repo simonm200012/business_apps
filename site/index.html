@@ -444,6 +444,70 @@ body.searching .home-only{display:none!important}
 .sw-odoo{background:linear-gradient(135deg,#714B67 0 50%,#F3EEF2 50%)}
 .sw-classic{background:linear-gradient(90deg,#F7F7F4 0 55%,#26251E 55%)}
 @media (max-width:900px){.look-btn .look-lbl{display:none}.look-btn{width:32px;padding:0;justify-content:center}}
+/* All apps as a list with a sales sheet beside it (Microsoft 365 look only; the cards stay in the page as the source and
+   for the other looks). The list and sheet are drawn by the page script from _shared/app-sheets.js. */
+.b-ui{display:none}
+html.b-on[data-look="m365"] .b-ui{display:block}
+html.b-on[data-look="m365"] .groups-wrap,html.b-on[data-look="m365"] .ah .view{display:none}
+.b-adj{margin:12px 0 14px;padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--card);max-width:1040px}
+.b-adj h3{margin:0 0 4px;font-size:16px;line-height:22px;font-weight:600}
+.b-adj>p{margin:0 0 12px;max-width:70ch;color:var(--ink2)}
+.b-adjg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.b-adjg li{padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.b-adjg b{display:block;margin-bottom:2px;font-size:13px;font-weight:600}
+.b-adjg span{display:block;font-size:12.5px;line-height:17px;color:var(--ink3)}
+.b-news{margin:12px 0 0;max-width:70ch;padding:10px 12px;border:1px solid var(--tintLine);border-radius:6px;background:var(--tint);color:var(--ink2)}
+.b-news b{color:var(--tintFg)}
+.b-lay{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,680px);gap:16px;align-items:start}
+.b-list{border:1px solid var(--line);border-radius:8px;background:var(--card);overflow:hidden}
+.b-gh{margin:0;padding:10px 12px 6px;border-top:1px solid var(--line);background:var(--bg);color:var(--ink3);font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.b-g:first-child .b-gh{border-top:0}
+.b-gh span{font-weight:400}
+.b-row{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 12px;border:0;border-top:1px solid var(--line3);background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.b-row:hover{background:var(--hover)}
+.b-row:focus-visible{outline-offset:-2px}
+.b-row[aria-current="true"]{background:var(--tint);box-shadow:inset 3px 0 0 var(--brand)}
+.b-row img{width:28px;height:28px;flex:none;display:block}
+.b-t{flex:1;min-width:0}
+.b-n{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-s{display:block;margin-top:1px;color:var(--ink3);font-size:12px;line-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-tag{flex:none;color:var(--ink3);font-size:11px;white-space:nowrap}
+.b-tag.yours{color:var(--okFg);font-weight:600}
+.b-none{margin:0;padding:20px 12px;color:var(--ink3)}
+.b-sheet{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto;min-width:0;padding:20px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.b-sheet:focus{outline:none}
+.b-back{display:none;margin:0 0 10px;padding:0;border:0;background:none;color:var(--brandFg);font:inherit;cursor:pointer}
+.b-hd{display:flex;gap:12px;align-items:center}
+.b-hd img{width:44px;height:44px;flex:none;display:block}
+.b-hd h3{margin:0 0 4px;font-size:20px;line-height:26px;font-weight:600}
+.b-act{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.b-act .fbtn[aria-pressed="true"] .i{fill:currentColor}
+.b-sc{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.b-sc a{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:4px;background:var(--chip);color:var(--ink2);font-size:12.5px;text-decoration:none;white-space:nowrap}
+.b-sc a:hover{background:var(--tint);color:var(--tintFg)}
+.b-sec{margin-top:14px;max-width:70ch}
+.b-sec p{margin:2px 0 0}
+.b-sec ul{margin:2px 0 0;padding-left:18px}
+.b-lab{font-size:11px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3)}
+.b-pitch{padding:8px 10px;border-left:3px solid var(--brand);border-radius:0 4px 4px 0;background:var(--tint);color:var(--ink);font-weight:600}
+.b-pitch small{display:block;margin-bottom:2px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tintFg)}
+.b-cust{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.b-cust ul{margin:2px 0 0;padding-left:18px;columns:2}
+.b-cust p{margin:6px 0 0;color:var(--ink2)}
+body.searching .b-adj{display:none}
+@media (max-width:900px){.b-lay{grid-template-columns:minmax(240px,300px) minmax(0,1fr)}.b-adjg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){
+  .b-ui{padding:0 16px}
+  .b-adj{margin-top:8px}
+  .b-adjg{grid-template-columns:1fr}
+  .b-lay{display:block}
+  .b-sheet{display:none;position:static;max-height:none;overflow:visible;padding:16px}
+  .b-ui.open .b-adj,.b-ui.open .b-list{display:none}
+  .b-ui.open .b-sheet{display:block}
+  .b-back{display:block;min-height:32px}
+  .b-cust ul{columns:1}
+  .b-row{min-height:56px}
+}
 </style>
 <!-- Only the active style's files load (written here so they block the first paint like a normal stylesheet and the
      page never flashes in the wrong style); the others load when they are chosen, see HomeLook below. -->
@@ -523,6 +587,14 @@ body.searching .home-only{display:none!important}
     <div class="ah"><h2 id="appsH">All apps</h2><span class="n" id="appsN">33 apps</span><div class="chips" id="chips" role="group" aria-label="Show a group"></div>
       <div class="view" role="group" aria-label="Show apps as"><button type="button" data-view="cards" aria-pressed="true" aria-label="Cards" title="Cards"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg></button><button type="button" data-view="list" aria-pressed="false" aria-label="List" title="List"><svg class="i" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></button></div></div>
     <p class="status" id="status" role="status" aria-live="polite"></p>
+    <div class="b-ui" id="bui">
+      <section class="b-adj" id="bAdj" aria-labelledby="bAdjH"><h3 id="bAdjH">Every app can be adjusted for your company</h3>
+        <p>The apps shown here use sample branding. For a client we change the app to look and work like their own system, so it feels like theirs from day one.</p>
+        <ul class="b-adjg"><li><b>Branding</b><span>Your logo and your colours on every screen, invoice and report.</span></li><li><b>Fields</b><span>Add, rename or hide fields, for example a contract number or cost centre.</span></li><li><b>Workflows</b><span>Your approval steps, statuses and who sees what.</span></li><li><b>Language</b><span>English, Slovenian, Croatian or German labels and letters.</span></li><li><b>Company news</b><span>An announcements area on the start screen: opening hours, new rules, campaigns.</span></li></ul>
+        <p class="b-news"><b>Example: Company news</b><br>"Stores close at 14:00 on Friday for stocktake. New returns form is in Operations." Posted by Head office.</p>
+      </section>
+      <div class="b-lay" id="bLay"><nav class="b-list" id="bList" aria-label="Apps"></nav><article class="b-sheet" id="bSheet" tabindex="-1" aria-label="App sales sheet"></article></div>
+    </div>
     <div class="groups-wrap" id="groupsWrap">
   <section class="group" id="g-finance" data-group="finance" aria-labelledby="h-finance">
     <header class="ghead"><h2 id="h-finance">Finance</h2><span class="gcount">7 apps</span><p>Invoicing, cash, collections and budgets</p></header>
@@ -725,6 +797,7 @@ body.searching .home-only{display:none!important}
 </div>
 <p class="sr" id="live" aria-live="polite"></p>
 
+<script src="/_shared/app-sheets.js?v=1"></script>
 <script>
 // Home page: pinned apps, "Needs you today", Quick access, search, group chips, cards/list view, the ⌘K command bar and
 // Install. Works without this script too (every app is a plain link in the page).
@@ -795,6 +868,9 @@ body.searching .home-only{display:none!important}
     'design-compare': 'videz slog izgled dizajn'
   };
   apps.forEach(function (a) { a.kw = KW[a.id] || ''; if (a.kw) a.text += ' ' + fold(a.kw); });
+  // sales-sheet texts (who it's for, problem, pitch, features) are searchable too
+  var SH = window.APP_SHEETS || {};
+  apps.forEach(function (a) { var s = a.sheet = SH[a.id] || null; if (s) a.text += ' ' + fold([s.short, s.what, s.who, s.problem, s.pitch].concat(s.features).join(' ')); });
 
   // stored lists
   function idList(k) { var l = get(k, []); return Array.isArray(l) ? l.filter(function (id, i) { return byId[id] && l.indexOf(id) === i; }) : []; }
@@ -1081,6 +1157,7 @@ body.searching .home-only{display:none!important}
     if (!shown) empty.textContent = q ? 'No app matches “' + state.q.trim() + '”' + (state.group ? ' in this group. Try All.' : '.') : 'No apps here.';
     $('status').textContent = q ? shown + (shown === 1 ? ' app matches' : ' apps match') + ' “' + state.q.trim() + '”' + (state.group ? ' in ' + groupById(state.group).name : '') : '';
     renderQuick();
+    if (typeof updateList === 'function') updateList();
     save();
   }
   function clearSearch() { $('q').value = ''; state.q = ''; apply(); }
@@ -1444,6 +1521,122 @@ body.searching .home-only{display:none!important}
     }
     if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && cx.el.hidden && !isField(document.activeElement)) { e.preventDefault(); openCmd(''); }
   });
+
+  // ── All apps as a list with a sales sheet (Microsoft 365 look). The cards above stay in the page as the source of
+  // truth (and for the other looks); the sheet texts come from _shared/app-sheets.js. #app=<id> in the address selects
+  // an app. On a phone the sheet replaces the list ("All apps" or Esc goes back).
+  var bui = $('bui'), blay = $('bLay'), blist = $('bList'), bsheet = $('bSheet'), bsel = '', bScroll = 0;
+  root.classList.add('b-on');
+  function bOn() { return root.getAttribute('data-look') === 'm365'; }
+  function hashId() { var m = /^#app=([\w-]+)$/.exec(location.hash); return m && byId[m[1]] ? m[1] : ''; }
+  function hiddenApp(a) { return a.el.hasAttribute('data-hide'); }
+  function bRow(a) { return blist.querySelector('.b-row[data-id="' + a.id + '"]'); }
+  function buildList() {
+    blist.innerHTML = groups.map(function (g) {
+      return '<section class="b-g" data-g="' + g.id + '" aria-labelledby="bgh-' + g.id + '"><h3 class="b-gh" id="bgh-' + g.id + '">' + esc(g.name) + ' <span>(' + g.apps.length + ')</span></h3>' +
+        g.apps.map(function (a) {
+          var s = a.sheet;
+          return '<button type="button" class="b-row" data-id="' + a.id + '" aria-current="false"><img src="' + esc(a.icon) + '" alt="" width="28" height="28" loading="lazy" decoding="async">' +
+            '<span class="b-t"><span class="b-n">' + esc(a.name) + '</span><span class="b-s">' + esc(s ? s.short : a.desc) + '</span></span>' +
+            (a.data ? '<span class="b-tag ' + a.data + '">' + (a.data === 'yours' ? 'Your data' : 'Demo') + '</span>' : '') + '</button>';
+        }).join('') + '</section>';
+    }).join('') + '<p class="b-none" id="bNone" hidden></p>';
+  }
+  function sheetHtml(a) {
+    var s = a.sheet || { what: a.desc, who: '', problem: '', features: [], pitch: '' };
+    var tags = (a.isNew ? '<span class="pill new">New</span>' : '') + (a.kind ? '<span class="pill kind">' + esc(a.kind) + '</span>' : '') +
+      (a.data ? '<span class="pill data ' + a.data + '">' + (a.data === 'yours' ? 'Your data' : 'Demo data') + '</span>' : '');
+    function sec(label, text) { return text ? '<div class="b-sec"><span class="b-lab">' + label + '</span><p>' + esc(text) + '</p></div>' : ''; }
+    return '<button type="button" class="b-back" data-bback>← All apps</button>' +
+      '<div class="b-hd"><img src="' + esc(a.icon) + '" alt="" width="44" height="44"><div><h3 id="bSheetH">' + esc(a.name) + '</h3><div class="tags">' + tags + '</div></div></div>' +
+      '<div class="b-act" data-app="' + a.id + '"><a class="fbtn pri b-open" href="' + esc(a.href) + '">Open app</a>' +
+      '<button type="button" class="fbtn" data-pin="' + a.id + '" aria-pressed="false">' + svg('star', 16) + '<span>Pin</span></button></div>' +
+      (a.screens.length ? '<nav class="b-sc" data-app="' + a.id + '" aria-label="' + esc(a.name) + ' screens">' + a.screens.map(function (x) { return '<a href="' + esc(x.href) + '">' + esc(x.name) + '</a>'; }).join('') + '</nav>' : '') +
+      sec('What it does', s.what) + sec('Who it’s for', s.who) + sec('Problem it solves', s.problem) +
+      (s.features.length ? '<div class="b-sec"><span class="b-lab">Key features</span><ul>' + s.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>' : '') +
+      (s.pitch ? '<div class="b-sec"><div class="b-pitch"><small>How I’d pitch it</small>' + esc(s.pitch) + '</div></div>' : '') +
+      '<div class="b-cust"><span class="b-lab">Adjust for your company</span><ul><li>Your logo and colours</li><li>Your fields (for example extra columns or IDs)</li><li>Your workflow and approval steps</li><li>Your language</li><li>A company news area on the start screen</li></ul>' +
+      '<p>Typical for ' + esc(a.name) + ': same screens, relabelled and recoloured for the client, with their news on top.</p></div>';
+  }
+  function bMark() {
+    [].forEach.call(blist.querySelectorAll('.b-row'), function (b) { b.setAttribute('aria-current', String(b.getAttribute('data-id') === bsel)); });
+  }
+  // show one app's sheet; how: 'push' (new history entry), 'replace' or 'none' (the address already says it)
+  function showSheet(id, how) {
+    var a = byId[id]; if (!a) return;
+    var wasOpen = bui.classList.contains('open');
+    bsel = id;
+    bsheet.innerHTML = sheetHtml(a);
+    bsheet.setAttribute('aria-labelledby', 'bSheetH');
+    bsheet.scrollTop = 0;
+    bMark(); syncPinButtons();
+    var h = '#app=' + id;
+    if (location.hash !== h) {
+      try { if (how === 'push') history.pushState({ sheet: 1 }, '', h); else if (how === 'replace') history.replaceState(history.state, '', h); } catch (e) {}
+    }
+    if (phone.matches) {
+      if (!wasOpen) bScroll = window.pageYOffset;
+      bui.classList.add('open');
+      window.scrollTo(0, Math.max(0, blay.getBoundingClientRect().top + window.pageYOffset - 64));
+      bsheet.focus({ preventScroll: true });
+    }
+  }
+  function closeUi(restore) {
+    if (!bui.classList.contains('open')) { if (!bsel) return; }
+    var id = bsel; bsel = '';
+    bui.classList.remove('open'); bMark();
+    if (restore) { window.scrollTo(0, bScroll); var r = id && byId[id] && bRow(byId[id]); if (r) r.focus({ preventScroll: true }); }
+  }
+  function closeSheet() {
+    if (history.state && history.state.sheet) { history.back(); return; }  // popstate closes it
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    closeUi(true);
+  }
+  // rows and group headings follow the search and the group chips (they hide the cards; the list mirrors that)
+  function updateList() {
+    if (!bOn()) return;
+    var total = 0, first = null;
+    groups.forEach(function (g) {
+      var n = 0, sec = blist.querySelector('.b-g[data-g="' + g.id + '"]');
+      g.apps.forEach(function (a) { var h = hiddenApp(a), r = bRow(a); if (r) r.hidden = h; if (!h) { n++; if (!first) first = a; } });
+      if (sec) { sec.hidden = !n; sec.querySelector('.b-gh span').textContent = '(' + n + ')'; }
+      total += n;
+    });
+    var none = $('bNone'); none.hidden = total > 0; none.textContent = $('empty').textContent;
+    var id = hashId();
+    if (phone.matches) {
+      if (id && bsel !== id) showSheet(id, 'none'); else if (!id && bsel) closeUi(true);
+    } else if (!total) {
+      bsel = ''; bMark(); bsheet.innerHTML = '<p class="b-none">' + esc($('empty').textContent) + '</p>'; bsheet.removeAttribute('aria-labelledby');
+    } else if (!bsel || hiddenApp(byId[bsel]) || (id && id !== bsel && !hiddenApp(byId[id]))) {
+      showSheet(id && !hiddenApp(byId[id]) ? id : first.id, 'replace');
+    }
+  }
+  function onHash() {
+    if (!bOn()) return;
+    var id = hashId();
+    if (id && state.group && byId[id].group.id !== state.group) { state.group = ''; state.q = ''; $('q').value = ''; apply(); }
+    if (id) showSheet(id, 'none'); else if (phone.matches) closeUi(true);
+    updateList();
+  }
+  buildList();
+  blist.addEventListener('click', function (e) { var b = e.target.closest('.b-row'); if (b) showSheet(b.getAttribute('data-id'), phone.matches ? 'push' : 'replace'); });
+  blist.addEventListener('keydown', function (e) {   // arrow keys walk the rows
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    var rows = [].filter.call(blist.querySelectorAll('.b-row'), function (r) { return !r.hidden; }), i = rows.indexOf(document.activeElement);
+    if (i < 0) return;
+    e.preventDefault(); var n = rows[i + (e.key === 'ArrowDown' ? 1 : -1)]; if (n) n.focus();
+  });
+  bsheet.addEventListener('click', function (e) { if (e.target.closest('[data-bback]')) closeSheet(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && bOn() && phone.matches && bui.classList.contains('open') && cx.el.hidden && !e.defaultPrevented) { e.preventDefault(); closeSheet(); }
+  });
+  window.addEventListener('hashchange', onHash);
+  window.addEventListener('popstate', onHash);
+  window.addEventListener('home-look', function (e) { if (e.detail && e.detail.look === 'm365') setTimeout(onHash, 0); });
+  if (phone.addEventListener) phone.addEventListener('change', function () { bui.classList.remove('open'); bsel = ''; onHash(); });
+  // an address that names an app whose group is filtered out: show all groups so the row is there
+  (function () { var id = hashId(); if (id && state.group && byId[id].group.id !== state.group) state.group = ''; })();
 
   // draw everything; again when the page comes back from the cache, the tab is shown again, or another tab changes a list
   function renderAll() { renderPins(); renderNeeds(); syncPinButtons(); apply(); markNav(); }

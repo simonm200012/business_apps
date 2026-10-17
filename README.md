@@ -4,7 +4,8 @@ Browser apps for finance, sales, operations and people, plus the Clearfigure sho
 customers and tools he uses himself. Live (private, behind Cloudflare Access): https://business-apps.simonm2000.workers.dev
 
 - `site/`: the web root. Every app is a folder of plain HTML, CSS and JavaScript (no build step). The home page
-  `site/index.html` lists them in groups. How the apps are built: `docs/APPS-CODE-GUIDE.md`.
+  `site/index.html` lists them in groups; in the default look "All apps" is a list with a one-page sales sheet per app (texts in
+  `site/_shared/app-sheets.js`, `#app=<id>` links to one). How the apps are built: `docs/APPS-CODE-GUIDE.md`.
 - `worker/`: a small Cloudflare Worker that answers only `/api/*`: the private cloud copy that keeps each app's data the
   same on the phone and the computer (`worker/index.js`, Access check in `worker/access.js`).
 - `tools/`: `make-pwa.mjs` (home-screen tags on every page), `make-icons.mjs` (the launcher and app icons in
