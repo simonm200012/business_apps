@@ -594,6 +594,13 @@ addMark('pickOne', ({ cw = 184, ch = 376, gap = 40, lift = 80, ck = 116, cy = 54
   ], nx, ny);
 });
 
+/** Client portal — a window onto a company's papers (a page with text lines) with a person badge in front: what one client sees. */
+addMark('portalWindow', ({ nx = 0, ny = 0 } = {}, k) => centre([
+  { role: 'back', tone: [0.3, 1.2], d: rect(192, 232, 560, 520, k.R) },
+  { role: 'detail', tone: [1.4, 1.8], d: [rect(256, 320, 320, 44, 22), rect(256, 408, 240, 44, 22), rect(256, 496, 288, 44, 22)] },
+  { role: 'front', gap: true, d: circle(676, 660, 164) },
+  { role: 'inlay', d: [circle(676, 612, 52), roundPoly([[596, 736], [608, 676], [744, 676], [756, 736]], [28, 28, 28, 28])] },
+], nx, ny));
 // ═════════════════════════════ the specs, in home-page order ═════════════════════════════
 // Apps of one group never share a ramp; violet is the suite brand and belongs to the launcher only (no app ramp within
 // 30° of it: indigo and plum are retired). Only the launcher has the dark tile.
@@ -624,6 +631,7 @@ export default [
   { id: 'marketing', name: 'Marketing calendar', group: 'Sales & marketing', hue: 'coral', mark: 'megaphone',
     args: { rot: -24, P: [300, 712], h0: 72, h1: 236, len: 400, cal: [192, 192, 320, 336], hb: 92, rimW: 80, piece: [120, 128] } },
   { id: 'refill', name: 'Refill & win-back', group: 'Sales & marketing', hue: 'cyan', mark: 'lensLoop' },
+  { id: 'client-portal', name: 'Client portal', group: 'Sales & marketing', hue: 'emerald', mark: 'portalWindow' },
   { id: 'postbench', name: 'Postbench', group: 'Sales & marketing', hue: 'magenta', mark: 'fannedPosts',
     args: { cards: [[-14, 432, 248, [392, 340]], [-2, 336, 336, [448, 508]], [10, 272, 480, [636, 552]]], nx: -16 } },
 

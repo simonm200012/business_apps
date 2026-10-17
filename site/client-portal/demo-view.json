@@ -1,0 +1,213 @@
+{
+ "client": {
+  "name": "Lindgren Café"
+ },
+ "brand": {
+  "name": "Alder & Finch Studio",
+  "accent": "#1f6b4f",
+  "logo": true
+ },
+ "news": [
+  {
+   "id": "n0",
+   "date": "2026-10-14",
+   "title": "Studio closed 2 to 4 November",
+   "body": "We are at a print fair. Urgent requests still reach us by e-mail."
+  },
+  {
+   "id": "n1",
+   "date": "2026-10-01",
+   "title": "New: invoices payable by bank transfer QR",
+   "body": "Scan the code on any invoice from your banking app."
+  },
+  {
+   "id": "n2",
+   "date": "2026-09-18",
+   "title": "Welcome, Jonas Berg, junior designer",
+   "body": "Jonas joins the brand team this month."
+  }
+ ],
+ "today": "2026-10-17",
+ "publishedAt": "2026-10-17T21:30:33.613Z",
+ "invoices": [
+  {
+   "id": "de049695-7c3c-41a7-ab8a-56e27d59f519",
+   "number": "INV-2026-0005",
+   "kind": "invoice",
+   "issueDate": "2026-10-09",
+   "dueDate": "2026-10-24",
+   "total": 124000,
+   "amountDue": 124000,
+   "status": "issued",
+   "paidOn": null,
+   "reference": "SI00 2026-0005",
+   "title": "Brand refresh, phase 2"
+  },
+  {
+   "id": "736ae249-11a2-4afd-a4e1-ec48c90d8a80",
+   "number": "INV-2026-0003",
+   "kind": "invoice",
+   "issueDate": "2026-09-26",
+   "dueDate": "2026-10-11",
+   "total": 86000,
+   "amountDue": 86000,
+   "status": "overdue",
+   "paidOn": null,
+   "reference": "SI00 2026-0003",
+   "title": "Menu and signage design"
+  },
+  {
+   "id": "08d12dfd-a708-4454-ae37-81af14c11fe6",
+   "number": "INV-2026-0002",
+   "kind": "invoice",
+   "issueDate": "2026-08-20",
+   "dueDate": "2026-09-02",
+   "total": 215000,
+   "amountDue": 0,
+   "status": "paid",
+   "paidOn": "2026-09-02",
+   "reference": "SI00 2026-0002",
+   "title": "Brand refresh, phase 1"
+  },
+  {
+   "id": "9e3779b1-3c6e-4daa-a78d-17156075b54c",
+   "number": "INV-2026-0001",
+   "kind": "invoice",
+   "issueDate": "2026-08-01",
+   "dueDate": "2026-08-14",
+   "total": 64000,
+   "amountDue": 0,
+   "status": "paid",
+   "paidOn": "2026-08-14",
+   "reference": "SI00 2026-0001",
+   "title": "Photography day"
+  }
+ ],
+ "quotes": [
+  {
+   "id": "fdeb2507-9c22-43a5-ad89-76c90bcb1500",
+   "number": "Q-2026-0003",
+   "kind": "proforma",
+   "issueDate": "2026-10-08",
+   "validUntil": "2026-10-18",
+   "status": "open",
+   "totals": {
+    "net": 30000,
+    "vat": 0,
+    "total": 30000
+   },
+   "lines": [
+    {
+     "description": "Window decals (proforma)",
+     "qty": 1,
+     "unit": "pc",
+     "unitPrice": 300,
+     "discountPct": 0,
+     "rate": 0,
+     "net": 30000
+    }
+   ],
+   "note": "",
+   "hash": "d759230864bcde0a1b0292d0959ef62e7ed5a617d1d6f1d91bfc2fa3f2dc1859",
+   "response": null,
+   "canDecide": false
+  },
+  {
+   "id": "935170bb-3188-4cfc-a6df-0c2f577faa66",
+   "number": "Q-2026-0001",
+   "kind": "quote",
+   "issueDate": "2026-10-05",
+   "validUntil": "2026-10-31",
+   "status": "open",
+   "totals": {
+    "net": 480000,
+    "vat": 0,
+    "total": 480000
+   },
+   "lines": [
+    {
+     "description": "Discovery and content plan",
+     "qty": 1,
+     "unit": "pc",
+     "unitPrice": 1200,
+     "discountPct": 0,
+     "rate": 0,
+     "net": 120000
+    },
+    {
+     "description": "Design of 8 pages",
+     "qty": 1,
+     "unit": "pc",
+     "unitPrice": 2400,
+     "discountPct": 0,
+     "rate": 0,
+     "net": 240000
+    },
+    {
+     "description": "Build and launch",
+     "qty": 1,
+     "unit": "pc",
+     "unitPrice": 1200,
+     "discountPct": 0,
+     "rate": 0,
+     "net": 120000
+    }
+   ],
+   "note": "Prices in euro. VAT not charged (small taxpayer).",
+   "hash": "168074cc88fcdec3fb099b639ae18e72d67305d07c1cd7cd9e069486aca6f6f8",
+   "response": null,
+   "canDecide": true
+  },
+  {
+   "id": "b337ff2d-516f-4efa-a8dd-2c15e5f1ca4d",
+   "number": "Q-2026-0004",
+   "kind": "quote",
+   "issueDate": "2026-07-01",
+   "validUntil": "2026-07-31",
+   "status": "expired",
+   "totals": {
+    "net": 25000,
+    "vat": 0,
+    "total": 25000
+   },
+   "lines": [
+    {
+     "description": "Old logo variants",
+     "qty": 1,
+     "unit": "pc",
+     "unitPrice": 250,
+     "discountPct": 0,
+     "rate": 0,
+     "net": 25000
+    }
+   ],
+   "note": "",
+   "hash": "4e65f89bcbd487b7e23e1347830f8232c54dc20a09258114de039e54ae33af8b",
+   "response": null,
+   "canDecide": false
+  }
+ ],
+ "documents": [
+  {
+   "id": "4272616e642067756964656c696e6573",
+   "name": "Brand guidelines v3.pdf",
+   "size": 4404019,
+   "type": "application/pdf",
+   "sharedAt": "2026-10-09"
+  },
+  {
+   "id": "5369676e6167652070726f6f662c2066",
+   "name": "Signage proof, front window.pdf",
+   "size": 1887437,
+   "type": "application/pdf",
+   "sharedAt": "2026-10-02"
+  },
+  {
+   "id": "4c6f676f2066696c65732c2066696e61",
+   "name": "Logo files, final.pdf",
+   "size": 12582912,
+   "type": "application/pdf",
+   "sharedAt": "2026-09-21"
+  }
+ ]
+}

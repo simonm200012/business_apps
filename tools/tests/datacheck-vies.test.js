@@ -16,7 +16,7 @@ async function t(name, fn) { await fn(); n++; console.log('ok', n, name); }
   ['log', 'error', 'warn', 'info'].forEach((k) => { const orig = console[k]; console[k] = (...a) => { logs.push(a.map(String).join(' ')); if (k === 'log') orig(...a); }; });
   let calls = [], answer = null;
   global.fetch = async (url, opts) => { calls.push({ url: String(url), opts }); return typeof answer === 'function' ? answer(url, opts) : answer; };
-  const get = (p, env) => worker.fetch(new Request('https://apps.example.test' + p), env || DEV);
+  const get = (p, env) => worker.fetch(new Request('http://localhost' + p), env || DEV);
   const viesJson = (o, status) => new Response(JSON.stringify(o), { status: status || 200, headers: { 'Content-Type': 'application/json' } });
 
   await t('valid VAT ID: calls the official VIES REST address and passes on name and address', async () => {
@@ -56,7 +56,7 @@ async function t(name, fn) { await fn(); n++; console.log('ok', n, name); }
       assert.strictEqual((await get(p)).status, 400, p);
     }
     assert.strictEqual(calls.length, 0);
-    assert.strictEqual((await worker.fetch(new Request('https://apps.example.test/api/vies/SI/12345679', { method: 'POST', headers: { 'X-Stratum-Apps': '1' } }), DEV)).status, 405);
+    assert.strictEqual((await worker.fetch(new Request('http://localhost/api/vies/SI/12345679', { method: 'POST', headers: { 'X-Stratum-Apps': '1' } }), DEV)).status, 405);
   });
 
   await t('the same sign-in check as the other routes: no Access setup or token, no VIES call', async () => {

@@ -137,6 +137,18 @@
   ],
   "pitch": "Know which customers are about to run out of lenses and remind them before a competitor does."
  },
+ "client-portal": {
+  "short": "Service firms that want clients to see their own invoices and quotes",
+  "what": "A separate, branded portal for your clients. Each person signs in with a one-time code sent to their e-mail and sees only their own company: invoices with PDFs, quotes, shared documents and news from you. A client can accept or decline a quote online; you confirm it in Billing. It shows your name, logo and colour, and a client can never reach your internal data.",
+  "who": "Agencies, studios and service firms that already invoice in Billing; owner or account manager.",
+  "problem": "Ends the e-mail ping-pong of resending invoices, PDFs and quotes, and gets quotes answered faster.",
+  "features": [
+   "Overview, invoices, documents, quotes and news, on desktop and phone",
+   "Quote answers are recorded with a fingerprint of what the client saw, expiry and replay checks",
+   "Your own name, logo and colour; every client sees only their own data"
+  ],
+  "pitch": "Give every client one place for their invoices, files and quotes, under your own brand."
+ },
  "postbench": {
   "short": "Small business owners or marketing staff who make their own social posts",
   "what": "A design tool for social posts and banners. It turns a customer review into a post, sets size, layout, text, colours, logo and safe zones, and has a month planner and export.",

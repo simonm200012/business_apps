@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Client portal (sample)</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="portal.css">
+</head>
+<body data-demo="1">
+<header class="top" id="top" hidden>
+  <a class="logo" href="#/overview" id="logo"><span class="mark" id="mark" aria-hidden="true"></span><img class="mark-img" id="markImg" alt="" width="28" height="28" hidden><span id="brandName"></span></a>
+  <nav class="nav" id="nav" aria-label="Sections"></nav>
+  <div class="user"><span class="who" id="whoName"></span><span class="av" id="av" aria-hidden="true"></span><button class="link" id="signOut" type="button">Sign out</button></div>
+</header>
+<main id="app" aria-live="polite"><p class="state">Loading...</p></main>
+<footer class="foot" id="foot" hidden><span id="footName"></span><span id="footDemo" hidden> · Sample portal with fictional data</span> · Powered by Business Apps</footer>
+<nav class="tabs" id="tabs" aria-label="Sections" hidden></nav>
+<script src="portal.js"></script>
+</body>
+</html>

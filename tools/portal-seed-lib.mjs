@@ -49,10 +49,10 @@ export function samplePdf(title) {
   return Buffer.from(out, 'latin1');
 }
 
-export async function seedDemo(staff, { today = '2026-10-17', log = () => {} } = {}) {
+export async function seedDemo(staff, { today = '2026-10-17', log = () => {}, companies = Object.keys(COMPANIES) } = {}) {
   const must = async (company, method, path, body, headers) => { const r = await staff(company, method, path, body, headers); if (r.status >= 400) throw new Error(method + ' ' + path + ' → ' + r.status + ' ' + r.text); return r; };
   const out = { users: DEMO_USERS, clients: {} };
-  for (const [company, def] of Object.entries(COMPANIES)) {
+  for (const [company, def] of Object.entries(COMPANIES).filter(([k]) => companies.includes(k))) {
     const state = buildDemoState(company);
     await must(company, 'PUT', '/api/portal/brand', { name: def.name, accent: def.accent });
     await must(company, 'PUT', '/api/portal/brand/logo', logoPng(def.accent, company === 'alder' ? 'peak' : 'ring'), { 'Content-Type': 'image/png' });
@@ -74,6 +74,6 @@ export async function seedDemo(staff, { today = '2026-10-17', log = () => {} } =
       log('published ' + bc.name);
     }
   }
-  for (const [email, u] of Object.entries(DEMO_USERS)) await must(u.company, 'PUT', '/api/portal/users', { email, c: clientId(u.client), name: u.name });
+  for (const [email, u] of Object.entries(DEMO_USERS).filter(([, u]) => companies.includes(u.company))) await must(u.company, 'PUT', '/api/portal/users', { email, c: clientId(u.client), name: u.name });
   return out;
 }
