@@ -305,6 +305,18 @@
   ],
   "pitch": "One dashboard for sales, stores, the webshop funnel and marketing return, with filters you can change live."
  },
+ "quotes": {
+  "short": "Freelancers and small agencies that send quotes and then have to write the invoice again",
+  "what": "You build a quote with items, discounts and VAT while a live preview shows the finished page. The client opens a link, reads it and presses Accept or Decline. When a quote is accepted, one click makes the invoice draft in Billing with the same items, discount and VAT.",
+  "who": "Studios, consultants and trades that quote a job before they bill it.",
+  "problem": "Stops quotes from being retyped as invoices, and shows which ones are still open, accepted or expired.",
+  "features": [
+   "Status tabs and totals: what is still open, what was accepted this month, how many quotes are won",
+   "Exact totals with line and overall discounts, and print or save as PDF",
+   "A client page to accept or decline, then Accepted to a Billing invoice draft in one click, never twice"
+  ],
+  "pitch": "Send a quote, get a yes, and the invoice is already waiting in Billing."
+ },
  "convert": {
   "short": "Anyone who handles contracts, statements and exports and needs them in another format",
   "what": "You drop in a PDF, Word, Excel, CSV or XML file and get it back in the format you need: Word to PDF, PDF to Word, tables from a PDF into Excel, Excel or CSV to XML and back, plus merging and splitting PDFs. Everything happens in your browser, so the files are never uploaded.",

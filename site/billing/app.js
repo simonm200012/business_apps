@@ -1899,7 +1899,8 @@
     window.scrollTo(0, 0);
   });
   window.addEventListener('beforeunload', (e) => { if (editing && editing.dirty) { e.preventDefault(); e.returnValue = ''; } });
-  if (channel) channel.onmessage = async () => { state = (await readState()) || emptyState(); if (!(editing && editing.dirty)) render(); checkIntegrity(); };
+  // 'external': another Business Apps page (Quotes) added an invoice draft to this data; upload it like any other change.
+  if (channel) channel.onmessage = async (e) => { state = (await readState()) || emptyState(); if (e && e.data === 'external') syncChanged(); if (!(editing && editing.dirty)) render(); checkIntegrity(); };
 
   (async function init() {
     parseRoute();
@@ -1921,6 +1922,8 @@
         StratumSync.ready.then(redrawSettings); StratumSync.on(redrawSettings);
       } catch (e) { sync = null; }
     }
+    // Quotes put an invoice draft here while Billing was closed: mark the data as changed so the cloud copy catches up.
+    try { if (localStorage.getItem('stratum-billing-external-change')) { localStorage.removeItem('stratum-billing-external-change'); syncChanged(); } } catch (e) { /* ignore */ }
     if (location.hash === '#new') { await openNewFromHash(); parseRoute(); }
     if (!state.clients.length && !state.invoices.length && route.page === 'overview') {
       renderSide();
