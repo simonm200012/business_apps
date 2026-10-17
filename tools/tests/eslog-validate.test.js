@@ -91,7 +91,7 @@ await t('XML: well-formed, declaration, the invoice data in the right elements',
   const moa = (q) => find(root, 'G_SG50').map((g) => [find(g, 'D_5025')[0].text, find(g, 'D_5004')[0].text]).find((x) => x[0] === q)[1];
   assert.equal(moa('79'), '1400.00'); assert.equal(moa('176'), '290.50'); assert.equal(moa('9'), '1690.50');
   assert.deepEqual(find(find(root, 'G_SG26')[2], 'D_6060').map((x) => x.text), ['40']); assert.deepEqual(find(find(root, 'G_SG26')[2], 'D_5278').map((x) => x.text), ['9.50']);
-  assert.ok(find(root, 'D_2380').some((x) => x.text === '20261002') && find(root, 'D_2380').some((x) => x.text === '20261101'));
+  assert.ok(find(root, 'D_2380').some((x) => x.text === '2026-10-02') && find(root, 'D_2380').some((x) => x.text === '2026-11-01'));
   assert.match(xml, /Slovenian|Ljubljana/); assert.equal(E.eslogFileName(inv), 'eslog-2026-0142.xml');
 });
 await t('XML is deterministic: the same invoice twice is the same bytes, and has no time stamp or random id', () => {
@@ -114,9 +114,25 @@ await t('XML limits: long text is cut to what the element allows; empty optional
   const withRef = parseXml(E.buildEslog(invoice({}, (i) => { i.paymentReference = 'SI00 2026-0142'; i.note = 'Hvala'; })));
   assert.equal(find(withRef, 'G_SG1').length, 1); assert.equal(find(withRef, 'D_4440')[0].text, 'Hvala');
 });
-await t('the header comment of eslog.mjs says the mapping is unverified and that no XSD is included', () => {
-  const src = require('fs').readFileSync(path.join(dir, 'eslog/eslog.mjs'), 'utf8').split('\n').slice(0, 12).join('\n');
-  assert.match(src, /TO VERIFY against e-SLOG-2\.0 documentation from epos\.si\/eslog/); assert.match(src, /does NOT contain or copy the official GZS XSD/);
+await t('the header comment of eslog.mjs says the XSD was checked but is not included', () => {
+  const src = require('fs').readFileSync(path.join(dir, 'eslog/eslog.mjs'), 'utf8').split('\n').slice(0, 10).join('\n');
+  assert.match(src, /validates against that XSD/); assert.match(src, /NOT copied into this repo/);
+});
+await t('XML carries the eSLOG namespace, S_UNH first and an S_UNT whose count matches', () => {
+  const xml = E.buildEslog(invoice()), root = parseXml(xml);
+  assert.match(xml, /<Invoice xmlns="urn:eslog:2\.00">/);
+  const m = root.children[0]; assert.equal(m.children[0].name, 'S_UNH'); assert.equal(m.children[m.children.length - 1].name, 'S_UNT');
+  let segs = 0; (function walk(e) { if (e.name.startsWith('S_')) segs++; e.children.forEach(walk); })(m);
+  assert.equal(find(m, 'D_0074')[0].text, String(segs));
+  assert.equal(find(m, 'D_0062')[0].text, find(m, 'D_0062')[1].text);
+});
+await t('optional: the XML validates against the official XSD when ESLOG_XSD points at eSLOG20_INVOIC_v200.xsd (xmllint)', () => {
+  if (!process.env.ESLOG_XSD) { console.log('   (skipped: set ESLOG_XSD to the XSD from epos.si/eslog)'); return; }
+  const { spawnSync } = require('child_process'), os = require('os'), fs = require('fs'), f = path.join(os.tmpdir(), 'eslog-test-' + process.pid + '.xml');
+  fs.writeFileSync(f, E.buildEslog(invoice())); const r = spawnSync('xmllint', ['--noout', '--schema', process.env.ESLOG_XSD, f], { encoding: 'utf8' }); fs.unlinkSync(f);
+  assert.equal(r.status, 0, r.stderr);
+});
+await t('rounding', () => {
   assert.equal(M.round2(0.1 + 0.2), 0.3);
 });
 console.log(n + ' tests passed');

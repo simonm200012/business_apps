@@ -258,11 +258,13 @@ new tools.
   totals), `validate.mjs` (our own rules; errors block the download, warnings do not), `eslog.mjs` (the XML writer),
   `wizard.mjs` (the page), `eslog.css`. Tests: `tools/tests/eslog-*.test.js` (samples in `eslog-samples.js`, fictional,
   .xlsx made with the vendored SheetJS). Screenshots: `docs/design/eslog-shots/`.
-  **Open and honest:** the official GZS XSD is not in the repo (licence unclear) and was not available, so the element
-  mapping in the header comment of `eslog.mjs` is from knowledge of eSLOG 2.0 (EDIFACT INVOIC D.01B) and marked "to verify
-  against e-SLOG-2.0 documentation from epos.si/eslog". Validation is our own rule check; UJP's structure check
-  (storitve.ujp.gov.si) is the final word. The page and the docs say so. Not done: UBL/EN 16931 output, credit notes,
-  CSV input, the entry in `site/_shared/app-sheets.js`.
+  **Checked against the official package (17 Oct 2026):** the output validates against GZS's `eSLOG20_INVOIC_v200.xsd`
+  (namespace `urn:eslog:2.00`, S_UNH/S_UNT, ISO dates) and uses the sample's codes. The XSD and sample (from
+  epos.si/eslog, ZIP `e-SLOG-2.0-08-2020-EN.zip`) are © GZS and NOT in the repo (licence unclear). To re-check:
+  `ESLOG_XSD=/path/eSLOG20_INVOIC_v200.xsd node tools/tests/eslog-validate.test.js` (needs `xmllint`). Not done: UJP's
+  business rules beyond the schema (run storitve.ujp.gov.si structure check on a real file), parties II/IV/DP/PE, UBL/EN
+  16931 output, credit notes, CSV input. Validation in the page is our own rule check; UJP's check is the final word.
+  Sales sheet entry in `site/_shared/app-sheets.js`: done.
 - **Libraries (vendored, loaded only when a tool needs them):** pdf.js 6.3.289, pdf-lib 1.17.1, pdfmake 0.3.11,
   mammoth 1.13.0, html-to-pdfmake 2.5.34, docx 9.8.1, marked 18.0.14, SheetJS 0.20.3, JSZip 3.10.1. All MIT or
   Apache-2.0. No CDN; pdfmake is told to refuse every URL. Only Noto Sans comes from Google Fonts, like the home page.
