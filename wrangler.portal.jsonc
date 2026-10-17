@@ -1,0 +1,36 @@
+{
+  // Client portal Worker (worker/portal.js, pages in portal-site/). Deploy: npx wrangler deploy -c wrangler.portal.jsonc
+  // Steps Simon does in Cloudflare first: docs/CLIENT-PORTAL.md. Without PORTAL_ACCESS_AUD every /api/* request answers 503.
+  "name": "business-apps-portal",
+  "main": "worker/portal.js",
+  "compatibility_date": "2026-01-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  // Only /api/* reaches the Worker; the pages are static files from portal-site/ (security headers: portal-site/_headers).
+  "assets": {
+    "directory": "./portal-site",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // The portal's own bucket. There is deliberately NO SYNC binding here: this Worker cannot read Billing or any staff data.
+  "r2_buckets": [
+    { "binding": "PORTAL", "bucket_name": "business-apps-portal-eu", "jurisdiction": "eu" }
+  ],
+  // Per signed-in person (key = e-mail hash): reads 120/min, downloads 30/min, quote answers 5/min.
+  "ratelimits": [
+    { "name": "RL_READ", "namespace_id": "7101", "simple": { "limit": 120, "period": 60 } },
+    { "name": "RL_DOWNLOAD", "namespace_id": "7102", "simple": { "limit": 30, "period": 60 } },
+    { "name": "RL_DECIDE", "namespace_id": "7103", "simple": { "limit": 5, "period": 60 } }
+  ],
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "twilight-forest-055c.cloudflareaccess.com",
+    // The STAFF app's audience (public, as in wrangler.jsonc): a token that lists it is refused here.
+    "ACCESS_AUD": "d2118dbaa694438dd172f794b8a031cf5fda9c3dbf8fa5e3100232bbf979d5d3",
+    // The portal's own Access app audience (docs/CLIENT-PORTAL.md step 4). Empty = not set up yet, every request answers 503.
+    "PORTAL_ACCESS_AUD": "",
+    // The portal's own address: quote answers are only accepted from pages served from it.
+    "PORTAL_ORIGIN": "https://business-apps-portal.simonm2000.workers.dev"
+  }
+}

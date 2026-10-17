@@ -9,7 +9,7 @@
 //   GET    /api/portal/clients/:c/view                       the published view (ETag header)
 //   PUT    /api/portal/clients/:c/view?base=<etag>           publish a projection (re-whitelisted here); 409 when base is stale
 //   PUT|DELETE /api/portal/clients/:c/files/:fid             a PDF or shared document (≤ 20 MB, allow-list, content checked)
-//   PUT|DELETE /api/portal/users   { email, c, disabled? }   one e-mail → one client; the owner's own e-mail is refused
+//   PUT|DELETE /api/portal/users   { email, c, name?, disabled? }   one e-mail → one client; the owner's own e-mail is refused
 //   PUT    /api/portal/brand { name, accent } · /brand/logo (raw PNG/JPEG/WebP ≤ 256 KB) · PUT /news { items }
 //   GET    /api/portal/responses?after=<key>                 quote decisions clients made, oldest first (Billing imports them)
 //   GET    /api/portal/audit?day=YYYY-MM-DD                  that day's audit objects
@@ -154,15 +154,16 @@ export async function portalStaff(request, env, url, who) {
     const staffList = [owner, ...String(env.VIEWER_EMAILS || '').toLowerCase().split(/[\s,;]+/)].filter(Boolean);
     if (staffList.includes(e)) { await log(c, 'staff.user.add', h.slice(0, 8), 'refused-staff-email'); return bad('A staff e-mail cannot be a portal client. Use a separate address for the test client.', 400); }
     const disabled = body.value.disabled === true;
+    const person = String(body.value.name || '').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, 60); // first name for the greeting
     const cur = await B.get(key);
     if (cur) {
       const rec = JSON.parse(await cur.text());
       if (rec.t !== t || rec.c !== c) return bad('This e-mail already belongs to another portal client.', 409);
-      await putJson(B, key, { ...rec, disabled }, { onlyIf: { etagMatches: cur.etag } });
+      await putJson(B, key, { ...rec, disabled, ...(person ? { name: person } : {}) }, { onlyIf: { etagMatches: cur.etag } });
       await log(c, disabled ? 'staff.user.disable' : 'staff.user.enable', h.slice(0, 8), 'ok');
       return json({ ok: true, disabled });
     }
-    const made = await putJson(B, key, { t, c, addedAt: nowDate(env).toISOString(), addedBy: (await sha256hex('by:' + email)).slice(0, 12), disabled }, { onlyIf: { etagDoesNotMatch: '*' } });
+    const made = await putJson(B, key, { t, c, addedAt: nowDate(env).toISOString(), addedBy: (await sha256hex('by:' + email)).slice(0, 12), name: person, disabled }, { onlyIf: { etagDoesNotMatch: '*' } });
     if (made === null) return bad('This e-mail already belongs to another portal client.', 409); // created a moment ago by someone else
     await putJson(B, K.marker(t, c, h), { at: nowDate(env).toISOString() });
     await log(c, 'staff.user.add', h.slice(0, 8), 'ok');
