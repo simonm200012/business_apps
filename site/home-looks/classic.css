@@ -293,7 +293,7 @@
 :root[data-look="classic"] .card:hover::after{word-spacing:4px}
 /* list view: hairline rows in two columns */
 :root[data-look="classic"] .list .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:0 24px;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
-:root[data-look="classic"] .list .card{display:grid;grid-template-columns:40px minmax(0,1fr) 32px 20px;grid-template-areas:"ic t pin go" "ic d pin go";column-gap:14px;row-gap:0;align-items:center;padding:12px 6px;border:0;border-bottom:1px solid var(--cl-line);border-radius:0;background:transparent}
+:root[data-look="classic"] .list .card{display:grid;grid-template-columns:40px minmax(0,1fr) 28px 32px 20px;grid-template-areas:"ic t info pin go" "ic d info pin go";column-gap:12px;row-gap:0;align-items:center;padding:12px 6px;border:0;border-bottom:1px solid var(--cl-line);border-radius:0;background:transparent}
 :root[data-look="classic"] .list .card:hover{background:var(--cl-card)}
 :root[data-look="classic"] .list .card .top{display:contents}
 :root[data-look="classic"] .list .card .ai{grid-area:ic;width:40px;height:40px}
@@ -303,6 +303,10 @@
 :root[data-look="classic"] .list .card .tags,:root[data-look="classic"] .list .card .screens{display:none}
 :root[data-look="classic"] .list .card p{grid-area:d;font-size:13px;line-height:1.45;color:var(--cl-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 :root[data-look="classic"] .list .card .pin{grid-area:pin;margin:0;align-self:center}
+:root[data-look="classic"] .list .card>.sp-info{grid-area:info;position:relative;top:auto;right:auto;bottom:auto;left:auto;align-self:center;width:28px;height:28px;margin:0;padding:0;justify-content:center;border-radius:50%}
+:root[data-look="classic"] .list .card>.sp-info span{display:none}
+/* cards: About shares the bottom row with "Open →" (which only fills the left side) */
+:root[data-look="classic"] .card>.sp-info{right:20px;bottom:20px}
 :root[data-look="classic"] .list .card::after{content:"→";grid-area:go;margin:0;padding:0;align-self:center;color:var(--cl-ink2);font-size:15px;text-align:center;transition:transform .14s}
 :root[data-look="classic"] .list .card:hover::after{transform:translateX(3px);color:var(--cl-ink)}
 :root[data-look="classic"] .empty{margin:40px 0;padding:36px 18px;border:1px dashed var(--cl-line2);border-radius:12px;color:var(--cl-ink2)}
@@ -418,10 +422,12 @@
   :root[data-look="classic"] .card p{display:block;font-size:14.5px}
   :root[data-look="classic"] .card .screens{display:flex}
   :root[data-look="classic"] .card .pin{position:relative;top:auto;right:auto;width:36px;height:36px;margin:-6px -10px 0 0}
+  :root[data-look="classic"] .card>.sp-info{top:auto;left:auto;right:18px;bottom:18px;width:auto;padding:0 10px}
+  :root[data-look="classic"] .card>.sp-info span{display:inline}
   :root[data-look="classic"] .card .pin .i{width:18px;height:18px}
   :root[data-look="classic"] .card .pin:not([aria-pressed="true"]){color:var(--cl-ink3)}
   :root[data-look="classic"] .list .grid{display:grid}
-  :root[data-look="classic"] .list .card{grid-template-columns:40px minmax(0,1fr) 36px 14px;column-gap:12px;padding:12px 2px}
+  :root[data-look="classic"] .list .card{grid-template-columns:40px minmax(0,1fr) 28px 36px 14px;column-gap:8px;padding:12px 2px}
   :root[data-look="classic"] .list .card h3{font-size:15px;line-height:1.35}
   :root[data-look="classic"] .list .card .tags,:root[data-look="classic"] .list .card .screens{display:none}
   :root[data-look="classic"] .list .card .pin{margin:0}

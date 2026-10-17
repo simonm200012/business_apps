@@ -520,7 +520,7 @@ html.sp-lock{overflow:hidden}
 .sp-adj{margin:0 0 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .sp-adj-hd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:10px 12px}
 .sp-adj-hd b{font-size:13.5px;font-weight:600}
-.sp-adj-chips{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}
+.sp-adj-chips{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 300px;min-width:0}
 .sp-adj-chips span{padding:1px 8px;border-radius:99px;background:var(--chip);color:var(--ink2);font-size:12px;line-height:18px}
 .sp-adj-tg{margin-left:auto;padding:2px 6px;border:0;background:none;color:var(--brandFg);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .sp-adj-body{padding:0 12px 12px;border-top:1px solid var(--line3)}
@@ -549,7 +549,7 @@ html.sp-lock{overflow:hidden}
 </style>
 <!-- Only the active style's files load (written here so they block the first paint like a normal stylesheet and the
      page never flashes in the wrong style); the others load when they are chosen, see HomeLook below. -->
-<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<link rel="stylesheet" href="home-looks/'+l+'.css?v=3" data-look-css="'+l+'">');})();</script>
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<link rel="stylesheet" href="home-looks/'+l+'.css?v=4" data-look-css="'+l+'">');})();</script>
 <!-- phone app: tools/make-pwa.mjs --><link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="icon" type="image/svg+xml" href="/icons/icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Business Apps"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="stylesheet" href="/_shared/phone.css"><!-- /phone app -->
 </head>
 <body>
@@ -1682,7 +1682,7 @@ html.sp-lock{overflow:hidden}
    look. A look that cannot load (offline) leaves the page as it is and says so. */
 (function () {
   'use strict';
-  var KEY = 'stratum-home-look', VER = '3', root = document.documentElement;
+  var KEY = 'stratum-home-look', VER = '4', root = document.documentElement;
   var LIST = [{ id: 'm365', name: 'Microsoft 365', sub: 'Default' }, { id: 'appstore', name: 'App Store', sub: 'Story cards and Open pills' }, { id: 'raycast', name: 'Raycast', sub: 'Dark command window' }, { id: 'arc', name: 'Arc', sub: 'Gradient spaces' }, { id: 'odoo', name: 'Odoo', sub: 'A grid of app icons' }, { id: 'classic', name: 'Classic', sub: 'The earlier cursor.com look' }];
   var btn = document.getElementById('lookBtn'), menu = document.getElementById('lookMenu'), q = document.getElementById('q');
   var PH = q ? q.getAttribute('placeholder') : '', want = null;
@@ -1755,7 +1755,7 @@ html.sp-lock{overflow:hidden}
   window.HomeLook = { get: get, set: set, load: load, list: LIST };
 })();
 </script>
-<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<script src="home-looks/'+l+'.js?v=3" data-look-js="'+l+'"><\/script>');})();</script>
+<script>(function(){var l=document.documentElement.getAttribute("data-look");if(l&&l!=="m365")document.write('<script src="home-looks/'+l+'.js?v=4" data-look-js="'+l+'"><\/script>');})();</script>
 <script src="home-looks/sync.js?v=3"></script>
 </body>
 </html>

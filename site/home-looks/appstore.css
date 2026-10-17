@@ -273,7 +273,7 @@
 :root[data-look="appstore"] .screens a:hover{background:var(--as-fillH);color:var(--as-blue)}
 /* list: two columns of App Store rows, hairlines between them */
 :root[data-look="appstore"] .list .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:36px;row-gap:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
-:root[data-look="appstore"] .list .card{grid-template-columns:52px minmax(0,1fr) auto 34px;grid-template-areas:"ic t open pin" "ic d open pin";column-gap:14px;row-gap:1px;padding:10px 0;border:0;border-radius:0;background:transparent;box-shadow:none}
+:root[data-look="appstore"] .list .card{grid-template-columns:52px minmax(0,1fr) auto auto 34px;grid-template-areas:"ic t info open pin" "ic d info open pin";column-gap:14px;row-gap:1px;padding:10px 0;border:0;border-radius:0;background:transparent;box-shadow:none}
 :root[data-look="appstore"] .list .card::after{content:"";position:absolute;left:66px;right:0;bottom:0;border-bottom:1px solid var(--line3)}
 :root[data-look="appstore"] .list .card:hover{background:transparent;box-shadow:none}
 :root[data-look="appstore"] .list .card .ai{width:52px;height:52px}
@@ -284,6 +284,11 @@
 :root[data-look="appstore"] .list .card p{grid-area:d;display:block;font-size:13px;line-height:18px;color:var(--ink3)}
 :root[data-look="appstore"] .list .card .tags .pill:not(.new){display:none}
 :root[data-look="appstore"] .list .card .pin{grid-area:pin;margin:0}
+/* the About button in a list row: a round info button of its own, left of the Open pill */
+:root[data-look="appstore"] .list .card>.sp-info{grid-area:info;position:relative;top:auto;right:auto;bottom:auto;left:auto;align-self:center;width:28px;height:28px;margin:0;padding:0;justify-content:center;border-radius:50%}
+:root[data-look="appstore"] .list .card>.sp-info span{display:none}
+/* cards: About sits in its own footer row, never on top of the description or icon */
+:root[data-look="appstore"] .card>.sp-info{position:relative;right:auto;bottom:auto;align-self:flex-end;margin-top:auto}
 
 /* footer */
 :root[data-look="appstore"] .foot{margin-top:56px;border-top:1px solid var(--line);color:var(--ink3);font-size:12.5px}
@@ -429,9 +434,11 @@
   :root[data-look="appstore"] .card .ai{width:62px;height:62px}
   :root[data-look="appstore"] .card h3{font:500 11.5px/14px var(--sans);letter-spacing:0;color:var(--ink)}
   :root[data-look="appstore"] .card .pin{top:-6px;right:-4px;width:28px;height:28px;margin:0}
+  :root[data-look="appstore"] .card{padding-top:30px}
+  :root[data-look="appstore"] .card>.sp-info{position:absolute;top:2px;left:2px;right:auto;bottom:auto;align-self:auto;margin:0}
   /* list: App Store rows */
   :root[data-look="appstore"] .list .grid{display:block}
-  :root[data-look="appstore"] .list .card{grid-template-columns:50px minmax(0,1fr) auto 32px;column-gap:12px;padding:9px 0;text-align:left}
+  :root[data-look="appstore"] .list .card{grid-template-columns:50px minmax(0,1fr) 28px auto 32px;column-gap:8px;padding:9px 0;text-align:left}
   :root[data-look="appstore"] .list .card::after{left:62px}
   :root[data-look="appstore"] .list .card .ai{width:50px;height:50px}
   :root[data-look="appstore"] .list .card .top::after{display:block;padding:0 14px}

@@ -381,6 +381,11 @@
   :root[data-look="arc"] .list .card .tags .pill:not(.new){display:none}
   :root[data-look="arc"] .list .card p{display:block;font-size:12px;line-height:17px;-webkit-line-clamp:unset}
   :root[data-look="arc"] .list .card .pin{margin:0}
+  /* About: cards get a footer row; list rows get their own round icon column */
+  :root[data-look="arc"] .card>.sp-info{position:relative;right:auto;bottom:auto;align-self:flex-end;margin-top:auto}
+  :root[data-look="arc"] .list .card{grid-template-columns:32px minmax(0,1fr) 28px 34px;grid-template-areas:"ic t info pin" "ic d info pin"}
+  :root[data-look="arc"] .list .card>.sp-info{grid-area:info;position:relative;top:auto;right:auto;bottom:auto;left:auto;align-self:center;width:28px;height:28px;margin:0;padding:0;justify-content:center;border-radius:50%}
+  :root[data-look="arc"] .list .card>.sp-info span{display:none}
   :root[data-look="arc"] .empty{border-radius:14px;border-color:var(--line2)}
 
   :root[data-look="arc"] .foot{margin-top:44px;border-top:1px solid var(--arc-line);color:var(--ink3);font-size:12.5px}
@@ -485,7 +490,8 @@
   :root[data-look="arc"] .ghead h2{font-size:17px;line-height:22px;font-weight:700;letter-spacing:-.02em;color:var(--arc-ink)}
   :root[data-look="arc"] .gcount{font-size:13px;color:var(--arc-ink3)}
   :root[data-look="arc"] .grid{gap:10px}
-  :root[data-look="arc"] .card{min-height:96px;padding:12px 4px 9px;border:0;border-radius:18px;box-shadow:none;background:var(--arc-tile)}
+  :root[data-look="arc"] .card>.sp-info{position:absolute;top:4px;left:4px;right:auto;bottom:auto;align-self:auto;margin:0}
+  :root[data-look="arc"] .card{min-height:96px;padding:34px 4px 9px;border:0;border-radius:18px;box-shadow:none;background:var(--arc-tile)}
   :root[data-look="arc"] .card:hover{box-shadow:none;background:var(--arc-tileH)}
   :root[data-look="arc"] .card .ai{width:40px;height:40px}
   :root[data-look="arc"] .card h3{font-size:11.5px;line-height:14px;font-weight:500}
@@ -494,7 +500,7 @@
   :root[data-look="arc"] .card.arc-on{background:var(--arc-tileOn);box-shadow:0 2px 6px rgba(30,23,54,.14)}
   :root[data-look="arc"] .card .pin:not([aria-pressed="true"]){color:var(--arc-ink3)}
   :root[data-look="arc"] .list .grid{display:block;background:transparent;box-shadow:none}
-  :root[data-look="arc"] .list .card{grid-template-columns:28px minmax(0,1fr) 36px;grid-template-areas:"ic t pin";min-height:44px;margin:0 0 2px;padding:0 2px 0 10px;border:0;border-radius:12px;background:transparent}
+  :root[data-look="arc"] .list .card{grid-template-columns:28px minmax(0,1fr) 28px 36px;grid-template-areas:"ic t info pin";min-height:44px;margin:0 0 2px;padding:0 2px 0 10px;border:0;border-radius:12px;background:transparent}
   :root[data-look="arc"] .list .card:hover{background:var(--arc-tile)}
   :root[data-look="arc"] .list .card.arc-on{background:var(--arc-tileOn);box-shadow:var(--arc-shadow)}
   :root[data-look="arc"] .list .card .ai{width:27px;height:27px}
@@ -504,6 +510,8 @@
   :root[data-look="arc"] .list .card .tags .pill:not(.new){display:none}
   :root[data-look="arc"] .list .card p{display:none}
   :root[data-look="arc"] .list .card .pin{width:36px;height:36px}
+  :root[data-look="arc"] .list .card>.sp-info{grid-area:info;position:relative;top:auto;right:auto;bottom:auto;left:auto;align-self:center;width:28px;height:28px;margin:0;padding:0;justify-content:center;border-radius:50%}
+  :root[data-look="arc"] .list .card>.sp-info span{display:none}
   :root[data-look="arc"] .list .card.arc-on h3 a{color:var(--ink)}
   :root[data-look="arc"][data-stratum-mode="dark"] .list .card.arc-on h3 a{color:var(--arc-ink)}
   :root[data-look="arc"] .empty{margin:16px 6px;border-color:var(--arc-tileH);color:var(--arc-ink2)}
