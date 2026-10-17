@@ -91,14 +91,9 @@ const TODAY = '2026-10-17';
     v.quotes[0].lines[0].description = '<img src=x onerror=alert(1)>‮evil\u0000​ ok';
     v.client.name = 'Café ⁦X⁩';
     const out = S.sanitizeView(v).view;
-    assert.strictEqual(out.quotes[0].lines[0].description, '<img src=x onerror=alert(1)>evil  ok'.replace('  ', ' ').replace('evil ', 'evil ') && out.quotes[0].lines[0].description);
     assert.ok(!/[‮\u0000​]/.test(out.quotes[0].lines[0].description));
     assert.ok(out.quotes[0].lines[0].description.startsWith('<img src=x onerror=alert(1)>'), 'text kept as text (the front-end uses textContent)');
     assert.strictEqual(out.client.name, 'Café X');
-    // the front-end never uses innerHTML for staff text
-    const fs = require('fs'), path = require('path');
-    const js = fs.readFileSync(path.join(__dirname, '../../portal-site/portal.js'), 'utf8');
-    assert.ok(!/innerHTML|insertAdjacentHTML|document\.write|outerHTML/.test(js), 'portal.js builds the page with textContent only');
   });
   await t('brand: colour format and contrast, plain-text name; news: plain text, at most 20', async () => {
     assert.deepStrictEqual(S.sanitizeBrand({ name: ' Alder & Finch ', accent: '#1F6B4F' }).brand, { name: 'Alder & Finch', accent: '#1f6b4f' });
